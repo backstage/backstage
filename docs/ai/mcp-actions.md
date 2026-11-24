@@ -237,12 +237,25 @@ Tokens issued through this flow carry an `azp` claim holding the `client_id` of
 the client that obtained them, both on the initial exchange and after a refresh.
 Tokens from an interactive Backstage sign-in have no `azp` claim.
 
-The claim is only present on the token as it was issued. The backend that
-receives that token directly, such as the MCP server, can decode it to tell which
-client a request originated from. The claim is not exposed on the user principal
-of the request credentials, so audit events and permission policies do not see
-it, and it is not carried over when that backend calls another backend on behalf
-of the user.
+Backend plugins do not need to decode the token to use it. The client is
+available as `clientId` on the user principal of the request credentials, and it
+is kept when a backend calls another backend on behalf of the user, so a tool
+call that reaches the catalog or the scaffolder through the MCP server still
+names the client that started it.
+
+This gives you two things without any changes to your plugins:
+
+- **Audit events** created with the [Auditor Service](../backend-system/core-services/auditor.md)
+  include `actor.clientId` next to `actor.actorId`, so a tool call made by an
+  MCP client can be told apart from the same user working in the Backstage UI.
+- **Permission policies** can read `user.credentials.principal.clientId` and
+  decide differently for a client than for the user's own session. See
+  [Requests made through an OAuth client](../permissions/writing-a-policy.md#requests-made-through-an-oauth-client)
+  for an example.
+
+Note that the client only tells you which application the user approved. The
+token still carries all of the user's permissions unless your permission policy
+narrows them for that client.
 
 #### Pre-registered clients
 

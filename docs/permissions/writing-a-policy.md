@@ -201,3 +201,35 @@ In this example, we use [`isResourcePermission`](https://backstage.io/api/stable
 Some catalog permissions do not have the `'catalog-entity'` resource type, such as [`catalogEntityCreatePermission`](https://github.com/backstage/backstage/blob/1e5e9fb9de9856a49e60fc70c38a4e4e94c69570/plugins/catalog-common/src/permissions.ts#L49). In those cases, a definitive decision is required because conditions can't be applied to an entity that does not exist yet.
 
 :::
+
+## Requests made through an OAuth client
+
+A user can approve an OAuth client, such as an MCP client used by an AI agent, to act for them. See [Client ID Metadata Documents](../ai/mcp-actions.md#client-id-metadata-documents) for how that sign-in works. Requests made by such a client carry the user's identity, and by default they are allowed everything that the user is allowed.
+
+The user principal tells you when a client is involved. `user.credentials.principal.clientId` holds the ID of the client that the token was issued to, and it is not set for requests that come from the user's own session in Backstage. The value is set by the `auth` backend when the token is issued and the client cannot change it. It is also kept when a backend plugin asks for a permission decision on behalf of the user, so your policy sees it no matter which plugin the request went through.
+
+The following policy lets OAuth clients read, and only lets a trusted client make changes:
+
+```ts title="packages/backend/src/extensions/permissionsPolicyExtension.ts"
+const trustedClients = ['https://my-custom-client.example.com/client.json'];
+
+export class CustomPolicy implements PermissionPolicy {
+  async handle(
+    request: PolicyQuery,
+    user?: PolicyQueryUser,
+  ): Promise<PolicyDecision> {
+    const clientId = user?.credentials.principal.clientId;
+
+    if (clientId && request.permission.attributes.action !== 'read') {
+      if (!trustedClients.includes(clientId)) {
+        return { result: AuthorizeResult.DENY };
+      }
+    }
+
+    // The rules that apply to everyone, including the user's own session
+    return { result: AuthorizeResult.ALLOW };
+  }
+}
+```
+
+Permissions without an `action` attribute are treated as changes in this example, which is the safer default.

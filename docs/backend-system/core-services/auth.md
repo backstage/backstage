@@ -114,6 +114,25 @@ if (auth.isPrincipal(credentials, 'user')) {
 }
 ```
 
+A user principal has the following properties:
+
+- `userEntityRef`: the entity ref of the user.
+- `actor`: the service principal of the backend plugin that made the request on
+  behalf of the user. It is only set for on-behalf-of requests between backend
+  plugins.
+- `clientId`: the ID of the OAuth client that the user's token was issued to,
+  for example an MCP client that the user approved on the consent page. It is
+  only set when the user signed in through such a client, and it is kept across
+  on-behalf-of requests, so every backend plugin involved in handling the
+  request sees the same value. It is not set for an interactive sign-in to
+  Backstage.
+
+```ts
+if (auth.isPrincipal(credentials, 'user') && credentials.principal.clientId) {
+  // The request was made by an OAuth client acting for the user
+}
+```
+
 ## Configuring the service
 
 :::note
