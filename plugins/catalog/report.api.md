@@ -131,8 +131,8 @@ export const catalogPlugin: BackstagePlugin<
     catalogIndex: RouteRef<undefined>;
     catalogEntity: RouteRef<{
       name: string;
-      kind: string;
       namespace: string;
+      kind: string;
     }>;
   },
   {
@@ -140,8 +140,8 @@ export const catalogPlugin: BackstagePlugin<
     viewTechDoc: ExternalRouteRef<
       {
         name: string;
-        kind: string;
         namespace: string;
+        kind: string;
       },
       true
     >;
@@ -631,7 +631,7 @@ export function EntityRelationWarning(): JSX_2.Element | null;
 
 // @public (undocumented)
 export const EntitySwitch: {
-  (props: EntitySwitchProps): JSX.Element;
+  (props: EntitySwitchProps): JSX_2.Element;
   Case: (_props: EntitySwitchCaseProps) => null;
 };
 
