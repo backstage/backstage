@@ -1,12 +1,13 @@
 # Complements .github/workflows/verify_fossa.yml (FOSSA push + PR analysis).
 # This workflow provides fast, deterministic PR gating on yarn.lock dependency
 # license changes using scripts/check-licenses.js and .allowed-licenses.json.
-# Security: runs on pull_request_target but executes only base-trusted code.
-# The PR's yarn.lock is fetched as data (git show) and never executed.
+# Runs on pull_request (no secrets needed) to avoid the default
+# pull_request_target block (evaluate now, enforcement Dec 2, 2026).
+# See PR description for why not Snyk/Mend/FOSSA/ORT/dependency-review-action.
 name: Verify Licenses
 
 on:
-  pull_request_target:
+  pull_request:
     branches: [master]
     paths:
       - 'yarn.lock'
@@ -30,23 +31,18 @@ jobs:
         with:
           egress-policy: audit
 
-      - name: Checkout base (trusted code)
+      - name: Checkout PR merge commit
         uses: actions/checkout@v7
         with:
           persist-credentials: false
           fetch-depth: 0
-          ref: ${{ github.event.pull_request.base.sha }}
 
-      - name: Fetch PR head yarn.lock as data only
+      - name: Fetch base yarn.lock for diff
         run: |
-          git fetch origin pull/${{ github.event.pull_request.number }}/head --depth 1
-          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
           BASE_SHA="${{ github.event.pull_request.base.sha }}"
-          echo "Base: $BASE_SHA Head: $HEAD_SHA"
+          echo "Base: $BASE_SHA Head: ${{ github.event.pull_request.head.sha }}"
+          git fetch origin master --depth 1
           git show "$BASE_SHA":yarn.lock > /tmp/base-yarn.lock 2>/dev/null || touch /tmp/base-yarn.lock
-          git show "$HEAD_SHA":yarn.lock > yarn.lock 2>/dev/null || { echo "::error::Failed to fetch head yarn.lock from $HEAD_SHA"; exit 1; }
-          # Validate fetched file is a lockfile (not executed)
-          head -n 5 yarn.lock | grep -q "yarn.lock" || head -n 5 yarn.lock | grep -q "__metadata" || echo "::warning::Fetched head yarn.lock header unexpected"
           ls -l /tmp/base-yarn.lock yarn.lock || true
 
       - name: Use Node.js 24.x
