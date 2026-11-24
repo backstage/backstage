@@ -16,8 +16,11 @@
 
 // Building blocks for implementing additional TechDocs generators. These are
 // alpha while the set of engines settles and may change in minor releases.
+import type { LoggerService } from '@backstage/backend-plugin-api';
+import type { Config } from '@backstage/config';
 import type { TechDocsContainerRunner } from '@backstage/plugin-techdocs-node';
 import { DockerContainerRunner } from './stages/generate/DockerContainerRunner';
+import { createKubernetesJobRunner as createKubernetesJobRunnerFromConfig } from './stages/generate/techdocs';
 
 export { sanitizeMkdocsYml } from './stages/generate/mkdocsPatchers';
 export {
@@ -39,4 +42,18 @@ export type { RunCommandOptions } from './stages/generate/helpers';
  */
 export function createDockerContainerRunner(): TechDocsContainerRunner {
   return new DockerContainerRunner();
+}
+
+/**
+ * Creates a container runner that runs builds as Kubernetes Jobs, configured
+ * by `techdocs.generator.kubernetes`, the same one the built-in MkDocs
+ * generator uses when `techdocs.generator.runIn` is `'kubernetes'`.
+ *
+ * @alpha
+ */
+export function createKubernetesJobRunner(options: {
+  config: Config;
+  logger?: LoggerService;
+}): TechDocsContainerRunner {
+  return createKubernetesJobRunnerFromConfig(options.config, options.logger);
 }
