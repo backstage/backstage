@@ -46,6 +46,18 @@ export type BackstageUserPrincipal = {
    * facilitated the authentication.
    */
   actor?: BackstageServicePrincipal;
+
+  /**
+   * The ID of the OAuth client that the user's token was issued to.
+   *
+   * @remarks
+   *
+   * This field is present when the user signed in through an OAuth client,
+   * for example an MCP client that the user approved, and is kept when a
+   * backend service makes further requests on behalf of the user. It is not
+   * set for tokens from an interactive sign-in to Backstage.
+   */
+  clientId?: string;
 };
 
 /**

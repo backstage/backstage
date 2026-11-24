@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { mockServices } from '@backstage/backend-test-utils';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import { DefaultAuditorService } from './DefaultAuditorService';
 
 const mockDeps = {
@@ -88,6 +88,62 @@ describe('DefaultAuditorService', () => {
       severityLevel: 'low',
       actor: {},
     });
+  });
+
+  it('should log the user and the client that the credentials were issued to', async () => {
+    const logFn = jest.fn();
+    const request = {
+      ip: '127.0.0.1',
+      hostname: 'localhost',
+      originalUrl: '/api/test',
+      method: 'POST',
+      get: () => 'test-agent',
+    } as any;
+
+    const httpAuth = mockServices.httpAuth.mock({
+      credentials: async () =>
+        ({
+          $$type: '@backstage/BackstageCredentials',
+          principal: {
+            type: 'user',
+            userEntityRef: 'user:default/mock',
+            clientId: 'https://example.com/client.json',
+          },
+        } as any),
+    });
+    const auditor = DefaultAuditorService.create(logFn, {
+      auth: mockServices.auth(),
+      httpAuth,
+      plugin: mockDeps.plugin,
+    });
+
+    await auditor.createEvent({ eventId: 'test-event', request });
+
+    expect(logFn).toHaveBeenCalledWith({
+      eventId: 'test-event',
+      status: 'initiated',
+      plugin: 'test',
+      severityLevel: 'low',
+      actor: {
+        actorId: 'user:default/mock',
+        clientId: 'https://example.com/client.json',
+        ip: '127.0.0.1',
+        hostname: 'localhost',
+        userAgent: 'test-agent',
+      },
+      request: { url: '/api/test', method: 'POST' },
+    });
+
+    // No client for credentials from an interactive sign-in
+    httpAuth.credentials.mockResolvedValue(mockCredentials.user());
+    await auditor.createEvent({ eventId: 'test-event', request });
+    expect(logFn.mock.calls[1][0].actor).toEqual({
+      actorId: 'user:default/mock',
+      ip: '127.0.0.1',
+      hostname: 'localhost',
+      userAgent: 'test-agent',
+    });
+    expect(logFn.mock.calls[1][0].actor).not.toHaveProperty('clientId');
   });
 
   it('should use root meta', async () => {

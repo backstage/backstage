@@ -23,7 +23,7 @@ import {
   authServiceFactory,
   pluginTokenHandlerDecoratorServiceRef,
 } from './authServiceFactory';
-import { base64url, decodeJwt } from 'jose';
+import { base64url, decodeJwt, GeneralSign, importJWK, SignJWT } from 'jose';
 import { discoveryServiceFactory } from '../discovery';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
@@ -401,6 +401,137 @@ describe('authServiceFactory', () => {
       targetPluginId: 'permission',
     });
     expect(decodeJwt(oboToken2).obo).toBe(limitedToken);
+  });
+
+  it('should keep the client of a user token across on-behalf-of requests', async () => {
+    const tester = ServiceFactoryTester.from(authServiceFactory, {
+      dependencies: mockDeps,
+    });
+
+    const searchAuth = await tester.getSubject('search');
+    const catalogAuth = await tester.getSubject('catalog');
+    const permissionAuth = await tester.getSubject('permission');
+
+    const publicKey = {
+      kty: 'EC',
+      x: 'c9cPvv_S7zETBKDlAa3oOjr7RvyUueIYIak0TRph7mg',
+      y: 'bKaxDRAWgmEJ9Ix8e85blH_IsnbQxX31x0oQTVwLZ2c',
+      crv: 'P-256',
+      kid: '8d01c3db-56f9-45f0-86dd-05b3c835b3d3',
+      alg: 'ES256',
+    };
+    const privateKey = await importJWK({
+      ...publicKey,
+      d: '2eJlhCDdGx9fxKDL1D9BnY3CCTEKxL60Bkms0hmubmY',
+    });
+
+    server.use(
+      http.get('http://localhost:7007/api/auth/.well-known/jwks.json', () =>
+        HttpResponse.json({ keys: [publicKey] }),
+      ),
+      http.get(
+        'http://localhost:7007/api/catalog/.backstage/auth/v1/jwks.json',
+        async () =>
+          HttpResponse.json(await catalogAuth.listPublicServiceKeys()),
+      ),
+      http.get(
+        'http://localhost:7007/api/search/.backstage/auth/v1/jwks.json',
+        async () => HttpResponse.json(await searchAuth.listPublicServiceKeys()),
+      ),
+      http.get(
+        'http://localhost:7007/api/permission/.backstage/auth/v1/jwks.json',
+        async () =>
+          HttpResponse.json(await permissionAuth.listPublicServiceKeys()),
+      ),
+    );
+
+    const iat = 1712071714;
+    const exp = 1712075314;
+    const sub = 'user:development/guest';
+    const clientId = 'https://example.com/client.json';
+
+    jest.useFakeTimers({
+      doNotFake: ['nextTick'],
+      now: iat * 1000 + 600_000,
+    });
+
+    const {
+      signatures: [{ signature: uip }],
+    } = await new GeneralSign(
+      new TextEncoder().encode(
+        JSON.stringify({ sub, iat, exp, azp: clientId }),
+      ),
+    )
+      .addSignature(privateKey)
+      .setProtectedHeader({
+        typ: 'vnd.backstage.limited-user',
+        alg: 'ES256',
+        kid: publicKey.kid,
+      })
+      .done()
+      .sign();
+
+    const fullToken = await new SignJWT({
+      iss: 'http://localhost:7007/api/auth',
+      sub,
+      ent: [sub],
+      aud: 'backstage',
+      azp: clientId,
+      iat,
+      exp,
+      uip,
+    })
+      .setProtectedHeader({
+        typ: 'vnd.backstage.user',
+        alg: 'ES256',
+        kid: publicKey.kid,
+      })
+      .sign(privateKey);
+
+    const credentials = await searchAuth.authenticate(fullToken);
+    if (!searchAuth.isPrincipal(credentials, 'user')) {
+      throw new Error('not a user principal');
+    }
+    expect(credentials.principal).toEqual({
+      type: 'user',
+      userEntityRef: sub,
+      clientId,
+    });
+    expect(String(credentials.principal)).toBe(
+      `userPrincipal{${sub},clientId=${clientId}}`,
+    );
+
+    const { token: oboToken } = await searchAuth.getPluginRequestToken({
+      onBehalfOf: credentials,
+      targetPluginId: 'catalog',
+    });
+
+    const oboCredentials = await catalogAuth.authenticate(oboToken);
+    if (!catalogAuth.isPrincipal(oboCredentials, 'user')) {
+      throw new Error('obo credential is not a user principal');
+    }
+    expect(oboCredentials.principal).toEqual({
+      type: 'user',
+      userEntityRef: sub,
+      actor: { type: 'service', subject: 'plugin:search' },
+      clientId,
+    });
+
+    // A second hop, as when a plugin asks the permission backend
+    const { token: oboToken2 } = await catalogAuth.getPluginRequestToken({
+      onBehalfOf: oboCredentials,
+      targetPluginId: 'permission',
+    });
+    const oboCredentials2 = await permissionAuth.authenticate(oboToken2);
+    if (!permissionAuth.isPrincipal(oboCredentials2, 'user')) {
+      throw new Error('obo credential is not a user principal');
+    }
+    expect(oboCredentials2.principal).toEqual({
+      type: 'user',
+      userEntityRef: sub,
+      actor: { type: 'service', subject: 'plugin:catalog' },
+      clientId,
+    });
   });
 
   it('should eagerly reject access to external access tokens based on plugin id', async () => {

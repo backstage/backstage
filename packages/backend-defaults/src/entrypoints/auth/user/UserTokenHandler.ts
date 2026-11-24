@@ -74,7 +74,10 @@ export class UserTokenHandler {
       throw new AuthenticationError('No user sub found in token');
     }
 
-    return { userEntityRef };
+    // Only present on tokens that were issued to an OAuth client
+    const clientId = typeof payload.azp === 'string' ? payload.azp : undefined;
+
+    return { userEntityRef, clientId };
   }
 
   #getTokenVerificationOptions(token: string): JWTVerifyOptions | undefined {
@@ -153,6 +156,7 @@ export class UserTokenHandler {
           sub: payload.sub,
           iat: payload.iat,
           exp: payload.exp,
+          ...(payload.azp ? { azp: payload.azp } : {}),
         }),
       ),
       payload.uip,

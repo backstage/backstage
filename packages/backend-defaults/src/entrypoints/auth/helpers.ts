@@ -65,10 +65,12 @@ export function createCredentialsWithUserPrincipal(
   token: string,
   expiresAt?: Date,
   actor?: string,
+  clientId?: string,
 ): InternalBackstageCredentials<BackstageUserPrincipal> {
   const principal = createUserPrincipal(
     sub,
     actor ? createServicePrincipal(actor) : undefined,
+    clientId,
   );
   const result = {
     $$type: '@backstage/BackstageCredentials',
@@ -166,11 +168,13 @@ function createServicePrincipal(
 function createUserPrincipal(
   userEntityRef: string,
   actor?: BackstageServicePrincipal,
+  clientId?: string,
 ): BackstageUserPrincipal {
   const result = {
     type: 'user',
     userEntityRef,
     actor,
+    ...(clientId ? { clientId } : {}),
   } as const;
   Object.defineProperties(result, {
     toString: {
@@ -181,6 +185,9 @@ function createUserPrincipal(
         let parts = userEntityRef;
         if (actor) {
           parts += `,actor={${actor}}`;
+        }
+        if (clientId) {
+          parts += `,clientId=${clientId}`;
         }
         return `userPrincipal{${parts}}`;
       },

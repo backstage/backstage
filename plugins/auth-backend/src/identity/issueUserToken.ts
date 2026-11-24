@@ -64,6 +64,15 @@ export async function issueUserToken({
 
   logger.info(`Issuing token for ${sub}, with entities ${ent}`);
 
+  // The client that the token was issued to, if any. It is only made part of
+  // the identity proof when it also ends up in the token itself, since the
+  // proof has to be reconstructed from the token claims.
+  const azp =
+    typeof additionalClaims.azp === 'string' &&
+    !omitClaimsFromToken?.includes('azp')
+      ? additionalClaims.azp
+      : undefined;
+
   const signingKey = await importJWK(key);
 
   const uip = await createUserIdentityClaim({
@@ -72,7 +81,7 @@ export async function issueUserToken({
       alg: key.alg,
       kid: key.kid,
     },
-    payload: { sub, iat, exp },
+    payload: { sub, iat, exp, azp },
     key: signingKey,
   });
 
@@ -136,6 +145,11 @@ interface BackstageUserIdentityProofPayload {
    * Standard issue time in epoch seconds
    */
   iat: number;
+
+  /**
+   * The OAuth client that the token was issued to, if any
+   */
+  azp?: string;
 }
 
 /**
@@ -168,6 +182,7 @@ async function createUserIdentityClaim(options: {
     sub: options.payload.sub,
     iat: options.payload.iat,
     exp: options.payload.exp,
+    ...(options.payload.azp ? { azp: options.payload.azp } : {}),
   };
 
   const jws = await new GeneralSign(

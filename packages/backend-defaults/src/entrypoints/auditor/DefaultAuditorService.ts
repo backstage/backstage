@@ -31,6 +31,11 @@ import type { Request } from 'express';
 /** @public */
 export type AuditorEventActorDetails = {
   actorId?: string;
+  /**
+   * The OAuth client that the actor's credentials were issued to, for example
+   * an MCP client acting for a user. Not set for interactive sign-ins.
+   */
+  clientId?: string;
   ip?: string;
   hostname?: string;
   userAgent?: string;
@@ -162,7 +167,7 @@ export class DefaultAuditorService implements AuditorService {
       eventId,
       severityLevel,
       actor: {
-        actorId: await this.getActorId(request),
+        ...(await this.getActor(request)),
         ip: request?.ip,
         hostname: request?.hostname,
         userAgent: request?.get('user-agent'),
@@ -203,9 +208,9 @@ export class DefaultAuditorService implements AuditorService {
     };
   }
 
-  private async getActorId(
+  private async getActor(
     request?: Request<any, any, any, any, any>,
-  ): Promise<string | undefined> {
+  ): Promise<Pick<AuditorEventActorDetails, 'actorId' | 'clientId'>> {
     let credentials: BackstageCredentials =
       await this.auth.getOwnServiceCredentials();
 
@@ -218,13 +223,14 @@ export class DefaultAuditorService implements AuditorService {
     }
 
     if (this.auth.isPrincipal(credentials, 'user')) {
-      return credentials.principal.userEntityRef;
+      const { userEntityRef, clientId } = credentials.principal;
+      return { actorId: userEntityRef, ...(clientId ? { clientId } : {}) };
     }
 
     if (this.auth.isPrincipal(credentials, 'service')) {
-      return credentials.principal.subject;
+      return { actorId: credentials.principal.subject };
     }
 
-    return undefined;
+    return { actorId: undefined };
   }
 }

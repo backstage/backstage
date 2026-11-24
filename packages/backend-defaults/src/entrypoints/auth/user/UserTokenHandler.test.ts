@@ -480,5 +480,86 @@ describe('UserTokenHandler', () => {
         },
       );
     });
+
+    it('should keep the client of a user token in the limited token', async () => {
+      jest.useFakeTimers({
+        doNotFake: ['nextTick'],
+        now: 1712071714 * 1000 + 600_000,
+      });
+      const parts = {
+        header: {
+          typ: 'vnd.backstage.user',
+          alg: 'ES256',
+          kid: mockPublicKey.kid,
+        },
+        payload: {
+          iss: 'http://localhost:7007/api/auth',
+          sub: 'user:development/guest',
+          ent: ['user:development/guest', 'group:default/team-a'],
+          aud: 'backstage',
+          azp: 'https://example.com/client.json',
+          iat: 1712071714,
+          exp: 1712075314,
+          uip: '',
+        },
+      };
+
+      const {
+        signatures: [{ signature: uip }],
+      } = await new GeneralSign(
+        new TextEncoder().encode(
+          JSON.stringify({
+            sub: parts.payload.sub,
+            iat: parts.payload.iat,
+            exp: parts.payload.exp,
+            azp: parts.payload.azp,
+          }),
+        ),
+      )
+        .addSignature(await importJWK(mockPrivateKey))
+        .setProtectedHeader({
+          ...parts.header,
+          typ: 'vnd.backstage.limited-user',
+        })
+        .done()
+        .sign();
+
+      parts.payload.uip = uip;
+      const token = await createToken(parts);
+
+      await expect(userTokenHandler.verifyToken(token)).resolves.toEqual({
+        userEntityRef: 'user:development/guest',
+        clientId: 'https://example.com/client.json',
+      });
+
+      const result = userTokenHandler.createLimitedUserToken(token);
+      expect(JSON.parse(atob(result.token.split('.')[1]))).toEqual({
+        sub: 'user:development/guest',
+        iat: 1712071714,
+        exp: 1712075314,
+        azp: 'https://example.com/client.json',
+      });
+      await expect(userTokenHandler.verifyToken(result.token)).resolves.toEqual(
+        {
+          userEntityRef: 'user:development/guest',
+          clientId: 'https://example.com/client.json',
+        },
+      );
+
+      // A limited token for the same user without the client does not verify
+      const [header, , signature] = result.token.split('.');
+      const stripped = [
+        header,
+        encodeData({
+          sub: 'user:development/guest',
+          iat: 1712071714,
+          exp: 1712075314,
+        }),
+        signature,
+      ].join('.');
+      await expect(userTokenHandler.verifyToken(stripped)).rejects.toThrow(
+        'Failed user token verification',
+      );
+    });
   });
 });
