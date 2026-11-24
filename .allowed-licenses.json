@@ -34,6 +34,94 @@
       "reason": "Example override entry showing required fields - engine ignores entries with _example:true; remove flag to activate",
       "expiresOn": "2026-12-31",
       "approvedBy": "legal@example.com"
+    },
+    {
+      "name": "bintrees",
+      "versionRange": "1.0.1",
+      "license": "(missing)",
+      "reason": "verified the package has MIT license https://github.com/vadimg/js_bintrees",
+      "expiresOn": "2027-12-31",
+      "approvedBy": "backstage/maintainers"
+    },
+    {
+      "name": "cli-table",
+      "versionRange": "0.3.11",
+      "license": "(missing)",
+      "reason": "verified the package has MIT license https://github.com/Automattic/cli-table",
+      "expiresOn": "2027-12-31",
+      "approvedBy": "backstage/maintainers"
+    },
+    {
+      "name": "fast-shallow-equal",
+      "versionRange": "1.0.0",
+      "license": "(missing)",
+      "reason": "verified the package has Unlicense license https://github.com/streamich/fast-shallow-equal",
+      "expiresOn": "2027-12-31",
+      "approvedBy": "backstage/maintainers"
+    },
+    {
+      "name": "fly-import",
+      "versionRange": "1.0.0",
+      "license": "(missing)",
+      "reason": "verified the package has MIT license via npm view",
+      "expiresOn": "2027-12-31",
+      "approvedBy": "backstage/maintainers"
+    },
+    {
+      "name": "pause",
+      "versionRange": "0.0.1",
+      "license": "(missing)",
+      "reason": "verified the package has MIT license via npm view",
+      "expiresOn": "2027-12-31",
+      "approvedBy": "backstage/maintainers"
+    },
+    {
+      "name": "pkginfo",
+      "versionRange": "0.2.3",
+      "license": "(missing)",
+      "reason": "verified the package has MIT license https://github.com/indexzero/node-pkginfo",
+      "expiresOn": "2027-12-31",
+      "approvedBy": "backstage/maintainers"
+    },
+    {
+      "name": "react-universal-interface",
+      "versionRange": "0.6.2",
+      "license": "(missing)",
+      "reason": "verified the package has Unlicense license https://github.com/streamich/react-universal-interface",
+      "expiresOn": "2027-12-31",
+      "approvedBy": "backstage/maintainers"
+    },
+    {
+      "name": "tosource",
+      "versionRange": "2.0.0-alpha.3",
+      "license": "(missing)",
+      "reason": "verified the package has Zlib license https://github.com/marcello3d/node-tosource",
+      "expiresOn": "2027-12-31",
+      "approvedBy": "backstage/maintainers"
+    },
+    {
+      "name": "uid2",
+      "versionRange": "0.0.3",
+      "license": "(missing)",
+      "reason": "verified the package has MIT license https://github.com/coreh/uid2",
+      "expiresOn": "2027-12-31",
+      "approvedBy": "backstage/maintainers"
+    },
+    {
+      "name": "valid-url",
+      "versionRange": "1.0.9",
+      "license": "(missing)",
+      "reason": "verified the package has MIT license https://github.com/ogt/valid-url",
+      "expiresOn": "2027-12-31",
+      "approvedBy": "backstage/maintainers"
+    },
+    {
+      "name": "spawndamnit",
+      "versionRange": "3.0.1",
+      "license": "SEE LICENSE IN LICENSE",
+      "reason": "verified the package has MIT license https://github.com/thejameskyle/spawndamnit",
+      "expiresOn": "2027-12-31",
+      "approvedBy": "backstage/maintainers"
     }
   ]
 }
