@@ -35,6 +35,7 @@ export interface CatalogFilters {
   query?: FilterPredicate;
   fullTextFilter?: {
     term: string;
+    fields?: string[];
   };
   orderFields?: EntityOrderQuery;
 }

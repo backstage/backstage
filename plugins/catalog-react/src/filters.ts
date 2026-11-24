@@ -160,17 +160,41 @@ export class EntityTagFilter implements EntityFilter {
 }
 
 /**
- * Filters entities where the text matches spec, title or tags.
+ * Filters entities by matching free text against a set of fields.
+ *
+ * When pagination is disabled, filtering happens client-side against
+ * `metadata.name`, `metadata.title`, `spec.profile.displayName`, and an
+ * exact match on `metadata.tags`. When pagination is enabled, filtering is
+ * delegated to the catalog backend's full-text search instead, matching
+ * `metadata.name`, `metadata.title`, and `spec.profile.displayName` by
+ * default, or the fields passed in via `fields`.
  * @public
  */
 export class EntityTextFilter implements EntityFilter {
-  readonly value: string;
+  static readonly DEFAULT_FIELDS = [
+    'metadata.name',
+    'metadata.title',
+    'spec.profile.displayName',
+    'spec.target',
+    'spec.targets',
+  ];
 
-  constructor(value: string) {
+  readonly value: string;
+  readonly fields?: string[];
+
+  constructor(value: string, fields?: string[]) {
     this.value = value;
+    this.fields = fields;
   }
 
   filterEntity(entity: Entity): boolean {
+    // When custom fields are specified, trust the backend filtering
+    // and skip client-side filtering to avoid mismatches
+    if (this.fields !== undefined) {
+      return true;
+    }
+
+    // Fallback client-side filtering for non-paginated mode using default fields
     const words = this.toUpperArray(this.value.split(/\s/));
     const exactMatch = this.toUpperArray([entity.metadata.tags]);
     const targets = (entity.spec as { targets?: unknown })?.targets;
@@ -197,18 +221,11 @@ export class EntityTextFilter implements EntityFilter {
   getFullTextFilters() {
     return {
       term: this.value,
-      // Update this to be more dynamic based on table columns.
-      fields: [
-        'metadata.name',
-        'metadata.title',
-        'spec.profile.displayName',
-        'spec.target',
-        'spec.targets',
-      ],
+      fields: this.fields ?? EntityTextFilter.DEFAULT_FIELDS,
     };
   }
 
-  toQueryValue() {
+  toQueryValue(): string {
     return this.value;
   }
 
