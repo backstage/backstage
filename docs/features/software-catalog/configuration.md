@@ -281,7 +281,7 @@ cancel the original attempt or impose a database query timeout.
 
 ## Subscribing to Catalog Errors
 
-Catalog errors are published to the [events plugin](../../backend-system/core-services/events.md): `@backstage/plugin-events-node`. You can subscribe to events and respond to errors, for example you may wish to log them.
+Catalog errors are published to the [events plugin](../../events/service.md): `@backstage/plugin-events-node`. You can subscribe to events and respond to errors, for example you may wish to log them.
 
 The first step is to add the events backend plugin to your Backstage application. Navigate to your Backstage application directory and add the plugin package.
 

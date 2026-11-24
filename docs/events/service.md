@@ -1,7 +1,7 @@
 ---
-id: events
+id: service
 title: Events Service
-sidebar_label: Events
+sidebar_label: Events Service
 description: Documentation for the Events service and the @backstage/plugin-events-node package
 ---
 

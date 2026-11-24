@@ -233,6 +233,11 @@ export default {
             'notifications/usage',
           ],
         ),
+        {
+          type: 'category',
+          label: 'Events',
+          items: ['events/service'],
+        },
         sidebarElementWithIndex(
           {
             label: 'Permissions',
@@ -550,7 +555,6 @@ export default {
                 'backend-system/core-services/cache',
                 'backend-system/core-services/database',
                 'backend-system/core-services/discovery',
-                'backend-system/core-services/events',
                 'backend-system/core-services/http-auth',
                 'backend-system/core-services/http-router',
                 'backend-system/core-services/identity',
