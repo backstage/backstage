@@ -671,4 +671,92 @@ describe('ReviewState', () => {
     expect(getByText('bob')).toBeInTheDocument();
     expect(getByText('github')).toBeInTheDocument();
   });
+
+  it('should mask, hide and label fields whose names contain "/" or "~"', () => {
+    const formState = {
+      'api/token': 's3cret',
+      'a~1b': 'pw',
+      'a%20b': 'pw2',
+      nest: {
+        'aws/key': 'AKIA...',
+        'gcp/secret': 'hidden-value',
+      },
+      keep: 'visible',
+    };
+
+    const schemas: ParsedTemplateSchema[] = [
+      {
+        mergedSchema: {
+          type: 'object',
+          properties: {
+            'api/token': {
+              type: 'string',
+              title: 'Slash token',
+              'ui:widget': 'password',
+            },
+            'a~1b': {
+              type: 'string',
+              'ui:backstage': {
+                review: {
+                  mask: 'masked!',
+                },
+              },
+            },
+            'a%20b': {
+              type: 'string',
+              'ui:widget': 'password',
+            },
+            nest: {
+              type: 'object',
+              properties: {
+                'aws/key': {
+                  type: 'string',
+                  'ui:widget': 'password',
+                },
+                'gcp/secret': {
+                  type: 'string',
+                  'ui:backstage': {
+                    review: {
+                      show: false,
+                    },
+                  },
+                },
+              },
+            },
+            keep: {
+              type: 'string',
+            },
+          },
+        },
+        schema: {},
+        title: 'test',
+        uiSchema: {},
+      },
+    ];
+
+    const { queryByRole, queryByText } = render(
+      <ReviewState formState={formState} schemas={schemas} />,
+    );
+
+    // secrets are never rendered in plain text
+    expect(
+      queryByText(/s3cret|AKIA|hidden-value|pw2?/),
+    ).not.toBeInTheDocument();
+
+    // each field resolves its own schema's mask, title and review options
+    expect(
+      queryByRole('row', { name: 'Slash token ******' }),
+    ).toBeInTheDocument();
+    expect(queryByRole('row', { name: 'A 1 B masked!' })).toBeInTheDocument();
+    expect(queryByRole('row', { name: 'A 20 B ******' })).toBeInTheDocument();
+    expect(
+      queryByRole('row', { name: 'Nest > Aws Key ******' }),
+    ).toBeInTheDocument();
+
+    // show: false hides the field entirely
+    expect(queryByRole('row', { name: /Gcp Secret/ })).not.toBeInTheDocument();
+
+    // ordinary fields are unaffected
+    expect(queryByRole('row', { name: 'Keep visible' })).toBeInTheDocument();
+  });
 });

@@ -17,7 +17,12 @@ import { StructuredMetadataTable } from '@backstage/core-components';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { Draft07 as JSONSchema, JsonSchema } from 'json-schema-library';
 import { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
-import { isJsonObject, formatKey, findSchemaForKey } from './util';
+import {
+  isJsonObject,
+  formatKey,
+  findSchemaForKey,
+  escapeJsonPointerSegment,
+} from './util';
 
 /**
  * The props for the {@link ReviewState} component.
@@ -58,6 +63,9 @@ function getReviewOverride(
 /**
  * Applies review masks and `show: false` to the items and fields nested in
  * an array or unexploded object, as these are rendered as a single value.
+ *
+ * `key` is a JSON Pointer path whose segments are already escaped per
+ * RFC 6901 by {@link escapeJsonPointerSegment}.
  */
 function maskNestedValue(
   key: string,
@@ -97,7 +105,10 @@ function maskNestedValue(
     if (nestedValue === undefined) {
       continue;
     }
-    const masked = maskChild(`${key}/${nestedKey}`, nestedValue);
+    const masked = maskChild(
+      `${key}/${escapeJsonPointerSegment(nestedKey)}`,
+      nestedValue,
+    );
     if (masked !== undefined) {
       result[nestedKey] = masked;
     }
@@ -105,6 +116,9 @@ function maskNestedValue(
   return result;
 }
 
+// `key` is a JSON Pointer path whose segments are already escaped per
+// RFC 6901 by escapeJsonPointerSegment, so names containing '/' or '~'
+// still resolve to their own schema definition.
 function processSchema(
   key: string,
   value: JsonValue | undefined,
@@ -146,7 +160,12 @@ function processSchema(
     if (backstageReviewOptions?.explode !== false && isJsonObject(value)) {
       // Recurse nested objects
       return Object.entries(value).flatMap(([nestedKey, nestedValue]) =>
-        processSchema(`${key}/${nestedKey}`, nestedValue, schema, formState),
+        processSchema(
+          `${key}/${escapeJsonPointerSegment(nestedKey)}`,
+          nestedValue,
+          schema,
+          formState,
+        ),
       );
     }
   }
@@ -168,9 +187,10 @@ export const ReviewState = (props: ReviewStateProps) => {
     Object.entries(props.formState)
       .flatMap(([key, value]) => {
         const schema = findSchemaForKey(key, props.schemas, schemaFormState);
+        const pointerSegment = escapeJsonPointerSegment(key);
         return schema
-          ? processSchema(key, value, schema, schemaFormState)
-          : [[formatKey(key), value]];
+          ? processSchema(pointerSegment, value, schema, schemaFormState)
+          : [[formatKey(pointerSegment), value]];
       })
       .filter(prop => prop.length > 0),
   );
