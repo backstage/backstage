@@ -27,6 +27,8 @@ export type TypedResponse<T> = Omit<Response, 'json'> & {
  */
 export interface RequestOptions {
   token?: string;
+  /** Cancels this request when aborted. */
+  signal?: AbortSignal;
 }
 {{#apis}}
 {{#operations}}
@@ -123,6 +125,7 @@ export class DefaultApiClient {
                 ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
             },
             method: '{{httpMethod}}',
+            signal: options?.signal,
             {{#hasBodyParam}} body: JSON.stringify(request.body), {{/hasBodyParam}}
         });
     }
