@@ -268,16 +268,16 @@ const _default: OverridableFrontendPlugin<
     catalogIndex: RouteRef<undefined>;
     catalogEntity: RouteRef<{
       name: string;
-      namespace: string;
       kind: string;
+      namespace: string;
     }>;
   },
   {
     viewTechDoc: ExternalRouteRef<
       {
         name: string;
-        namespace: string;
         kind: string;
+        namespace: string;
       },
       true
     >;
@@ -1126,7 +1126,7 @@ const _default: OverridableFrontendPlugin<
         pagination:
           | boolean
           | {
-              mode: 'cursor' | 'offset';
+              mode: 'offset' | 'cursor';
               limit?: number | undefined;
               offset?: number | undefined;
             };
@@ -1143,7 +1143,7 @@ const _default: OverridableFrontendPlugin<
         pagination?:
           | boolean
           | {
-              mode: 'cursor' | 'offset';
+              mode: 'offset' | 'cursor';
               limit?: number | undefined;
               offset?: number | undefined;
             }
