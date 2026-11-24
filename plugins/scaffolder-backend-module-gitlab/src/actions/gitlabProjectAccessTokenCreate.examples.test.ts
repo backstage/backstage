@@ -96,7 +96,10 @@ describe('gitlab:projectAccessToken:create examples', () => {
       },
     );
 
-    expect(mockContext.output).toHaveBeenCalledWith('access_token', 'TOKEN');
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'variableKey',
+      'BACKSTAGE_ACCESS_TOKEN',
+    );
   });
 
   it('Create a GitLab project access token with custom scopes.', async () => {
@@ -121,7 +124,10 @@ describe('gitlab:projectAccessToken:create examples', () => {
       },
     );
 
-    expect(mockContext.output).toHaveBeenCalledWith('access_token', 'TOKEN');
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'variableKey',
+      'BACKSTAGE_ACCESS_TOKEN',
+    );
   });
 
   it('Create a GitLab project access token with a specified name.', async () => {
@@ -146,7 +152,10 @@ describe('gitlab:projectAccessToken:create examples', () => {
       },
     );
 
-    expect(mockContext.output).toHaveBeenCalledWith('access_token', 'TOKEN');
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'variableKey',
+      'BACKSTAGE_ACCESS_TOKEN',
+    );
   });
 
   it('Create a GitLab project access token with a numeric project ID.', async () => {
@@ -171,7 +180,10 @@ describe('gitlab:projectAccessToken:create examples', () => {
       },
     );
 
-    expect(mockContext.output).toHaveBeenCalledWith('access_token', 'TOKEN');
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'variableKey',
+      'BACKSTAGE_ACCESS_TOKEN',
+    );
   });
 
   it('Create a GitLab project access token with a specified expired Date.', async () => {
@@ -196,7 +208,10 @@ describe('gitlab:projectAccessToken:create examples', () => {
       },
     );
 
-    expect(mockContext.output).toHaveBeenCalledWith('access_token', 'TOKEN');
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'variableKey',
+      'BACKSTAGE_ACCESS_TOKEN',
+    );
   });
 
   it(`should ${examples[5].description}`, async () => {
@@ -222,8 +237,8 @@ describe('gitlab:projectAccessToken:create examples', () => {
     );
 
     expect(mockContext.output).toHaveBeenCalledWith(
-      'access_token',
-      'personal-access-token',
+      'variableKey',
+      'BACKSTAGE_ACCESS_TOKEN',
     );
   });
 
@@ -249,9 +264,23 @@ describe('gitlab:projectAccessToken:create examples', () => {
       },
     );
 
-    expect(mockContext.output).toHaveBeenCalledWith(
-      'access_token',
+    expect(mockGitlabClient.ProjectVariables.create).toHaveBeenCalledWith(
+      '456',
+      'BACKSTAGE_ACCESS_TOKEN',
       'personal-access-token',
+      {
+        variableType: 'env_var',
+        protected: true,
+        masked: true,
+        masked_and_hidden: false,
+        raw: true,
+        environmentScope: '*',
+      },
+    );
+
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'variableKey',
+      'BACKSTAGE_ACCESS_TOKEN',
     );
   });
 
@@ -278,8 +307,8 @@ describe('gitlab:projectAccessToken:create examples', () => {
     );
 
     expect(mockContext.output).toHaveBeenCalledWith(
-      'access_token',
-      'personal-access-token',
+      'variableKey',
+      'BACKSTAGE_ACCESS_TOKEN',
     );
   });
 
@@ -306,8 +335,8 @@ describe('gitlab:projectAccessToken:create examples', () => {
     );
 
     expect(mockContext.output).toHaveBeenCalledWith(
-      'access_token',
-      'personal-access-token',
+      'variableKey',
+      'BACKSTAGE_ACCESS_TOKEN',
     );
   });
 
@@ -334,8 +363,8 @@ describe('gitlab:projectAccessToken:create examples', () => {
     );
 
     expect(mockContext.output).toHaveBeenCalledWith(
-      'access_token',
-      'personal-access-token',
+      'variableKey',
+      'BACKSTAGE_ACCESS_TOKEN',
     );
   });
 
@@ -362,8 +391,8 @@ describe('gitlab:projectAccessToken:create examples', () => {
     );
 
     expect(mockContext.output).toHaveBeenCalledWith(
-      'access_token',
-      'personal-access-token',
+      'variableKey',
+      'BACKSTAGE_ACCESS_TOKEN',
     );
   });
 
@@ -390,8 +419,8 @@ describe('gitlab:projectAccessToken:create examples', () => {
     );
 
     expect(mockContext.output).toHaveBeenCalledWith(
-      'access_token',
-      'personal-access-token',
+      'variableKey',
+      'BACKSTAGE_ACCESS_TOKEN',
     );
   });
 
@@ -418,8 +447,8 @@ describe('gitlab:projectAccessToken:create examples', () => {
     );
 
     expect(mockContext.output).toHaveBeenCalledWith(
-      'access_token',
-      'personal-access-token',
+      'variableKey',
+      'BACKSTAGE_ACCESS_TOKEN',
     );
   });
 
@@ -446,56 +475,8 @@ describe('gitlab:projectAccessToken:create examples', () => {
     );
 
     expect(mockContext.output).toHaveBeenCalledWith(
-      'access_token',
-      'personal-access-token',
-    );
-  });
-
-  it(`should ${examples[14].description}`, async () => {
-    mockGitlabClient.ProjectAccessTokens.create.mockResolvedValue({
-      id: 1,
-      token: 'personal-access-token',
-      username: 'gitlab-user',
-    });
-    mockGitlabClient.ProjectVariables.create.mockResolvedValue({});
-
-    const input = yaml.parse(examples[14].example).steps[0].input;
-    await action.handler({
-      ...mockContext,
-      input,
-    });
-
-    expect(mockGitlabClient.ProjectAccessTokens.create).toHaveBeenCalledWith(
-      '456',
-      'backstage-access-token',
-      ['read_repository'],
-      DateTime.now().plus({ days: 365 }).toISODate()!,
-      {
-        accessLevel: 40,
-      },
-    );
-
-    expect(mockGitlabClient.ProjectVariables.create).toHaveBeenCalledWith(
-      '456',
-      'BACKSTAGE_ACCESS_TOKEN',
-      'personal-access-token',
-      {
-        variableType: 'env_var',
-        protected: true,
-        masked: true,
-        masked_and_hidden: false,
-        raw: true,
-        environmentScope: '*',
-      },
-    );
-
-    expect(mockContext.output).toHaveBeenCalledWith(
       'variableKey',
       'BACKSTAGE_ACCESS_TOKEN',
-    );
-    expect(mockContext.output).not.toHaveBeenCalledWith(
-      'access_token',
-      expect.anything(),
     );
   });
 });
