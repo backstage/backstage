@@ -16,7 +16,6 @@
 
 import {
   IdentityApi,
-  SignOutOptions,
   ProfileInfo,
   BackstageUserIdentity,
   ErrorApi,
@@ -136,7 +135,7 @@ export class AppIdentityProxy implements IdentityApi {
     });
   }
 
-  async signOut(options?: SignOutOptions): Promise<void> {
+  async signOut(options?: { preserveLocation?: boolean }): Promise<void> {
     const { pathname, search, hash } = window.location;
     const preservedUrl =
       options?.preserveLocation && !pathname.startsWith('//')
