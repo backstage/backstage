@@ -254,7 +254,7 @@ export class I18nextTranslationApi implements TranslationApi {
       fallbackNS: false,
 
       // Disable resource loading on init, meaning i18n will be ready to use immediately
-      initImmediate: false,
+      initAsync: false,
     });
 
     i18n.init();
