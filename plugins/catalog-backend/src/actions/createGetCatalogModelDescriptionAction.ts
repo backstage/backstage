@@ -26,12 +26,8 @@ import {
   compileCatalogModel,
   defaultCatalogEntityModel,
 } from '@backstage/catalog-model/alpha';
+import { JsonObject } from '@backstage/types';
 import { ModelHolder } from '../model/ModelHolder';
-import {
-  describeJsonSchemaFields,
-  JsonSchemaField,
-  renderJsonSchemaField,
-} from './describeJsonSchema';
 
 const PREAMBLE = `# Catalog Model
 
@@ -91,7 +87,7 @@ export const createGetCatalogModelDescriptionAction = ({
     name: 'get-catalog-model-description',
     title: 'Get a Catalog Model Description',
     description:
-      'Returns a markdown formatted description of the current catalog model, including all registered entity kinds and their fields, annotations, labels, tags, and relations.',
+      'Returns a markdown formatted description of the current catalog model, including all registered entity kinds with their JSON schemas, annotations, labels, tags, and relations.',
     attributes: {
       destructive: false,
       readOnly: true,
@@ -104,7 +100,7 @@ export const createGetCatalogModelDescriptionAction = ({
           description: z
             .string()
             .describe(
-              'Markdown description of the catalog model including entity kinds, spec fields, and relations.',
+              'Markdown description of the catalog model including entity kinds with their JSON schemas, and relations.',
             ),
         }),
     },
@@ -118,10 +114,8 @@ export const createGetCatalogModelDescriptionAction = ({
   });
 };
 
-const MAX_FIELD_DEPTH = 3;
-
 // Fields shared by all entities, which are described separately
-const BASE_FIELDS = new Set(['apiVersion', 'kind', 'metadata']);
+const BASE_FIELDS = ['apiVersion', 'kind', 'metadata'];
 
 // Compile the default model once (if needed) and cache it
 let defaultModel: CatalogModel | undefined;
@@ -188,22 +182,53 @@ ${kind.versions
   .join('\n')}
 
 ${kind.description}
-${describeFieldGroups(resolveFieldGroups(kind, model))}`;
+${describeSchemaGroups(resolveSchemaGroups(kind, model))}`;
 }
 
-type FieldGroup = {
-  lines: string[];
+type SchemaGroup = {
+  schema: string;
+  relationFields: string[];
   apiVersions: string[];
   specType?: string;
 };
 
-// Resolves the fields of every version of a kind, grouping versions (per spec
-// type) whose rendered field lines are identical.
-function resolveFieldGroups(
+// Removes the fields shared by all entities from a kind schema, since they are
+// described separately and would otherwise be repeated for every kind
+function omitBaseFields(schema: JsonObject): JsonObject {
+  const { properties, required, ...rest } = schema;
+  const result: JsonObject = { ...rest };
+  if (
+    properties &&
+    typeof properties === 'object' &&
+    !Array.isArray(properties)
+  ) {
+    const remaining = Object.fromEntries(
+      Object.entries(properties).filter(
+        ([name]) => !BASE_FIELDS.includes(name),
+      ),
+    );
+    if (Object.keys(remaining).length) {
+      result.properties = remaining;
+    }
+  }
+  if (Array.isArray(required)) {
+    const remaining = required.filter(
+      name => typeof name !== 'string' || !BASE_FIELDS.includes(name),
+    );
+    if (remaining.length) {
+      result.required = remaining;
+    }
+  }
+  return result;
+}
+
+// Resolves the JSON schema of every version of a kind, grouping versions (per
+// spec type) whose schemas and relation fields are identical.
+function resolveSchemaGroups(
   kind: CatalogModelKindSummary,
   model: CatalogModel,
-): FieldGroup[] {
-  const groups = new Map<string, FieldGroup>();
+): SchemaGroup[] {
+  const groups = new Map<string, SchemaGroup>();
   for (const version of kind.versions) {
     const resolved = model.getKind({
       kind: kind.names.kind,
@@ -213,30 +238,16 @@ function resolveFieldGroups(
     if (!resolved) {
       continue;
     }
-    const entries: JsonSchemaField[] = describeJsonSchemaFields(
-      resolved.jsonSchema,
-      { maxDepth: MAX_FIELD_DEPTH, omitRootProperties: BASE_FIELDS },
-    );
-    for (const relationField of resolved.relationFields) {
-      const part = describeRelationField(relationField);
-      const existing = entries.find(e => e.path === relationField.path);
-      if (existing) {
-        existing.parts.push(part);
-      } else {
-        entries.push({ path: relationField.path, parts: [part] });
-      }
-    }
-    if (!entries.length) {
-      continue;
-    }
-    const lines = entries.map(renderJsonSchemaField);
-    const key = JSON.stringify([lines, version.specType ?? null]);
+    const schema = JSON.stringify(omitBaseFields(resolved.jsonSchema), null, 2);
+    const relationFields = resolved.relationFields.map(describeRelationField);
+    const key = JSON.stringify([schema, relationFields, version.specType]);
     const group = groups.get(key);
     if (group) {
       group.apiVersions.push(version.apiVersion);
     } else {
       groups.set(key, {
-        lines,
+        schema,
+        relationFields,
         apiVersions: [version.apiVersion],
         specType: version.specType,
       });
@@ -245,14 +256,18 @@ function resolveFieldGroups(
   return [...groups.values()];
 }
 
-function describeFieldGroups(groups: FieldGroup[]): string {
-  const blocks: string[] = [];
-  for (const group of groups) {
+function describeSchemaGroups(groups: SchemaGroup[]): string {
+  const blocks = groups.map(group => {
     const label = `${group.apiVersions.join(', ')}${
       group.specType ? `; spec.type: "${group.specType}"` : ''
     }`;
-    blocks.push(`#### Fields (${label})\n\n${group.lines.join('\n')}\n`);
-  }
+    const relations = group.relationFields.length
+      ? `\nRelation fields:\n\n${group.relationFields
+          .map(f => `* ${f}`)
+          .join('\n')}\n`
+      : '';
+    return `#### JSON Schema (${label})\n\n\`\`\`json\n${group.schema}\n\`\`\`\n${relations}`;
+  });
   return blocks.length ? `\n${blocks.join('\n')}` : '';
 }
 
@@ -265,7 +280,7 @@ function describeRelationField(
       ? `allowed kinds: ${field.allowedKinds.join(', ')}`
       : undefined,
   ].filter(Boolean);
-  return `relation "${field.relation}"${
+  return `"${field.path}": relation "${field.relation}"${
     details.length ? ` [${details.join('; ')}]` : ''
   }`;
 }
