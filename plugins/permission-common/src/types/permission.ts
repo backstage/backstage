@@ -21,6 +21,16 @@
  */
 export type PermissionAttributes = {
   action?: 'create' | 'read' | 'update' | 'delete';
+  /**
+   * Classifies the access level of the operation, for example 'admin'.
+   *
+   * @remarks
+   * Omission represents ordinary access. Values are interpreted by the permission
+   * policy; the framework does not assign roles, imply a hierarchy, or grant
+   * access based on this attribute. Policies enforcing access levels should
+   * deny values they do not recognize.
+   */
+  accessLevel?: string;
 };
 
 /**
