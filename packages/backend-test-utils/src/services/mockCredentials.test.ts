@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { MockAuthService } from './MockAuthService';
 import { mockCredentials } from './mockCredentials';
 
 describe('mockCredentials', () => {
@@ -200,5 +201,29 @@ describe('mockCredentials', () => {
     expect(String(mockCredentials.none())).toMatchInlineSnapshot(
       `"mockCredentials{nonePrincipal}"`,
     );
+  });
+
+  it('creates user credentials issued to an OAuth client', async () => {
+    const credentials = mockCredentials.user('user:default/mock', {
+      clientId: 'my-client',
+    });
+    expect(credentials.principal).toEqual({
+      type: 'user',
+      userEntityRef: 'user:default/mock',
+      clientId: 'my-client',
+    });
+    expect(String(credentials)).toBe(
+      'mockCredentials{userPrincipal{user:default/mock,clientId=my-client}}',
+    );
+
+    const token = mockCredentials.user.token('user:default/mock', {
+      clientId: 'my-client',
+    });
+    await expect(
+      new MockAuthService({
+        pluginId: 'test',
+        disableDefaultAuthPolicy: false,
+      }).authenticate(token),
+    ).resolves.toEqual(credentials);
   });
 });

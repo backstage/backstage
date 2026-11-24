@@ -73,11 +73,15 @@ export class MockAuthService implements AuthService {
     }
 
     if (token.startsWith(MOCK_USER_TOKEN_PREFIX)) {
-      const { sub: userEntityRef, actor }: UserTokenPayload = JSON.parse(
+      const {
+        sub: userEntityRef,
+        actor,
+        clientId,
+      }: UserTokenPayload = JSON.parse(
         token.slice(MOCK_USER_TOKEN_PREFIX.length),
       );
 
-      return mockCredentials.user(userEntityRef, { actor });
+      return mockCredentials.user(userEntityRef, { actor, clientId });
     }
 
     if (token.startsWith(MOCK_USER_LIMITED_TOKEN_PREFIX)) {

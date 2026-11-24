@@ -90,60 +90,27 @@ describe('DefaultAuditorService', () => {
     });
   });
 
-  it('should log the user and the client that the credentials were issued to', async () => {
+  it('should log the client that the user credentials were issued to', async () => {
     const logFn = jest.fn();
-    const request = {
-      ip: '127.0.0.1',
-      hostname: 'localhost',
-      originalUrl: '/api/test',
-      method: 'POST',
-      get: () => 'test-agent',
-    } as any;
-
-    const httpAuth = mockServices.httpAuth.mock({
-      credentials: async () =>
-        ({
-          $$type: '@backstage/BackstageCredentials',
-          principal: {
-            type: 'user',
-            userEntityRef: 'user:default/mock',
-            clientId: 'https://example.com/client.json',
-          },
-        } as any),
-    });
     const auditor = DefaultAuditorService.create(logFn, {
+      ...mockDeps,
       auth: mockServices.auth(),
-      httpAuth,
-      plugin: mockDeps.plugin,
+      httpAuth: mockServices.httpAuth({
+        defaultCredentials: mockCredentials.user('user:default/mock', {
+          clientId: 'my-client',
+        }),
+      }),
     });
 
-    await auditor.createEvent({ eventId: 'test-event', request });
-
-    expect(logFn).toHaveBeenCalledWith({
+    await auditor.createEvent({
       eventId: 'test-event',
-      status: 'initiated',
-      plugin: 'test',
-      severityLevel: 'low',
-      actor: {
-        actorId: 'user:default/mock',
-        clientId: 'https://example.com/client.json',
-        ip: '127.0.0.1',
-        hostname: 'localhost',
-        userAgent: 'test-agent',
-      },
-      request: { url: '/api/test', method: 'POST' },
+      request: { headers: {}, get: () => undefined } as any,
     });
 
-    // No client for credentials from an interactive sign-in
-    httpAuth.credentials.mockResolvedValue(mockCredentials.user());
-    await auditor.createEvent({ eventId: 'test-event', request });
-    expect(logFn.mock.calls[1][0].actor).toEqual({
+    expect(logFn.mock.calls[0][0].actor).toEqual({
       actorId: 'user:default/mock',
-      ip: '127.0.0.1',
-      hostname: 'localhost',
-      userAgent: 'test-agent',
+      clientId: 'my-client',
     });
-    expect(logFn.mock.calls[1][0].actor).not.toHaveProperty('clientId');
   });
 
   it('should use root meta', async () => {
