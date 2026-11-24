@@ -84,7 +84,7 @@ workflows:
         - 'actions/setup-node@v7'
         - 'actions/upload-artifact@v7'
         - 'backstage/actions@v0.7.13'
-        - 'github/gh-aw-actions@v1.2.2'
+        - 'github/gh-aw-actions@v1.4.0'
     '.github/workflows/issue.yaml':
         - 'actions/checkout@v7'
         - 'github/issue-labeler@v3.5'
@@ -360,9 +360,9 @@ dependencies:
         commit: 'sha1-33d7b85da1a04171e211befe2c739303b9a4c066'
         owner_id: 9919
         repo_id: 259445878
-    'github/gh-aw-actions@v1.2.2':
-        ref: 'v1.2.2'
-        commit: 'sha1-53d0749e19424a918acd82b4d140264ce48f2f14'
+    'github/gh-aw-actions@v1.4.0':
+        ref: 'v1.4.0'
+        commit: 'sha1-b907753c079ddd7d6829a0d8c24e02e818b4b45f'
         owner_id: 9919
         repo_id: 1156386970
     'github/issue-labeler@v3.5':
