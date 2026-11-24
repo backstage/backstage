@@ -26,6 +26,19 @@ const DEFAULT_ALLOWED = (() => {
     const cfgPath = path.join(__dirname, '..', '.allowed-licenses.json');
     const raw = fs.readFileSync(cfgPath, 'utf8');
     const cfg = JSON.parse(raw);
+    if (
+      Array.isArray(cfg.cncfAllowedLicenses) ||
+      Array.isArray(cfg.approvedLicenses)
+    ) {
+      const cncf = Array.isArray(cfg.cncfAllowedLicenses)
+        ? cfg.cncfAllowedLicenses
+        : [];
+      const approved = Array.isArray(cfg.approvedLicenses)
+        ? cfg.approvedLicenses.map(l => l.id || l)
+        : [];
+      const merged = [...cncf, ...approved];
+      if (merged.length) return merged;
+    }
     if (Array.isArray(cfg.allowedLicenses) && cfg.allowedLicenses.length)
       return cfg.allowedLicenses;
   } catch {}
@@ -400,6 +413,42 @@ function createDefaultFetchLicense() {
             .join(' OR ');
         else if (lic && typeof lic === 'object')
           licStr = lic.type || lic.license || null;
+        if (
+          licStr &&
+          !/^SEE LICENSE/i.test(licStr) &&
+          !/^LicenseRef/i.test(licStr) &&
+          licStr.trim()
+        ) {
+          cache.set(key, licStr);
+          return licStr;
+        }
+        // Dynamic fallback: registry missing/SEE LICENSE -> try GitHub LICENSE via repository URL
+        const repoUrl =
+          typeof data.repository === 'string'
+            ? data.repository
+            : data.repository?.url || data.homepage || '';
+        const ghMatch = repoUrl.match(
+          /github\.com[:/]([^/]+)\/([^/]+?)(?:\.git)?(?:\/|$)/i,
+        );
+        if (ghMatch) {
+          const owner = ghMatch[1];
+          const repo = ghMatch[2].replace(/\.git$/, '');
+          try {
+            const ghRes = await fetch(
+              `https://api.github.com/repos/${owner}/${repo}/license`,
+              { headers: { Accept: 'application/vnd.github.v3+json' } },
+            );
+            if (ghRes.ok) {
+              const ghData = await ghRes.json();
+              const ghLicense =
+                ghData.license?.spdx_id || ghData.license?.name || null;
+              if (ghLicense && ghLicense !== 'NOASSERTION') {
+                cache.set(key, ghLicense);
+                return ghLicense;
+              }
+            }
+          } catch {}
+        }
         cache.set(key, licStr);
         return licStr;
       } catch {
@@ -515,7 +564,19 @@ function loadConfig(configPath) {
   try {
     const raw = fs.readFileSync(configPath, 'utf8');
     const cfg = JSON.parse(raw);
-    if (Array.isArray(cfg.allowedLicenses) && cfg.allowedLicenses.length)
+    if (
+      Array.isArray(cfg.cncfAllowedLicenses) ||
+      Array.isArray(cfg.approvedLicenses)
+    ) {
+      const cncf = Array.isArray(cfg.cncfAllowedLicenses)
+        ? cfg.cncfAllowedLicenses
+        : [];
+      const approvedIds = Array.isArray(cfg.approvedLicenses)
+        ? cfg.approvedLicenses.map(l => l.id || l).filter(Boolean)
+        : [];
+      const merged = [...cncf, ...approvedIds];
+      if (merged.length) allowedLicenses = merged;
+    } else if (Array.isArray(cfg.allowedLicenses) && cfg.allowedLicenses.length)
       allowedLicenses = cfg.allowedLicenses;
     if (Array.isArray(cfg.overrides))
       overrides = cfg.overrides.filter(o => !o._example);

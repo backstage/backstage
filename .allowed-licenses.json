@@ -1,7 +1,7 @@
 {
-  "_comment": "Allowed licenses: CNCF Allowlist (https://github.com/cncf/foundation/blob/main/policies-guidance/allowed-third-party-license-policy.md) revision 2024-11-23 plus Apache-2.0 and Backstage-approved permissive licenses (BlueOak-1.0.0, Artistic-2.0, CC0-1.0, Unlicense) per PR review.",
+  "_comment": "CNCF Allowlist + Backstage-approved licenses. CNCF list is pinned; additional licenses have per-entry approval. Allowed set is cncfAllowedLicenses ∪ approvedLicenses[].id",
   "cncfPolicyRev": "2024-11-23",
-  "allowedLicenses": [
+  "cncfAllowedLicenses": [
     "0BSD",
     "BSD-2-Clause",
     "BSD-2-Clause-FreeBSD",
@@ -19,11 +19,33 @@
     "UPL-1.0",
     "X11",
     "Zlib",
-    "Apache-2.0",
-    "BlueOak-1.0.0",
-    "Artistic-2.0",
-    "CC0-1.0",
-    "Unlicense"
+    "Apache-2.0"
+  ],
+  "approvedLicenses": [
+    {
+      "id": "BlueOak-1.0.0",
+      "reason": "MIT-like permissive license, 22 packages in yarn.lock",
+      "approvedBy": "backstage/maintainers (per PR review with aramissennyeydd)",
+      "url": "https://opensource.org/license/BlueOak-1.0.0"
+    },
+    {
+      "id": "Artistic-2.0",
+      "reason": "OSI-approved permissive, 4 packages in yarn.lock",
+      "approvedBy": "backstage/maintainers (per PR review with aramissennyeydd)",
+      "url": "https://opensource.org/license/Artistic-2.0"
+    },
+    {
+      "id": "CC0-1.0",
+      "reason": "Public domain dedication for data packages (7 packages)",
+      "approvedBy": "backstage/maintainers",
+      "url": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "Unlicense",
+      "reason": "Public domain dedication (11 packages via allowlist + overrides)",
+      "approvedBy": "backstage/maintainers",
+      "url": "https://unlicense.org/"
+    }
   ],
   "overrides": [
     {
