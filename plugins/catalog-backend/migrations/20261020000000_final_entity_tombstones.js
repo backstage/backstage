@@ -32,9 +32,13 @@
  * failed or partial run never leaves deletions untracked. Each step skips
  * work that is already done, so a failed run can simply be retried.
  *
- * DRAFT: this activates retained rows unconditionally. Older stitchers in a
- * rolling deployment assume that a final row's ID equals its candidate's ID,
- * so a real rollout needs an explicit mixed-version fence first.
+ * This activates retained rows without a mixed-version fence. Older
+ * stitchers still running during a rolling deployment can consume a deletion
+ * request without tombstoning, and cannot publish a re-created entity whose
+ * slot outlived its original candidate. The integrity sweep in the stitcher
+ * finds the former, and the latter keeps failing and retrying until an
+ * upgraded instance picks it up. Older versions cannot start after this
+ * migration, so no new cases arise once they are gone.
  */
 
 const { randomUUID } = require('node:crypto');

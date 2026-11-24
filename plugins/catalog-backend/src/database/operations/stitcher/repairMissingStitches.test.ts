@@ -246,6 +246,44 @@ describe.each(databases.eachSupportedId())(
       );
     });
 
+    it('stops between insert chunks when aborted and resumes the same batch', async () => {
+      const names = Array.from(
+        { length: 501 },
+        (_, i) => `a${String(i).padStart(3, '0')}`,
+      );
+      for (let i = 0; i < names.length; i += 100) {
+        await knex<DbFinalEntitiesRow>('final_entities').insert(
+          names.slice(i, i + 100).map(name => ({
+            entity_id: name,
+            entity_ref: ref(name),
+            final_entity: entity(name, name),
+            hash: 'published-hash',
+          })),
+        );
+      }
+      const repair = createMissingStitchRepair({
+        knex,
+        logger: mockServices.logger.mock(),
+        startAfter: null,
+      });
+      const controller = new AbortController();
+      const onQuery = (q: { sql: string }) => {
+        if (/^insert/i.test(q.sql.trim())) controller.abort();
+      };
+      knex.on('query', onQuery);
+      try {
+        await repair(controller.signal);
+      } finally {
+        knex.removeListener('query', onQuery);
+      }
+      const count = async () =>
+        Number((await knex('stitch_queue').count({ count: '*' }))[0].count);
+      expect(await count()).toBe(500);
+
+      await repair(new AbortController().signal);
+      expect(await count()).toBe(501);
+    });
+
     it('does nothing when already aborted', async () => {
       await insertFinal(knex, 'deleted', 'deleted-slot');
       const repair = createMissingStitchRepair({

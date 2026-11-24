@@ -67,11 +67,7 @@ export function createMissingStitchRepair(options: {
       const rows = await readBatch(knex, cursor, batchSize);
       const flagged = rows.filter(isMissingStitch).map(row => row.entity_ref);
       if (flagged.length) {
-        if (signal.aborted) {
-          // Leave the cursor so that the next run handles this batch.
-          return;
-        }
-        const enqueued = await enqueueMissing(knex, flagged);
+        const enqueued = await enqueueMissing(knex, flagged, signal);
         if (enqueued.count) {
           logger.warn(
             'Found published catalog entities whose candidate is gone without a pending stitch; ' +
@@ -82,6 +78,11 @@ export function createMissingStitchRepair(options: {
         }
       }
 
+      if (signal.aborted) {
+        // The batch may be partly handled. Leave the cursor so that the next
+        // run handles it again; already queued refs are skipped.
+        return;
+      }
       // Only advance once the batch has been handled.
       if (rows.length < batchSize) {
         cursor = undefined;
@@ -143,14 +144,15 @@ async function readBatch(
 async function enqueueMissing(
   knex: Knex,
   flagged: string[],
+  signal: AbortSignal,
 ): Promise<{ count: number; refs: string[] }> {
   let count = 0;
   const refs: string[] = [];
   const sorted = [...flagged].sort();
-  for (let i = 0; i < sorted.length; i += insertChunkSize) {
+  for (let i = 0; i < sorted.length && !signal.aborted; i += insertChunkSize) {
     const chunk = sorted.slice(i, i + insertChunkSize);
     const inserted = await retryOnDeadlock(
-      () => enqueueChunk(knex, chunk),
+      () => enqueueChunk(knex, chunk, signal),
       knex,
     );
     count += inserted.count;
@@ -162,6 +164,7 @@ async function enqueueMissing(
 async function enqueueChunk(
   knex: Knex,
   chunk: string[],
+  signal: AbortSignal,
 ): Promise<{ count: number; refs: string[] }> {
   // Check again just before inserting: a normal stitch may have reconciled a
   // row or been requested since the batch was read.
@@ -176,7 +179,7 @@ async function enqueueChunk(
     stillMissing.delete(queued);
   }
   const refs = chunk.filter(ref => stillMissing.has(ref));
-  if (!refs.length) {
+  if (!refs.length || signal.aborted) {
     return { count: 0, refs: [] };
   }
 
