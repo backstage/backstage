@@ -74,15 +74,7 @@ export async function createRouter(
 
 In this example, an audit event is created for each request to `/my-endpoint`. The `success` or `fail` methods are called based on the outcome of processing the request.
 
-## Actor Details
-
-When you pass the `request` to `createEvent`, the event includes details about the caller in its `actor` field:
-
-- `actorId`: the user entity ref for a user, or the subject for a service.
-- `clientId`: the ID of the OAuth client that the user's token was issued to, for example an MCP client acting for the user. It is only present when the user signed in through such a client, which lets you tell these requests apart from the ones the same user makes in the Backstage UI.
-- `ip`, `hostname` and `userAgent`: taken from the HTTP request.
-
-Without a `request`, the actor is the plugin itself.
+Passing the `request` also records who made it in the `actor` field of the event. For a user that signed in through an OAuth client, such as an MCP client, the actor includes the `clientId` of that client next to the `actorId` of the user.
 
 ## Naming Conventions
 
