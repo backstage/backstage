@@ -276,8 +276,21 @@ function isAllowedLicense(licenseExpr, allowedLicenses) {
   if (/SEE LICENSE/i.test(trimmed)) return false;
   const rawAllowed = allowedLicenses || DEFAULT_ALLOWED;
   const allowedSet = new Set(rawAllowed.map(s => String(s).toLowerCase()));
+  // Normalize legacy npm license strings to SPDX ids (e.g. "Apache 2.0" -> "Apache-2.0", "Apache License, Version 2.0" -> "Apache-2.0")
+  const aliasMap = {
+    'apache 2.0': 'apache-2.0',
+    'apache license 2.0': 'apache-2.0',
+    'apache license, version 2.0': 'apache-2.0',
+    'apache-2.0': 'apache-2.0',
+    bsd: 'bsd-3-clause',
+    'bsd license': 'bsd-3-clause',
+  };
+  let normalized = trimmed;
+  const lower = trimmed.toLowerCase();
+  if (aliasMap[lower]) normalized = aliasMap[lower];
+  else if (/^apache\s+2\.0/i.test(trimmed)) normalized = 'Apache-2.0';
   // strip WITH exceptions: " GPL-2.0-only WITH Classpath-exception-2.0"
-  const cleaned = trimmed.replace(/\s+WITH\s+[^\s()]+/g, '');
+  const cleaned = normalized.replace(/\s+WITH\s+[^\s()]+/gi, '');
   // try spdx-expression-parse if available
   try {
     const parse = require('spdx-expression-parse');
