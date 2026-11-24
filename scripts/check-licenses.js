@@ -157,7 +157,7 @@ function normalizeResolution(resolution) {
 }
 
 // Custom Berry v10 parser instead of @yarnpkg/core: @yarnpkg packages require a full Yarn Project
-// configuration (PnP, plugins, rc) and pull in heavy peer deps, not a lightweight lockfile reader
+// configuration (Plug'n'Play, plugins, rc) and pull in heavy peer deps, not a lightweight lockfile reader
 // for CI data-only use. This parser is ~60 lines, handles resolution/descriptorMap/BFS without executing
 // PR code or needing yarn install, and is tested via checkLicenses().
 function parseYarnLock(content) {
