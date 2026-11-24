@@ -182,6 +182,8 @@ The suspension key is an identifier, not a capability. It is caller-owned and of
 
 Caller identity is server-derived. The route resolves the authenticated principal the same way task creation sets `createdBy` and records it as `resumed_by`; the request payload is opaque plugin data and is never authoritative for identity. Where the decision arrives out of band - Slack, email, a webhook - the calling plugin holds no Backstage credentials for the human it authenticated, so core records the service principal and the plugin's own record holds its verified actor. `resumedBy` is carried on the resumed event and returned to the replayed action alongside the payload.
 
+Resume is audited the same way as the other task routes. The route emits an auditor event with `eventId: 'task'` and `actionType: 'resume'`, carrying the task id, suspension key, outcome and `policy_context`, and the auditor records the caller and whether the call succeeded. The timeout sweep emits the same event with a `timed_out` outcome and no caller. The record of each gate decision therefore outlives `payload`, which is cleared at terminal state. What the decision meant and which approver rule matched stay in the plugin's own record.
+
 An inbound third-party webhook is deliberately out of core; a plugin can authenticate an external system and call this route, keeping core authenticated-only.
 
 ### Timeout
@@ -191,6 +193,8 @@ Timeout is enforced by a scheduled sweep that consumes waiting suspensions whose
 Timeout and resume share one mechanism, and the action observes which one happened: `ctx.suspend` returns `{ timedOut: true }` on a replay that follows a timeout. A consumed suspension always returns its stored outcome on replay rather than parking again, which is what stops a timed-out replay re-parking on the same key; parking again requires a new key.
 
 Because an action author could ignore `timedOut` and continue provisioning after a wait nobody answered, core does not rely on the author here: a replay carrying a timeout outcome forces the suspended step to fail once its handler returns, whatever it returned. Silence therefore cannot approve. Re-parking lifts the force. A handler that observes `timedOut`, notifies again and calls `suspend` with a new key parks normally. The force applies only when the handler returns without parking again. Re-ask and escalation therefore stay inside one step, and a timed-out gate can only finish by waiting again or failing. Forcing the step rather than the task is what makes compensation ordinary: `taskState.failed` flips, and any step whose `if` invokes `${{ failure() }}` or `${{ always() }}` runs, so cleaning up an abandoned gate is template-level work rather than something every gated action must implement.
+
+A gate that waits for a human decision should declare a timeout, and the reference action declares one. Core does not enforce this. Some waits, such as waiting for a merge, have no natural bound, and a mandatory value would be set high enough to mean nothing.
 
 ### Secrets across a long wait
 
@@ -233,6 +237,7 @@ Downgrade is the operationally important case, because this feature deliberately
 - Resume payload size limits are enforced with an explicit rejection rather than a database error, covering anything else written to the task state store.
 - Suspension is neither a completion nor a failure: a parked task is not completed or failed by the worker, emits no failed-step event, and records no terminal result on the task and step counters.
 - `resumedBy` is derived from the authenticated caller, and a `by` field in the request payload is ignored.
+- Resume and timeout each emit one auditor event carrying the task id, suspension key and outcome, and a rejected resume is audited as a failure.
 - A timed-out replay cannot finish green: an action that ignores `timedOut` and returns normally still leaves the step failed, and the template's `${{ failure() }}` and `${{ always() }}` steps then run.
 - A gate on a `${{ failure() }}` step resumes with the run still failing, and steps that were being skipped stay skipped.
 - The workspace survives a park: a resumed task restores the files its earlier steps wrote.
