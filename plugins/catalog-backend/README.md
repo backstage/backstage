@@ -128,12 +128,13 @@ During a rolling upgrade, older instances can delay some catalog changes:
   created again after the upgrade. Its attempts fail and are retried, so the
   update is published once an upgraded instance picks it up.
 
-Instances running an older version cannot start once the upgrade's database
-migrations have run, so no new delays arise after the last older instance
-stops. Delays that already happened clear over time, at the pace of the
-background check and the retries. On large catalogs a full pass of the
-background check can take hours, so to avoid them entirely, stop all older
-instances before starting upgraded ones.
+Instances running an older version refuse to start once the upgrade's
+database migrations have run, unless `database.migrations.skip` is set. Once
+the last older instance stops, no new delays arise. Delays that already
+happened clear over time, at the pace of the background check and the retries.
+On large catalogs a full pass of the background check can take hours. To avoid
+these delays entirely, stop all older catalog instances before the upgraded
+version runs its migrations. If you skip migrations, you must do this yourself.
 
 ## Development
 

@@ -37,8 +37,9 @@
  * request without tombstoning, and cannot publish a re-created entity whose
  * slot outlived its original candidate. The integrity sweep in the stitcher
  * finds the former, and the latter keeps failing and retrying until an
- * upgraded instance picks it up. Older versions cannot start after this
- * migration, so no new cases arise once they are gone.
+ * upgraded instance picks it up. Older versions refuse to start after this
+ * migration unless they skip migrations, so no new cases arise once they
+ * are gone.
  */
 
 const { randomUUID } = require('node:crypto');

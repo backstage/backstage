@@ -166,6 +166,9 @@ async function enqueueChunk(
   chunk: string[],
   signal: AbortSignal,
 ): Promise<{ count: number; refs: string[] }> {
+  if (signal.aborted) {
+    return { count: 0, refs: [] };
+  }
   // Check again just before inserting: a normal stitch may have reconciled a
   // row or been requested since the batch was read.
   const stillMissing = new Set(
@@ -173,6 +176,9 @@ async function enqueueChunk(
       .filter(isMissingStitch)
       .map(row => row.entity_ref),
   );
+  if (!stillMissing.size || signal.aborted) {
+    return { count: 0, refs: [] };
+  }
   for (const queued of await knex<DbStitchQueueRow>('stitch_queue')
     .whereIn('entity_ref', [...stillMissing])
     .pluck('entity_ref')) {
