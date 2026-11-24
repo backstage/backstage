@@ -72,10 +72,10 @@ Under the hood, the service wraps
 [Pi Durable](https://www.npmjs.com/package/@earendil-works/pi-durable).
 Conversation, task, and streaming operations ship as Backstage-owned types in
 `@backstage/ai-node` backed by Pi Durable, while the service handles identity,
-permissions, credentials, storage, multi-instance ownership, and audit. Everything the service controls fails closed: missing configuration,
+permissions, credentials, storage, multi-instance ownership, and audit.
+Everything the service controls fails closed: missing configuration,
 uncertified routes, requests that cannot be inspected, and authorization or
-storage errors
-all block dispatch before reaching a provider. (Backstage's own default
+storage errors all block dispatch before reaching a provider. (Backstage's own default
 permission policy remains under adopter control; see
 [Permissions and access control](#permissions-and-access-control).)
 
@@ -182,6 +182,10 @@ Two boundaries keep the harness safe:
   presenting a different credentials object (even for the same principal) is
   rejected so two callers' credentials can never mix (see
   [Limitations and Open Questions](#limitations-and-open-questions)).
+
+Concurrent requests for the same principal share a live namespace when they
+present the same credentials object; the single-authority rule rejects a
+different credentials object, not additional handles.
 
 Higher-level helpers, such as the `ai:generate` and `ai:transform` scaffolder
 actions in `@backstage/plugin-scaffolder-backend-module-ai`, are built strictly
@@ -345,7 +349,7 @@ an SDK that exposes no request-scoped hook.
 
 ## API Design
 
-The service exposes five public contracts. Converging on these interfaces is
+The service exposes six public contracts. Converging on these interfaces is
 the main decision for this BEP; internal storage, guard, and adapter code can
 evolve behind them without breaking callers.
 
@@ -416,9 +420,15 @@ export type OpenHarnessOptions = Readonly<{
  * and never cancels admitted durable work; calls on a released handle reject.
  */
 export interface ManagedHarness {
+  /**
+   * Session, document, task, and lifecycle operations: commit, snapshot,
+   * watchDoc, getTask, waitForTask, resume, wake, inspect, usage, and the
+   * peers listed in the operation inventory below.
+   */
+  readonly session: AiSession;
   /** Conversation operations: submit, wait, watch, fork. */
   readonly conversation: AiConversation;
-  /** Context bound to this admission, passed to conversation operations. */
+  /** Context bound to this admission, passed to session and conversation calls. */
   readonly context: AiContext;
   /** Guarded tool operations, permission-checked on every attempt. */
   readonly tools?: GuardedToolOperations;
@@ -477,10 +487,49 @@ export interface GuardedToolOperations {
     caller?: Record<string, unknown>;
   }): Promise<unknown>;
 }
+
+/** One cataloged model a policy may allow or deny. */
+export type AiModelDescriptor = Readonly<{
+  provider: string;
+  modelId: string;
+  /** Certified adapter identifier of the provider module. */
+  api?: string;
+  /** Model type, for example 'chat', 'classifier', or 'image'. */
+  type?: string;
+  /** Context window in tokens. */
+  contextWindow?: number;
+  /** Output limit in tokens. */
+  maxTokens?: number;
+}>;
+
+/** Authorized reads for a plugin's managed AI sessions. */
+export interface AiHttpSupport {
+  listModels(
+    credentials: BackstageCredentials,
+  ): Promise<readonly AiModelDescriptor[]>;
+  listSessions(
+    credentials: BackstageCredentials,
+    options?: { cursor?: string; limit?: number },
+  ): Promise<{ items: string[]; nextCursor?: string }>;
+  assertSessionOwner(
+    credentials: BackstageCredentials,
+    sessionId: string,
+  ): Promise<void>;
+}
+
+/** Journal reads: ai.audit.read plus session ownership. */
+export interface AiAuditLog {
+  read(
+    credentials: BackstageCredentials,
+    query: AiAuditQuery,
+  ): Promise<AiAuditPage>;
+}
 ```
 
 The exact signatures are what the alpha period settles; the operation set they
-cover is fixed, and every operation below is already mediated by the guard:
+cover is fixed, and every operation below is already mediated by the guard.
+Session, document, task, and lifecycle operations sit on `AiSession`;
+conversation operations on `AiConversation`:
 
 - Session and documents: `commit`, `snapshot`, `snapshotAsOf`, `watchDoc`,
   `observeDoc`, `observeCommits`, `subscribeClose`, `closed`
@@ -494,7 +543,12 @@ cover is fixed, and every operation below is already mediated by the guard:
 The `Ai`-prefixed data types (`AiSubmission`, `AiConversationWatch`, task and
 entry types) are owned declarations of the same shapes, and the `Tx`-style
 transaction overloads on `submit` and `commit` carry over behind the same
-adapter.
+adapter. Discovery and audit reads sit beside `AiService` as companion
+interfaces exported from `@backstage/ai-node`, created with
+`createAiHttpSupport` and wired into the host: `AiHttpSupport` backs the HTTP
+surface of `@backstage/plugin-ai-backend` (model listing, session listing,
+session ownership, and the per-session audit endpoint), and `AiAuditLog`
+serves journal reads under `ai.audit.read` plus session ownership.
 
 Owning the types also decouples consumer API stability from upstream Pi
 breaking changes, so Pi can be upgraded or replaced behind the adapter once
@@ -509,8 +563,10 @@ without changing the guarded path.
 A catalog-assistant plugin exercising each capability a consumer touches:
 
 ```ts
-// Declare what this plugin uses. Tool modules and prompt libraries install
-// into the registry; it is matched by version when a session reopens.
+// Declare what this plugin enables for the session (prompts, workflows, and
+// bindings to registered tools); matched by version when a session reopens.
+// Certified tool and provider modules register separately, at the backend
+// composition root (see the authoring example below).
 const registry = createAiRegistry();
 registry.install(shellTools);
 registry.install(catalogPrompts);
@@ -526,7 +582,7 @@ const { conversation, context, tools, release } = await ai.openHarness({
 
 try {
   // Submit a prompt; the guard journals the intent before any send.
-  const submission = await conversation.submit(
+  await conversation.submit(
     { prompt: { text: 'Summarize this catalog entity' } },
     context,
   );
@@ -548,6 +604,7 @@ try {
   );
 
   // Call a registered tool through the guarded path (ai.tool.use per attempt).
+  // Credentials must match the caller bound when the harness was opened.
   const hits = await tools?.callTool({
     serverId: 'docs',
     toolName: 'search',
@@ -611,26 +668,8 @@ const moduleRegistry = createAiModuleRegistry({
 ### Harness lifecycle
 
 A plugin opens a harness once per session through `aiServiceRef` and receives a
-Backstage-owned conversation surface plus an explicit release function:
-
-```ts
-const ai = ctx.ai; // @backstage/ai-node, plugin-scoped
-
-const { conversation, context, release } = await ai.openHarness({
-  sessionId,
-  config,
-  credentials, // the original authenticated Backstage caller
-  registry,
-  registryVersion,
-  features,
-});
-
-try {
-  // conversation operations: submit, wait, watch, fork ...
-} finally {
-  await release(); // explicit release; ending the request does not stop durable work
-}
-```
+Backstage-owned conversation surface plus an explicit release function (the
+full call pattern is in [Consumer examples](#consumer-examples)):
 
 ```mermaid
 sequenceDiagram
@@ -722,13 +761,14 @@ Adding a provider requires only module registration. A module ships only if
 its conformance suite passes; routes outside its certified set are rejected
 before dispatch.
 
-| Interface                | Contract                                                                                     | Primary consumer            |
-| :----------------------- | :------------------------------------------------------------------------------------------- | :-------------------------- |
-| `openHarness`            | Single entry point; admission checks, lease, guarded conversation surface, explicit release  | Consuming plugins           |
-| Conversation operations  | Backstage-owned conversation, task, fork, and stream types; Pi Durable implements underneath | Consuming plugins           |
-| Module registration      | Certified routes, envelope validation, pinned adapter, tools, conformance suite              | Module authors              |
-| Scoped credential stores | `org`/`service` read-only from config, `user` encrypted in the database                      | Adopters and administrators |
-| Journal read             | `ai.audit.read` plus session ownership; redacted, identity-only rows                         | Auditors and tooling        |
+| Interface                   | Contract                                                                                     | Primary consumer            |
+| :-------------------------- | :------------------------------------------------------------------------------------------- | :-------------------------- |
+| `openHarness`               | Single entry point; admission checks, lease, guarded conversation surface, explicit release  | Consuming plugins           |
+| Conversation operations     | Backstage-owned conversation, task, fork, and stream types; Pi Durable implements underneath | Consuming plugins           |
+| Module registration         | Certified routes, envelope validation, pinned adapter, tools, conformance suite              | Module authors              |
+| Model and session discovery | Permission-filtered model listing and session ownership checks                               | Consuming plugins           |
+| Scoped credential stores    | `org`/`service` read-only from config, `user` encrypted in the database                      | Adopters and administrators |
+| Journal read                | `ai.audit.read` plus session ownership; redacted, identity-only rows                         | Auditors and tooling        |
 
 ## Design Details
 
@@ -759,6 +799,12 @@ open when no policy is configured (and a blanket `ALLOW` rule grants every
 configured model). That matches how the rest of Backstage works; installations
 that want restrictive AI access configure a permission policy, as they do for
 other plugins.
+
+Denials surface as errors naming the permission and the evaluated resource
+attributes, so a plugin can distinguish a policy denial from a validation
+failure. A handle whose lease was lost rejects further calls with its own
+error, and a session blocked on recovery reports that state instead of
+hanging.
 
 ### The decision journal
 
@@ -823,9 +869,8 @@ enforce per-attempt authorization.
 
 OAuth token refreshes run as guarded operations recorded in the journal under
 a cross-process `(scope, provider)` lock. Once a refresh starts, caller
-cancellation does not abort it, because losing the only valid refresh token is
-worse than completing
-the write. Custom AI gateways and enterprise proxies (such as Cloudflare AI
+cancellation does not abort it, because losing the only valid refresh token
+is worse than completing the write. Custom AI gateways and enterprise proxies (such as Cloudflare AI
 Gateway or OpenAI-compatible routers) are supported by wrapping certified
 provider modules onto path-prefixed base URLs without weakening route
 certification.
@@ -923,7 +968,9 @@ Crash recovery distinguishes three states:
   no matching outcome row.
 
 Service-origin work resumes only under the originating plugin's own service
-credentials. Configuration sets defaults only for new conversations (including
+credentials. Across a backend restart, existing handles end while sessions
+persist and reopen on demand once the owning plugin opens the namespace with a
+matching registry. Configuration sets defaults only for new conversations (including
 persisted model and thinking-level choices); reopening an existing conversation
 never resets its state or forks, and attempting to generate with no selected
 model fails with actionable guidance.
@@ -932,7 +979,24 @@ model fails with actionable guidance.
 
 Nothing is enabled by default. Without explicit configuration, no providers are
 registered; without a declared, permission-checked feature request, a harness
-receives no tool surface and no code-mode globals. Credential kinds are opaque
+receives no tools and no code-mode globals. Configuration splits cleanly
+between installation-level settings (configured providers, gateways, scoped
+credentials, encryption keys, and journal retention) and per-plugin defaults.
+Each consuming plugin chooses its own configuration path (there is no required
+`ai.*` path for plugin defaults) and passes the root configuration plus that
+path to `openHarness`. The schema at a plugin-selected path is:
+
+```yaml
+<plugin-chosen-path>:
+  mode: service | interactive
+  model:
+    provider: <provider-id>
+    modelId: <model-id>
+  thinkingLevel: off | minimal | low | medium | high | xhigh | max
+```
+
+`mode: service` requires `model.provider` and `model.modelId`; the scaffolder
+module, for example, reads `scaffolder.ai`. Credential kinds are opaque
 to the core config schema and interpreted by the provider or auth modules that
 consume them, so new credential kinds do not require core schema changes. The
 generic backend's HTTP endpoints (login challenges, session status) are bound to
@@ -1120,8 +1184,7 @@ standalone service.
 ### Command-based API instead of a harness
 
 Instead of `openHarness` returning conversation operations, every interaction
-could go
-through a typed command interface (`execute({ command })`). Representing
+could go through a typed command interface (`execute({ command })`). Representing
 transactions, streaming, typed documents, and extensions as serializable
 commands would duplicate the entire engine surface and introduce new
 serialization and unknown-command failure modes. Exposing direct conversation
@@ -1168,6 +1231,6 @@ satisfies both durability and operational logging.
 Having each plugin ship its own AI backend with its own keys and checks (the
 common pattern today) leaves adopters with the scattered credentials,
 inconsistent authorization, and missing pre-dispatch audit described in
-[Motivation](#motivation). A shared managed service still
-supports plugin-specific AI backends and chat UIs on top; they simply delegate
+[Motivation](#motivation). A shared managed service still supports
+plugin-specific AI backends and chat UIs on top; they simply delegate
 model and tool dispatch to the service instead of rebuilding the plumbing.
