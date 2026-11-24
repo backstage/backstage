@@ -101,13 +101,14 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
-    description: 'Creates a Sentry project with a custom API base URL.',
+    description:
+      'Creates a Sentry project with an API base URL that matches the operator configured scaffolder.sentry.apiBaseUrl.',
     example: yaml.stringify({
       steps: [
         {
           id: 'create-sentry-project',
           action: 'sentry:project:create',
-          name: 'Create a Sentry project with custom API base URL.',
+          name: 'Create a Sentry project with the configured API base URL.',
           input: {
             organizationSlug: 'my-org',
             teamSlug: 'team-a',

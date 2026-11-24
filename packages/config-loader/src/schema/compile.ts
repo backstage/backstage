@@ -27,6 +27,7 @@ import {
 } from './types';
 import { SchemaObject } from 'json-schema-traverse';
 import { normalizeAjvPath } from './utils';
+import cloneDeep from 'lodash/cloneDeep';
 
 // Used to keep track of the internal deepVisibility inherited through the schema.
 const inheritedVisibility = Symbol('inherited-visibility');
@@ -58,6 +59,11 @@ export function compileConfigSchemas(
     schemas: {
       'https://backstage.io/schema/config-v1': true,
     },
+    // The validators compiled here run only a few times per process, when
+    // config is loaded, so the time Ajv's code optimizer takes to generate
+    // faster validation code is never paid back. Skipping it roughly halves
+    // the compile time of large schemas, without changing the results.
+    code: { optimize: false },
   })
     .addKeyword({
       keyword: 'visibility',
@@ -129,7 +135,27 @@ export function compileConfigSchemas(
     }
   }
 
-  const merged = mergeConfigSchemas(schemas.map(_ => _.value));
+  const merged = mergeConfigSchemas(
+    schemas.map(_ => {
+      const copy = cloneDeep(_.value as JSONSchema);
+      traverse(copy, s => {
+        // We convert `additionalProperties: {}` to `additionalProperties: true`
+        // because `mergeAllOf` drops `additionalProperties: {}` during merging.
+        // According to JSON Schema, these two forms are equivalent. Without this
+        // conversion, the dropped value is treated as unset, which causes
+        // `noUndeclaredProperties` to incorrectly add `additionalProperties: false`
+        // and reject valid configuration.
+        if (
+          typeof s.additionalProperties === 'object' &&
+          s.additionalProperties !== null &&
+          Object.keys(s.additionalProperties).length === 0
+        ) {
+          s.additionalProperties = true;
+        }
+      });
+      return copy;
+    }),
+  );
 
   traverse(
     merged,
@@ -166,11 +192,21 @@ export function compileConfigSchemas(
       }
 
       if (options?.noUndeclaredProperties) {
+        const hasPropertyWithKey = (key: string) =>
+          typeof schema[key] === 'object' &&
+          schema[key] !== null &&
+          Object.keys(schema[key]).length > 0;
         /**
-         * The `additionalProperties` key can only be applied to `type: object` in the JSON
-         *  schema.
+         * The `additionalProperties` key can only be applied to `type: object`
+         * in the JSON schema. It's only applied to objects that specify
+         * properties. Otherwise, we end up with nonsensical schemas that don't
+         * allow any properties at all.
          */
-        if (schema?.type === 'object') {
+        if (
+          schema?.type === 'object' &&
+          (hasPropertyWithKey('properties') ||
+            hasPropertyWithKey('patternProperties'))
+        ) {
           schema.additionalProperties ||= false;
         }
       }

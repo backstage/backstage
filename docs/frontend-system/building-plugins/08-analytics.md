@@ -20,8 +20,7 @@ interactions.
   pairs) that may be provided on an event-by-event basis. To continue the above
   example, the URL a user clicked to might look like `{ "to": "/a/page" }`.
 - **Context** represents the broader context in which an event took place. By
-  default, information like `pluginId`, `extension`, and `routeRef` are
-  provided.
+  default, it includes `pluginId` and `extensionId`.
 
 This composition of events aims to allow analysis at different levels of detail,
 enabling very granular questions (like "what is the most clicked on thing on a
@@ -83,6 +82,13 @@ _OSS plugin maintainers: feel free to document your events in the table above._
 Analytics event forwarding is implemented as a Backstage [Utility API](../utility-apis/01-index.md). The
 provided API need only provide a single method `captureEvent`, which takes
 an `AnalyticsEvent` object.
+
+Use `AnalyticsImplementationBlueprint` from `@backstage/plugin-app-react` to
+provide integrations. The same package exports `AnalyticsImplementation` for
+explicitly typing an integration and `AnalyticsImplementationFactory` for its
+factory. Import `AnalyticsImplementation` from this package instead of
+`@backstage/frontend-plugin-api`. Event types, the Analytics API, `useAnalytics`,
+and `AnalyticsContext` remain in `@backstage/frontend-plugin-api`.
 
 A simple implementation using `AnalyticsImplementationBlueprint`:
 
@@ -256,9 +262,9 @@ event resembling:
 ```
 
 Note that, for brevity in the example above, the context keys provided by
-Backstage core (`pluginId`, `extension`, and `routeRef`) have been omitted. In
-reality, those details would be included alongside any additional context
-provided by you.
+Backstage core (`pluginId` and `extensionId`) have been omitted. In reality,
+those details would be included alongside any additional context provided by
+you.
 
 Analytics contexts can be nested; their values are merged down the react tree,
 allowing keys to be overwritten.
@@ -272,7 +278,7 @@ it's important to keep each of these levels of detail disaggregated.
 - Avoid providing an overly specific `action`. For example, instead of
   `filterEntityTable`, consider just using `filter` as the action, and allowing
   `EntityTable` to be specified as part of the event's `context` (most likely
-  automatically as part of the `extension` in which the `filter` event was
+  automatically as part of the `extensionId` in which the `filter` event was
   captured).
 
 - On the flip side, when adding `attributes` to or `context` around an event,
@@ -284,9 +290,9 @@ it's important to keep each of these levels of detail disaggregated.
 
 ### Unit Testing Event Capture
 
-The `@backstage/frontend-test-utils` package includes a `MockAnalyticsApi` implementation
-that you can use in your unit tests to spy on and make assertions about any
-analytics events captured.
+The `@backstage/frontend-test-utils` package includes a `mockApis.analytics()`
+helper that you can use in your unit tests to spy on and make assertions about
+any analytics events captured.
 
 Use it like this:
 
@@ -294,14 +300,14 @@ Use it like this:
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import { analyticsApiRef } from '@backstage/frontend-plugin-api';
 import {
-  MockAnalyticsApi,
+  mockApis,
   TestApiProvider,
   wrapInTestApp,
 } from '@backstage/frontend-test-utils';
 
 describe('SomeComponent', () => {
   it('should capture event on click', () => {
-    const apiSpy = new MockAnalyticsApi();
+    const apiSpy = mockApis.analytics();
 
     const { getByText } = render(
       wrapInTestApp(

@@ -1,4 +1,5 @@
 abc
+accessor
 accessors
 ACLs
 addon
@@ -6,6 +7,7 @@ addons
 ADRs
 affordance
 airbrake
+argocd
 Airbrake
 Airbrakes
 ajv
@@ -23,6 +25,7 @@ approvers
 asciidoc
 async
 Atlassian
+autocomplete
 autofix
 autologout
 automations
@@ -33,6 +36,8 @@ backend's
 backoff
 backported
 backporting
+Basename
+Bazel
 BEPs
 bg
 bigint
@@ -141,6 +146,7 @@ Dockerize
 dockerode
 Docusaurus
 Dominik
+dirtyreload
 DOMPurify
 don'ts
 dynatrace
@@ -148,6 +154,7 @@ dyno
 ecco
 elasticsearch
 Entra
+enum
 enums
 env
 Env
@@ -159,6 +166,7 @@ etag
 Expedia
 facto
 failover
+falsy
 faq
 Fargate
 faqs
@@ -194,6 +202,7 @@ Hackathons
 hackathon
 haproxy
 hardcoded
+hardcodes
 hardcoding
 harness
 Helidon
@@ -205,10 +214,13 @@ Hostname
 hotspot
 hotspots
 howto
+href
+hrefs
 http
 https
 Iain
 idempotency
+idempotent
 Iglesias
 iLert
 img
@@ -236,6 +248,7 @@ json
 jsonnet
 JSONSchema
 jsx
+justfile
 JWTs
 Kaewkasi
 Kaswell
@@ -260,6 +273,7 @@ Levenshtein
 lightbox
 Lightsail
 limitranges
+livereload
 liveness
 LLMs
 LocalStack
@@ -279,6 +293,7 @@ maintainer's
 maintainership
 makefile
 Matomo
+materialx
 matchers
 md
 memcache
@@ -297,6 +312,7 @@ misconfiguration
 misconfigured
 mkdocs
 Mkdocs
+mock's
 modularization
 monopackage
 monopackages
@@ -320,6 +336,7 @@ neuro
 newrelic
 nginx
 nodegit
+nodemailer
 nodejs
 nohoist
 nonces
@@ -327,6 +344,7 @@ noop
 npm
 nullable
 nunjucks
+nunjitsu
 nvarchar
 nvm
 OAuth
@@ -371,7 +389,11 @@ pipx
 plaintext
 plantuml
 Platformize
+pluggable
+Pluggable
+pnpm
 Podman
+polyfills
 posix
 postgres
 postpack
@@ -392,6 +414,7 @@ pseudonymized
 pubsub
 Pulumi
 pygments
+pymdown
 pymdownx
 rankdir
 readme
@@ -416,6 +439,7 @@ requestors
 rerender
 rerenders
 resizable
+resolver's
 resourcequotas
 retryable
 reusability
@@ -436,6 +460,7 @@ rst
 rsync
 Rugvip
 ruleset
+rulesets
 runbook
 sam
 sandbox
@@ -480,6 +505,7 @@ sqs
 squidfunk
 src
 statefulsets
+stderr
 stdout
 storable
 storages
@@ -495,9 +521,12 @@ subfolders
 subheader
 subheaders
 subkey
+submenu
 subpage
 subpath
 subpaths
+subplan
+subplans
 subroute
 subroutes
 subquery
@@ -515,6 +544,7 @@ Tanzu
 targetRef
 tasklist
 teardown
+Teardown
 techdocs
 Telenor
 telus
@@ -563,15 +593,18 @@ ungrouped
 unicode
 unmanaged
 unmount
+unparseable
 unregister
 unregistering
 unregisters
 unregistration
+unpatched
 unreviewed
 unschedulable
 unstarred
 untemplated
 untracked
+untrusted
 upsert
 upstreamed
 upstreams
@@ -609,7 +642,11 @@ xyz
 yaml
 Zalando
 Zhou
+zensical
+Zensical
 zod
 Zolotusky
 zoomable
 zsh
+Zensical
+zensical

@@ -1,5 +1,113 @@
 # @backstage/cli-module-new
 
+## 0.1.9
+
+### Patch Changes
+
+- b937434: Fixed `backstage-cli new` rewriting the entire `CODEOWNERS` file when an owner is provided. Existing content, including comments and formatting, is now preserved and a single repository-relative entry such as `/packages/my-lib/ @org/team` is appended, rather than an entry with an absolute filesystem path.
+- c009ae4: The `frontend-plugin` template now declares package info: the generated `package.json` exports `./package.json`, and the plugin passes `info: { packageJson: () => import('../package.json') }` to `createFrontendPlugin`.
+- 500f8ff: Templates now depend on `@testing-library/react` 16 together with `@testing-library/dom` 10, which React Testing Library 16 requires as a peer dependency and which matches `@backstage/frontend-test-utils`.
+- c584676: Template version hints are now treated as a minimum version within their caret range, that is the same major version, or the same minor version for `0.x` hints. When the lockfile already contains a range for a dependency that resolves to the hinted version or a newer compatible one, `backstage-cli new` reuses the highest such range instead of adding an older one, which avoids duplicate dependency versions.
+- e769ccb: Fix an issue where creating a new package with the `cli-module` role would crash during the installation phase due to an unhandled role mapping.
+- 33894d6: Fixed an issue where scaffolding templates on Windows could generate corrupted file names for files in subdirectories.
+- Updated dependencies
+  - @backstage/cli-node@0.3.6
+  - @backstage/errors@1.4.0
+  - @backstage/cli-common@0.3.3
+
+## 0.1.9-next.2
+
+### Patch Changes
+
+- b937434: Fixed `backstage-cli new` rewriting the entire `CODEOWNERS` file when an owner is provided. Existing content, including comments and formatting, is now preserved and a single repository-relative entry such as `/packages/my-lib/ @org/team` is appended, rather than an entry with an absolute filesystem path.
+- c009ae4: The `frontend-plugin` template now declares package info: the generated `package.json` exports `./package.json`, and the plugin passes `info: { packageJson: () => import('../package.json') }` to `createFrontendPlugin`.
+- 500f8ff: Templates now depend on `@testing-library/react` 16 together with `@testing-library/dom` 10, which React Testing Library 16 requires as a peer dependency and which matches `@backstage/frontend-test-utils`.
+- c584676: Template version hints are now treated as a minimum version within their caret range, that is the same major version, or the same minor version for `0.x` hints. When the lockfile already contains a range for a dependency that resolves to the hinted version or a newer compatible one, `backstage-cli new` reuses the highest such range instead of adding an older one, which avoids duplicate dependency versions.
+- Updated dependencies
+  - @backstage/cli-node@0.3.6-next.2
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/cli-common@0.3.3-next.0
+
+## 0.1.9-next.1
+
+### Patch Changes
+
+- e769ccb: Fix an issue where creating a new package with the `cli-module` role would crash during the installation phase due to an unhandled role mapping.
+- 33894d6: Fixed an issue where scaffolding templates on Windows could generate corrupted file names for files in subdirectories.
+- Updated dependencies
+  - @backstage/cli-node@0.3.6-next.1
+
+## 0.1.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.6-next.0
+
+## 0.1.8
+
+### Patch Changes
+
+- e4597ce: Updated the `plugin-web-library` template to use `@backstage/ui` instead of the deprecated `@material-ui/core`.
+- b717df2: Switched to version 4 of `zod` for internal validation. Validation errors for invalid templates now use the updated, more descriptive `zod` wording.
+- Updated dependencies
+  - @backstage/cli-node@0.3.5
+  - @backstage/errors@1.3.2
+  - @backstage/cli-common@0.3.2
+
+## 0.1.8-next.1
+
+### Patch Changes
+
+- e4597ce: Updated the `plugin-web-library` template to use `@backstage/ui` instead of the deprecated `@material-ui/core`.
+
+## 0.1.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.5-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/cli-common@0.3.2-next.0
+
+## 0.1.7
+
+### Patch Changes
+
+- 33c8190: Updated the frontend plugin templates to use MSW 2 for generated tests.
+- 4cba335: Fixes published entry point configurations so it can be imported reliably in Jest/Node resolution.
+- Updated dependencies
+  - @backstage/cli-common@0.3.1
+
+## 0.1.7-next.0
+
+### Patch Changes
+
+- 4cba335: Fixes published entry point configurations so it can be imported reliably in Jest/Node resolution.
+
+## 0.1.6
+
+### Patch Changes
+
+- 90ef477: Added a new `permission-policy-module` template for scaffolding custom permission policies via `backstage-cli new`. The template generates a backend module that wires a `PermissionPolicy` implementation into the permission backend using the `policyExtensionPoint`, along with a test example.
+- 88b2bbf: Added a `search-collator-module` template for scaffolding new search collator modules via `backstage-cli new`.
+- 2c7cc55: Added a new `catalog-processor-module` template for scaffolding catalog processor modules via `backstage-cli new`.
+- 8ccc09b: Fixed `yarn new` failing with "No version available" for several templates by adding missing packages to the version map.
+- 0e6007f: Updated the `plugin-web-library` template to use `toastApiRef` from `@backstage/frontend-plugin-api` instead of the deprecated `alertApiRef` from `@backstage/core-plugin-api`.
+- 90bbc2e: Added `UserInfoService` to the `permission-policy-module` template so that scaffolded permission policies have the service already wired up for ownership lookups.
+- 10887f4: Fixed generated frontend plugin tables to identify their row header, and added the associated backend plugin package as a development dependency of generated backend plugin modules.
+
+## 0.1.6-next.0
+
+### Patch Changes
+
+- 90ef477: Added a new `permission-policy-module` template for scaffolding custom permission policies via `backstage-cli new`. The template generates a backend module that wires a `PermissionPolicy` implementation into the permission backend using the `policyExtensionPoint`, along with a test example.
+- 88b2bbf: Added a `search-collator-module` template for scaffolding new search collator modules via `backstage-cli new`.
+- 2c7cc55: Added a new `catalog-processor-module` template for scaffolding catalog processor modules via `backstage-cli new`.
+- 0e6007f: Updated the `plugin-web-library` template to use `toastApiRef` from `@backstage/frontend-plugin-api` instead of the deprecated `alertApiRef` from `@backstage/core-plugin-api`.
+- 90bbc2e: Added `UserInfoService` to the `permission-policy-module` template so that scaffolded permission policies have the service already wired up for ownership lookups.
+- 10887f4: Fixed generated frontend plugin tables to identify their row header, and added the associated backend plugin package as a development dependency of generated backend plugin modules.
+
 ## 0.1.5
 
 ### Patch Changes

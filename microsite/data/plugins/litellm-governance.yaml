@@ -1,0 +1,9 @@
+title: LiteLLM Governance Plugin
+author: Andrea Carmisciano
+authorUrl: https://github.com/acarmisc
+category: Monitoring
+description: LiteLLM governance interface for managing virtual API keys and monitoring AI model usage directly from Backstage.
+documentation: https://github.com/acarmisc/backstage-plugin-litellm-govai#readme
+npmPackageName: '@acarmisc/backstage-plugin-litellm'
+addedDate: '2026-07-31'
+status: active

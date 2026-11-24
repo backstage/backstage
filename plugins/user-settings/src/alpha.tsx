@@ -20,7 +20,6 @@ import {
   PageBlueprint,
   SubPageBlueprint,
 } from '@backstage/frontend-plugin-api';
-import { Content } from '@backstage/core-components';
 import SettingsIcon from '@material-ui/icons/Settings';
 import { settingsRouteRef } from './plugin';
 
@@ -46,12 +45,17 @@ const generalSettingsPage = SubPageBlueprint.make({
   params: {
     path: 'general',
     title: 'General',
-    loader: () =>
-      import('./components/General').then(m => (
+    loader: async () => {
+      const [m, { Content }] = await Promise.all([
+        import('./components/General'),
+        import('@backstage/core-components'),
+      ]);
+      return (
         <Content>
           <m.UserSettingsGeneral />
         </Content>
-      )),
+      );
+    },
   },
 });
 
@@ -67,8 +71,12 @@ const authProvidersSettingsPage = SubPageBlueprint.makeWithOverrides({
     return originalFactory({
       path: 'auth-providers',
       title: 'Authentication Providers',
-      loader: () =>
-        import('./components/AuthProviders').then(m => (
+      loader: async () => {
+        const [m, { Content }] = await Promise.all([
+          import('./components/AuthProviders'),
+          import('@backstage/core-components'),
+        ]);
+        return (
           <Content>
             <m.UserSettingsAuthProviders
               providerSettings={inputs.providerSettings?.get(
@@ -76,7 +84,8 @@ const authProvidersSettingsPage = SubPageBlueprint.makeWithOverrides({
               )}
             />
           </Content>
-        )),
+        );
+      },
     });
   },
 });
@@ -86,12 +95,17 @@ const featureFlagsSettingsPage = SubPageBlueprint.make({
   params: {
     path: 'feature-flags',
     title: 'Feature Flags',
-    loader: () =>
-      import('./components/FeatureFlags').then(m => (
+    loader: async () => {
+      const [m, { Content }] = await Promise.all([
+        import('./components/FeatureFlags'),
+        import('@backstage/core-components'),
+      ]);
+      return (
         <Content>
           <m.UserSettingsFeatureFlags />
         </Content>
-      )),
+      );
+    },
   },
 });
 

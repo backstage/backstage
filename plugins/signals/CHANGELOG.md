@@ -1,5 +1,111 @@
 # @backstage/plugin-signals
 
+## 0.0.37
+
+### Patch Changes
+
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+- Updated dependencies
+  - @backstage/frontend-plugin-api@1.0.0
+  - @backstage/core-plugin-api@1.13.0
+  - @backstage/core-components@0.18.16
+  - @backstage/plugin-signals-react@0.0.28
+  - @backstage/theme@0.7.4
+
+## 0.0.37-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.12-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+
+## 0.0.37-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.3-next.0
+  - @backstage/core-plugin-api@1.12.12-next.0
+  - @backstage/core-components@0.18.16-next.0
+  - @backstage/plugin-signals-react@0.0.28-next.0
+
+## 0.0.36
+
+### Patch Changes
+
+- b8e865b: The signals client now shares one WebSocket connection across simultaneous subscriptions and does not connect or retry when no identity token is available.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/core-components@0.18.15
+  - @backstage/core-plugin-api@1.12.11
+  - @backstage/plugin-signals-react@0.0.27
+
+## 0.0.36-next.1
+
+### Patch Changes
+
+- b8e865b: The signals client now shares one WebSocket connection across simultaneous subscriptions and does not connect or retry when no identity token is available.
+- Updated dependencies
+  - @backstage/core-components@0.18.15-next.2
+
+## 0.0.36-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.15-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+  - @backstage/plugin-signals-react@0.0.27-next.0
+
+## 0.0.35
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.14
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/core-plugin-api@1.12.10
+  - @backstage/plugin-signals-react@0.0.26
+
+## 0.0.35-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.0
+  - @backstage/core-plugin-api@1.12.10-next.0
+  - @backstage/plugin-signals-react@0.0.26-next.0
+
+## 0.0.35-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.0
+
+## 0.0.34
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.13
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/plugin-signals-react@0.0.25
+
+## 0.0.34-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.0-next.0
+  - @backstage/core-plugin-api@1.12.9-next.0
+  - @backstage/core-components@0.18.13-next.2
+  - @backstage/plugin-signals-react@0.0.25-next.0
+
 ## 0.0.34-next.0
 
 ### Patch Changes

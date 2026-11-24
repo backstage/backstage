@@ -133,25 +133,49 @@ async function ciCheck(prFilesPath) {
     process.exit(1);
   }
 
-  let issueCount = 0;
+  let errorCount = 0;
+  let warningCount = 0;
 
   if (result.stdout && result.stdout.trim()) {
     try {
       const data = JSON.parse(result.stdout);
+      const severityLevels = {
+        error: 'error',
+        warning: 'warning',
+        suggestion: 'notice',
+      };
+
       for (const [file, alerts] of Object.entries(data)) {
+        if (alerts.length === 0) continue;
+
+        // Emit GitHub Actions annotations
         for (const alert of alerts) {
-          const severityLevels = {
-            error: 'error',
-            warning: 'warning',
-            suggestion: 'notice',
-          };
           const level = severityLevels[alert.Severity] ?? 'notice';
           const col = alert.Span ? alert.Span[0] : 1;
           const endCol = alert.Span ? `,endColumn=${alert.Span[1] + 1}` : '';
           console.log(
             `::${level} file=${file},line=${alert.Line},col=${col}${endCol},title=${alert.Check}::${alert.Message}`,
           );
-          issueCount++;
+        }
+
+        // Print eslint-style file group, e.g.:
+        //   .changeset/my-change.md
+        //     9:74      error      Did you really mean 'accessor'?  Vale.Terms
+        console.log(`\n${file}`);
+        for (const alert of alerts) {
+          const level = alert.Severity === 'error' ? 'error' : 'warning';
+          const col = alert.Span ? alert.Span[0] : 1;
+          const loc = `${alert.Line}:${col}`;
+          console.log(
+            `  ${loc.padEnd(8)}  ${level.padEnd(9)}  ${alert.Message}  ${
+              alert.Check
+            }`,
+          );
+          if (alert.Severity === 'error') {
+            errorCount++;
+          } else {
+            warningCount++;
+          }
         }
       }
     } catch {
@@ -165,9 +189,19 @@ async function ciCheck(prFilesPath) {
     console.error(result.stderr);
   }
 
+  const issueCount = errorCount + warningCount;
   if (issueCount > 0) {
+    const parts = [];
+    if (errorCount > 0) {
+      parts.push(`${errorCount} error${errorCount !== 1 ? 's' : ''}`);
+    }
+    if (warningCount > 0) {
+      parts.push(`${warningCount} warning${warningCount !== 1 ? 's' : ''}`);
+    }
     console.log(
-      `\nFound ${issueCount} documentation quality issue(s). Please review the annotations above.`,
+      `\n✖ ${issueCount} problem${issueCount !== 1 ? 's' : ''} (${parts.join(
+        ', ',
+      )})`,
     );
   }
 
@@ -206,6 +240,15 @@ async function main() {
   const relativePaths = absolutePaths
     .map(path => relativePath(rootDir, path))
     .filter(path => !IGNORED_WHEN_EXPLICIT.some(pattern => pattern.test(path)));
+
+  // When run from lint-staged, only the staged files are checked. If all of
+  // them are ignored there is nothing to do, so don't fall back to checking
+  // every file in the repository.
+  if (process.argv.includes('--lint-staged') && relativePaths.length === 0) {
+    console.log('No staged documentation files to check.');
+    return;
+  }
+
   const success = await runVale(
     relativePaths.length === 0 ? await listFiles() : relativePaths,
   );

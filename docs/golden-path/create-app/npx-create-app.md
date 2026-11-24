@@ -6,7 +6,7 @@ description: How to scaffold a new Backstage app using create-app
 
 Audience: Developers and Admins
 
-:::note Note
+:::note
 It is not required, although recommended to have a basic understanding of [Yarn](https://www.pluralsight.com/guides/yarn-a-package-manager-for-node-js) and [npm](https://docs.npmjs.com/about-npm) before starting this guide.
 :::
 
@@ -16,7 +16,7 @@ This guide walks through how to get started creating your very own Backstage cus
 
 By the end of this guide, you will have a standalone Backstage installation running locally with a `SQLite` database and demo content.
 
-:::caution Organization customization
+:::caution[Organization customization]
 
 To be clear, this is not a production-ready installation, and it does not contain information specific to your organization. You will learn how to customize Backstage for your use case through this guide.
 
@@ -33,12 +33,12 @@ This guide also assumes a basic understanding of working on a Linux based operat
   On macOS, you will want to have run `xcode-select --install` to get the XCode command line build tooling in place.
 - An account with elevated rights to install the dependencies
 - `curl` or `wget` installed
-- Node.js [Active LTS Release](../../overview/versioning-policy.md#nodejs-releases) installed using one of these
+- A [supported Node.js release](../../overview/versioning-policy.md#nodejs-releases) installed using one of these
   methods:
   - Using `nvm` (recommended)
     - [Installing nvm](https://github.com/nvm-sh/nvm#install--update-script)
     - [Install and change Node version with nvm](https://nodejs.org/en/download/package-manager/#nvm)
-    - Node 20 is a good starting point, this can be installed using `nvm install lts/iron`
+    - Node 24 or 26 are recommended, these can be installed using `nvm install 24` or `nvm install 26`
   - [Binary download](https://nodejs.org/en/download/)
   - [Package manager](https://nodejs.org/en/download/package-manager/)
   - [Using NodeSource packages](https://github.com/nodesource/distributions/blob/master/README.md)
@@ -56,7 +56,7 @@ The wizard for this command will ask what name you want to have for your new app
 
 When you run the command, you'll see an output like this.
 
-```console
+```text
 
 ? Enter a name for the app [required] my-backstage-app
 
@@ -94,19 +94,13 @@ npx @backstage/create-app@latest
 
 This may take a few minutes to fully install everything. Don't stress if the loading seems to be spinning nonstop, there's a lot going on in the background.
 
-:::note
-
-If this fails on the `yarn install` step, it's likely that you will need to install some additional dependencies which are used to configure `isolated-vm`. You can find out more in their [requirements section](https://github.com/laverdet/isolated-vm#requirements), and then run `yarn install` manually again after you've completed those steps.
-
-:::
-
 ## Structure of your app
 
 ### General folder structure
 
 Below is a simplified layout of the files and folders generated when creating an app.
 
-```
+```text
 app
 ├── app-config.yaml
 ├── catalog-info.yaml

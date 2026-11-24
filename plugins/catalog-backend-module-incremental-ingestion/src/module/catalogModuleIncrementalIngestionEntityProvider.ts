@@ -110,6 +110,8 @@ export const catalogModuleIncrementalIngestionEntityProvider =
           scheduler: coreServices.scheduler,
           events: eventsServiceRef,
           metrics: metricsServiceRef,
+          permissions: coreServices.permissions,
+          httpAuth: coreServices.httpAuth,
         },
         async init({
           catalog,
@@ -120,6 +122,8 @@ export const catalogModuleIncrementalIngestionEntityProvider =
           scheduler,
           events,
           metrics,
+          permissions,
+          httpAuth,
         }) {
           const client = await database.getClient();
 
@@ -130,6 +134,8 @@ export const catalogModuleIncrementalIngestionEntityProvider =
             scheduler,
             events,
             metrics,
+            permissions,
+            httpAuth,
           });
 
           for (const entry of addedProviders) {

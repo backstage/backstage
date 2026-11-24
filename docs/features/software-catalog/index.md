@@ -48,7 +48,7 @@ There are 3 ways to add components to the catalog:
 
 1. Manually register components
 2. Creating new components through Backstage
-3. Integrating with an [external source](external-integrations.md)
+3. Integrating with an [external source](external-integrations/index.md)
 
 ### Manually register components
 
@@ -140,7 +140,7 @@ or by [building your own](../../plugins/index.md).
 
 Sometimes entities fail to process correctly. The **Unprocessed Entities** feature helps Backstage admins find and diagnose these entities to understand the state of the catalog.
 
-To use this feature, check out the documentation for the [catalog-unprocessed-entities plugin](https://github.com/backstage/backstage/tree/master/plugins/catalog-unprocessed-entities) and its [backend module](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-unprocessed).
+To use this feature, see the [Unprocessed Entities documentation](./unprocessed-entities.md).
 
 ## Links
 

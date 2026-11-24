@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { TestRouter } from '../../testUtils/TestRouter';
 import preview from '../../../../../.storybook/preview';
 import {
   MenuTrigger,
@@ -26,7 +27,7 @@ import {
 import { Button, Flex, Text } from '../..';
 import { useEffect, useState } from 'react';
 import { Selection } from 'react-aria-components';
-import { MemoryRouter } from 'react-router-dom';
+
 import { BUIProvider } from '../../provider';
 
 const meta = preview.meta({
@@ -34,11 +35,11 @@ const meta = preview.meta({
   component: MenuTrigger,
   decorators: [
     Story => (
-      <MemoryRouter>
+      <TestRouter>
         <BUIProvider>
           <Story />
         </BUIProvider>
-      </MemoryRouter>
+      </TestRouter>
     ),
   ],
 });
@@ -214,7 +215,7 @@ export const Virtualized = meta.story({
         >
           {pokemon.map((p, index) => (
             <MenuListBoxItem key={index} id={p.name}>
-              {p.name.charAt(0).toLocaleUpperCase('en-US') + p.name.slice(1)}
+              {p.name.charAt(0).toUpperCase() + p.name.slice(1)}
             </MenuListBoxItem>
           ))}
         </MenuAutocompleteListbox>
@@ -254,7 +255,7 @@ export const VirtualizedMaxHeight = meta.story({
         >
           {pokemon.map((p, index) => (
             <MenuListBoxItem key={index} id={p.name}>
-              {p.name.charAt(0).toLocaleUpperCase('en-US') + p.name.slice(1)}
+              {p.name.charAt(0).toUpperCase() + p.name.slice(1)}
             </MenuListBoxItem>
           ))}
         </MenuAutocompleteListbox>

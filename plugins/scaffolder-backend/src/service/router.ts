@@ -53,12 +53,14 @@ import {
   templateEntityV1beta3Validator,
 } from '@backstage/plugin-scaffolder-common';
 import {
+  resolveParameterSteps,
   scaffolderActionPermissions,
   scaffolderTaskPermissions,
   scaffolderTemplatePermissions,
   taskCancelPermission,
   taskCreatePermission,
   taskReadPermission,
+  templateDryRunPermission,
   templateManagementPermission,
   templateParameterReadPermission,
   templateStepReadPermission,
@@ -66,6 +68,7 @@ import {
 import {
   TaskBroker,
   TaskFilters,
+  SerializedTask,
   TaskStatus,
   TemplateAction,
   TemplateFilter,
@@ -80,7 +83,7 @@ import {
   scaffolderTemplatePermissionResourceRef,
   WorkspaceProvider,
 } from '@backstage/plugin-scaffolder-node/alpha';
-import { HumanDuration, JsonObject } from '@backstage/types';
+import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
 import express from 'express';
 import { Duration } from 'luxon';
 import { pathToFileURL } from 'node:url';
@@ -93,8 +96,10 @@ import {
 } from '../scaffolder';
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
+import { isTaskRecoveryEnabled } from '../scaffolder/tasks/taskRecoveryHelper';
 import { InternalTaskSecrets } from '../scaffolder/tasks/types';
 import { createOpenApiRouter } from '../schema/openapi';
+import type { SerializedTask as SerializedTaskResponse } from '../schema/openapi/generated/models/SerializedTask.model';
 import {
   checkPermission,
   checkTaskPermission,
@@ -187,6 +192,8 @@ const readDuration = (
   return defaultValue;
 };
 
+const taskOrderFields = new Set(['created_at', 'status', 'created_by']);
+
 function formatSecretsValidationErrors(result: ValidatorResult) {
   return result.errors.map(err => {
     const property = err.property.replace(/^instance/, 'secrets');
@@ -228,6 +235,40 @@ async function validateSecrets(options: {
     errors: formatSecretsValidationErrors(result),
   });
   return false;
+}
+
+/**
+ * Validates the values against the parameter steps that are visible, and
+ * returns the values with those owned only by hidden steps removed.
+ */
+function validateParameterSteps(
+  template: TemplateEntityV1beta3,
+  values: Record<string, JsonValue>,
+): { result?: ValidatorResult; values: Record<string, JsonValue> } {
+  const parameters = [template.spec.parameters ?? []].flat();
+  const resolved = resolveParameterSteps(
+    values,
+    parameters.map(schema => ({ schema, when: schema.when })),
+  );
+  for (const [index, schema] of parameters.entries()) {
+    if (!resolved.visible[index]) continue;
+    const result = validate(values, schema);
+    if (!result.valid) {
+      return { result, values: resolved.values };
+    }
+  }
+  return { values: resolved.values };
+}
+
+function serializeTask(task: SerializedTask): SerializedTaskResponse {
+  return {
+    id: task.id,
+    spec: task.spec,
+    status: task.status,
+    createdAt: task.createdAt,
+    lastHeartbeatAt: task.lastHeartbeatAt,
+    createdBy: task.createdBy,
+  };
 }
 
 /**
@@ -279,6 +320,7 @@ export async function createRouter(
     const databaseTaskStore = await DatabaseTaskStore.create({
       database,
       events: eventsService,
+      recoverTasksEnabled: isTaskRecoveryEnabled(config),
     });
     taskBroker = new StorageTaskBroker(
       databaseTaskStore,
@@ -407,10 +449,13 @@ export async function createRouter(
   const isTemplateAuthorized = createConditionAuthorizer(
     Object.values(templateRules),
   );
-  const isTaskAuthorized = createConditionAuthorizer(Object.values(taskRules));
+  const taskRuleset = permissionsRegistry.getPermissionRuleset(
+    scaffolderTaskPermissionResourceRef,
+  );
+  const isTaskAuthorized = createConditionAuthorizer(taskRuleset);
 
   const taskTransformConditions: ConditionTransformer<TaskFilters> =
-    createConditionTransformer(Object.values(taskRules));
+    createConditionTransformer(taskRuleset);
 
   permissionsRegistry.addResourceType({
     resourceRef: scaffolderTemplatePermissionResourceRef,
@@ -439,6 +484,7 @@ export async function createRouter(
 
   permissionsRegistry.addPermissions([
     taskCreatePermission,
+    templateDryRunPermission,
     templateManagementPermission,
   ]);
 
@@ -474,11 +520,14 @@ export async function createRouter(
             ...(presentation ? { presentation } : {}),
             description: template.metadata.description,
             'ui:options': template.metadata['ui:options'],
-            steps: parameters.map(schema => ({
+            steps: parameters.map(({ when, ...schema }) => ({
               title:
                 (schema.title as string) ??
                 'Please enter the following information',
               description: schema.description as string,
+              ...(typeof when === 'string' || typeof when === 'boolean'
+                ? { when }
+                : {}),
               schema,
             })),
             formDecorators:
@@ -564,21 +613,20 @@ export async function createRouter(
           credentials,
         );
 
-        for (const parameters of [template.spec.parameters ?? []].flat()) {
-          const result = validate(values, parameters);
+        const { result: validationResult, values: filteredValues } =
+          validateParameterSteps(template, values as Record<string, JsonValue>);
 
-          if (!result.valid) {
-            await auditorEvent?.fail({
-              // TODO(Rugvip): Seems like there aren't proper types for AggregateError yet
-              error: (AggregateError as any)(
-                result.errors,
-                'Could not create entity',
-              ),
-            });
+        if (validationResult) {
+          await auditorEvent?.fail({
+            // TODO(Rugvip): Seems like there aren't proper types for AggregateError yet
+            error: (AggregateError as any)(
+              validationResult.errors,
+              'Could not create entity',
+            ),
+          });
 
-            res.status(400).json({ errors: result.errors });
-            return;
-          }
+          res.status(400).json({ errors: validationResult.errors });
+          return;
         }
 
         const secretsValid = await validateSecrets({
@@ -602,7 +650,7 @@ export async function createRouter(
           })),
           EXPERIMENTAL_recovery: template.spec.EXPERIMENTAL_recovery,
           output: template.spec.output ?? {},
-          parameters: values,
+          parameters: filteredValues,
           user: {
             entity: userEntity as UserEntity,
             ref: userEntityRef,
@@ -669,6 +717,10 @@ export async function createRouter(
             );
           }
 
+          if (!taskOrderFields.has(match[2])) {
+            throw new InputError(`Invalid order field "${match[2]}"`);
+          }
+
           return {
             order: match[1] as 'asc' | 'desc',
             field: match[2],
@@ -684,7 +736,7 @@ export async function createRouter(
           transformConditions: taskTransformConditions,
         });
 
-        const tasks = await taskBroker.list({
+        const taskList = await taskBroker.list({
           filters: {
             createdBy,
             status: status ? (status as TaskStatus[]) : undefined,
@@ -699,7 +751,10 @@ export async function createRouter(
 
         await auditorEvent?.success();
 
-        res.status(200).json(tasks);
+        res.status(200).json({
+          tasks: taskList.tasks.map(serializeTask),
+          totalTasks: taskList.totalTasks,
+        });
       } catch (err) {
         await auditorEvent?.fail({ error: err });
         throw err;
@@ -736,9 +791,7 @@ export async function createRouter(
 
         await auditorEvent?.success();
 
-        // Do not disclose secrets
-        delete task.secrets;
-        res.status(200).json(task);
+        res.status(200).json(serializeTask(task));
       } catch (err) {
         await auditorEvent?.fail({ error: err });
         throw err;
@@ -1009,7 +1062,7 @@ export async function createRouter(
         const credentials = await httpAuth.credentials(req);
         await checkPermission({
           credentials,
-          permissions: [taskCreatePermission],
+          permissions: [taskCreatePermission, templateDryRunPermission],
           permissionService: permissions,
         });
 
@@ -1042,24 +1095,27 @@ export async function createRouter(
           template.metadata.namespace || 'default'
         }/${template.metadata.name}`;
 
-        for (const parameters of [template.spec.parameters ?? []].flat()) {
-          const result = validate(body.values, parameters);
-          if (!result.valid) {
-            await auditorEvent?.fail({
-              // TODO(Rugvip): Seems like there aren't proper types for AggregateError yet
-              error: (AggregateError as any)(
-                result.errors,
-                'Could not execute dry run',
-              ),
-              meta: {
-                templateRef: templateRef,
-                parameters: template.spec.parameters,
-              },
-            });
+        const { result: validationResult, values: dryRunFilteredValues } =
+          validateParameterSteps(
+            template,
+            body.values as Record<string, JsonValue>,
+          );
 
-            res.status(400).json({ errors: result.errors });
-            return;
-          }
+        if (validationResult) {
+          await auditorEvent?.fail({
+            // TODO(Rugvip): Seems like there aren't proper types for AggregateError yet
+            error: (AggregateError as any)(
+              validationResult.errors,
+              'Could not execute dry run',
+            ),
+            meta: {
+              templateRef: templateRef,
+              parameters: template.spec.parameters,
+            },
+          });
+
+          res.status(400).json({ errors: validationResult.errors });
+          return;
         }
 
         const secretsValid = await validateSecrets({
@@ -1098,7 +1154,7 @@ export async function createRouter(
             apiVersion: template.apiVersion,
             steps,
             output: template.spec.output ?? {},
-            parameters: body.values as JsonObject,
+            parameters: dryRunFilteredValues as JsonObject,
             user: {
               entity: userEntity as UserEntity,
               ref: userEntityRef,

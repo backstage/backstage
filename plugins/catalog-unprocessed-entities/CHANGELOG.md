@@ -1,5 +1,155 @@
 # @backstage/plugin-catalog-unprocessed-entities
 
+## 0.2.37
+
+### Patch Changes
+
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+- Updated dependencies
+  - @backstage/frontend-plugin-api@1.0.0
+  - @backstage/core-plugin-api@1.13.0
+  - @backstage/core-components@0.18.16
+  - @backstage/errors@1.4.0
+  - @backstage/core-compat-api@0.6.0
+  - @backstage/ui@0.20.0
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.19
+
+## 0.2.37-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/core-components@0.18.16-next.1
+  - @backstage/ui@0.20.0-next.0
+  - @backstage/core-compat-api@0.6.0-next.2
+  - @backstage/frontend-plugin-api@0.19.0-next.2
+  - @backstage/core-plugin-api@1.12.12-next.2
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.19-next.0
+
+## 0.2.37-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.5.17-next.1
+  - @backstage/core-plugin-api@1.12.12-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+
+## 0.2.37-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.3-next.0
+  - @backstage/core-compat-api@0.5.17-next.0
+  - @backstage/core-plugin-api@1.12.12-next.0
+  - @backstage/core-components@0.18.16-next.0
+
+## 0.2.36
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/ui@0.19.0
+  - @backstage/core-compat-api@0.5.16
+  - @backstage/errors@1.3.2
+  - @backstage/core-components@0.18.15
+  - @backstage/core-plugin-api@1.12.11
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.18
+
+## 0.2.36-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2-next.1
+  - @backstage/core-components@0.18.15-next.3
+  - @backstage/ui@0.19.0-next.0
+  - @backstage/core-compat-api@0.5.16-next.1
+
+## 0.2.36-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/core-components@0.18.15-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+  - @backstage/core-compat-api@0.5.16-next.0
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.18-next.0
+
+## 0.2.35
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- d421187: Reduced the initial app bundle size by loading page and optional UI implementations only when their extensions render.
+- Updated dependencies
+  - @backstage/core-components@0.18.14
+  - @backstage/ui@0.18.0
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/core-compat-api@0.5.15
+  - @backstage/core-plugin-api@1.12.10
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.17
+
+## 0.2.35-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.18.0-next.2
+  - @backstage/core-components@0.18.14-next.2
+  - @backstage/core-plugin-api@1.12.10-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.1
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.17-next.0
+
+## 0.2.35-next.1
+
+### Patch Changes
+
+- d421187: Reduced the initial app bundle size by loading page and optional UI implementations only when their extensions render.
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.0
+  - @backstage/ui@0.18.0-next.1
+  - @backstage/core-compat-api@0.5.15-next.1
+  - @backstage/core-plugin-api@1.12.10-next.0
+
+## 0.2.35-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.17.2-next.0
+  - @backstage/core-components@0.18.14-next.0
+  - @backstage/core-compat-api@0.5.15-next.0
+
+## 0.2.34
+
+### Patch Changes
+
+- 531495a: Migrated the Unprocessed Entities UI to the Backstage UI component library. The page, dialogs, and action buttons now use the new design system, and the raw entity definition and delete confirmation dialogs have an updated look and feel. The pending entities tab now also has a search box, matching the failed entities tab.
+- Updated dependencies
+  - @backstage/core-components@0.18.13
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/ui@0.17.1
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/core-compat-api@0.5.14
+
+## 0.2.34-next.1
+
+### Patch Changes
+
+- 531495a: Migrated the Unprocessed Entities UI to the Backstage UI component library. The page, dialogs, and action buttons now use the new design system, and the raw entity definition and delete confirmation dialogs have an updated look and feel. The pending entities tab now also has a search box, matching the failed entities tab.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.0-next.0
+  - @backstage/core-compat-api@0.5.14-next.1
+  - @backstage/core-plugin-api@1.12.9-next.0
+  - @backstage/core-components@0.18.13-next.2
+
 ## 0.2.34-next.0
 
 ### Patch Changes

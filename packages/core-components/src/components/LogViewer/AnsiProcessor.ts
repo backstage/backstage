@@ -87,7 +87,7 @@ export class AnsiLine {
     this.text = chunks
       .map(c => c.text)
       .join('')
-      .toLocaleLowerCase('en-US');
+      .toLowerCase();
   }
 
   lastChunk(): AnsiChunk | undefined {
@@ -100,7 +100,7 @@ export class AnsiLine {
       this.text = this.chunks
         .map(c => c.text)
         .join('')
-        .toLocaleLowerCase('en-US');
+        .toLowerCase();
     }
   }
 }

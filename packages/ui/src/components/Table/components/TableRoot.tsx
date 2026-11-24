@@ -18,6 +18,7 @@ import { useDefinition } from '../../../hooks/useDefinition';
 import { TableDefinition } from '../definition';
 import { Table as ReactAriaTable } from 'react-aria-components';
 import { TableRootProps } from '../types';
+import { BUIRoutingProvider } from '../../../navigation/BUIRoutingProvider';
 
 /**
  * The low-level table root element for building custom table layouts from atomic components.
@@ -40,12 +41,14 @@ export const TableRoot = (props: TableRootProps) => {
   );
 
   return (
-    <ReactAriaTable
-      className={ownProps.classes.root}
-      aria-label="Data table"
-      aria-busy={ownProps.stale || ownProps.isPending}
-      {...dataAttributes}
-      {...restProps}
-    />
+    <BUIRoutingProvider>
+      <ReactAriaTable
+        className={ownProps.classes.root}
+        aria-label="Data table"
+        aria-busy={ownProps.stale || ownProps.isPending}
+        {...dataAttributes}
+        {...restProps}
+      />
+    </BUIRoutingProvider>
   );
 };

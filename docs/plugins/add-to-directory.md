@@ -4,7 +4,7 @@ title: Add to Directory
 description: Documentation on Adding Plugin to Plugin Directory
 ---
 
-:::caution Legacy Documentation
+:::caution[Legacy Documentation]
 
 This section is part of the legacy plugins documentation. The process for adding plugins to the directory described here is still current.
 

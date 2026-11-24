@@ -24,7 +24,7 @@ Before we jump in to making this plugin ready to ship, let's walk through how to
 
 If you run `yarn start`, you should see a custom backend for just your plugin start up. This will simplify plugin development and iteration for you or your team by easily testing out new features in just your plugin - just make sure you add what you need to the global `packages/backend`. The important log for us to look for is
 
-```
+```log
 2025-06-08T16:14:53.229Z rootHttpRouter info Listening on :7007
 ```
 

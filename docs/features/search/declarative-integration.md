@@ -31,7 +31,7 @@ Only one step is required to start using the `Search` plugin within declarative 
 yarn add @backstage/plugin-catalog @backstage/plugin-search
 ```
 
-The `Search` plugin depends on the `Catalog API`, that's the reason we have to install the ` @backstage/plugin-catalog` package too.
+The `Search` plugin depends on the `Catalog API`, that's the reason we have to install the `@backstage/plugin-catalog` package too.
 
 ### Extensions
 

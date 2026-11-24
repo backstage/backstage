@@ -241,7 +241,7 @@ class TargetPathsImpl implements TargetPaths {
     // Drive letter can end up being lowercased here on Windows, bring back to uppercase for consistency
     this.#dir = fs
       .realpathSync(cwd)
-      .replace(/^[a-z]:/, str => str.toLocaleUpperCase('en-US'));
+      .replace(/^[a-z]:/, str => str.toUpperCase());
     return this.#dir;
   }
 

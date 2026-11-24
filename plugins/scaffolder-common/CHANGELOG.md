@@ -1,5 +1,109 @@
 # @backstage/plugin-scaffolder-common
 
+## 2.4.0
+
+### Minor Changes
+
+- ff0ef74: Added support for `when` conditions on parameter steps, allowing templates to show or hide wizard steps based on earlier answers, for example `${{ parameters.cloudProvider === 'AWS' }}`. Also added the alpha `resolveParameterSteps` and `filterHiddenStepValues` helpers for working out which steps are visible and removing values from hidden steps.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.2.0
+  - @backstage/errors@1.4.0
+  - @backstage/catalog-model@1.10.3
+  - @backstage/plugin-permission-common@0.9.13
+
+## 2.4.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/integration@2.1.4-next.0
+  - @backstage/catalog-model@1.10.3-next.0
+  - @backstage/plugin-permission-common@0.9.13-next.0
+
+## 2.4.0-next.0
+
+### Minor Changes
+
+- ff0ef74: Added support for `when` conditions on parameter steps, allowing templates to show or hide wizard steps based on earlier answers, for example `${{ parameters.cloudProvider === 'AWS' }}`. Also added the alpha `resolveParameterSteps` and `filterHiddenStepValues` helpers for working out which steps are visible and removing values from hidden steps.
+
+## 2.3.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.3
+  - @backstage/errors@1.3.2
+  - @backstage/catalog-model@1.10.2
+  - @backstage/plugin-permission-common@0.9.12
+
+## 2.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.3-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/plugin-permission-common@0.9.12-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+
+## 2.3.0
+
+### Minor Changes
+
+- 1a705ca: Added `templateDryRunPermission`, which allows permission policies to control who can submit inline Software Template dry runs.
+
+### Patch Changes
+
+- be0a75a: Exclude internal task data from task responses.
+- ffaca06: Fixed a connection leak in the scaffolder event stream where unsubscribing did not abort the underlying SSE connection. Also changed unexpected server disconnects to signal an error instead of silently completing, enabling consumers to retry.
+- Updated dependencies
+  - @backstage/integration@2.1.2
+  - @backstage/catalog-model@1.10.1
+  - @backstage/plugin-permission-common@0.9.11
+
+## 2.3.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.2-next.1
+  - @backstage/plugin-permission-common@0.9.11-next.0
+
+## 2.3.0-next.1
+
+### Patch Changes
+
+- be0a75a: Exclude internal task data from task responses.
+- Updated dependencies
+  - @backstage/integration@2.1.2-next.0
+
+## 2.3.0-next.0
+
+### Minor Changes
+
+- 1a705ca: Added `templateDryRunPermission`, which allows permission policies to control who can submit inline Software Template dry runs.
+
+## 2.2.2
+
+### Patch Changes
+
+- 4e8d763: Migrated tests from MSW v1 to MSW v2.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/integration@2.1.0
+  - @backstage/plugin-permission-common@0.9.10
+
+## 2.2.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.0-next.0
+
 ## 2.2.1
 
 ### Patch Changes

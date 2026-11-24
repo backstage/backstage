@@ -12,7 +12,7 @@ is a hierarchy of
 [`Group`](../../features/software-catalog/descriptor-format.md#kind-group) kind
 entities that mirror your org setup.
 
-:::note Note
+:::note
 
 This adds `User` and `Group` entities to the catalog, but does not
 provide authentication. See the
@@ -93,7 +93,7 @@ Directly under the `githubOrg` is a list of configurations, each entry is a stru
 
 - `id`: A stable id for this provider. Entities from this provider will be associated with this ID, so you should take care not to change it over time since that may lead to orphaned entities and/or conflicts.
 - `githubUrl`: The target that this provider should consume
-- `orgs` (optional): The list of the GitHub orgs to consume. If you only list a single org the generated group entities will use the `default` namespace, otherwise they will use the org name as the namespace. By default the provider will consume all accessible orgs on the given GitHub instance (support for GitHub App integration only).
+- `orgs` (optional): The list of the GitHub orgs to consume. If you only list a single org the generated group entities will use the `default` namespace, otherwise they will use the org name as the namespace. By default the provider will consume all accessible orgs on the given GitHub instance (support for GitHub App integration only). When consuming multiple organizations, if a GitHub App installation is missing for an organization (or credentials cannot be resolved), the provider logs a clear warning and aborts the ingestion run to prevent silent deletion of existing catalog entities.
 - `schedule`: The refresh schedule to use, matches the structure of [`SchedulerServiceTaskScheduleDefinitionConfig`](https://backstage.io/api/stable/interfaces/_backstage_backend-plugin-api.index.SchedulerServiceTaskScheduleDefinition.html)
 - `pageSizes` (optional): Configure page sizes for GitHub GraphQL API queries to prevent `RESOURCE_LIMITS_EXCEEDED` errors. You can configure the following page sizes:
 
@@ -104,6 +104,8 @@ Directly under the `githubOrg` is a list of configurations, each entry is a stru
   Reducing page sizes will result in more API calls and slightly longer sync times, but will prevent API resource limits for organizations with large number of teams and members.
 
 - `excludeSuspendedUsers` (optional): Whether to exclude suspended users when querying organization users. Only for GitHub Enterprise instances. Will error if used against GitHub.com API.
+- `fetchEmailForGithubApps` (optional): Request the public email field from the GitHub GraphQL API even when using a GitHub App for authentication. By default, the public email is only requested with personal access tokens because GitHub App installation tokens historically could not access it. Some GitHub instances now allow it — enable this flag if your GitHub App can read user emails. If the GitHub instance does not support this, the entire user sync will fail with a "Resource not accessible by integration" error. This setting only affects the entity providers, not the legacy processors (`GithubOrgReaderProcessor` / `GithubMultiOrgReaderProcessor`). Default: `false`.
+- `defaultUserTransformer.useVerifiedEmails` (optional): Prefer organization verified domain emails over the user's public GitHub email when populating user entity profiles. When enabled, the default transformer uses the first verified domain email (with plus-addressed routing tags stripped) and falls back to the public email if none are available. Default: `false`.
 
 ### Events Support
 

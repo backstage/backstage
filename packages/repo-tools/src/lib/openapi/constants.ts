@@ -60,3 +60,5 @@ export const OPENAPI_IGNORE_FILES = [
   'package.json',
   'tsconfig.json',
 ];
+
+export const OPENAPI_MANIFEST_FILE = '.openapi-manifest.json';

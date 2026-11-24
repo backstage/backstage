@@ -24,7 +24,7 @@ merges them together. Files loaded later override values from earlier files.
 The Docker image built in the [first step](./001-docker.md) starts with this
 command:
 
-```
+```shell
 node packages/backend --config app-config.yaml --config app-config.production.yaml
 ```
 

@@ -155,9 +155,21 @@ export function createPublishAzureAction(options: {
       }
 
       const url = `https://${host}/${organization}`;
-      const credentialProvider =
-        DefaultAzureDevOpsCredentialsProvider.fromIntegrations(integrations);
-      const credentials = await credentialProvider.getCredentials({ url: url });
+      const requireScmUserCredentials = config.getOptionalBoolean(
+        'scaffolder.requireScmUserCredentials',
+      );
+      if (requireScmUserCredentials && !ctx.input.token) {
+        throw new InputError(
+          `No user credentials provided for host ${host}, but scaffolder.requireScmUserCredentials is enabled`,
+        );
+      }
+
+      const credentials =
+        ctx.input.token || requireScmUserCredentials
+          ? undefined
+          : await DefaultAzureDevOpsCredentialsProvider.fromIntegrations(
+              integrations,
+            ).getCredentials({ url });
       const integrationConfig = integrations.azure.byHost(host);
 
       if (credentials === undefined && ctx.input.token === undefined) {

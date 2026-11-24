@@ -23,8 +23,14 @@ export function createGitlabApi(options: {
   integrations: ScmIntegrationRegistry;
   token?: string;
   repoUrl: string;
+  requireScmUserCredentials?: boolean;
 }): InstanceType<typeof Gitlab> {
-  const { integrations, token: providedToken, repoUrl } = options;
+  const {
+    integrations,
+    token: providedToken,
+    repoUrl,
+    requireScmUserCredentials,
+  } = options;
 
   const { host } = parseRepoUrl(repoUrl, integrations);
 
@@ -33,6 +39,12 @@ export function createGitlabApi(options: {
   if (!integrationConfig) {
     throw new InputError(
       `No matching integration configuration for host ${host}, please check your integrations config`,
+    );
+  }
+
+  if (requireScmUserCredentials && !providedToken) {
+    throw new InputError(
+      `No user credentials provided for host ${host}, but scaffolder.requireScmUserCredentials is enabled`,
     );
   }
 
@@ -67,4 +79,12 @@ export function getErrorMessage(e: unknown): string {
     return `${e} - ${e.cause.description}`;
   if (isGitlabError(e)) return `${e} - ${e.description}`;
   return String(e);
+}
+
+export function assertValidTargetPath(targetPath: string) {
+  if (targetPath.startsWith('/') || targetPath.split('/').includes('..')) {
+    throw new InputError(
+      `Invalid targetPath '${targetPath}': must be a relative path within the target repository, without '..' segments`,
+    );
+  }
 }

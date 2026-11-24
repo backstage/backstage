@@ -21,12 +21,7 @@ import { useBgProvider, useBgConsumer, BgProvider } from '../useBg';
 import { resolveDefinitionProps, processUtilityProps } from './helpers';
 import { useAnalytics } from '../../analytics/useAnalytics';
 import { noopTracker } from '../../analytics/useAnalytics';
-import {
-  useResolvedPath,
-  useInRouterContext,
-  createPath,
-} from 'react-router-dom';
-import { isExternalLink } from '../../utils/linkUtils';
+import { sanitizeHref } from '../../utils/linkUtils';
 import type {
   ComponentConfig,
   UseDefinitionOptions,
@@ -44,20 +39,14 @@ export function useDefinition<
 ): UseDefinitionResult<D, P> {
   const { breakpoint } = useBreakpoint();
 
-  let hrefResolvedProps = props;
-  const hasRouter = useInRouterContext();
-  if (hasRouter) {
-    const rawHref = (props as any).href;
-    const resolved = useResolvedPath(rawHref ?? '');
-    if (rawHref !== undefined && !isExternalLink(rawHref)) {
-      hrefResolvedProps = { ...props, href: createPath(resolved) } as P;
-    }
-  }
+  const rawHref = props.href;
+  const href = sanitizeHref(rawHref);
+  const safeProps = href === rawHref ? props : ({ ...props, href } as P);
 
   // Resolve all props centrally — applies responsive values and defaults
   const { ownPropsResolved, restProps } = resolveDefinitionProps(
     definition,
-    hrefResolvedProps,
+    safeProps,
     breakpoint,
   );
 

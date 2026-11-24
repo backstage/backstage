@@ -119,11 +119,12 @@ function getImportInfo(node) {
  * @param visitor - Visitor callback
  * @param {import('eslint').Rule.RuleContext} context
  * @param {ImportVisitor} visitor
+ * @returns {import('eslint').Rule.RuleListener}
  */
 module.exports = function visitImports(context, visitor) {
   const packages = getPackages(context.getCwd());
   if (!packages) {
-    return;
+    return {};
   }
 
   /**
@@ -194,6 +195,11 @@ module.exports = function visitImports(context, visitor) {
     ExportAllDeclaration: visit,
     ExportNamedDeclaration: visit,
     ImportExpression: visit,
-    CallExpression: visit,
+    CallExpression: node => {
+      // The estree CallExpression type also includes NewExpression
+      if (node.type === 'CallExpression') {
+        visit(node);
+      }
+    },
   };
 };

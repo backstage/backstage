@@ -33,8 +33,12 @@ import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import {
   FormFieldBlueprint,
   formFieldsApiRef,
+  ScaffolderTemplateFilterBlueprint,
+  scaffolderTemplateOutputsComponentRef,
+  scaffolderTemplateOutputTemplateRefsRef,
 } from '@backstage/plugin-scaffolder-react/alpha';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
+import { HomePageWidgetBlueprint } from '@backstage/plugin-home-react/alpha';
 import {
   scaffolderApiRef,
   TemplateGroupFilter,
@@ -59,6 +63,12 @@ export const scaffolderPage = PageBlueprint.makeWithOverrides({
 
 export const scaffolderTemplatesSubPage = SubPageBlueprint.makeWithOverrides({
   name: 'templates',
+  inputs: {
+    templateFilter: createExtensionInput(
+      [ScaffolderTemplateFilterBlueprint.dataRefs.useTemplateFilter],
+      { singleton: true, optional: true },
+    ),
+  },
   configSchema: {
     enableBackstageUi: z.boolean().optional().default(false),
     groups: z
@@ -69,8 +79,9 @@ export const scaffolderTemplatesSubPage = SubPageBlueprint.makeWithOverrides({
         }),
       )
       .optional(),
+    templateFilter: createZodV4FilterPredicateSchema().optional(),
   },
-  factory(originalFactory, { apis, config }) {
+  factory(originalFactory, { apis, config, inputs }) {
     const formFieldsApi = apis.get(formFieldsApiRef);
 
     const groups: TemplateGroupFilter[] | undefined = config.groups?.map(
@@ -78,6 +89,13 @@ export const scaffolderTemplatesSubPage = SubPageBlueprint.makeWithOverrides({
         title: group.title,
         filter: filterPredicateToFilterFunction(group.filter),
       }),
+    );
+    const templateFilter =
+      config.templateFilter === undefined
+        ? undefined
+        : filterPredicateToFilterFunction(config.templateFilter);
+    const useTemplateFilter = inputs.templateFilter?.get(
+      ScaffolderTemplateFilterBlueprint.dataRefs.useTemplateFilter,
     );
 
     return originalFactory({
@@ -90,6 +108,8 @@ export const scaffolderTemplatesSubPage = SubPageBlueprint.makeWithOverrides({
           <m.TemplatesSubPage
             formFields={formFields}
             groups={groups}
+            templateFilter={templateFilter}
+            useTemplateFilter={useTemplateFilter}
             formProps={{
               EXPERIMENTAL_theme: config.enableBackstageUi ? 'bui' : 'mui',
             }}
@@ -100,13 +120,35 @@ export const scaffolderTemplatesSubPage = SubPageBlueprint.makeWithOverrides({
   },
 });
 
-export const scaffolderTasksSubPage = SubPageBlueprint.make({
+export const scaffolderTasksSubPage = SubPageBlueprint.makeWithOverrides({
   name: 'tasks',
-  params: {
-    path: 'tasks',
-    title: 'Tasks',
-    loader: () =>
-      import('./components/TasksSubPage').then(m => <m.TasksSubPage />),
+  inputs: {
+    templateOutputsComponents: createExtensionInput(
+      [
+        scaffolderTemplateOutputsComponentRef,
+        scaffolderTemplateOutputTemplateRefsRef,
+      ],
+      { optional: true },
+    ),
+  },
+  factory(originalFactory, { inputs }) {
+    return originalFactory({
+      path: 'tasks',
+      title: 'Tasks',
+      loader: async () => {
+        const templateOutputsComponents = inputs.templateOutputsComponents?.map(
+          input => ({
+            component: input.get(scaffolderTemplateOutputsComponentRef),
+            templateRefs: input.get(scaffolderTemplateOutputTemplateRefsRef),
+          }),
+        );
+        return import('./components/TasksSubPage').then(m => (
+          <m.TasksSubPage
+            templateOutputsComponents={templateOutputsComponents}
+          />
+        ));
+      },
+    });
   },
 });
 
@@ -249,3 +291,27 @@ export const scaffolderApi = ApiBlueprint.make({
         }),
     }),
 });
+
+export const scaffolderFeaturedTemplatesWidget =
+  HomePageWidgetBlueprint.makeWithOverrides({
+    name: 'featured-templates',
+    configSchema: {
+      title: z.string().default('Featured Templates'),
+      tag: z.string().default('featured'),
+    },
+    factory(originalFactory, { config }) {
+      return originalFactory({
+        name: 'HomePageFeaturedTemplates',
+        title: config.title,
+        components: () =>
+          import('./components/HomePageFeaturedTemplates').then(m => ({
+            Content: m.HomePageFeaturedTemplates,
+          })),
+        componentProps: { tag: config.tag },
+        layout: {
+          width: { defaultColumns: 6, minColumns: 2 },
+          height: { defaultRows: 6, minRows: 5 },
+        },
+      });
+    },
+  });

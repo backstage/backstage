@@ -32,7 +32,7 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import parseGitUrl from 'git-url-parse';
-import { trimEnd, trimStart } from 'lodash';
+import { trimEnd } from 'lodash';
 import { Minimatch } from 'minimatch';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import { ReaderFactory, ReadTreeResponseFactory } from './types';
@@ -123,20 +123,9 @@ export class GitlabUrlReader implements UrlReaderService {
     const { etag, signal, token } = options ?? {};
     const { ref, full_name, filepath } = parseGitUrl(url);
 
-    let repoFullName = full_name;
-
-    const relativePath = getGitLabIntegrationRelativePath(
-      this.integration.config,
+    const repoFullName = this.validateAndStripGitLabRelativePath(
+      `/${full_name}`,
     );
-
-    // Considering self hosted gitlab with relative
-    // assuming '/gitlab' is the relative path
-    // from: /gitlab/repo/project
-    // to: repo/project
-    if (relativePath) {
-      const rectifiedRelativePath = `${trimStart(relativePath, '/')}/`;
-      repoFullName = full_name.replace(rectifiedRelativePath, '');
-    }
 
     // Use GitLab API to get the default branch
     // encodeURIComponent is required for GitLab API
@@ -326,6 +315,7 @@ export class GitlabUrlReader implements UrlReaderService {
   ): Promise<string> {
     // If the target is for a job artifact then go down that path
     const targetUrl = new URL(target);
+    this.validateAndStripGitLabRelativePath(targetUrl.pathname);
     if (targetUrl.pathname.includes('/-/jobs/artifacts/')) {
       return this.getGitlabArtifactFetchUrl(targetUrl).then(value =>
         value.toString(),
@@ -347,18 +337,11 @@ export class GitlabUrlReader implements UrlReaderService {
       const [namespaceAndProject, ref] =
         target.pathname.split('/-/jobs/artifacts/');
 
-      // Extract project path directly instead of making API call
       const relativePath = getGitLabIntegrationRelativePath(
         this.integration.config,
       );
-
-      let projectPath = namespaceAndProject;
-      // Check relative path exist and remove it
-      if (relativePath) {
-        projectPath = trimStart(projectPath, relativePath);
-      }
-      // Trim an initial / if it exists
-      projectPath = projectPath.replace(/^\//, '');
+      const projectPath =
+        this.validateAndStripGitLabRelativePath(namespaceAndProject);
 
       const newUrl = new URL(target);
       newUrl.pathname = `${relativePath}/api/v4/projects/${encodeURIComponent(
@@ -370,5 +353,23 @@ export class GitlabUrlReader implements UrlReaderService {
         `Unable to translate GitLab artifact URL: ${target}, ${e}`,
       );
     }
+  }
+
+  private validateAndStripGitLabRelativePath(pathname: string): string {
+    const relativePath = getGitLabIntegrationRelativePath(
+      this.integration.config,
+    );
+    if (!relativePath) {
+      return pathname.replace(/^\//, '');
+    }
+
+    const relativePathPrefix = `${relativePath}/`;
+    if (!pathname.startsWith(relativePathPrefix)) {
+      throw new Error(
+        `Failed to read GitLab URL from ${pathname}. Url path must start with ${relativePathPrefix}.`,
+      );
+    }
+
+    return pathname.slice(relativePathPrefix.length);
   }
 }

@@ -40,7 +40,6 @@ import { EntityRelationAggregation } from '../../types';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { orgTranslationRef } from '../../../../translation';
 import {
-  Avatar,
   Box,
   Card,
   Flex,
@@ -50,6 +49,7 @@ import {
   TablePagination,
   Text,
 } from '@backstage/ui';
+import { UserAvatar } from '../../../UserAvatar';
 
 const useMemberStyles = makeStyles({
   card: {
@@ -96,11 +96,10 @@ const MemberComponent = (props: { member: UserEntity }) => {
       href={entityLink(props.member)}
       label={t('membersListCard.cardLabel', { memberName: displayName })}
     >
-      <Avatar
+      <UserAvatar
         className={classes.avatar}
-        name={displayName}
-        src={profile?.picture ?? ''}
-        purpose="decoration"
+        displayName={displayName}
+        entity={props.member}
         size="x-large"
       />
       <Flex className={classes.cardTextContainer} direction="column" gap="1">
@@ -212,11 +211,11 @@ export const MembersListCard = (props: {
     const membersList = await catalogApi.getEntities({
       filter: {
         kind: 'User',
-        [`relations.${relationType.toLocaleLowerCase('en-US')}`]: [
+        [`relations.${relationType.toLowerCase()}`]: [
           stringifyEntityRef({
             kind: 'group',
-            namespace: groupNamespace.toLocaleLowerCase('en-US'),
-            name: groupName.toLocaleLowerCase('en-US'),
+            namespace: groupNamespace.toLowerCase(),
+            name: groupName.toLowerCase(),
           }),
         ],
       },
@@ -248,9 +247,7 @@ export const MembersListCard = (props: {
       member.spec?.profile?.email,
     ];
     return fields.some(val =>
-      val
-        ?.toLocaleLowerCase('en-US')
-        .includes(searchTerm.toLocaleLowerCase('en-US')),
+      val?.toLowerCase().includes(searchTerm.toLowerCase()),
     );
   });
 

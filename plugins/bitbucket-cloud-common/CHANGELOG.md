@@ -1,5 +1,85 @@
 # @backstage/plugin-bitbucket-cloud-common
 
+## 0.3.15
+
+### Patch Changes
+
+- ed1cb3e: Added `BitbucketCloudClient.searchWorkspaceCode` and the `CodeSearch` types for the workspace code search API of Bitbucket Cloud (`POST /2.0/workspaces/{workspace}/codesearch`). This API needs a credential that identifies a user, with the scopes `read:repository:bitbucket` and `read:workspace:bitbucket`. Bitbucket Cloud rejects app passwords, legacy OAuth consumers, and API keys for this API with `BitbucketCloudApiError` status `403`.
+
+  Added `BitbucketCloudClient.repositorySourceFileExists`, `BitbucketCloudClient.listRepositorySource`, and `BitbucketCloudApiError` so callers can fall back to the Bitbucket Cloud source API when workspace code search is unavailable.
+
+  Deprecated `BitbucketCloudClient.searchCode`, because Bitbucket Cloud removes the endpoint that it uses on 2026-11-15.
+
+- Updated dependencies
+  - @backstage/integration@2.2.0
+
+## 0.3.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.4-next.0
+
+## 0.3.14
+
+### Patch Changes
+
+- 0c9d72c: Update Bitbucket Cloud Authentication logic to support bearer API token
+- Updated dependencies
+  - @backstage/integration@2.1.3
+
+## 0.3.14-next.1
+
+### Patch Changes
+
+- 0c9d72c: Update Bitbucket Cloud Authentication logic to support bearer API token
+- Updated dependencies
+  - @backstage/integration@2.1.3-next.1
+
+## 0.3.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.3-next.0
+
+## 0.3.13
+
+### Patch Changes
+
+- 0c1b8ee: Updated the OpenAPI generator tooling to avoid known security vulnerabilities.
+- Updated dependencies
+  - @backstage/integration@2.1.2
+
+## 0.3.13-next.1
+
+### Patch Changes
+
+- 0c1b8ee: Updated the OpenAPI generator tooling to avoid known security vulnerabilities.
+- Updated dependencies
+  - @backstage/integration@2.1.2-next.1
+
+## 0.3.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.2-next.0
+
+## 0.3.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.0
+
+## 0.3.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.0-next.0
+
 ## 0.3.11
 
 ### Patch Changes

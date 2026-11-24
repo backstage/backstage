@@ -26,7 +26,7 @@ import {
   registerMswTestHooks,
 } from '@backstage/test-utils';
 import { createDeferred } from '@backstage/types';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { UserSettingsStorage } from './UserSettingsStorage';
 
@@ -97,15 +97,15 @@ describe('Persistent Storage API', () => {
     const dummyValue = 'a';
 
     server.use(
-      rest.put(
+      http.put(
         `${mockBaseUrl}/buckets/:bucket/keys/:key`,
-        async (req, res, ctx) => {
-          const body = await req.json();
+        async ({ request }) => {
+          const body = await request.json();
           const data = { value: dummyValue };
 
           expect(body).toEqual(data);
 
-          return res(ctx.json(data));
+          return HttpResponse.json(data);
         },
       ),
     );
@@ -121,14 +121,14 @@ describe('Persistent Storage API', () => {
     };
 
     server.use(
-      rest.put(
+      http.put(
         `${mockBaseUrl}/buckets/:bucket/keys/:key`,
-        async (req, res, ctx) => {
-          const body = await req.json();
+        async ({ request }) => {
+          const body = await request.json();
           const data = { value: dummyValue };
           expect(body).toEqual(data);
 
-          return res(ctx.json(data));
+          return HttpResponse.json(data);
         },
       ),
     );
@@ -175,19 +175,19 @@ describe('Persistent Storage API', () => {
     const serverCall = createDeferred();
 
     server.use(
-      rest.put(
+      http.put(
         `${mockBaseUrl}/buckets/:bucket/keys/:key`,
-        async (req, res, ctx) => {
-          const body = await req.json();
+        async ({ request }) => {
+          const body = await request.json();
           const data = { value: mockData };
           expect(body).toEqual(data);
 
-          return res(ctx.json(data));
+          return HttpResponse.json(data);
         },
       ),
-      rest.post(`${mockBaseUrl}/multiget`, async (_req, res, ctx) => {
+      http.post(`${mockBaseUrl}/multiget`, async () => {
         serverCall.resolve();
-        return res(ctx.json([]));
+        return HttpResponse.json([]);
       }),
     );
 
@@ -226,15 +226,12 @@ describe('Persistent Storage API', () => {
     const serverCall = createDeferred();
 
     server.use(
-      rest.delete(
-        `${mockBaseUrl}/buckets/:bucket/keys/:key`,
-        async (_req, res, ctx) => {
-          return res(ctx.status(204));
-        },
-      ),
-      rest.post(`${mockBaseUrl}/multiget`, async (_req, res, ctx) => {
+      http.delete(`${mockBaseUrl}/buckets/:bucket/keys/:key`, async () => {
+        return new HttpResponse(null, { status: 204 });
+      }),
+      http.post(`${mockBaseUrl}/multiget`, async () => {
         serverCall.resolve();
-        return res(ctx.json([]));
+        return HttpResponse.json([]);
       }),
     );
 
@@ -269,26 +266,28 @@ describe('Persistent Storage API', () => {
     const selectedKeyNextHandler = jest.fn();
 
     server.use(
-      rest.put(
+      http.put(
         `${mockBaseUrl}/buckets/:bucket/keys/:key`,
-        async (req, res, ctx) => {
-          const { bucket, key } = req.params;
-          const { value } = await req.json();
+        async ({ request, params }) => {
+          const { bucket, key } = params;
+          const value = await request.json();
 
           expect(bucket).toEqual('clash.profile.something.deep');
           expect(key).toEqual('test2');
 
-          return res(ctx.json({ value }));
+          return HttpResponse.json(value);
         },
       ),
-      rest.post(`${mockBaseUrl}/multiget`, async (req, res, ctx) => {
-        const payload = await req.json();
+      http.post(`${mockBaseUrl}/multiget`, async ({ request }) => {
+        const payload = (await request.json()) as {
+          items: { bucket: string; key: string }[];
+        };
         const { bucket, key } = payload.items[0];
 
         expect(bucket).toEqual('clash.profile/something');
         expect(key).toEqual('deep/test2');
 
-        return res(ctx.status(404));
+        return new HttpResponse(null, { status: 404 });
       }),
     );
 
@@ -330,12 +329,12 @@ describe('Persistent Storage API', () => {
     });
 
     server.use(
-      rest.post(`${mockBaseUrl}/multiget`, async (req, res, ctx) => {
-        const payload = await req.json();
+      http.post(`${mockBaseUrl}/multiget`, async ({ request }) => {
+        const payload = await request.json();
         expect(payload).toEqual({
           items: [{ bucket: 'Test.Mock.Thing', key: 'key' }],
         });
-        return res(ctx.text('{ invalid: json string }'));
+        return HttpResponse.text('{ invalid: json string }');
       }),
     );
 
@@ -365,8 +364,8 @@ describe('Persistent Storage API', () => {
     const data = { foo: 'bar', baz: [{ foo: 'bar' }] };
 
     server.use(
-      rest.post(`${mockBaseUrl}/multiget`, async (_req, res, ctx) => {
-        return res(ctx.json({ items: [{ value: data }] }));
+      http.post(`${mockBaseUrl}/multiget`, async () => {
+        return HttpResponse.json({ items: [{ value: data }] });
       }),
     );
 
@@ -411,9 +410,9 @@ describe('Persistent Storage API', () => {
     let serverCalls = 0;
 
     server.use(
-      rest.post(`${mockBaseUrl}/multiget`, async (req, res, ctx) => {
+      http.post(`${mockBaseUrl}/multiget`, async ({ request }) => {
         ++serverCalls;
-        const payload = (await req.json()) as {
+        const payload = (await request.json()) as {
           items: { bucket: string; key: string }[];
         };
         const result = payload.items.map(item => {
@@ -425,7 +424,7 @@ describe('Persistent Storage API', () => {
           return null;
         });
 
-        return res(ctx.json({ items: result }));
+        return HttpResponse.json({ items: result });
       }),
     );
 

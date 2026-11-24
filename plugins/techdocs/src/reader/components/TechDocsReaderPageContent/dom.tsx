@@ -73,6 +73,19 @@ export const useInitialRedirect = (defaultPath?: string) => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 };
 
+// The secondary sidebar (table of contents) is fixed-positioned, so its
+// `right` offset is relative to the viewport. When the docs container is
+// narrower than the viewport (e.g. on wide screens), offset the sidebar so it
+// stays aligned with the container's right edge instead of drifting outwards.
+export const getSecondarySidebarRightOffset = (
+  container: Element,
+  minOffset: number,
+): number => {
+  const viewportWidth = document.documentElement.clientWidth;
+  const containerRight = container.getBoundingClientRect().right;
+  return Math.max(minOffset, viewportWidth - containerRight);
+};
+
 /**
  * Hook that encapsulates the behavior of getting raw HTML and applying
  * transforms to it in order to make it function at a basic level in the
@@ -80,8 +93,10 @@ export const useInitialRedirect = (defaultPath?: string) => {
  */
 export const useTechDocsReaderDom = (
   entityRef: CompoundEntityRef,
-  defaultPath?: string,
+  options?: { defaultPath?: string; withFeedbackLink?: boolean },
 ): Element | null => {
+  const { defaultPath, withFeedbackLink = true } = options ?? {};
+
   const navigate = useNavigateUrl();
   const theme = useTheme();
   const isMobileMedia = useMediaQuery(MOBILE_MEDIA_QUERY);
@@ -134,12 +149,18 @@ export const useTechDocsReaderDom = (
           footer?.getBoundingClientRect().top ?? window.innerHeight;
 
         element.style.height = `${scrollbarEndPx - scrollbarTopPx}px`;
+
+        // keep the table of contents aligned with the docs container
+        if (element.classList.contains('md-sidebar--secondary')) {
+          const rightPx = getSecondarySidebarRightOffset(dom, theme.spacing(3));
+          element.style.right = `${rightPx}px`;
+        }
       }
 
       // show the sidebar only after updating its position
       element.style.setProperty('opacity', '1');
     });
-  }, [dom, isMobileMedia]);
+  }, [dom, isMobileMedia, theme]);
 
   useEffect(() => {
     window.addEventListener('resize', updateSidebarPositionAndHeight);
@@ -198,7 +219,7 @@ export const useTechDocsReaderDom = (
         addSidebarToggle(),
         removeMkdocsHeader(),
         simplifyMkdocsFooter(),
-        addGitFeedbackLink(scmIntegrationsApi),
+        ...(withFeedbackLink ? [addGitFeedbackLink(scmIntegrationsApi)] : []),
         stylesTransformer,
       ]),
     [
@@ -208,6 +229,7 @@ export const useTechDocsReaderDom = (
       techdocsStorageApi,
       sanitizerTransformer,
       stylesTransformer,
+      withFeedbackLink,
     ],
   );
 

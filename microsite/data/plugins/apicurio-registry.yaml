@@ -8,4 +8,5 @@ documentation: https://github.com/simonnepomuk/backstage-plugin-apicurio-registr
 iconUrl: https://avatars.githubusercontent.com/u/28107283?s=200&v=4
 npmPackageName: '@simonnepomuk/backstage-plugin-apicurio-registry'
 addedDate: '2025-08-31'
-status: active
+status: inactive
+staleSince: '2026-11-04'

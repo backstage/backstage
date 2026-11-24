@@ -29,16 +29,18 @@ export class BackstageBackend implements Backend {
   constructor(
     defaultServiceFactories: ServiceFactory[],
     extensionPointFactoryMiddleware?: ExtensionPointFactoryMiddleware[],
+    instanceId?: string,
   ) {
     this.#initializer = new BackendInitializer(
       defaultServiceFactories,
       extensionPointFactoryMiddleware,
+      instanceId,
     );
   }
 
   add(feature: BackendFeature | Promise<{ default: BackendFeature }>): void {
     if (isPromise(feature)) {
-      this.#initializer.add(feature.then(f => unwrapFeature(f.default)));
+      this.#initializer.add(feature.then(unwrapFeature));
     } else {
       this.#initializer.add(unwrapFeature(feature));
     }

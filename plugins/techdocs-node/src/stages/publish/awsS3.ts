@@ -476,20 +476,9 @@ export class AwsS3Publish implements PublisherBase {
         useLegacyPathCasing,
         bucketRootPath,
       );
-      const response = await this.retryOperation(
-        async () => {
-          const listCommand = new ListObjectsV2Command({
-            Bucket: this.bucketName,
-            Prefix: remoteFolder,
-          });
-          return this.storageClient.send(listCommand);
-        },
-        'ListObjects',
-        this.maxAttempts,
-      );
-      existingFiles = (response.Contents || [])
-        .map(f => f.Key || '')
-        .filter(f => !!f);
+      existingFiles = await this.getAllObjectsFromBucket({
+        prefix: remoteFolder,
+      });
     } catch (e) {
       this.logger.error(
         `Unable to list files for Entity ${entity.metadata.name}: ${
@@ -756,7 +745,17 @@ export class AwsS3Publish implements PublisherBase {
           res.setHeader(headerKey, headerValue);
         }
 
-        (resp.Body as Readable)
+        const body = resp.Body as Readable;
+
+        // If the client disconnects before the file is fully sent, the piped
+        // body is left paused and keeps its pooled S3 connection forever.
+        res.on('close', () => {
+          if (!body.readableEnded) {
+            body.destroy();
+          }
+        });
+
+        body
           .on('error', err => {
             this.logger.warn(
               `TechDocs S3 router failed to serve static files from bucket ${this.bucketName} at key ${filePath}: ${err.message}`,

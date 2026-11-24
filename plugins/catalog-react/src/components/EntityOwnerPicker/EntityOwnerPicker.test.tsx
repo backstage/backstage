@@ -207,7 +207,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
     );
 
     expect(mockCatalogApi.getEntitiesByRefs).toHaveBeenCalledWith({
-      entityRefs: ['another-owner'],
+      entityRefs: ['group:default/another-owner'],
     });
     expect(updateFilters).toHaveBeenLastCalledWith({
       owners: new EntityOwnerFilter(['group:default/another-owner']),
@@ -253,7 +253,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
     );
 
     expect(mockCatalogApi.getEntitiesByRefs).toHaveBeenCalledWith({
-      entityRefs: ['another-owner'],
+      entityRefs: ['group:default/another-owner'],
     });
 
     fireEvent.click(screen.getByTestId('owner-picker-expand'));
@@ -345,7 +345,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
       </ApiProvider>,
     );
     expect(mockCatalogApi.getEntitiesByRefs).toHaveBeenCalledWith({
-      entityRefs: ['team-a'],
+      entityRefs: ['group:default/team-a'],
     });
     expect(updateFilters).toHaveBeenLastCalledWith({
       owners: new EntityOwnerFilter(['group:default/team-a']),

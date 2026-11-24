@@ -16,6 +16,7 @@
 
 import { act, screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/frontend-test-utils';
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 import {
   Entity,
   RELATION_OWNED_BY,
@@ -23,11 +24,13 @@ import {
 } from '@backstage/catalog-model';
 import {
   EntityProvider,
+  entityPresentationApiRef,
   entityRouteRef,
   MockStarredEntitiesApi,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
+import { DefaultEntityPresentationApi } from '../../../apis';
 import { EntityHeaderBui } from './EntityHeaderBui';
 
 const componentEntity: Entity = {
@@ -55,6 +58,16 @@ const ownerEntity: Entity = {
   spec: { profile: { picture: 'https://example.com/team-a.png' } },
 };
 
+const systemEntity: Entity = {
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'System',
+  metadata: {
+    namespace: 'default',
+    name: 'artist-engagement-portal',
+    title: 'Artist Engagement Portal',
+  },
+};
+
 function createDeferred<T>() {
   let resolve!: (value: T) => void;
   const promise = new Promise<T>(resolver => {
@@ -68,14 +81,23 @@ async function renderHeader(options: {
   catalogEntities?: Entity[];
   catalogApi?: ReturnType<typeof catalogApiMock>;
 }) {
+  const catalogApi =
+    options.catalogApi ??
+    catalogApiMock({ entities: options.catalogEntities ?? [] });
+
   return renderInTestApp(
-    <EntityProvider entity={options.entity}>
-      <EntityHeaderBui tabs={[]} contextMenuItems={[]} />
-    </EntityProvider>,
+    <ReactRouterV6PageRouter>
+      <EntityProvider entity={options.entity}>
+        <EntityHeaderBui tabs={[]} contextMenuItems={[]} />
+      </EntityProvider>
+    </ReactRouterV6PageRouter>,
     {
       apis: [
-        options.catalogApi ??
-          catalogApiMock({ entities: options.catalogEntities ?? [] }),
+        catalogApi,
+        [
+          entityPresentationApiRef,
+          DefaultEntityPresentationApi.create({ catalogApi }),
+        ],
         [starredEntitiesApiRef, new MockStarredEntitiesApi()],
       ],
       mountPath: '/catalog/:namespace/:kind/:name',
@@ -91,7 +113,7 @@ describe('EntityHeaderBui', () => {
   it('renders rich entity data from canonical relations', async () => {
     await renderHeader({
       entity: componentEntity,
-      catalogEntities: [componentEntity, ownerEntity],
+      catalogEntities: [componentEntity, ownerEntity, systemEntity],
     });
 
     expect(
@@ -102,7 +124,7 @@ describe('EntityHeaderBui', () => {
     expect(screen.getByText('experimental')).toBeInTheDocument();
     expect(await screen.findByText('Team A')).toBeInTheDocument();
     expect(
-      screen.getByRole('link', { name: 'artist-engagement-portal' }),
+      await screen.findByRole('link', { name: 'Artist Engagement Portal' }),
     ).toHaveAttribute(
       'href',
       '/catalog/default/system/artist-engagement-portal',
@@ -116,19 +138,29 @@ describe('EntityHeaderBui', () => {
   });
 
   it('keeps a useful owner fallback while catalog owner resolution is pending', async () => {
-    const ownerResponse = createDeferred<{ items: Entity[] }>();
-    await renderHeader({
-      entity: componentEntity,
-      catalogApi: catalogApiMock.mock({
-        getEntitiesByRefs: jest.fn(() => ownerResponse.promise),
-      }),
+    const catalogApi = catalogApiMock({
+      entities: [componentEntity, ownerEntity, systemEntity],
     });
+    // Hold back all lookups, but answer each one by its refs, so that no
+    // lookup can receive another one's entities however they are batched
+    const ownerResponse = createDeferred<void>();
+    const getEntitiesByRefs = catalogApi.getEntitiesByRefs.bind(catalogApi);
+    jest
+      .spyOn(catalogApi, 'getEntitiesByRefs')
+      .mockImplementation(async query => {
+        await ownerResponse.promise;
+        return getEntitiesByRefs(query);
+      });
+    await renderHeader({ entity: componentEntity, catalogApi });
 
     expect(await screen.findByText('team-a')).toBeInTheDocument();
     await act(async () => {
-      ownerResponse.resolve({ items: [ownerEntity] });
+      ownerResponse.resolve();
     });
     expect(await screen.findByText('Team A')).toBeInTheDocument();
+    expect(
+      await screen.findByRole('link', { name: 'Artist Engagement Portal' }),
+    ).toBeInTheDocument();
   });
 
   it('renders a route-ref title while the entity is loading', async () => {

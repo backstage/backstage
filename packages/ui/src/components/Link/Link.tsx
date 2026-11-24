@@ -14,27 +14,37 @@
  * limitations under the License.
  */
 
-import { forwardRef, useRef } from 'react';
-import { mergeProps, useFocusRing, useLink } from 'react-aria';
+import { forwardRef } from 'react';
+import { mergeProps, useFocusRing, useLink, useObjectRef } from 'react-aria';
 import type { LinkProps } from './types';
-import { useDefinition } from '../../hooks/useDefinition';
-import { useResolvedHref } from '../../hooks/useResolvedHref';
+import {
+  useDefinition,
+  type UseDefinitionResult,
+} from '../../hooks/useDefinition';
 import { LinkDefinition } from './definition';
 import { getNodeText } from '../../analytics/getNodeText';
+import { BUIRoutingProvider } from '../../navigation/BUIRoutingProvider';
 
-const LinkInternal = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
-  const { ownProps, restProps, dataAttributes, analytics } = useDefinition(
-    LinkDefinition,
-    props,
-  );
+type LinkViewProps = {
+  definitionResult: UseDefinitionResult<typeof LinkDefinition, LinkProps>;
+  forwardedRef: React.ForwardedRef<HTMLAnchorElement>;
+};
+
+function LinkView({ definitionResult, forwardedRef }: LinkViewProps) {
+  const { ownProps, restProps, dataAttributes, analytics } = definitionResult;
   const { classes, title, children } = ownProps;
 
-  const internalRef = useRef<HTMLAnchorElement>(null);
-  const linkRef = (ref || internalRef) as React.RefObject<HTMLAnchorElement>;
+  const linkRef = useObjectRef(forwardedRef);
 
-  const { linkProps } = useLink(restProps, linkRef);
+  // React Aria Components' Link filters out the native title attribute.
+  // Render the anchor explicitly so truncated links retain their browser tooltip.
+  // RouterConfig belongs to applications. The host provider accepts BUI's
+  // router-neutral options, so only the React Aria boundary needs this cast.
+  const { linkProps } = useLink(
+    restProps as Parameters<typeof useLink>[0],
+    linkRef,
+  );
   const { isFocusVisible, focusProps } = useFocusRing();
-  const resolvedHref = useResolvedHref(restProps.href);
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     linkProps.onClick?.(e);
@@ -47,24 +57,30 @@ const LinkInternal = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
     });
   };
 
-  return (
-    <a
-      {...mergeProps(linkProps, focusProps)}
-      {...dataAttributes}
-      {...(restProps as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
-      href={resolvedHref}
-      ref={linkRef}
-      title={title}
-      className={classes.root}
-      data-focus-visible={isFocusVisible || undefined}
-      onClick={handleClick}
-    >
-      {children}
-    </a>
-  );
-});
+  const interactionProps = mergeProps(
+    linkProps,
+    focusProps,
+  ) as React.AnchorHTMLAttributes<HTMLAnchorElement>;
+  const {
+    href: _restHref,
+    routerOptions: _routerOptions,
+    ...anchorProps
+  } = restProps;
+  const commonProps = {
+    ...(anchorProps as React.AnchorHTMLAttributes<HTMLAnchorElement>),
+    ...interactionProps,
+    href: interactionProps.href ?? (restProps.href === '' ? '' : undefined),
+    ...dataAttributes,
+    ref: linkRef,
+    title,
+    className: classes.root,
+    'data-focus-visible': isFocusVisible || undefined,
+    onClick: handleClick,
+    children,
+  };
 
-LinkInternal.displayName = 'LinkInternal';
+  return <a {...commonProps} />;
+}
 
 /**
  * A styled anchor element that supports analytics event tracking on click.
@@ -72,7 +88,13 @@ LinkInternal.displayName = 'LinkInternal';
  * @public
  */
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
-  return <LinkInternal {...props} ref={ref} />;
+  const definitionResult = useDefinition(LinkDefinition, props);
+
+  return (
+    <BUIRoutingProvider>
+      <LinkView definitionResult={definitionResult} forwardedRef={ref} />
+    </BUIRoutingProvider>
+  );
 });
 
 Link.displayName = 'Link';

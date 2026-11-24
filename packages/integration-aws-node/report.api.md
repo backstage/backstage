@@ -10,6 +10,7 @@ import { Config } from '@backstage/config';
 export type AwsCredentialProvider = {
   accountId?: string;
   stsRegion?: string;
+  roleArn?: string;
   sdkCredentialProvider: AwsCredentialIdentityProvider;
 };
 

@@ -103,6 +103,31 @@ describe('createPropertyRule', () => {
           ),
         ).toBe(true);
       });
+
+      it.each([false, 0, ''])(
+        'returns true when the specified key has the falsy scalar value %p',
+        fieldValue => {
+          const specRule = createPropertyRule('spec');
+
+          expect(
+            specRule.apply(
+              {
+                apiVersion: 'backstage.io/v1alpha1',
+                kind: 'Component',
+                metadata: {
+                  name: 'test-component',
+                },
+                spec: {
+                  field: fieldValue,
+                },
+              },
+              {
+                key: 'field',
+              },
+            ),
+          ).toBe(true);
+        },
+      );
     });
 
     describe('key and value', () => {
@@ -199,6 +224,140 @@ describe('createPropertyRule', () => {
             {
               key: 'tags',
               value: 'java',
+            },
+          ),
+        ).toBe(true);
+      });
+
+      it('matches metadata string values case-insensitively', () => {
+        expect(
+          apply(
+            {
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Component',
+              metadata: {
+                name: 'test-component',
+                namespace: 'Internal',
+              },
+            },
+            {
+              key: 'namespace',
+              value: 'internal',
+            },
+          ),
+        ).toBe(true);
+      });
+
+      it('matches nested property keys case-insensitively', () => {
+        expect(
+          apply(
+            {
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Component',
+              metadata: {
+                name: 'test-component',
+                org: {
+                  name: 'test-org',
+                },
+              },
+            },
+            {
+              key: 'ORG.NAME',
+              value: 'test-org',
+            },
+          ),
+        ).toBe(true);
+      });
+
+      it.each([
+        [false, 'false'],
+        [0, '0'],
+      ])(
+        'matches the scalar value %p using its indexed string value',
+        (fieldValue, value) => {
+          const specRule = createPropertyRule('spec');
+
+          expect(
+            specRule.apply(
+              {
+                apiVersion: 'backstage.io/v1alpha1',
+                kind: 'Component',
+                metadata: {
+                  name: 'test-component',
+                },
+                spec: {
+                  field: fieldValue,
+                },
+              },
+              {
+                key: 'field',
+                value,
+              },
+            ),
+          ).toBe(true);
+        },
+      );
+
+      it('matches metadata array values case-insensitively', () => {
+        expect(
+          apply(
+            {
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Component',
+              metadata: {
+                name: 'test-component',
+                tags: ['Java'],
+              },
+            },
+            {
+              key: 'tags',
+              value: 'java',
+            },
+          ),
+        ).toBe(true);
+      });
+
+      it('matches spec string values case-insensitively', () => {
+        const specRule = createPropertyRule('spec');
+
+        expect(
+          specRule.apply(
+            {
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Component',
+              metadata: {
+                name: 'test-component',
+              },
+              spec: {
+                owner: 'Group:Default/Test',
+              },
+            },
+            {
+              key: 'owner',
+              value: 'group:default/test',
+            },
+          ),
+        ).toBe(true);
+      });
+
+      it('matches spec array values case-insensitively', () => {
+        const specRule = createPropertyRule('spec');
+
+        expect(
+          specRule.apply(
+            {
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Component',
+              metadata: {
+                name: 'test-component',
+              },
+              spec: {
+                audiences: ['Internal'],
+              },
+            },
+            {
+              key: 'audiences',
+              value: 'internal',
             },
           ),
         ).toBe(true);

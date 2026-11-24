@@ -1,5 +1,125 @@
 # @backstage/plugin-org-react
 
+## 0.1.56
+
+### Patch Changes
+
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+- Updated dependencies
+  - @backstage/core-plugin-api@1.13.0
+  - @backstage/catalog-client@1.16.4
+  - @backstage/core-components@0.18.16
+  - @backstage/plugin-catalog-react@4.0.0
+  - @backstage/catalog-model@1.10.3
+
+## 0.1.56-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.16-next.1
+  - @backstage/catalog-client@1.16.4-next.1
+  - @backstage/catalog-model@1.10.3-next.0
+  - @backstage/core-plugin-api@1.12.12-next.2
+  - @backstage/plugin-catalog-react@4.0.0-next.2
+
+## 0.1.56-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.4-next.0
+  - @backstage/core-plugin-api@1.12.12-next.1
+  - @backstage/plugin-catalog-react@4.0.0-next.1
+
+## 0.1.56-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.12-next.0
+  - @backstage/plugin-catalog-react@4.0.0-next.0
+  - @backstage/core-components@0.18.16-next.0
+
+## 0.1.55
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.3
+  - @backstage/plugin-catalog-react@3.3.0
+  - @backstage/core-components@0.18.15
+  - @backstage/catalog-model@1.10.2
+  - @backstage/core-plugin-api@1.12.11
+
+## 0.1.55-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.3-next.1
+  - @backstage/plugin-catalog-react@3.3.0-next.2
+  - @backstage/core-components@0.18.15-next.3
+
+## 0.1.55-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.15-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/catalog-client@1.16.3-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-catalog-react@3.2.4-next.0
+
+## 0.1.54
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.14
+  - @backstage/catalog-client@1.16.2
+  - @backstage/catalog-model@1.10.1
+  - @backstage/plugin-catalog-react@3.2.3
+  - @backstage/core-plugin-api@1.12.10
+
+## 0.1.54-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.1
+  - @backstage/plugin-catalog-react@3.2.3-next.1
+  - @backstage/core-plugin-api@1.12.10-next.0
+  - @backstage/catalog-client@1.16.2-next.0
+
+## 0.1.54-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.2-next.0
+  - @backstage/core-components@0.18.14-next.0
+
+## 0.1.53
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/core-components@0.18.13
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/plugin-catalog-react@3.2.1
+
+## 0.1.53-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.1-next.2
+  - @backstage/core-plugin-api@1.12.9-next.0
+  - @backstage/core-components@0.18.13-next.2
+
 ## 0.1.53-next.0
 
 ### Patch Changes

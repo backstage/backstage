@@ -1,5 +1,143 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.2.0
+
+### Minor Changes
+
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@1.0.0
+  - @backstage/core-plugin-api@1.13.0
+  - @backstage/integration@2.2.0
+  - @backstage/core-components@0.18.16
+  - @backstage/integration-react@1.3.0
+  - @backstage/plugin-techdocs-react@1.5.0
+
+## 1.1.42-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.4-next.0
+  - @backstage/core-components@0.18.16-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.2
+  - @backstage/core-plugin-api@1.12.12-next.2
+  - @backstage/integration-react@1.2.24-next.1
+  - @backstage/plugin-techdocs-react@1.4.1-next.2
+
+## 1.1.42-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.12-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+  - @backstage/plugin-techdocs-react@1.4.1-next.1
+
+## 1.1.42-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.3-next.0
+  - @backstage/core-plugin-api@1.12.12-next.0
+  - @backstage/plugin-techdocs-react@1.4.1-next.0
+  - @backstage/core-components@0.18.16-next.0
+  - @backstage/integration-react@1.2.24-next.0
+
+## 1.1.41
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/integration@2.1.3
+  - @backstage/plugin-techdocs-react@1.4.0
+  - @backstage/core-components@0.18.15
+  - @backstage/core-plugin-api@1.12.11
+  - @backstage/integration-react@1.2.23
+
+## 1.1.41-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.3-next.0
+  - @backstage/integration-react@1.2.23-next.0
+  - @backstage/core-components@0.18.15-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+  - @backstage/plugin-techdocs-react@1.3.16-next.0
+
+## 1.1.40
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- 10d2720: Keep the TechDocs LightBox addon's image viewer out of an app's initial bundle by loading it with the first documentation page.
+- Updated dependencies
+  - @backstage/core-components@0.18.14
+  - @backstage/integration@2.1.2
+  - @backstage/plugin-techdocs-react@1.3.15
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/core-plugin-api@1.12.10
+  - @backstage/integration-react@1.2.22
+
+## 1.1.40-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.1
+  - @backstage/integration@2.1.2-next.0
+  - @backstage/frontend-plugin-api@0.18.1-next.0
+  - @backstage/integration-react@1.2.22-next.0
+  - @backstage/core-plugin-api@1.12.10-next.0
+  - @backstage/plugin-techdocs-react@1.3.15-next.1
+
+## 1.1.40-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.0
+  - @backstage/plugin-techdocs-react@1.3.15-next.0
+
+## 1.1.39
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.13
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/integration@2.1.0
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/integration-react@1.2.21
+  - @backstage/plugin-techdocs-react@1.3.14
+
+## 1.1.39-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.0-next.0
+  - @backstage/core-plugin-api@1.12.9-next.0
+  - @backstage/plugin-techdocs-react@1.3.14-next.1
+  - @backstage/core-components@0.18.13-next.2
+  - @backstage/integration-react@1.2.21-next.1
+
+## 1.1.39-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.13-next.1
+  - @backstage/integration@2.1.0-next.0
+  - @backstage/integration-react@1.2.21-next.0
+
 ## 1.1.39-next.0
 
 ### Patch Changes

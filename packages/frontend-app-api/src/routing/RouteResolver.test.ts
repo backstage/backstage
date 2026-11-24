@@ -21,6 +21,7 @@ import {
   ExternalRouteRef,
   RouteRef,
   SubRouteRef,
+  AppNode,
 } from '@backstage/frontend-plugin-api';
 import {
   BackstagePlugin,
@@ -29,14 +30,19 @@ import {
   createExternalRouteRef as createLegacyExternalRouteRef,
 } from '@backstage/core-plugin-api';
 import { RouteResolver } from './RouteResolver';
+import { matchRouteRefs } from './matchRouteRefs';
 import { MATCH_ALL_ROUTE } from './extractRouteInfoFromAppNode';
 import {
   createExactRouteAliasResolver,
   createRouteAliasResolver,
 } from './RouteAliasResolver';
 
+jest.mock('./matchRouteRefs', () => {
+  const actual = jest.requireActual('./matchRouteRefs');
+  return { ...actual, matchRouteRefs: jest.fn(actual.matchRouteRefs) };
+});
+
 const rest = {
-  element: null,
   caseSensitive: false,
   children: [MATCH_ALL_ROUTE],
   plugins: new Set<BackstagePlugin>(),
@@ -59,6 +65,173 @@ function src(sourcePath: string) {
 const emptyResolver = createExactRouteAliasResolver(new Map());
 
 describe('RouteResolver', () => {
+  it('shares route matches across consumers and evicts the least recently used pathname', () => {
+    const resolver = new RouteResolver(
+      new Map<RouteRef, string>([
+        [ref2, 'parent/:x'],
+        [ref1, 'child'],
+      ]),
+      new Map([[ref1, ref2]]),
+      [
+        {
+          routeRefs: new Set([ref2]),
+          path: 'parent/:x',
+          ...rest,
+          children: [
+            MATCH_ALL_ROUTE,
+            { routeRefs: new Set([ref1]), path: 'child', ...rest },
+          ],
+        },
+      ],
+      new Map([[externalRef1, ref1]]),
+      '/base',
+      emptyResolver,
+      new Map(),
+    );
+    jest.mocked(matchRouteRefs).mockClear();
+
+    const resolve = (value: string) =>
+      resolver.resolve(ref1, src(`/base/parent/${value}/child`))?.();
+    expect(resolve('0')).toBe('/parent/0/child');
+    expect(resolver.resolve(subRef1, src('/base/parent/0/child'))?.()).toBe(
+      '/parent/0/child/foo',
+    );
+    expect(
+      resolver.resolvePath({ pathname: '/parent/0/child' }).matches,
+    ).toEqual([]);
+    expect(matchRouteRefs).toHaveBeenCalledTimes(1);
+
+    expect(resolver.resolve(ref2, src('/base/missing'))?.({ x: 'new' })).toBe(
+      '/parent/new',
+    );
+    expect(resolver.resolve(ref2, src('/base/missing'))?.({ x: 'next' })).toBe(
+      '/parent/next',
+    );
+    expect(matchRouteRefs).toHaveBeenCalledTimes(2);
+
+    for (let i = 1; i < 31; i++) {
+      expect(resolve(String(i))).toBe(`/parent/${i}/child`);
+    }
+    expect(matchRouteRefs).toHaveBeenCalledTimes(32);
+    expect(resolve('0')).toBe('/parent/0/child');
+    expect(resolve('31')).toBe('/parent/31/child');
+    expect(resolve('0')).toBe('/parent/0/child');
+    expect(matchRouteRefs).toHaveBeenCalledTimes(33);
+    expect(resolver.resolve(ref2, src('/base/missing'))?.({ x: 'again' })).toBe(
+      '/parent/again',
+    );
+    expect(resolve('1')).toBe('/parent/1/child');
+    expect(matchRouteRefs).toHaveBeenCalledTimes(35);
+  });
+
+  it('resolves node ancestry from the selected branch and shares matches across consumers', () => {
+    function node(id: string, parent?: AppNode): AppNode {
+      const result: AppNode = {
+        spec: { id } as AppNode['spec'],
+        edges: {
+          attachedTo: parent ? { node: parent, input: 'children' } : undefined,
+          attachments: new Map([['children', []]]),
+        },
+      };
+      parent?.edges.attachments.get('children')!.push(result);
+      return result;
+    }
+    const root = node('root');
+    const page = node('page', root);
+    const layout = node('layout', page);
+    const edit = node('edit', layout);
+    const content = node('content', edit);
+    const sibling = node('sibling', page);
+    const unrelated = node('unrelated', root);
+    const resolver = new RouteResolver(
+      new Map(),
+      new Map(),
+      [
+        {
+          ...rest,
+          routeRefs: new Set(),
+          path: 'a/:id?',
+          appNode: page,
+          children: [
+            {
+              ...rest,
+              routeRefs: new Set(),
+              path: '',
+              appNode: layout,
+              children: [
+                { ...rest, routeRefs: new Set(), path: 'edit', appNode: edit },
+              ],
+            },
+            { ...rest, routeRefs: new Set(), path: 'view', appNode: sibling },
+          ],
+        },
+      ],
+      new Map(),
+      '/backstage',
+      emptyResolver,
+      new Map(),
+    );
+
+    // The child wins over consuming "edit" as the parent's optional id.
+    const pathname = '/a/edit';
+    const branch = resolver.resolvePath({ pathname });
+    expect(branch.matches).toEqual([
+      {
+        node: page,
+        basePath: '/a',
+        routePattern: '/a/:id?',
+        params: {},
+        contributesPath: true,
+      },
+      {
+        node: layout,
+        basePath: '/a',
+        routePattern: '/a/:id?/',
+        params: {},
+        contributesPath: false,
+      },
+      {
+        node: edit,
+        basePath: '/a/edit',
+        routePattern: '/a/:id?/edit',
+        params: {},
+        contributesPath: true,
+      },
+    ]);
+    const scoped = resolver.resolvePath({ pathname, node: content });
+    expect(scoped.matches).toEqual(branch.matches);
+    expect(scoped.matches[0]).toBe(branch.matches[0]);
+    expect(resolver.resolvePath({ pathname, node: content })).toBe(scoped);
+    expect(resolver.resolvePath({ pathname })).toBe(branch);
+    expect(resolver.resolvePath({ pathname, node: page }).matches).toEqual(
+      branch.matches.slice(0, 1),
+    );
+    expect(resolver.resolvePath({ pathname, node: sibling }).matches).toEqual(
+      branch.matches.slice(0, 1),
+    );
+    expect(resolver.resolvePath({ pathname, node: root }).matches).toEqual([]);
+    expect(resolver.resolvePath({ pathname, node: unrelated }).matches).toEqual(
+      [],
+    );
+
+    // Resolve another location without browser history or a React render.
+    const next = resolver.resolvePath({
+      pathname: '/a/foo%20bar/edit',
+      node: content,
+    });
+    expect(next.matches.at(-1)).toMatchObject({
+      basePath: '/a/foo%20bar/edit',
+      params: { id: 'foo bar' },
+    });
+    expect(scoped.matches.at(-1)?.params).toEqual({});
+    expect(
+      resolver.resolvePath({ pathname: '/elsewhere', node: content }).matches,
+    ).toEqual([]);
+    expect(resolver.resolvePath({ pathname, node: content }).matches).toEqual(
+      scoped.matches,
+    );
+  });
+
   it('should not resolve anything with an empty resolver', () => {
     const r = new RouteResolver(
       new Map(),
@@ -105,6 +278,70 @@ describe('RouteResolver', () => {
     );
     expect(r.resolve(externalRef1, src('/'))?.()).toBe(undefined);
     expect(r.resolve(externalRef2, src('/'))?.({ x: '5x' })).toBe(undefined);
+  });
+
+  it('should resolve nested sub routes directly and as external targets', () => {
+    const packagesRouteRef = createRouteRef();
+    const revisionRouteRef = createSubRouteRef({
+      parent: packagesRouteRef,
+      path: '/:name/:revision',
+    });
+    const attachmentsRouteRef = createSubRouteRef({
+      parent: revisionRouteRef,
+      path: '/attachments',
+    });
+    const attachmentRouteRef = createSubRouteRef({
+      parent: attachmentsRouteRef,
+      path: '/:attachmentId',
+    });
+    const attachmentExternalRouteRef = createExternalRouteRef({
+      params: ['name', 'revision', 'attachmentId'],
+    });
+    const r = new RouteResolver(
+      new Map([[packagesRouteRef, 'packages']]),
+      new Map(),
+      [
+        {
+          routeRefs: new Set([packagesRouteRef]),
+          path: 'packages',
+          ...rest,
+        },
+      ],
+      new Map([[attachmentExternalRouteRef, attachmentRouteRef]]),
+      '/base',
+      emptyResolver,
+      new Map(),
+    );
+
+    expect(
+      r.resolve(
+        attachmentsRouteRef,
+        src('/'),
+      )?.({
+        name: 'example',
+        revision: '1.0.0',
+      }),
+    ).toBe('/packages/example/1.0.0/attachments');
+    expect(
+      r.resolve(
+        attachmentRouteRef,
+        src('/base/other'),
+      )?.({
+        name: 'example',
+        revision: '1.0.0',
+        attachmentId: 'readme',
+      }),
+    ).toBe('/packages/example/1.0.0/attachments/readme');
+    expect(
+      r.resolve(
+        attachmentExternalRouteRef,
+        src('/base'),
+      )?.({
+        name: 'example',
+        revision: '1.0.0',
+        attachmentId: 'license',
+      }),
+    ).toBe('/packages/example/1.0.0/attachments/license');
   });
 
   it('should resolve an absolute route with a param and with a parent', () => {

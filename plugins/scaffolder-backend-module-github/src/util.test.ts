@@ -17,7 +17,12 @@
 import { Octokit } from 'octokit';
 import { retry } from '@octokit/plugin-retry';
 import { mockServices } from '@backstage/backend-test-utils';
-import { isRetryEnabled, getOctokitClient } from './util';
+import { ConfigReader } from '@backstage/config';
+import {
+  GithubCredentialsProvider,
+  ScmIntegrations,
+} from '@backstage/integration';
+import { getOctokitClient, getOctokitOptions, isRetryEnabled } from './util';
 
 jest.mock('octokit', () => ({
   Octokit: Object.assign(jest.fn(), {
@@ -157,5 +162,57 @@ describe('getOctokitClient', () => {
       },
       log: logger,
     });
+  });
+});
+
+describe('getOctokitOptions', () => {
+  const integrations = ScmIntegrations.fromConfig(
+    new ConfigReader({
+      integrations: {
+        github: [{ host: 'github.com', token: 'integration-token' }],
+      },
+    }),
+  );
+  const getCredentials = jest.fn().mockResolvedValue({
+    token: 'integration-token',
+    type: 'token',
+  });
+  const credentialsProvider: GithubCredentialsProvider = { getCredentials };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('requires an explicit token without resolving integration credentials', async () => {
+    await expect(
+      getOctokitOptions({
+        integrations,
+        credentialsProvider,
+        requireScmUserCredentials: true,
+        host: 'github.com',
+        owner: 'backstage',
+        repo: 'backstage',
+      }),
+    ).rejects.toThrow(
+      'No user credentials provided for host github.com, but scaffolder.requireScmUserCredentials is enabled',
+    );
+
+    await expect(
+      getOctokitOptions({
+        integrations,
+        credentialsProvider,
+        requireScmUserCredentials: true,
+        token: 'user-token',
+        host: 'github.com',
+        owner: 'backstage',
+        repo: 'backstage',
+      }),
+    ).resolves.toEqual(
+      expect.objectContaining({
+        auth: 'user-token',
+        baseUrl: 'https://api.github.com',
+      }),
+    );
+    expect(getCredentials).not.toHaveBeenCalled();
   });
 });

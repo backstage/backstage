@@ -1,5 +1,62 @@
 # @backstage/module-federation-common
 
+## 0.1.7
+
+### Patch Changes
+
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+- ed8f1ef: Updated dependency `@module-federation/sdk` to `~2.9.0`.
+  Updated dependency `@module-federation/enhanced` to `~2.9.0`.
+  Updated dependency `@module-federation/runtime` to `~2.9.0`.
+  Updated dependency `@module-federation/runtime-core` to `~2.9.0`.
+- Updated dependencies
+  - @backstage/errors@1.4.0
+  - @backstage/config@1.3.11
+
+## 0.1.7-next.0
+
+### Patch Changes
+
+- ed8f1ef: Updated dependency `@module-federation/sdk` to `~2.9.0`.
+  Updated dependency `@module-federation/enhanced` to `~2.9.0`.
+  Updated dependency `@module-federation/runtime` to `~2.9.0`.
+  Updated dependency `@module-federation/runtime-core` to `~2.9.0`.
+- Updated dependencies
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/config@1.3.11-next.0
+
+## 0.1.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+
+## 0.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+
+## 0.1.5
+
+### Patch Changes
+
+- 064c2de: Updated the Module Federation dependencies to versions that avoid known security vulnerabilities.
+- Updated dependencies
+  - @backstage/config@1.3.9
+
+## 0.1.5-next.0
+
+### Patch Changes
+
+- 064c2de: Updated the Module Federation dependencies to versions that avoid known security vulnerabilities.
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+
 ## 0.1.4
 
 ### Patch Changes

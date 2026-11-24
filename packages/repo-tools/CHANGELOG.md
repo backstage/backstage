@@ -1,5 +1,157 @@
 # @backstage/repo-tools
 
+## 0.19.3
+
+### Patch Changes
+
+- 1892d2f: chore(deps): bump `minimatch` from 10.2.6 to 11.0.1
+- 11437a9: The `type-deps` command now fails with a clear error when no packages with built type declarations are found, instead of silently passing. Make sure to build all packages before running it.
+- 7d58727: The peer dependency checks now expect React 18 for frontend packages, following the removal of React 17 support across the workspace. The old frontend system core packages continue to allow React 17.
+- 9120c46: Updated dependency `glob` to `^14.0.0`.
+- 5eb2381: The generated API reference documentation no longer overwrites pages when a package exports declarations whose names only differ in case, or that share a name but are of different kinds, for example a variable and an interface or namespace. One of them keeps the existing page, and the others get a page with their kind added to the filename, for example `-interface` or `-namespace`, or a number if they are of the same kind.
+- fbb676e: The `package schema openapi generate` command now exits with a non-zero code when client or server generation fails, for example when linting the generated code fails. Previously the failure was logged but the command still exited with code 0. Watch mode is unaffected and keeps watching after a failed generation.
+- 1fba2bb: The peer dependency check no longer enforces a shared `react-router-dom` version, so packages can declare their own supported major version. See the [1.57 migration notes](https://backstage.io/docs/frontend-system/architecture/migrations#157) for background on the routing changes this supports.
+- Updated dependencies
+  - @backstage/cli-node@0.3.6
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/catalog-model@1.10.3
+  - @backstage/cli-common@0.3.3
+  - @backstage/config-loader@1.11.5
+
+## 0.19.3-next.1
+
+### Patch Changes
+
+- 1892d2f: chore(deps): bump `minimatch` from 10.2.6 to 11.0.1
+- 9120c46: Updated dependency `glob` to `^14.0.0`.
+- 5eb2381: The generated API reference documentation no longer overwrites pages when a package exports declarations whose names only differ in case, or that share a name but are of different kinds, for example a variable and an interface or namespace. One of them keeps the existing page, and the others get a page with their kind added to the filename, for example `-interface` or `-namespace`, or a number if they are of the same kind.
+- 1fba2bb: The peer dependency check no longer enforces a shared `react-router-dom` version, so packages can declare their own supported major version. See the [1.57 migration notes](https://backstage.io/docs/frontend-system/architecture/migrations#157) for background on the routing changes this supports.
+- Updated dependencies
+  - @backstage/cli-node@0.3.6-next.2
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/catalog-model@1.10.3-next.0
+  - @backstage/cli-common@0.3.3-next.0
+  - @backstage/config-loader@1.11.5-next.0
+
+## 0.19.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.6-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+
+## 0.19.2
+
+### Patch Changes
+
+- b8c8132: CLI API reports now support help output with separate groups and commands sections, including commands nested within groups.
+- 76ac6ed: Updated dependency `js-yaml` to `^5.0.0`.
+- 466bbea: Fixed CLI report generation failing when the `FORCE_COLOR` environment variable is set.
+- dec6175: When an API, CLI, SQL, or knip report is out of date in CI, the error output now shows a diff of the changes that need to be committed instead of printing the full expected report.
+- a281164: Updated SQL report generation to support newer Knex releases.
+- Updated dependencies
+  - @backstage/cli-node@0.3.5
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/config-loader@1.11.4
+  - @backstage/errors@1.3.2
+  - @backstage/catalog-model@1.10.2
+  - @backstage/cli-common@0.3.2
+
+## 0.19.2-next.3
+
+### Patch Changes
+
+- dec6175: When an API, CLI, SQL, or knip report is out of date in CI, the error output now shows a diff of the changes that need to be committed instead of printing the full expected report.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.2
+
+## 0.19.2-next.2
+
+### Patch Changes
+
+- b8c8132: CLI API reports now support help output with separate groups and commands sections, including commands nested within groups.
+- 76ac6ed: Updated dependency `js-yaml` to `^5.0.0`.
+- Updated dependencies
+  - @backstage/cli-node@0.3.5-next.1
+
+## 0.19.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+
+## 0.19.2-next.0
+
+### Patch Changes
+
+- a281164: Updated SQL report generation to support newer Knex releases.
+- Updated dependencies
+  - @backstage/cli-node@0.3.5-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/config-loader@1.11.4-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/cli-common@0.3.2-next.0
+
+## 0.19.1
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- c0ebaa7: chore(deps): bump `js-yaml` from 4.3.1 to 4.3.2
+- bf1f82d: Added the required OpenAPI types dependency for Swagger Parser.
+- 0c1b8ee: Updated the OpenAPI generator tooling to avoid known security vulnerabilities.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.1
+  - @backstage/cli-common@0.3.1
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/config-loader@1.11.3
+
+## 0.19.1-next.1
+
+### Patch Changes
+
+- 0c1b8ee: Updated the OpenAPI generator tooling to avoid known security vulnerabilities.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/config-loader@1.11.3-next.0
+
+## 0.19.1-next.0
+
+### Patch Changes
+
+- bf1f82d: Added the required OpenAPI types dependency for Swagger Parser.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.1-next.0
+
+## 0.19.0
+
+### Minor Changes
+
+- 0804116: **BREAKING**: Renamed the `repo schema openapi verify` command to `repo schema openapi validate`. Added a new `package schema openapi validate` command to validate that an OpenAPI spec is a valid OpenAPI 3.x document.
+
+### Patch Changes
+
+- 226817d: chore(deps): bump `js-yaml` from 4.2.0 to 4.3.0
+- 78bf918: chore(deps): bump `tar` from 7.5.15 to 7.5.21
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/config-loader@1.11.2
+  - @backstage/backend-plugin-api@1.10.0
+
+## 0.18.1-next.1
+
+### Patch Changes
+
+- 78bf918: chore(deps): bump `tar` from 7.5.15 to 7.5.21
+- Updated dependencies
+  - @backstage/config-loader@1.11.2-next.0
+  - @backstage/backend-plugin-api@1.10.0-next.1
+
 ## 0.18.1-next.0
 
 ### Patch Changes

@@ -22,10 +22,10 @@ import {
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { AwsS3EntityProvider } from './AwsS3EntityProvider';
-import { mockClient } from 'aws-sdk-client-mock';
-import 'aws-sdk-client-mock-jest';
 import { ListObjectsV2Command, S3Client } from '@aws-sdk/client-s3';
 import { mockServices } from '@backstage/backend-test-utils';
+
+const s3SendMock = jest.fn();
 
 class PersistingTaskRunner implements SchedulerServiceTaskRunner {
   private tasks: SchedulerServiceTaskInvocationDefinition[] = [];
@@ -53,10 +53,15 @@ describe('AwsS3EntityProvider', () => {
   };
 
   const keys = ['key1.yaml', 'key2.yaml', 'key3.yaml', 'key 4.yaml'];
-  const mock = mockClient(S3Client);
 
   beforeEach(() => {
-    mock.on(ListObjectsV2Command).callsFake(async req => {
+    jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
+    s3SendMock.mockImplementation(async command => {
+      if (!(command instanceof ListObjectsV2Command)) {
+        throw new Error(`No mock for ${command.constructor.name}`);
+      }
+
+      const req = command.input;
       const prefix = req.Prefix ?? '';
 
       if (!req.ContinuationToken) {
@@ -79,7 +84,8 @@ describe('AwsS3EntityProvider', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    jest.restoreAllMocks();
+    s3SendMock.mockReset();
     process.env.AWS_REGION = undefined;
   });
 
@@ -366,6 +372,69 @@ describe('AwsS3EntityProvider', () => {
       },
     );
   });
+
+  it.each([
+    {
+      name: 'virtual-hosted',
+      integrationConfig: undefined,
+      expectedTarget:
+        'https://bucket-1.s3.eu-west-1.amazonaws.com/sub/dir/%252e%252e/%252e%252e/bucket-2/catalog-info.yaml',
+    },
+    {
+      name: 'path-style',
+      integrationConfig: { s3ForcePathStyle: true },
+      expectedTarget:
+        'https://s3.eu-west-1.amazonaws.com/bucket-1/sub/dir/%252e%252e/%252e%252e/bucket-2/catalog-info.yaml',
+    },
+  ])(
+    'preserves encoded dot segments and skips literal dot segments for $name URLs',
+    async ({ integrationConfig, expectedTarget }) => {
+      const encodedKey = 'sub/dir/%2e%2e/%2e%2e/bucket-2/catalog-info.yaml';
+      const literalKey = 'sub/dir/../../bucket-2/catalog-info.yaml';
+      s3SendMock.mockResolvedValue({
+        Contents: createObjectList([encodedKey, literalKey]),
+      });
+
+      const config = new ConfigReader({
+        integrations: {
+          awsS3: integrationConfig ? [integrationConfig] : [],
+        },
+        catalog: {
+          providers: {
+            awsS3: {
+              encodedDotSegments: {
+                bucketName: 'bucket-1',
+                prefix: 'sub/dir/',
+                region: 'eu-west-1',
+              },
+            },
+          },
+        },
+      });
+      const schedule = new PersistingTaskRunner();
+      const applyMutation = jest.fn();
+      const provider = AwsS3EntityProvider.fromConfig(config, {
+        schedule,
+        logger,
+      })[0];
+
+      await provider.connect({ applyMutation, refresh: jest.fn() });
+      await (schedule.getTasks()[0].fn as () => Promise<void>)();
+
+      expect(applyMutation).toHaveBeenCalledTimes(1);
+      expect(applyMutation.mock.calls[0][0].entities).toEqual([
+        expect.objectContaining({
+          entity: expect.objectContaining({
+            spec: {
+              presence: 'required',
+              target: expectedTarget,
+              type: 'url',
+            },
+          }),
+        }),
+      ]);
+    },
+  );
 
   it('fail without schedule and scheduler', () => {
     const config = new ConfigReader({

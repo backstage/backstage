@@ -69,6 +69,22 @@ const hostedGitlabProcessor = new GitlabUrlReader(
   { treeResponseFactory },
 );
 
+const relativePathGitlabIntegration = new GitLabIntegration(
+  readGitLabIntegrationConfig(
+    new ConfigReader({
+      host: 'gitlab.mycompany.com',
+      apiBaseUrl: 'https://gitlab.mycompany.com/gitlab/api/v4',
+      baseUrl: 'https://gitlab.mycompany.com/gitlab',
+      token: 'gl-dummy-token',
+    }),
+  ),
+);
+
+const relativePathGitlabProcessor = new GitlabUrlReader(
+  relativePathGitlabIntegration,
+  { treeResponseFactory },
+);
+
 describe('GitlabUrlReader', () => {
   beforeEach(mockDir.clear);
 
@@ -774,6 +790,117 @@ describe('GitlabUrlReader', () => {
           'https://gitlab.com/api/v4/projects/user%2Fproject/jobs/artifacts/branch/raw/my/path/to/file.yaml?job=myJob',
         ),
       );
+    });
+  });
+
+  describe('with a configured relative path', () => {
+    const archiveBuffer = fs.readFileSync(
+      path.resolve(__dirname, '__fixtures__/gitlab-archive.tar.gz'),
+    );
+
+    afterEach(() => jest.restoreAllMocks());
+
+    it('reads blob URLs with the configured segment in the project path', async () => {
+      worker.use(
+        http.get(
+          'https://gitlab.mycompany.com/gitlab/api/v4/projects/group%2Fgitlab-project/repository/files/file.yaml/raw',
+          ({ request }) => {
+            expect(request.headers.get('authorization')).toBe(
+              'Bearer gl-dummy-token',
+            );
+            return new HttpResponse('content');
+          },
+        ),
+      );
+
+      const response = await relativePathGitlabProcessor.readUrl(
+        'https://gitlab.mycompany.com/gitlab/group/gitlab-project/-/blob/main/file.yaml',
+      );
+
+      await expect(response.buffer()).resolves.toEqual(Buffer.from('content'));
+    });
+
+    it('reads tree URLs with the configured segment in the project path', async () => {
+      const projectPath = 'group%2Fgitlab-project';
+      worker.use(
+        http.get(
+          `https://gitlab.mycompany.com/gitlab/api/v4/projects/${projectPath}`,
+          () => HttpResponse.json({ default_branch: 'main' }),
+        ),
+        http.get(
+          `https://gitlab.mycompany.com/gitlab/api/v4/projects/${projectPath}/repository/commits`,
+          () => HttpResponse.json([{ id: 'sha123abc' }]),
+        ),
+        http.get(
+          `https://gitlab.mycompany.com/gitlab/api/v4/projects/${projectPath}/repository/archive`,
+          () =>
+            new HttpResponse(new Uint8Array(archiveBuffer), {
+              status: 200,
+              headers: {
+                'Content-Type': 'application/zip',
+                'content-disposition':
+                  'attachment; filename="mock-main-sha123abc.zip"',
+              },
+            }),
+        ),
+      );
+
+      const response = await relativePathGitlabProcessor.readTree(
+        'https://gitlab.mycompany.com/gitlab/group/gitlab-project/tree/main',
+      );
+
+      await expect(response.files()).resolves.toHaveLength(2);
+    });
+
+    it('reads artifact URLs with the configured segment in the project path', async () => {
+      worker.use(
+        http.get(
+          'https://gitlab.mycompany.com/gitlab/api/v4/projects/group%2Fgitlab-project/jobs/artifacts/main/raw/file.yaml',
+          ({ request }) => {
+            expect(request.headers.get('authorization')).toBe(
+              'Bearer gl-dummy-token',
+            );
+            return new HttpResponse('artifact');
+          },
+        ),
+      );
+
+      const response = await relativePathGitlabProcessor.readUrl(
+        'https://gitlab.mycompany.com/gitlab/group/gitlab-project/-/jobs/artifacts/main/raw/file.yaml?job=build',
+      );
+
+      await expect(response.buffer()).resolves.toEqual(Buffer.from('artifact'));
+    });
+
+    it.each([
+      [
+        'blob URL with the configured segment in the middle',
+        () =>
+          relativePathGitlabProcessor.readUrl(
+            'https://gitlab.mycompany.com/group/gitlab/project/-/blob/main/file.yaml',
+          ),
+      ],
+      [
+        'tree URL with the configured segment in the middle',
+        () =>
+          relativePathGitlabProcessor.readTree(
+            'https://gitlab.mycompany.com/group/gitlab/project/tree/main',
+          ),
+      ],
+      [
+        'artifact URL with a lookalike prefix',
+        () =>
+          relativePathGitlabProcessor.readUrl(
+            'https://gitlab.mycompany.com/gitlabsecret/group/project/-/jobs/artifacts/main/raw/file.yaml?job=build',
+          ),
+      ],
+    ])('rejects %s before fetching', async (_, read) => {
+      const fetchSpy = jest.spyOn(relativePathGitlabIntegration, 'fetch');
+
+      await expect(read()).rejects.toThrow(
+        'Url path must start with /gitlab/.',
+      );
+      expect(fetchSpy).not.toHaveBeenCalled();
     });
   });
 });

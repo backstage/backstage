@@ -122,65 +122,97 @@ describe.each(caches.eachSupportedId())(
       await expect(plugin2b.get('a')).resolves.toBe('plugin2b');
     });
 
-    it('supports both milliseconds and human durations throughout', async () => {
+    it('isolates the same key across plugins when a prefix is configured', async () => {
       const { store, connection } = await caches.init(cacheId);
 
-      for (const defaultTtl of [200, { milliseconds: 200 }]) {
-        const manager = CacheManager.fromConfig(
-          mockServices.rootConfig({
-            data: {
-              backend: {
-                cache: {
-                  store,
-                  connection,
-                  defaultTtl,
-                },
+      const manager = CacheManager.fromConfig(
+        mockServices.rootConfig({
+          data: {
+            backend: {
+              cache: {
+                store,
+                connection,
+                valkey: { client: { keyPrefix: 'vk:' } },
+                redis: { client: { namespace: 'rd' } },
               },
             },
-          }),
-        ).forPlugin('p');
+          },
+        }),
+      );
 
-        const defaultClient = manager;
-        const numberOverrideClient = manager.withOptions({ defaultTtl: 400 });
-        const durationOverrideClient = manager.withOptions({
-          defaultTtl: { milliseconds: 400 },
-        });
+      const pluginA = manager.forPlugin('plugin-a');
+      const pluginB = manager.forPlugin('plugin-b');
 
-        await defaultClient.set('a', 'x');
-        await defaultClient.set('b', 'x');
-        await numberOverrideClient.set('c', 'x');
-        await durationOverrideClient.set('d', 'x');
-        await defaultClient.set('e', 'x', { ttl: 400 });
-        await defaultClient.set('f', 'x', { ttl: { milliseconds: 400 } });
+      await pluginA.set('shared', 'from-a');
+      await pluginB.set('shared', 'from-b');
 
-        await expect(defaultClient.get('a')).resolves.toBe('x');
-        await expect(defaultClient.get('b')).resolves.toBe('x');
-        await expect(defaultClient.get('c')).resolves.toBe('x');
-        await expect(defaultClient.get('d')).resolves.toBe('x');
-        await expect(defaultClient.get('e')).resolves.toBe('x');
-        await expect(defaultClient.get('f')).resolves.toBe('x');
-
-        await new Promise(resolve => setTimeout(resolve, 50 + 200));
-
-        await expect(defaultClient.get('a')).resolves.toBeUndefined();
-        await expect(defaultClient.get('b')).resolves.toBeUndefined();
-        await expect(defaultClient.get('c')).resolves.toBe('x');
-        await expect(defaultClient.get('d')).resolves.toBe('x');
-        await expect(defaultClient.get('e')).resolves.toBe('x');
-        await expect(defaultClient.get('f')).resolves.toBe('x');
-
-        await new Promise(resolve => setTimeout(resolve, 200));
-
-        await expect(defaultClient.get('a')).resolves.toBeUndefined();
-        await expect(defaultClient.get('b')).resolves.toBeUndefined();
-        await expect(defaultClient.get('c')).resolves.toBeUndefined();
-        await expect(defaultClient.get('d')).resolves.toBeUndefined();
-        await expect(defaultClient.get('e')).resolves.toBeUndefined();
-        await expect(defaultClient.get('f')).resolves.toBeUndefined();
-      }
+      await expect(pluginA.get('shared')).resolves.toBe('from-a');
+      await expect(pluginB.get('shared')).resolves.toBe('from-b');
     });
   },
 );
+
+it('supports both milliseconds and human durations throughout', async () => {
+  let now = Date.now();
+  const dateNow = jest.spyOn(Date, 'now').mockImplementation(() => now);
+
+  try {
+    for (const defaultTtl of [200, { milliseconds: 200 }]) {
+      const manager = CacheManager.fromConfig(
+        mockServices.rootConfig({
+          data: {
+            backend: {
+              cache: {
+                store: 'memory',
+                defaultTtl,
+              },
+            },
+          },
+        }),
+      ).forPlugin('p');
+
+      const defaultClient = manager;
+      const numberOverrideClient = manager.withOptions({ defaultTtl: 400 });
+      const durationOverrideClient = manager.withOptions({
+        defaultTtl: { milliseconds: 400 },
+      });
+
+      await defaultClient.set('a', 'x');
+      await defaultClient.set('b', 'x');
+      await numberOverrideClient.set('c', 'x');
+      await durationOverrideClient.set('d', 'x');
+      await defaultClient.set('e', 'x', { ttl: 400 });
+      await defaultClient.set('f', 'x', { ttl: { milliseconds: 400 } });
+
+      await expect(defaultClient.get('a')).resolves.toBe('x');
+      await expect(defaultClient.get('b')).resolves.toBe('x');
+      await expect(defaultClient.get('c')).resolves.toBe('x');
+      await expect(defaultClient.get('d')).resolves.toBe('x');
+      await expect(defaultClient.get('e')).resolves.toBe('x');
+      await expect(defaultClient.get('f')).resolves.toBe('x');
+
+      now += 250;
+
+      await expect(defaultClient.get('a')).resolves.toBeUndefined();
+      await expect(defaultClient.get('b')).resolves.toBeUndefined();
+      await expect(defaultClient.get('c')).resolves.toBe('x');
+      await expect(defaultClient.get('d')).resolves.toBe('x');
+      await expect(defaultClient.get('e')).resolves.toBe('x');
+      await expect(defaultClient.get('f')).resolves.toBe('x');
+
+      now += 200;
+
+      await expect(defaultClient.get('a')).resolves.toBeUndefined();
+      await expect(defaultClient.get('b')).resolves.toBeUndefined();
+      await expect(defaultClient.get('c')).resolves.toBeUndefined();
+      await expect(defaultClient.get('d')).resolves.toBeUndefined();
+      await expect(defaultClient.get('e')).resolves.toBeUndefined();
+      await expect(defaultClient.get('f')).resolves.toBeUndefined();
+    }
+  } finally {
+    dateNow.mockRestore();
+  }
+});
 
 it('rejects invalid defaultTtl', () => {
   expect(() =>
@@ -379,6 +411,7 @@ describe('CacheManager store options', () => {
     );
     expect(KeyvValkey).toHaveBeenCalledWith(expect.any(Object), {
       keyPrefix: undefined,
+      useRedisSets: false,
     });
   });
 
@@ -416,6 +449,7 @@ describe('CacheManager store options', () => {
     );
     expect(KeyvValkey).toHaveBeenCalledWith(expect.any(Object), {
       keyPrefix: 'my-app:',
+      useRedisSets: false,
     });
   });
 
@@ -440,7 +474,51 @@ describe('CacheManager store options', () => {
     expect(ValkeyCluster).not.toHaveBeenCalled();
     expect(KeyvValkey).toHaveBeenCalledWith('redis://localhost:6379', {
       keyPrefix: undefined,
+      useRedisSets: false,
     });
+  });
+
+  it('does not let client options turn redis sets back on for valkey', () => {
+    // The config schema only passes on keyPrefix, so this goes through the
+    // constructor, which accepts the full client option type
+    const storeOptions = {
+      type: 'valkey' as const,
+      client: { keyPrefix: 'my-app:', useRedisSets: true },
+    };
+
+    new CacheManager(
+      'valkey',
+      'redis://localhost:6379',
+      undefined,
+      undefined,
+      undefined,
+      storeOptions,
+    ).forPlugin('p1');
+
+    expect(ValkeyCluster).not.toHaveBeenCalled();
+    expect(KeyvValkey).toHaveBeenLastCalledWith('redis://localhost:6379', {
+      keyPrefix: 'my-app:',
+      useRedisSets: false,
+    });
+
+    new CacheManager(
+      'valkey',
+      'redis://localhost:6379',
+      undefined,
+      undefined,
+      undefined,
+      {
+        ...storeOptions,
+        cluster: { rootNodes: [{ host: 'localhost', port: 6379 }] },
+      },
+    ).forPlugin('p1');
+
+    expect(ValkeyCluster).toHaveBeenCalledTimes(1);
+    expect(KeyvValkey).toHaveBeenLastCalledWith(expect.any(Object), {
+      keyPrefix: 'my-app:',
+      useRedisSets: false,
+    });
+    expect(storeOptions.client.useRedisSets).toBe(true);
   });
 
   it('correctly applies namespace configuration to redis and valkey stores', () => {
@@ -482,10 +560,10 @@ describe('CacheManager store options', () => {
         );
       } else if (store === 'valkey') {
         // eslint-disable-next-line jest/no-conditional-expect
-        expect(KeyvValkey).toHaveBeenCalledWith(
-          'redis://localhost:6379',
-          client,
-        );
+        expect(KeyvValkey).toHaveBeenCalledWith('redis://localhost:6379', {
+          ...client,
+          useRedisSets: false,
+        });
       }
     });
   });

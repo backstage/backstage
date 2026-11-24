@@ -1,5 +1,152 @@
 # @backstage/plugin-catalog-backend-module-bitbucket-cloud
 
+## 0.5.17
+
+### Patch Changes
+
+- ed1cb3e: The Bitbucket Cloud entity provider now finds catalog files with the workspace code search API of Bitbucket Cloud, because Bitbucket Cloud removes the old code search API on 2026-11-15. The provider finds the same locations for the same configuration.
+
+  The new API needs a credential that identifies a user, for example an Atlassian account email as `username` with an API `token`. The token needs the scopes `read:repository:bitbucket` and `read:workspace:bitbucket`. The old API did not need `read:workspace:bitbucket`. Bitbucket Cloud rejects app passwords, legacy OAuth consumers, and API keys for this API. An API token without `read:workspace:bitbucket` is also rejected with `403`. When that happens, or when code search is not enabled, the provider checks catalog files with the source API instead. Adding `read:workspace:bitbucket` to the API token restores workspace code search.
+
+- Updated dependencies
+  - @backstage/integration@2.2.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.15
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/plugin-events-node@0.5.0
+  - @backstage/catalog-model@1.10.3
+  - @backstage/config@1.3.11
+  - @backstage/plugin-catalog-common@1.2.2
+  - @backstage/plugin-catalog-node@3.0.0
+
+## 0.5.17-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/integration@2.1.4-next.0
+  - @backstage/plugin-catalog-node@3.0.0-next.2
+  - @backstage/plugin-events-node@0.5.0-next.2
+  - @backstage/catalog-model@1.10.3-next.0
+  - @backstage/config@1.3.11-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.15-next.0
+  - @backstage/plugin-catalog-common@1.2.2-next.0
+
+## 0.5.17-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.5.0-next.1
+  - @backstage/plugin-catalog-node@2.2.7-next.1
+
+## 0.5.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-catalog-node@2.2.7-next.0
+  - @backstage/plugin-events-node@0.4.28-next.0
+
+## 0.5.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.3
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/plugin-bitbucket-cloud-common@0.3.14
+  - @backstage/catalog-model@1.10.2
+  - @backstage/plugin-catalog-common@1.2.1
+  - @backstage/plugin-catalog-node@2.2.6
+  - @backstage/plugin-events-node@0.4.27
+
+## 0.5.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+  - @backstage/plugin-catalog-node@2.2.6-next.1
+  - @backstage/plugin-events-node@0.4.27-next.1
+
+## 0.5.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.3-next.0
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.14-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-catalog-node@2.2.6-next.0
+  - @backstage/plugin-events-node@0.4.27-next.0
+  - @backstage/plugin-catalog-common@1.2.1-next.0
+
+## 0.5.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.2
+  - @backstage/plugin-catalog-common@1.2.0
+  - @backstage/catalog-model@1.10.1
+  - @backstage/config@1.3.9
+  - @backstage/plugin-bitbucket-cloud-common@0.3.13
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-catalog-node@2.2.5
+  - @backstage/plugin-events-node@0.4.26
+
+## 0.5.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.2.0-next.0
+  - @backstage/config@1.3.9-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.13-next.1
+  - @backstage/plugin-catalog-node@2.2.5-next.1
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/integration@2.1.2-next.1
+
+## 0.5.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.2-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.13-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+  - @backstage/plugin-catalog-node@2.2.5-next.0
+  - @backstage/plugin-events-node@0.4.26-next.0
+
+## 0.5.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/integration@2.1.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.12
+  - @backstage/plugin-catalog-node@2.2.4
+  - @backstage/plugin-events-node@0.4.25
+
+## 0.5.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.0-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.12-next.0
+
 ## 0.5.14-next.0
 
 ### Patch Changes

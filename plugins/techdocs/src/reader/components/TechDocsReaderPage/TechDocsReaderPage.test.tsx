@@ -153,6 +153,10 @@ const mountedRoutes = {
   '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
 };
 
+const mockAppComponents = {
+  NotFoundErrorPage: () => <span>Custom not found page</span>,
+};
+
 describe('<TechDocsReaderPage />', () => {
   const mockNavigate = jest.fn();
 
@@ -189,6 +193,7 @@ describe('<TechDocsReaderPage />', () => {
       </Wrapper>,
       {
         mountedRoutes,
+        components: mockAppComponents,
       },
     );
 
@@ -293,6 +298,7 @@ describe('<TechDocsReaderPage />', () => {
       </Wrapper>,
       {
         mountedRoutes,
+        components: mockAppComponents,
       },
     );
 
@@ -370,6 +376,7 @@ describe('<TechDocsReaderPage />', () => {
         </Wrapper>,
         {
           mountedRoutes,
+          components: mockAppComponents,
         },
       );
 
@@ -405,6 +412,7 @@ describe('<TechDocsReaderPage />', () => {
         </Wrapper>,
         {
           mountedRoutes,
+          components: mockAppComponents,
         },
       );
 
@@ -430,6 +438,7 @@ describe('<TechDocsReaderPage />', () => {
         </Wrapper>,
         {
           mountedRoutes,
+          components: mockAppComponents,
         },
       );
 

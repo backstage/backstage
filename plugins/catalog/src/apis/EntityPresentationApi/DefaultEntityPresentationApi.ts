@@ -230,10 +230,10 @@ export class DefaultEntityPresentationApi implements EntityPresentationApi {
 
     const kindIcons: Record<string, IconComponent> = {};
     Object.entries(DEFAULT_ICONS).forEach(([kind, icon]) => {
-      kindIcons[kind.toLocaleLowerCase('en-US')] = icon;
+      kindIcons[kind.toLowerCase()] = icon;
     });
     Object.entries(options.kindIcons ?? {}).forEach(([kind, icon]) => {
-      kindIcons[kind.toLocaleLowerCase('en-US')] = icon;
+      kindIcons[kind.toLowerCase()] = icon;
     });
 
     if (renderer.async) {
@@ -459,6 +459,6 @@ export class DefaultEntityPresentationApi implements EntityPresentationApi {
       return false;
     }
 
-    return this.#kindIcons[kind.toLocaleLowerCase('en-US')];
+    return this.#kindIcons[kind.toLowerCase()];
   }
 }

@@ -20,7 +20,7 @@ import { ForwardedError } from '@backstage/errors';
 import { PassThrough } from 'node:stream';
 import { pipeline as pipelineStream } from 'node:stream';
 import { promisify } from 'node:util';
-import { TechDocsContainerRunner } from './types';
+import { ContainerRunnerPullOptions, TechDocsContainerRunner } from './types';
 import { Writable } from 'node:stream';
 
 const pipeline = promisify(pipelineStream);
@@ -48,6 +48,7 @@ export class DockerContainerRunner implements TechDocsContainerRunner {
     workingDir?: string;
     envVars?: Record<string, string>;
     pullImage?: boolean;
+    pullOptions?: ContainerRunnerPullOptions;
     defaultUser?: boolean;
   }) {
     const {
@@ -59,6 +60,7 @@ export class DockerContainerRunner implements TechDocsContainerRunner {
       workingDir,
       envVars = {},
       pullImage = true,
+      pullOptions = {},
       defaultUser = false,
     } = options;
 
@@ -74,7 +76,7 @@ export class DockerContainerRunner implements TechDocsContainerRunner {
 
     if (pullImage) {
       await new Promise<void>((resolve, reject) => {
-        this.dockerClient.pull(imageName, {}, (err, stream) => {
+        this.dockerClient.pull(imageName, pullOptions, (err, stream) => {
           if (err) {
             reject(err);
           } else if (!stream) {

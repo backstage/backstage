@@ -1,6 +1,6 @@
 {
   "name": "app-example-plugin",
-  "version": "0.0.38-next.0",
+  "version": "0.0.41",
   "description": "Backstage internal example plugin",
   "backstage": {
     "role": "frontend-plugin",
@@ -54,9 +54,9 @@
     "react-router-dom": "^6.30.2"
   },
   "peerDependencies": {
-    "@types/react": "^17.0.0 || ^18.0.0",
-    "react": "^17.0.0 || ^18.0.0",
-    "react-dom": "^17.0.0 || ^18.0.0",
+    "@types/react": "^18.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
     "react-router-dom": "^6.30.2"
   },
   "peerDependenciesMeta": {

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { TestRouter } from '../../testUtils/TestRouter';
 import {
   act,
   fireEvent,
@@ -23,11 +24,13 @@ import {
   within,
 } from '@testing-library/react';
 import { useState } from 'react';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import type {
   AsyncListSource,
   IdentifiedOption,
 } from '../../types/selectableCollection';
 import { useAsyncList } from '../../hooks/useAsyncList';
+import { BUIProvider } from '../../provider';
 import { Select, SelectItem, SelectItemProfile, SelectItemText } from '.';
 
 function openSelect() {
@@ -203,6 +206,65 @@ describe('Select', () => {
     const option = screen.getByRole('option', { name: 'Custom' });
     expect(option.querySelector('.bui-SelectItemIndicator')).toBeVisible();
     expect(option.querySelector('.bui-SelectItemContent')).toBeVisible();
+  });
+
+  it('renders a linked item with the host basename and navigates client-side', () => {
+    render(
+      <TestRouter
+        basename="/app"
+        initialEntries={['/app/catalog']}
+        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+      >
+        <BUIProvider>
+          <Select aria-label="Destination">
+            <SelectItem id="docs" textValue="TechDocs" href="/catalog/docs">
+              TechDocs
+            </SelectItem>
+          </Select>
+          <LocationStatus />
+        </BUIProvider>
+      </TestRouter>,
+    );
+
+    openSelect();
+    const option = screen.getByRole('option', { name: 'TechDocs' });
+    expect(option).toHaveAttribute('href', '/app/catalog/docs');
+    fireEvent.click(option);
+    expect(screen.getByRole('status')).toHaveTextContent('/catalog/docs');
+  });
+
+  it('routes a relative text preset from the component route with one basename', () => {
+    render(
+      <TestRouter
+        basename="/app"
+        initialEntries={['/app/catalog/entity']}
+        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+      >
+        <BUIProvider>
+          <Routes>
+            <Route
+              path="catalog/entity/*"
+              element={
+                <>
+                  <Select aria-label="Destination">
+                    <SelectItemText id="docs" title="TechDocs" href="docs" />
+                  </Select>
+                  <LocationStatus />
+                </>
+              }
+            />
+          </Routes>
+        </BUIProvider>
+      </TestRouter>,
+    );
+
+    openSelect();
+    const option = screen.getByRole('option', { name: 'TechDocs' });
+    expect(option).toHaveAttribute('href', '/app/catalog/entity/docs');
+    fireEvent.click(option);
+    expect(screen.getByRole('status')).toHaveTextContent(
+      '/catalog/entity/docs',
+    );
   });
 
   it('renders normalized convenience options through the text preset', () => {
@@ -822,3 +884,7 @@ describe('Select', () => {
     }
   });
 });
+
+function LocationStatus() {
+  return <span role="status">{useLocation().pathname}</span>;
+}

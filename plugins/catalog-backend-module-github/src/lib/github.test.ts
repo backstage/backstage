@@ -21,7 +21,8 @@ import {
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { graphql as graphqlOctokit } from '@octokit/graphql';
 import { CacheService } from '@backstage/backend-plugin-api';
-import { graphql as graphqlMsw, http, HttpResponse } from 'msw';
+import { http, HttpResponse } from 'msw';
+import { graphql as mswGraphql } from 'msw/graphql';
 import { setupServer } from 'msw/node';
 import { TeamTransformer, UserTransformer } from './defaultTransformers';
 import {
@@ -46,6 +47,8 @@ import {
 import { Octokit } from '@octokit/core';
 import { throttling } from '@octokit/plugin-throttling';
 import { retry } from '@octokit/plugin-retry';
+
+const graphqlMsw = mswGraphql.link('https://api.github.com/graphql');
 
 // Note: We do NOT mock @octokit/core globally because createRestClient
 // needs a real Octokit.plugin. The createGraphqlClient tests use a local
@@ -410,6 +413,76 @@ describe('github', () => {
       expect(nonEnterpriseRestClient.request).toHaveBeenCalledWith(
         'GET /versions',
       );
+    });
+
+    it('fetches email with app token when fetchEmailForGithubApps is true', async () => {
+      let capturedVariables: Record<string, unknown> = {};
+      const input: QueryResponse = {
+        organization: {
+          membersWithRole: {
+            pageInfo: { hasNextPage: false },
+            nodes: [
+              {
+                login: 'a',
+                name: 'b',
+                bio: 'c',
+                email: 'd',
+                avatarUrl: 'e',
+              },
+            ],
+          },
+        },
+      };
+
+      server.use(
+        graphqlMsw.query('users', ({ variables }) => {
+          capturedVariables = variables;
+          return HttpResponse.json({ data: input });
+        }),
+      );
+
+      await getOrganizationUsers(
+        graphql,
+        'a',
+        'app',
+        undefined,
+        undefined,
+        false,
+        undefined,
+        true,
+      );
+
+      expect(capturedVariables.email).toBe(true);
+    });
+
+    it('does not fetch email with app token by default', async () => {
+      let capturedVariables: Record<string, unknown> = {};
+      const input: QueryResponse = {
+        organization: {
+          membersWithRole: {
+            pageInfo: { hasNextPage: false },
+            nodes: [
+              {
+                login: 'a',
+                name: 'b',
+                bio: 'c',
+                avatarUrl: 'e',
+              },
+            ],
+          },
+        },
+      };
+
+      server.use(
+        graphqlMsw.query('users', ({ variables }) => {
+          capturedVariables = variables;
+          return HttpResponse.json({ data: input });
+        }),
+      );
+
+      await getOrganizationUsers(graphql, 'a', 'app');
+
+      expect(capturedVariables.email).toBe(false);
     });
   });
 

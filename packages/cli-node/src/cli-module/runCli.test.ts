@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { createMockDirectory } from '@backstage/backend-test-utils';
+import { stripVTControlCharacters } from 'node:util';
 import { createCliModule } from './createCliModule';
 import { runCli } from './runCli';
 
@@ -78,6 +80,77 @@ describe('runCli', () => {
     expect(process.exit).toHaveBeenCalledTimes(1);
   });
 
+  it('preserves the exit code set by a command', async () => {
+    process.argv = ['node', 'cli', 'validate'];
+    const originalExitCode = process.exitCode;
+
+    const validateModule = createCliModule({
+      packageJson: { name: '@example/validate' },
+      init: async reg => {
+        reg.addCommand({
+          path: ['validate'],
+          description: 'Validate something',
+          execute: async () => {
+            process.exitCode = 1;
+          },
+        });
+      },
+    });
+
+    try {
+      await runCli({ modules: [validateModule], name: 'example-cli' });
+    } finally {
+      process.exitCode = originalExitCode;
+    }
+
+    expect(process.exit).toHaveBeenCalledWith(1);
+    expect(process.exit).toHaveBeenCalledTimes(1);
+  });
+
+  it('waits for stdout and stderr to flush before exiting', async () => {
+    process.argv = ['node', 'cli', 'print'];
+
+    const pendingFlushes: Array<() => void> = [];
+    let onAllFlushesPending: () => void = () => {};
+    const allFlushesPending = new Promise<void>(resolve => {
+      onAllFlushesPending = resolve;
+    });
+    const holdWrite = (_chunk: unknown, callback?: unknown) => {
+      if (typeof callback === 'function') {
+        pendingFlushes.push(callback as () => void);
+        if (pendingFlushes.length === 2) {
+          onAllFlushesPending();
+        }
+      }
+      return true;
+    };
+    jest.spyOn(process.stdout, 'write').mockImplementation(holdWrite as never);
+    jest.spyOn(process.stderr, 'write').mockImplementation(holdWrite as never);
+
+    const printModule = createCliModule({
+      packageJson: { name: '@example/print' },
+      init: async reg => {
+        reg.addCommand({
+          path: ['print'],
+          description: 'Print a lot of output',
+          execute: async () => {
+            process.stdout.write('output');
+          },
+        });
+      },
+    });
+
+    const done = runCli({ modules: [printModule], name: 'example-cli' });
+
+    await allFlushesPending;
+    expect(process.exit).not.toHaveBeenCalled();
+
+    pendingFlushes.forEach(flush => flush());
+    await done;
+
+    expect(process.exit).toHaveBeenCalledWith(0);
+  });
+
   it('forwards help flags to leaf commands', async () => {
     expect.assertions(2);
     process.argv = ['node', 'cli', 'test', '--help'];
@@ -135,6 +208,179 @@ describe('runCli', () => {
     expect(helpOutput).not.toContain('secret');
     expect(process.exit).toHaveBeenCalledWith(0);
     logSpy.mockRestore();
+  });
+
+  it.each([
+    { commandPath: [] },
+    { commandPath: ['repo'] },
+    { commandPath: ['repo', 'example'] },
+  ])(
+    'renders current-level help without a subcommand for %j',
+    async ({ commandPath }) => {
+      const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+      const execute = jest.fn(async () => {});
+      const loader = jest.fn(async () => ({ default: execute }));
+      const testModule = createCliModule({
+        packageJson: { name: '@example/test' },
+        init: async reg => {
+          reg.addCommand({
+            path: ['repo', 'example', 'list'],
+            description: 'List examples',
+            execute: { loader },
+          });
+        },
+      });
+      const options = { modules: [testModule], name: 'example-cli' };
+
+      process.argv = ['node', 'cli', ...commandPath];
+      await runCli(options);
+      const output = stripVTControlCharacters(
+        logSpy.mock.calls.flat().join('\n'),
+      );
+      expect(output).toContain(['example-cli', ...commandPath].join(' '));
+      expect(output).toContain(['repo', 'example', 'list'][commandPath.length]);
+      expect(output).toContain(
+        ['example list', 'list', 'List examples'][commandPath.length],
+      );
+      expect(output).not.toContain('Invalid command');
+      expect(process.exit).not.toHaveBeenCalled();
+
+      logSpy.mockClear();
+      process.argv = ['node', 'cli', ...commandPath, '--help'];
+      await runCli(options);
+      expect(
+        stripVTControlCharacters(logSpy.mock.calls.flat().join('\n')),
+      ).toBe(output);
+      expect(process.exit).toHaveBeenCalledWith(0);
+      expect(loader).not.toHaveBeenCalled();
+      expect(execute).not.toHaveBeenCalled();
+    },
+  );
+
+  it('separates and sorts groups and commands with visible child previews', async () => {
+    process.argv = ['node', 'cli'];
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const testModule = createCliModule({
+      packageJson: { name: '@example/test' },
+      init: async reg => {
+        for (const path of [
+          ['zulu'],
+          ['repo', 'test'],
+          ['repo', 'start'],
+          ['repo', 'lint'],
+          ['repo', 'fix'],
+          ['repo', 'clean'],
+          ['repo', 'build'],
+          ['package', 'example', 'list'],
+          ['alpha'],
+        ]) {
+          reg.addCommand({
+            path,
+            description: `Run ${path.join(' ')}`,
+            execute: async () => {},
+          });
+        }
+        for (const path of [
+          ['repo', 'hidden'],
+          ['hidden', 'test'],
+        ]) {
+          reg.addCommand({
+            path,
+            description: 'Hidden command',
+            experimental: true,
+            execute: async () => {},
+          });
+        }
+      },
+    });
+    await runCli({ modules: [testModule], name: 'example-cli' });
+    const output = stripVTControlCharacters(
+      logSpy.mock.calls.flat().join('\n'),
+    );
+    const groups = output.split(/groups:/i)[1].split(/commands:/i)[0];
+    const commands = output.split(/commands:/i)[1].split(/flags:/i)[0];
+    expect(
+      groups
+        .trim()
+        .split('\n')
+        .map(line => line.trim().replace(/\s+/g, ' ')),
+    ).toEqual([
+      'package example list',
+      'repo build, clean, fix, lint, start, test',
+    ]);
+    expect(
+      commands
+        .trim()
+        .split('\n')
+        .map(line => line.trim().replace(/\s+/g, ' ')),
+    ).toEqual([
+      'alpha Run alpha',
+      'help Display help for command',
+      'zulu Run zulu',
+    ]);
+    expect(output).not.toContain('hidden');
+  });
+
+  it('fits previews to terminal width and expands groups breadth-first', async () => {
+    const columnsDescriptor = Object.getOwnPropertyDescriptor(
+      process.stdout,
+      'columns',
+    );
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const loader = jest.fn();
+    const testModule = createCliModule({
+      packageJson: { name: '@example/test' },
+      init: async reg => {
+        for (const path of [
+          ['repo', 'a', 'x', 'one'],
+          ['repo', 'a', 'x', 'two'],
+          ['repo', 'b', 'one'],
+          ['repo', 'b', 'two'],
+          ['repo', 'z'],
+        ]) {
+          reg.addCommand({
+            path,
+            description: 'Example command',
+            execute: { loader },
+          });
+        }
+      },
+    });
+    try {
+      for (const [width, expected] of [
+        [1, '…'],
+        [8, 'a/, …'],
+        [9, 'a/, b/, z'],
+        [11, 'a x/, b/, z'],
+        [24, 'a x/, b one, b two, z'],
+        [33, 'a x one, a x two, b one, b two, z'],
+        [undefined, 'a x one, a x two, b one, b two, z'],
+      ] as const) {
+        Object.defineProperty(process.stdout, 'columns', {
+          configurable: true,
+          value: width === undefined ? undefined : width + 14,
+        });
+        process.argv = ['node', 'cli'];
+        logSpy.mockClear();
+        await runCli({ modules: [testModule], name: 'example-cli' });
+        const output = stripVTControlCharacters(
+          logSpy.mock.calls.flat().join('\n'),
+        );
+        expect(
+          output
+            .split(/groups:/i)[1]
+            .split(/commands:/i)[0]
+            .trim(),
+        ).toBe(`repo        ${expected}`);
+      }
+      expect(loader).not.toHaveBeenCalled();
+    } finally {
+      if (columnsDescriptor) {
+        Object.defineProperty(process.stdout, 'columns', columnsDescriptor);
+      } else {
+        Reflect.deleteProperty(process.stdout, 'columns');
+      }
+    }
   });
 
   it('supports the short version flag', async () => {
@@ -302,6 +548,143 @@ describe('runCli', () => {
       }),
     ).rejects.toThrow(
       'Command "repo test" from "@example/nested" conflicts with an existing command from "@example/parent"',
+    );
+  });
+
+  it('selects toggleable package commands based on the current package', async () => {
+    const mockDir = createMockDirectory();
+    mockDir.setContent({
+      vitest: {
+        'package.json': JSON.stringify({ name: 'vitest-pkg', version: '0' }),
+        src: {},
+      },
+      plain: {
+        'package.json': JSON.stringify({ name: 'plain-pkg', version: '0' }),
+      },
+    });
+    const calls: string[] = [];
+    const usesVitest = ({ packageJson }: { packageJson: { name: string } }) =>
+      packageJson.name.startsWith('vitest');
+    const modules = [
+      createCliModule({
+        packageJson: { name: '@example/jest' },
+        init: async reg => {
+          reg.addCommand({
+            path: ['package', 'test'],
+            description: 'Test with Jest',
+            execute: async ({ args }) => {
+              calls.push(`jest ${args.join(' ')}`);
+            },
+          });
+        },
+      }),
+      createCliModule({
+        packageJson: { name: '@example/vitest' },
+        init: async reg => {
+          reg.addPackageCommand({
+            path: ['test'],
+            description: 'Test with Vitest',
+            if: usesVitest,
+            execute: async ({ args }) => {
+              calls.push(`vitest ${args.join(' ')}`);
+            },
+          });
+        },
+      }),
+    ];
+    const cwdSpy = jest.spyOn(process, 'cwd');
+    process.argv = ['node', 'cli', 'package', 'test', '--watch'];
+
+    cwdSpy.mockReturnValue(mockDir.resolve('vitest/src'));
+    await runCli({ modules, name: 'example-cli' });
+    cwdSpy.mockReturnValue(mockDir.resolve('plain'));
+    await runCli({ modules, name: 'example-cli' });
+
+    expect(calls).toEqual(['vitest --watch', 'jest --watch']);
+    expect(process.exit).toHaveBeenCalledTimes(2);
+    expect(process.exit).toHaveBeenNthCalledWith(1, 0);
+    expect(process.exit).toHaveBeenNthCalledWith(2, 0);
+
+    // Help shows the description of the first registered variant
+    process.argv = ['node', 'cli', 'package'];
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    await runCli({ modules, name: 'example-cli' });
+    const helpOutput = stripVTControlCharacters(
+      logSpy.mock.calls.flat().join('\n'),
+    );
+    expect(helpOutput).toContain('Test with Jest');
+    expect(helpOutput).not.toContain('Test with Vitest');
+  });
+
+  it('describes a toggleable command by its fallback variant in group help', async () => {
+    const modules = [
+      createCliModule({
+        packageJson: { name: '@example/vitest' },
+        init: async reg => {
+          reg.addPackageCommand({
+            path: ['test'],
+            description: 'Test with Vitest',
+            if: () => true,
+            execute: async () => {},
+          });
+        },
+      }),
+      createCliModule({
+        packageJson: { name: '@example/jest' },
+        init: async reg => {
+          reg.addCommand({
+            path: ['package', 'test'],
+            description: 'Test with Jest',
+            execute: async () => {},
+          });
+        },
+      }),
+    ];
+    process.argv = ['node', 'cli', 'package'];
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+
+    await runCli({ modules, name: 'example-cli' });
+
+    const helpOutput = stripVTControlCharacters(
+      logSpy.mock.calls.flat().join('\n'),
+    );
+    expect(helpOutput).toContain('Test with Jest');
+    expect(helpOutput).not.toContain('Test with Vitest');
+  });
+
+  it('exits with an error when no toggleable variant is enabled', async () => {
+    const mockDir = createMockDirectory();
+    mockDir.setContent({
+      'package.json': JSON.stringify({ name: 'some-pkg', version: '0' }),
+    });
+    jest.spyOn(process, 'cwd').mockReturnValue(mockDir.path);
+    const stderrSpy = jest
+      .spyOn(process.stderr, 'write')
+      .mockImplementation(() => true);
+    const execute = jest.fn(async () => {});
+    process.argv = ['node', 'cli', 'package', 'test'];
+
+    await runCli({
+      modules: [
+        createCliModule({
+          packageJson: { name: '@example/vitest' },
+          init: async reg => {
+            reg.addPackageCommand({
+              path: ['test'],
+              description: 'Test with Vitest',
+              if: () => false,
+              execute,
+            });
+          },
+        }),
+      ],
+      name: 'example-cli',
+    });
+
+    expect(execute).not.toHaveBeenCalled();
+    expect(process.exit).toHaveBeenCalledWith(127);
+    expect(stderrSpy.mock.calls.flat().join('')).toContain(
+      'Command "package test" is not enabled for package "some-pkg". Candidate modules: "@example/vitest"',
     );
   });
 

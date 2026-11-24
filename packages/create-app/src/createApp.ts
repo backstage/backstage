@@ -31,11 +31,86 @@ import {
   tryInitGitRepository,
   readGitConfig,
   fetchYarnLockSeedTask,
+  tryCommandForVersion,
 } from './lib/tasks';
 
 const DEFAULT_BRANCH = 'master';
+// The lowest supported version of each supported Node.js release line.
+// Keep in sync with the engines.node field in the root package.json.
+const MINIMUM_NODE_VERSIONS = ['24.15.0', '26.13.0'];
+const SUPPORTED_NODE_VERSIONS = MINIMUM_NODE_VERSIONS.map(v => `${v}+`);
+
+// Compares two versions of the same major
+function isBelowMinimum(version: string, minimum: string) {
+  const [, minor, patch] = version.split('.').map(Number);
+  const [, minimumMinor, minimumPatch] = minimum.split('.').map(Number);
+  return (
+    minor < minimumMinor || (minor === minimumMinor && patch < minimumPatch)
+  );
+}
 
 export default async (opts: OptionValues): Promise<void> => {
+  // Prerequisite check — runs before the interactive prompt to fail fast
+  let hasPrerequisiteError = false;
+  const [major, minor, patch] = process.versions.node.split('.').map(Number);
+  const minimumVersion = MINIMUM_NODE_VERSIONS.find(
+    v => Number(v.split('.')[0]) === major,
+  );
+  const yarn = await tryCommandForVersion('yarn -v');
+  let python = await tryCommandForVersion('python3 --version');
+  if (python.error) {
+    python = await tryCommandForVersion('python --version');
+  }
+
+  Task.log();
+  Task.log('Prerequisites check...');
+  Task.log();
+  Task.log(`  Node version is: ${major}.${minor}.${patch}`);
+  Task.log(`  Yarn version is: ${yarn.version}`);
+  Task.log(`  Python version is: ${python.version.replace(/^Python\s+/, '')}`);
+
+  if (yarn.error) {
+    Task.error(
+      'Yarn is not available. Please install Yarn before creating a Backstage app.',
+    );
+    hasPrerequisiteError = true;
+  }
+
+  if (python.error) {
+    Task.log(
+      chalk.yellow(
+        'Warning: Python is not available. Python is required by node-gyp for some native dependencies.',
+      ),
+    );
+  }
+
+  if (!minimumVersion) {
+    Task.error(
+      `Node version ${major} is not a supported LTS version. Please use a supported version (${SUPPORTED_NODE_VERSIONS.join(
+        ' or ',
+      )}).`,
+    );
+    hasPrerequisiteError = true;
+  } else if (isBelowMinimum(process.versions.node, minimumVersion)) {
+    Task.error(
+      `Node version ${major}.${minor}.${patch} is not supported. Please use ${minimumVersion} or later.`,
+    );
+    hasPrerequisiteError = true;
+  }
+
+  if (hasPrerequisiteError) {
+    Task.log(
+      'It seems that something went wrong when validating the prerequisites 🤔',
+    );
+    Task.log(
+      'For help with setting up prerequisites, see https://backstage.io/docs/getting-started/#prerequisites',
+    );
+
+    Task.error('🔥  Failed to validate needed prerequisites!');
+    Task.exit(1);
+    return;
+  }
+
   const answers: Answers = await inquirer.prompt([
     {
       type: 'input',

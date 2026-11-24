@@ -130,7 +130,7 @@ describe('gateway', () => {
       }),
     );
     await Promise.all([backend.start(), anotherBackend.start()]);
-  }, 15_000);
+  }, 30_000);
 
   afterAll(async () => {
     await backend.stop();

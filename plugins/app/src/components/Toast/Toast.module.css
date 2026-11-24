@@ -66,6 +66,7 @@
   gap: var(--bui-space-3);
   border-radius: var(--bui-radius-3);
   font-size: var(--bui-font-size-3);
+  line-height: 1.15;
   background-color: var(--bui-bg-app);
   border: 1px solid var(--bui-border-1);
   color: var(--bui-fg-primary);
@@ -126,6 +127,7 @@
 .content {
   display: flex;
   flex-direction: column;
+  min-width: 0;
   gap: var(--bui-space-1);
 }
 
@@ -147,7 +149,7 @@
 .title {
   font-weight: var(--bui-font-weight-bold);
   font-size: var(--bui-font-size-3);
-  word-wrap: break-word;
+  overflow-wrap: anywhere;
   margin-top: var(--bui-space-0_5);
 }
 
@@ -156,7 +158,7 @@
   color: var(--bui-fg-secondary);
   font-size: var(--bui-font-size-3);
   opacity: 0.9;
-  word-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 
 /* Links */

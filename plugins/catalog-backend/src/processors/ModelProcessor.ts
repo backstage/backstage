@@ -86,6 +86,8 @@ export class ModelProcessor implements CatalogProcessor {
    * For all fields in the entity that the model says are relations: if the
    * field is a string or an array of strings, emit both the forward and reverse
    * relations that the model says apply for it.
+   * References without a namespace inherit the entity namespace unless the
+   * relation field explicitly selects the default namespace.
    */
   async postProcessEntity(
     entity: Entity,
@@ -116,18 +118,16 @@ export class ModelProcessor implements CatalogProcessor {
         const targetRef = parseEntityRef(shorthandRef, {
           defaultKind: fieldModel.defaultKind,
           defaultNamespace:
-            fieldModel.defaultNamespace === 'inherit'
-              ? selfNamespace
-              : DEFAULT_NAMESPACE,
+            fieldModel.defaultNamespace === 'default'
+              ? DEFAULT_NAMESPACE
+              : selfNamespace,
         });
 
-        const targetKind = targetRef.kind.toLocaleLowerCase('en-US');
+        const targetKind = targetRef.kind.toLowerCase();
 
         if (
           fieldModel.allowedKinds &&
-          !fieldModel.allowedKinds.some(
-            k => k.toLocaleLowerCase('en-US') === targetKind,
-          )
+          !fieldModel.allowedKinds.some(k => k.toLowerCase() === targetKind)
         ) {
           // TODO: Make this more visible. We should probably not use logging,
           // but if we added admonition support on entities, this would be a
@@ -145,12 +145,12 @@ export class ModelProcessor implements CatalogProcessor {
         );
 
         // Emit the reverse relation if the model knows about it
-        const selfKind = entity.kind.toLocaleLowerCase('en-US');
+        const selfKind = entity.kind.toLowerCase();
         const relation = modelRelations.find(
           r =>
             r.forward.type === fieldModel.relation &&
-            r.fromKind.some(k => k.toLocaleLowerCase('en-US') === selfKind) &&
-            r.toKind.some(k => k.toLocaleLowerCase('en-US') === targetKind),
+            r.fromKind.some(k => k.toLowerCase() === selfKind) &&
+            r.toKind.some(k => k.toLowerCase() === targetKind),
         );
         if (relation) {
           emit(

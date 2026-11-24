@@ -15,6 +15,7 @@
  */
 import { z } from 'zod/v4';
 import { InputError } from '@backstage/errors';
+import { getHostLookupIdentity } from './getHostLookupIdentity';
 import { createConnectionType } from './createConnectionType';
 
 describe('createConnectionType', () => {
@@ -26,6 +27,7 @@ describe('createConnectionType', () => {
     } as const;
 
     const SingleAuthType = createConnectionType({
+      getLookupIdentity: getHostLookupIdentity,
       type: 'single',
       title: 'Single',
       configSchema: z.object({ host: z.string() }),
@@ -33,6 +35,12 @@ describe('createConnectionType', () => {
     });
 
     expect(SingleAuthType.type).toBe('single');
+    expect(SingleAuthType).not.toHaveProperty('query');
+    expect(SingleAuthType).not.toHaveProperty('auth');
+    // @ts-expect-error - query is an input to find, not a descriptor property
+    expect(SingleAuthType.query).toBeUndefined();
+    // @ts-expect-error - auth values are derived from the auth method schemas
+    expect(SingleAuthType.auth).toBeUndefined();
     expect(SingleAuthType.authMethods).toEqual([
       expect.objectContaining({ method: 'token', title: 'Token' }),
     ]);
@@ -48,101 +56,56 @@ describe('createConnectionType', () => {
     expect(SingleAuthType.configSchema.schema().schema).toMatchObject({
       type: 'object',
       properties: {
-        type: { const: 'single' },
         host: { type: 'string' },
-        auth: { type: 'array' },
       },
       additionalProperties: false,
     });
-    expect(SingleAuthType.configSchema.schema().schema.required).toEqual(
-      expect.arrayContaining(['host', 'type', 'auth']),
-    );
-    expect(SingleAuthType.configSchema.schema().schema.required).toHaveLength(
-      3,
-    );
+    expect(SingleAuthType.configSchema.schema().schema.required).toEqual([
+      'host',
+    ]);
     expect(SingleAuthType.configSchema.parse).toBeInstanceOf(Function);
 
     const parsed = SingleAuthType.configSchema.parse({
-      type: 'single',
       host: 'example.com',
-      auth: [{ method: 'token', token: 'abc' }],
     });
-    expect(parsed.type).toBe('single');
     expect(parsed.host).toBe('example.com');
-    expect(parsed.auth[0].token).toBe('abc');
-
-    // Wrong literal type should fail.
-    expect(() =>
-      SingleAuthType.configSchema.parse({
-        type: 'other',
-        host: 'example.com',
-        auth: [{ method: 'token', token: 'abc' }],
-      }),
-    ).toThrow();
 
     // Missing required config field should fail.
-    expect(() =>
-      SingleAuthType.configSchema.parse({
-        type: 'single',
-        auth: [{ method: 'token', token: 'abc' }],
-      }),
-    ).toThrow();
+    expect(() => SingleAuthType.configSchema.parse({})).toThrow();
 
-    // Auth method not in the list should fail.
+    // Unknown top-level fields should fail (strict mode).
     expect(() =>
       SingleAuthType.configSchema.parse({
-        type: 'single',
-        host: 'example.com',
-        auth: [{ method: 'other', token: 'abc' }],
-      }),
-    ).toThrow();
-
-    // Unknown top-level fields should fail.
-    expect(() =>
-      SingleAuthType.configSchema.parse({
-        type: 'single',
         host: 'example.com',
         host2: 'example.com',
-        auth: [{ method: 'token', token: 'abc' }],
       }),
     ).toThrow();
+  });
 
-    // Optional title field should be accepted.
-    expect(
-      SingleAuthType.configSchema.parse({
-        type: 'single',
-        host: 'example.com',
-        title: 'My Production Instance',
-        auth: [{ method: 'token', token: 'abc' }],
+  it('calculates key/value identity from parsed configuration without exposing it in data', () => {
+    const definition = createConnectionType({
+      type: 'derived-identity',
+      title: 'Derived',
+      configSchema: z.object({
+        endpoint: z.string().transform(value => value.toLowerCase()),
       }),
-    ).toMatchObject({ title: 'My Production Instance' });
-
-    // Omitting title should still work.
-    expect(
-      SingleAuthType.configSchema.parse({
-        type: 'single',
-        host: 'example.com',
-        auth: [{ method: 'token', token: 'abc' }],
-      }),
-    ).not.toHaveProperty('title');
-
-    // Optional auth method title field should be accepted.
-    expect(
-      SingleAuthType.configSchema.parse({
-        type: 'single',
-        host: 'example.com',
-        auth: [{ method: 'token', title: 'Production Token', token: 'abc' }],
-      }),
-    ).toMatchObject({ auth: [{ title: 'Production Token' }] });
-
-    // Auth method title must not be empty when provided.
-    expect(() =>
-      SingleAuthType.configSchema.parse({
-        type: 'single',
-        host: 'example.com',
-        auth: [{ method: 'token', title: '', token: 'abc' }],
-      }),
-    ).toThrow();
+      getLookupIdentity: config => ({ key: 'host', value: config.endpoint }),
+      authMethods: [
+        { method: 'none', title: 'None', configSchema: z.object({}) },
+      ],
+    });
+    const parsed = definition.configSchema.parse({ endpoint: 'EXAMPLE.COM' });
+    expect(definition.getLookupIdentity(parsed)).toEqual({
+      key: 'host',
+      value: 'example.com',
+    });
+    expect(parsed).toEqual({ endpoint: 'example.com' });
+    expect(JSON.parse(JSON.stringify(parsed))).not.toHaveProperty(
+      'getLookupIdentity',
+    );
+    expect(definition).not.toHaveProperty('lookupStrategy');
+    // @ts-expect-error - the callback receives inferred parsed configuration
+    definition.getLookupIdentity({ url: 'https://example.com' });
   });
 
   it('rejects framework-owned auth method config fields at compile time', () => {
@@ -157,6 +120,7 @@ describe('createConnectionType', () => {
     } as const;
 
     createConnectionType({
+      getLookupIdentity: getHostLookupIdentity,
       type: 'reserved-auth',
       title: 'Reserved Auth',
       configSchema: z.object({ host: z.string() }),
@@ -165,8 +129,75 @@ describe('createConnectionType', () => {
     });
   });
 
+  it('supports object transforms while keeping strict input and reserved-field checks', () => {
+    const schema = z
+      .object({ baseUrl: z.string() })
+      .transform(config => ({ ...config, apiBaseUrl: config.baseUrl }));
+    const connectionType = createConnectionType({
+      getLookupIdentity: getHostLookupIdentity,
+      type: 'transformed',
+      title: 'Transformed',
+      configSchema: schema,
+      authMethods: [
+        { method: 'none', title: 'None', configSchema: z.object({}) },
+      ],
+    });
+    const parsed = connectionType.configSchema.parse({
+      baseUrl: 'https://example.com/context/',
+    });
+    expect(parsed.apiBaseUrl).toBe('https://example.com/context/');
+    expect(connectionType.configSchema.schema().schema).toMatchObject({
+      properties: { baseUrl: { type: 'string' } },
+      required: ['baseUrl'],
+      additionalProperties: false,
+    });
+    expect(() =>
+      connectionType.configSchema.parse({
+        baseUrl: 'https://example.com/',
+        host: 'other.example.com',
+      }),
+    ).toThrow(InputError);
+
+    createConnectionType({
+      getLookupIdentity: getHostLookupIdentity,
+      type: 'invalid-output',
+      title: 'Invalid output',
+      // @ts-expect-error - connection configuration must remain an object
+      configSchema: z.object({ host: z.string() }).transform(() => 1),
+      authMethods: [
+        { method: 'none', title: 'None', configSchema: z.object({}) },
+      ],
+    });
+
+    createConnectionType({
+      getLookupIdentity: getHostLookupIdentity,
+      type: 'reserved-input',
+      title: 'Reserved input',
+      // @ts-expect-error - reserved input fields cannot be hidden by a transform
+      configSchema: z
+        .object({ type: z.string() })
+        .transform(() => ({ host: 'example.com' })),
+      authMethods: [
+        { method: 'none', title: 'None', configSchema: z.object({}) },
+      ],
+    });
+    createConnectionType({
+      getLookupIdentity: getHostLookupIdentity,
+      type: 'reserved-output',
+      title: 'Reserved output',
+      // @ts-expect-error - transforms must not produce framework-owned fields
+      configSchema: z
+        .object({ host: z.string() })
+        .transform(config => ({ ...config, type: 'other' })),
+      authMethods: [
+        { method: 'none', title: 'None', configSchema: z.object({}) },
+      ],
+    });
+  });
+
   it('wraps schema validation failures in an InputError', () => {
     const connectionType = createConnectionType({
+      getLookupIdentity: getHostLookupIdentity,
       type: 'wrapped-error',
       title: 'Wrapped Error',
       configSchema: z.object({ host: z.string() }),
@@ -181,10 +212,7 @@ describe('createConnectionType', () => {
 
     let error: unknown;
     try {
-      connectionType.configSchema.parse({
-        type: 'wrapped-error',
-        auth: [{ method: 'none' }],
-      });
+      connectionType.configSchema.parse({});
     } catch (caughtError) {
       error = caughtError;
     }
@@ -201,6 +229,7 @@ describe('createConnectionType', () => {
   it('does not wrap unexpected schema errors', () => {
     const expectedError = new Error('Unexpected schema error');
     const connectionType = createConnectionType({
+      getLookupIdentity: getHostLookupIdentity,
       type: 'unexpected-error',
       title: 'Unexpected Error',
       configSchema: z.object({
@@ -220,9 +249,7 @@ describe('createConnectionType', () => {
     let error: unknown;
     try {
       connectionType.configSchema.parse({
-        type: 'unexpected-error',
         host: 'example.com',
-        auth: [{ method: 'none' }],
       });
     } catch (caughtError) {
       error = caughtError;
@@ -231,8 +258,63 @@ describe('createConnectionType', () => {
     expect(error).toBe(expectedError);
   });
 
+  it('exposes the validate hook for rules that span a whole connection', () => {
+    const ValidatedType = createConnectionType({
+      getLookupIdentity: () => undefined,
+      type: 'validated',
+      title: 'Validated',
+      configSchema: z.object({ defaultToken: z.string().optional() }),
+      authMethods: [
+        {
+          method: 'token',
+          title: 'Token',
+          configSchema: z.object({
+            token: z.string(),
+            primary: z.boolean().optional(),
+          }),
+        },
+      ],
+      validate: ({ config, auth }) => {
+        if (auth.filter(a => a.primary).length > 1) {
+          throw new InputError('At most one auth entry may be primary');
+        }
+        if (config.defaultToken && auth.some(a => a.primary)) {
+          throw new InputError(
+            'defaultToken and a primary auth entry are mutually exclusive',
+          );
+        }
+      },
+    });
+
+    expect(() =>
+      (ValidatedType as any).validate?.({
+        config: {},
+        auth: [
+          { method: 'token', token: 'a', primary: true },
+          { method: 'token', token: 'b', match: { plugins: ['catalog'] } },
+        ],
+      }),
+    ).not.toThrow();
+    expect(() =>
+      (ValidatedType as any).validate?.({
+        config: {},
+        auth: [
+          { method: 'token', token: 'a', primary: true },
+          { method: 'token', token: 'b', primary: true },
+        ],
+      }),
+    ).toThrow('At most one auth entry may be primary');
+    expect(() =>
+      (ValidatedType as any).validate?.({
+        config: { defaultToken: 't' },
+        auth: [{ method: 'token', token: 'a', primary: true }],
+      }),
+    ).toThrow(/mutually exclusive/);
+  });
+
   it('builds a multi-auth-method connection type that discriminates on method', () => {
     const MultiAuthType = createConnectionType({
+      getLookupIdentity: getHostLookupIdentity,
       type: 'multi',
       title: 'Multi',
       configSchema: z.object({ host: z.string() }),
@@ -270,44 +352,17 @@ describe('createConnectionType', () => {
       }).appId,
     ).toBe(1);
 
-    // Both auth methods accepted in the same connection.
+    // Config schema only validates user-defined fields.
     expect(() =>
-      MultiAuthType.configSchema.parse({
-        type: 'multi',
-        host: 'example.com',
-        auth: [
-          { method: 'token', token: 'abc' },
-          { method: 'app', appId: 1, privateKey: 'pk' },
-        ],
-      }),
+      MultiAuthType.configSchema.parse({ host: 'example.com' }),
     ).not.toThrow();
 
-    // Auth config must match the discriminator.
+    // Unknown config fields should fail (strict mode).
     expect(() =>
       MultiAuthType.configSchema.parse({
-        type: 'multi',
         host: 'example.com',
-        auth: [{ method: 'app', token: 'abc' }],
+        extra: 'field',
       }),
     ).toThrow();
-
-    // Unknown discriminator should fail.
-    expect(() =>
-      MultiAuthType.configSchema.parse({
-        type: 'multi',
-        host: 'example.com',
-        auth: [{ method: 'oauth' }],
-      }),
-    ).toThrow();
-
-    // The connection configuration parser is responsible for rejecting an
-    // empty auth array, rather than the connection type schema.
-    expect(() =>
-      MultiAuthType.configSchema.parse({
-        type: 'multi',
-        host: 'example.com',
-        auth: [],
-      }),
-    ).not.toThrow();
   });
 });

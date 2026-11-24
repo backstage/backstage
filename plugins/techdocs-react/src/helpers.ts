@@ -39,9 +39,9 @@ export function toLowercaseEntityRefMaybe(
   if (config.getOptionalBoolean('techdocs.legacyUseCaseSensitiveTripletPaths'))
     return entityRef;
 
-  entityRef.kind = entityRef.kind.toLocaleLowerCase();
-  entityRef.name = entityRef.name.toLocaleLowerCase();
-  entityRef.namespace = entityRef.namespace.toLocaleLowerCase();
+  entityRef.kind = entityRef.kind.toLowerCase();
+  entityRef.name = entityRef.name.toLowerCase();
+  entityRef.namespace = entityRef.namespace.toLowerCase();
 
   return entityRef;
 }

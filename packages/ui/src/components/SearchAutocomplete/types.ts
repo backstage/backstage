@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { BUINavigationOptions } from '../../provider/BUINavigation';
 import type {
   ListBoxItemProps as AriaListBoxItemProps,
   PopoverProps as AriaPopoverProps,
@@ -98,4 +99,10 @@ export type SearchAutocompleteItemOwnProps = {
 /** @public */
 export interface SearchAutocompleteItemProps
   extends SearchAutocompleteItemOwnProps,
-    Omit<AriaListBoxItemProps, keyof SearchAutocompleteItemOwnProps> {}
+    Omit<
+      AriaListBoxItemProps,
+      keyof SearchAutocompleteItemOwnProps | 'render' | 'routerOptions'
+    > {
+  /** Options passed to the router configured on BUIProvider. */
+  routerOptions?: BUINavigationOptions;
+}

@@ -1,5 +1,170 @@
 # @backstage/plugin-kubernetes
 
+## 0.12.25
+
+### Patch Changes
+
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+- Updated dependencies
+  - @backstage/frontend-plugin-api@1.0.0
+  - @backstage/core-plugin-api@1.13.0
+  - @backstage/core-components@0.18.16
+  - @backstage/plugin-catalog-react@4.0.0
+  - @backstage/plugin-kubernetes-common@0.9.15
+  - @backstage/plugin-kubernetes-react@0.6.2
+  - @backstage/plugin-permission-react@0.5.7
+  - @backstage/catalog-model@1.10.3
+
+## 0.12.25-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.16-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.2
+  - @backstage/catalog-model@1.10.3-next.0
+  - @backstage/core-plugin-api@1.12.12-next.2
+  - @backstage/plugin-catalog-react@4.0.0-next.2
+  - @backstage/plugin-kubernetes-react@0.6.2-next.1
+  - @backstage/plugin-kubernetes-common@0.9.15-next.2
+  - @backstage/plugin-permission-react@0.5.7-next.1
+
+## 0.12.25-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.9.15-next.1
+  - @backstage/core-plugin-api@1.12.12-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+  - @backstage/plugin-catalog-react@4.0.0-next.1
+
+## 0.12.25-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.3-next.0
+  - @backstage/plugin-kubernetes-common@0.9.15-next.0
+  - @backstage/core-plugin-api@1.12.12-next.0
+  - @backstage/plugin-catalog-react@4.0.0-next.0
+  - @backstage/plugin-kubernetes-react@0.6.2-next.0
+  - @backstage/core-components@0.18.16-next.0
+  - @backstage/plugin-permission-react@0.5.7-next.0
+
+## 0.12.24
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/plugin-catalog-react@3.3.0
+  - @backstage/core-components@0.18.15
+  - @backstage/plugin-kubernetes-react@0.6.1
+  - @backstage/catalog-model@1.10.2
+  - @backstage/core-plugin-api@1.12.11
+  - @backstage/plugin-kubernetes-common@0.9.14
+  - @backstage/plugin-permission-react@0.5.6
+
+## 0.12.24-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2-next.1
+  - @backstage/plugin-catalog-react@3.3.0-next.2
+  - @backstage/core-components@0.18.15-next.3
+
+## 0.12.24-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.15-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+  - @backstage/plugin-permission-react@0.5.6-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-catalog-react@3.2.4-next.0
+  - @backstage/plugin-kubernetes-react@0.6.1-next.0
+  - @backstage/plugin-kubernetes-common@0.9.14-next.0
+
+## 0.12.23
+
+### Patch Changes
+
+- 83f34f2: The Kubernetes entity content no longer loads its UI until the tab is opened, keeping it out of the initial bundle. Tab visibility is now an entity filter predicate that can be overridden through app config, and entities with an empty Kubernetes annotation now show the tab where previously it was hidden.
+- Updated dependencies
+  - @backstage/core-components@0.18.14
+  - @backstage/catalog-model@1.10.1
+  - @backstage/plugin-catalog-react@3.2.3
+  - @backstage/plugin-kubernetes-react@0.6.0
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/plugin-kubernetes-common@0.9.13
+  - @backstage/core-plugin-api@1.12.10
+  - @backstage/plugin-permission-react@0.5.5
+
+## 0.12.23-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-react@0.6.0-next.2
+  - @backstage/plugin-catalog-react@3.2.3-next.2
+  - @backstage/core-components@0.18.14-next.2
+  - @backstage/core-plugin-api@1.12.10-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.1
+  - @backstage/plugin-permission-react@0.5.5-next.1
+  - @backstage/plugin-kubernetes-common@0.9.13-next.1
+
+## 0.12.23-next.1
+
+### Patch Changes
+
+- 83f34f2: The Kubernetes entity content no longer loads its UI until the tab is opened, keeping it out of the initial bundle. Tab visibility is now an entity filter predicate that can be overridden through app config, and entities with an empty Kubernetes annotation now show the tab where previously it was hidden.
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.0
+  - @backstage/plugin-kubernetes-react@0.5.24-next.1
+  - @backstage/plugin-catalog-react@3.2.3-next.1
+  - @backstage/core-plugin-api@1.12.10-next.0
+  - @backstage/plugin-permission-react@0.5.5-next.0
+
+## 0.12.23-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.2-next.0
+  - @backstage/plugin-kubernetes-common@0.9.13-next.0
+  - @backstage/core-components@0.18.14-next.0
+  - @backstage/plugin-kubernetes-react@0.5.24-next.0
+
+## 0.12.22
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/core-components@0.18.13
+  - @backstage/plugin-kubernetes-react@0.5.23
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/plugin-catalog-react@3.2.1
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/plugin-permission-react@0.5.4
+
+## 0.12.22-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.1-next.2
+  - @backstage/frontend-plugin-api@0.18.0-next.0
+  - @backstage/core-plugin-api@1.12.9-next.0
+  - @backstage/core-components@0.18.13-next.2
+  - @backstage/plugin-kubernetes-react@0.5.23-next.1
+  - @backstage/plugin-permission-react@0.5.4-next.0
+
 ## 0.12.22-next.0
 
 ### Patch Changes

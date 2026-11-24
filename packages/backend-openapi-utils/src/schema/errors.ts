@@ -20,18 +20,14 @@ import { humanifyAjvError } from './utils';
 
 export class OperationError extends Error {
   constructor(operation: Operation, message: string) {
-    super(
-      `["${operation.method.toLocaleUpperCase('en-US')} ${
-        operation.path
-      }"] ${message}`,
-    );
+    super(`["${operation.method.toUpperCase()} ${operation.path}"] ${message}`);
   }
 }
 
 export class OperationResponseError extends Error {
   constructor(operation: Operation, response: Response, message: string) {
     super(
-      `["${operation.method.toLocaleUpperCase('en-US')} ${operation.path}" (${
+      `["${operation.method.toUpperCase()} ${operation.path}" (${
         response.status
       })]: ${message}`,
     );

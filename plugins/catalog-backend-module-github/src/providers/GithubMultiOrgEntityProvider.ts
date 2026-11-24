@@ -28,6 +28,7 @@ import { Config } from '@backstage/config';
 import {
   DefaultGithubCredentialsProvider,
   GithubAppCredentialsMux,
+  GithubCredentials,
   GithubCredentialsProvider,
   GithubIntegrationConfig,
   ScmIntegrations,
@@ -202,6 +203,14 @@ export interface GithubMultiOrgEntityProviderOptions {
    * @defaultValue false
    */
   experimental_checkForSuspendedUsersWithRest?: boolean;
+
+  /**
+   * Request the public email field from the GitHub GraphQL API even when
+   * using a GitHub App for authentication. By default, the public email
+   * field is only requested when using a personal access token.
+   * @defaultValue false
+   */
+  fetchEmailForGithubApps?: boolean;
 }
 
 type CreateDeltaOperation = (entities: Entity[]) => {
@@ -250,6 +259,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       alwaysUseDefaultNamespace: options.alwaysUseDefaultNamespace,
       pageSizes: options.pageSizes,
       excludeSuspendedUsers: options.excludeSuspendedUsers,
+      fetchEmailForGithubApps: options.fetchEmailForGithubApps,
       cache: options.cache,
       experimental_checkForSuspendedUsersWithRest:
         options.experimental_checkForSuspendedUsersWithRest,
@@ -274,6 +284,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       alwaysUseDefaultNamespace?: boolean;
       pageSizes?: Partial<GithubPageSizes>;
       excludeSuspendedUsers?: boolean;
+      fetchEmailForGithubApps?: boolean;
       cache?: CacheService;
       experimental_checkForSuspendedUsersWithRest?: boolean;
     },
@@ -361,10 +372,38 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       : await this.getAllOrgs(this.options.gitHubConfig);
 
     for (const org of orgsToProcess) {
-      const { headers, type: tokenType } =
-        await this.options.githubCredentialsProvider.getCredentials({
-          url: `${this.options.githubUrl}/${org}`,
-        });
+      let credentials: GithubCredentials;
+      try {
+        credentials =
+          await this.options.githubCredentialsProvider.getCredentials({
+            url: `${this.options.githubUrl}/${org}`,
+          });
+      } catch (error) {
+        if (isAppInstallationMissingError(error)) {
+          // Log a clear warning so the user knows *why* ingestion failed,
+          // then throw to abort the read and preserve existing entities.
+          // Skipping an org in a full mutation would silently delete its
+          // entities from the catalog.
+          logMissingCredentialsWarning(logger, org);
+          throw error;
+        }
+        throw error;
+      }
+
+      const { headers, type: tokenType } = credentials;
+
+      // When no installation (and no fallback token) is available the request
+      // would otherwise fail later with a confusing rate limit / auth error.
+      // Log a clear warning and abort to preserve existing catalog entities.
+      if (!headers) {
+        logMissingCredentialsWarning(logger, org);
+        throw new Error(
+          `No GitHub credentials available for org '${org}'. ` +
+            `Aborting ingestion to prevent silent deletion of existing entities. ` +
+            `See https://backstage.io/docs/integrations/github/github-apps/#troubleshooting for more information.`,
+        );
+      }
+
       const client = graphql.defaults({
         baseUrl: this.options.gitHubConfig.apiBaseUrl,
         headers,
@@ -382,6 +421,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
         pageSizes,
         this.options.excludeSuspendedUsers,
         this.useRestSuspendedCheck ? this.getRestClient(org) : undefined,
+        this.options.fetchEmailForGithubApps,
       );
 
       const { teams } = await getOrganizationTeams(
@@ -553,6 +593,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       pageSizes,
       this.options.excludeSuspendedUsers,
       this.useRestSuspendedCheck ? this.getRestClient(org) : undefined,
+      this.options.fetchEmailForGithubApps,
     );
 
     const { teams } = await getOrganizationTeams(
@@ -804,6 +845,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       pageSizes,
       this.options.excludeSuspendedUsers,
       this.useRestSuspendedCheck ? this.getRestClient(org) : undefined,
+      this.options.fetchEmailForGithubApps,
     );
 
     const usersFromChangedGroup = isGroupEntity(team)
@@ -1020,7 +1062,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
 
     if (result && result.spec) {
       if (!this.options.alwaysUseDefaultNamespace) {
-        result.metadata.namespace = ctx.org.toLocaleLowerCase('en-US');
+        result.metadata.namespace = ctx.org.toLowerCase();
       }
 
       // Group `spec.members` inherits the namespace of it's group so need to explicitly specify refs here
@@ -1102,6 +1144,25 @@ function trackProgress(logger: LoggerService) {
   }
 
   return { markReadComplete };
+}
+
+function logMissingCredentialsWarning(logger: LoggerService, org: string) {
+  logger.warn(
+    `No GitHub credentials available for org '${org}'. This can happen if the GitHub App isn't installed for the org and no fallback token is configured. If you do not have the Organization Owner role you may not be able to install the GitHub App. See https://backstage.io/docs/integrations/github/github-apps/#troubleshooting for more information.`,
+  );
+}
+
+// Detects the error thrown by the GitHub App credentials provider when there is
+// no app installation for the requested org.
+function isAppInstallationMissingError(error: unknown): boolean {
+  if (!error || typeof error !== 'object') {
+    return false;
+  }
+  const err = error as { name?: string; message?: string };
+  return (
+    err.name === 'NotFoundError' &&
+    /no app installation found/i.test(err.message ?? '')
+  );
 }
 
 // Makes sure that emitted entities have a proper location

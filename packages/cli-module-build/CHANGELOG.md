@@ -1,5 +1,172 @@
 # @backstage/cli-module-build
 
+## 0.1.10
+
+### Patch Changes
+
+- 04a54e2: Switched the compilation target to ES2024, which all supported Node.js versions fully support. Package builds, app bundles, and the backend development server now compile code for ES2024, and the TypeScript `target` and `lib` options in `@backstage/cli/config/tsconfig.json` are set to `ES2024`. This requires TypeScript 5.9 or later, which is now the oldest supported version according to the [versioning policy](https://backstage.io/docs/overview/versioning-policy#typescript-releases).
+
+  The `lib` change allows code to use ES2024 built-in APIs such as `Object.groupBy` and `Promise.withResolvers`. Backstage doesn't include polyfills, so frontend code that uses these APIs needs at least Chrome or Edge 119, Firefox 121, or Safari 17.4.
+
+- ed81712: Fixed `backstage-cli package start` and `backstage-cli repo start` so the `--require` flag can be repeated again. `repo start` also forwards every `--require` from a backend package's `start` script, instead of only the last one.
+- ed81712: Added `--import` flag to `backstage-cli repo start` and `backstage-cli package start`. This flag can be specified multiple times and is forwarded to the underlying node process.
+- ed8f1ef: Updated dependency `@module-federation/sdk` to `~2.9.0`.
+  Updated dependency `@module-federation/enhanced` to `~2.9.0`.
+  Updated dependency `@module-federation/runtime` to `~2.9.0`.
+  Updated dependency `@module-federation/runtime-core` to `~2.9.0`.
+- 20e14f5: Updated dependency `@types/react-dom` to `19.3.0`.
+  Updated dependency `react` to `19.3.0`.
+  Updated dependency `react-dom` to `19.3.0`.
+  Updated dependency `react-refresh` to `^0.19.0`.
+- 9120c46: Updated dependency `glob` to `^14.0.0`.
+- Updated dependencies
+  - @backstage/cli-node@0.3.6
+  - @backstage/errors@1.4.0
+  - @backstage/module-federation-common@0.1.7
+  - @backstage/cli-common@0.3.3
+  - @backstage/config@1.3.11
+  - @backstage/config-loader@1.11.5
+
+## 0.1.10-next.2
+
+### Patch Changes
+
+- ed81712: Fixed `backstage-cli package start` and `backstage-cli repo start` so the `--require` flag can be repeated again. `repo start` also forwards every `--require` from a backend package's `start` script, instead of only the last one.
+- ed81712: Added `--import` flag to `backstage-cli repo start` and `backstage-cli package start`. This flag can be specified multiple times and is forwarded to the underlying node process.
+- ed8f1ef: Updated dependency `@module-federation/sdk` to `~2.9.0`.
+  Updated dependency `@module-federation/enhanced` to `~2.9.0`.
+  Updated dependency `@module-federation/runtime` to `~2.9.0`.
+  Updated dependency `@module-federation/runtime-core` to `~2.9.0`.
+- 20e14f5: Updated dependency `@types/react-dom` to `19.3.0`.
+  Updated dependency `react` to `19.3.0`.
+  Updated dependency `react-dom` to `19.3.0`.
+  Updated dependency `react-refresh` to `^0.19.0`.
+- 9120c46: Updated dependency `glob` to `^14.0.0`.
+- Updated dependencies
+  - @backstage/cli-node@0.3.6-next.2
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/module-federation-common@0.1.7-next.0
+  - @backstage/cli-common@0.3.3-next.0
+  - @backstage/config@1.3.11-next.0
+  - @backstage/config-loader@1.11.5-next.0
+
+## 0.1.10-next.1
+
+### Patch Changes
+
+- 04a54e2: Switched the compilation target to ES2024, which all supported Node.js versions fully support. Package builds, app bundles, and the backend development server now compile code for ES2024, and the TypeScript `target` and `lib` options in `@backstage/cli/config/tsconfig.json` are set to `ES2024`. This requires TypeScript 5.9 or later, which is now the oldest supported version according to the [versioning policy](https://backstage.io/docs/overview/versioning-policy#typescript-releases).
+
+  The `lib` change allows code to use ES2024 built-in APIs such as `Object.groupBy` and `Promise.withResolvers`. Backstage doesn't include polyfills, so frontend code that uses these APIs needs at least Chrome or Edge 119, Firefox 121, or Safari 17.4.
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.6-next.1
+
+## 0.1.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.6-next.0
+
+## 0.1.9
+
+### Patch Changes
+
+- cc4ef47: Restored the default exclusion of `node_modules` from test coverage for this package.
+- 2ece167: Updated dependency `webpack` to `~5.111.0`.
+- f163298: Improved code splitting for frontend module federation remotes to reduce unnecessary downloads of unrelated lazy components from the same dependency scope. Shared dependencies and workspace code are extracted across lazy boundaries when the resulting shared chunk meets the size threshold. Regular application builds are unchanged.
+- Updated dependencies
+  - @backstage/cli-node@0.3.5
+  - @backstage/config-loader@1.11.4
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/cli-common@0.3.2
+  - @backstage/module-federation-common@0.1.6
+
+## 0.1.9-next.2
+
+### Patch Changes
+
+- cc4ef47: Restored the default exclusion of `node_modules` from test coverage for this package.
+- f163298: Improved code splitting for frontend module federation remotes to reduce unnecessary downloads of unrelated lazy components from the same dependency scope. Shared dependencies and workspace code are extracted across lazy boundaries when the resulting shared chunk meets the size threshold. Regular application builds are unchanged.
+
+## 0.1.9-next.1
+
+### Patch Changes
+
+- 2ece167: Updated dependency `webpack` to `~5.111.0`.
+
+## 0.1.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.5-next.0
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/config-loader@1.11.4-next.0
+  - @backstage/module-federation-common@0.1.6-next.0
+  - @backstage/cli-common@0.3.2-next.0
+
+## 0.1.8
+
+### Patch Changes
+
+- 064c2de: Updated the Module Federation dependencies to versions that avoid known security vulnerabilities.
+- 96badbc: Fixed a bug where plugin packages installed through feature discovery were loaded before the app's own code ran. This could cause bootstrap-order-sensitive setup code in the app, such as configuring MUI 5's class name prefix, to be skipped if a discovered plugin's dependencies loaded MUI 5 components first. Discovered plugin packages are now loaded after the app's own code instead.
+- b2b7568: Significantly improve the performance of `build-workspace` when packaging many Backstage packages.
+- 277a125: Fixed declaration bundling of imports that use the `node:` built-in module prefix.
+- Updated dependencies
+  - @backstage/cli-common@0.3.1
+  - @backstage/config@1.3.9
+  - @backstage/module-federation-common@0.1.5
+  - @backstage/config-loader@1.11.3
+
+## 0.1.8-next.2
+
+### Patch Changes
+
+- 064c2de: Updated the Module Federation dependencies to versions that avoid known security vulnerabilities.
+- 96badbc: Fixed a bug where plugin packages installed through feature discovery were loaded before the app's own code ran. This could cause bootstrap-order-sensitive setup code in the app, such as configuring MUI 5's class name prefix, to be skipped if a discovered plugin's dependencies loaded MUI 5 components first. Discovered plugin packages are now loaded after the app's own code instead.
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/module-federation-common@0.1.5-next.0
+  - @backstage/config-loader@1.11.3-next.0
+
+## 0.1.8-next.1
+
+### Patch Changes
+
+- 277a125: Fixed declaration bundling of imports that use the `node:` built-in module prefix.
+
+## 0.1.8-next.0
+
+### Patch Changes
+
+- b2b7568: Significantly improve the performance of `build-workspace` when packaging many Backstage packages.
+
+## 0.1.7
+
+### Patch Changes
+
+- 943687f: Stopped disabling the Node.js snapshot by default when starting backends or running tests.
+- 4d7b153: chore(deps): bump `shell-quote` from 1.8.4 to 1.9.0
+- 78bf918: chore(deps): bump `tar` from 7.5.15 to 7.5.21
+- bb98419: Package preparation for publishing validates TypeScript configuration schemas strictly, preventing invalid schemas from being published. Other build and bundle paths report schema errors as warnings.
+- Updated dependencies
+  - @backstage/config-loader@1.11.2
+
+## 0.1.7-next.0
+
+### Patch Changes
+
+- 943687f: Stopped disabling the Node.js snapshot by default when starting backends or running tests.
+- 4d7b153: chore(deps): bump `shell-quote` from 1.8.4 to 1.9.0
+- 78bf918: chore(deps): bump `tar` from 7.5.15 to 7.5.21
+- bb98419: Package preparation for publishing validates TypeScript configuration schemas strictly, preventing invalid schemas from being published. Other build and bundle paths report schema errors as warnings.
+- Updated dependencies
+  - @backstage/config-loader@1.11.2-next.0
+
 ## 0.1.5
 
 ### Patch Changes

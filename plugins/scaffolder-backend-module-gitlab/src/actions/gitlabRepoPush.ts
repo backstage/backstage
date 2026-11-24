@@ -24,7 +24,11 @@ import {
   serializeDirectoryContents,
 } from '@backstage/plugin-scaffolder-node';
 import { CommitAction } from '@gitbeaker/rest';
-import { createGitlabApi, getErrorMessage } from './helpers';
+import {
+  assertValidTargetPath,
+  createGitlabApi,
+  getErrorMessage,
+} from './helpers';
 import { examples } from './gitlabRepoPush.examples';
 import { getFileAction } from '../util';
 import { SerializedFile } from '@backstage/plugin-scaffolder-node';
@@ -37,8 +41,9 @@ import { RepositoryTreeSchema } from '@gitbeaker/rest';
  */
 export const createGitlabRepoPushAction = (options: {
   integrations: ScmIntegrationRegistry;
+  requireScmUserCredentials?: boolean;
 }) => {
-  const { integrations } = options;
+  const { integrations, requireScmUserCredentials } = options;
 
   return createTemplateAction({
     id: 'gitlab:repo:push',
@@ -100,9 +105,12 @@ export const createGitlabRepoPushAction = (options: {
             description: 'Gitlab Project path',
           }),
         commitHash: z =>
-          z.string({
-            description: 'The git commit hash of the commit',
-          }),
+          z
+            .string({
+              description:
+                'The git commit hash of the commit, or omitted when there were no file changes to commit and `allowEmpty` is not true (covers both the default of unset and an explicit `false`).',
+            })
+            .optional(),
       },
     },
     async handler(ctx) {
@@ -116,6 +124,10 @@ export const createGitlabRepoPushAction = (options: {
         allowEmpty,
       } = ctx.input;
 
+      if (targetPath) {
+        assertValidTargetPath(targetPath);
+      }
+
       const { owner, repo, project } = parseRepoUrl(repoUrl, integrations);
       const repoID = project ? project : `${owner}/${repo}`;
 
@@ -123,6 +135,7 @@ export const createGitlabRepoPushAction = (options: {
         integrations,
         token,
         repoUrl,
+        requireScmUserCredentials,
       });
 
       let fileRoot: string;
@@ -136,13 +149,15 @@ export const createGitlabRepoPushAction = (options: {
         gitignore: true,
       });
 
-      let remoteFiles: RepositoryTreeSchema[] = [];
+      let remoteFiles: RepositoryTreeSchema[] | undefined = [];
       if ((ctx.input.commitAction ?? 'auto') === 'auto') {
         try {
           remoteFiles = await api.Repositories.allRepositoryTrees(repoID, {
             ref: branchName,
             recursive: true,
             path: targetPath ?? undefined,
+            // Pages are walked serially via the Link header, and GitLab's default is 20.
+            perPage: 100,
           });
         } catch (e) {
           ctx.logger.warn(
@@ -150,6 +165,9 @@ export const createGitlabRepoPushAction = (options: {
               e,
             )}`,
           );
+          if (e.cause?.response?.status !== 404) {
+            remoteFiles = undefined;
+          }
         }
       }
 
@@ -213,6 +231,15 @@ export const createGitlabRepoPushAction = (options: {
             )}`,
           );
         }
+      }
+
+      if (actions.length === 0 && !allowEmpty) {
+        ctx.logger.warn(
+          `No file changes to commit to ${repoID} on branch '${branchName}'; skipping commit. Set 'allowEmpty: true' to create an empty commit.`,
+        );
+        ctx.output('projectid', repoID);
+        ctx.output('projectPath', repoID);
+        return;
       }
 
       try {

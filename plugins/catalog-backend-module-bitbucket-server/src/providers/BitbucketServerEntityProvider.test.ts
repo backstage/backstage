@@ -123,36 +123,51 @@ const host = 'bitbucket.mycompany.com';
 const targetPath = `/catalog-info.yaml`;
 const test1RepoUrl = `https://${host}/projects/TEST/repos/test1/browse`;
 
-function setupRepositoryReqHandler(defaultBranch: string) {
+function setupRepositoryReqHandler(
+  defaultBranch: string,
+  options: {
+    projectKey?: string;
+    repoSlug?: string;
+    archived?: boolean;
+  } = {},
+) {
+  const projectKey = options.projectKey ?? 'TEST';
+  const repoSlug = options.repoSlug ?? 'test1';
+  const repoUrl = `https://${host}/projects/${projectKey}/repos/${repoSlug}/browse`;
+
   server.use(
-    http.get(`https://${host}/rest/api/1.0/projects/TEST/repos/test1`, () => {
-      const response = {
-        slug: 'test1',
-        id: 1,
-        name: 'test1',
-        project: {
-          key: 'TEST',
+    http.get(
+      `https://${host}/rest/api/1.0/projects/${projectKey}/repos/${repoSlug}`,
+      () => {
+        const response = {
+          slug: repoSlug,
           id: 1,
-          name: 'TEST',
+          name: repoSlug,
+          project: {
+            key: projectKey,
+            id: 1,
+            name: projectKey,
+            links: {
+              self: [
+                {
+                  href: `https://${host}/projects/${projectKey}`,
+                },
+              ],
+            },
+          },
           links: {
             self: [
               {
-                href: `https://${host}/projects/TEST`,
+                href: repoUrl,
               },
             ],
           },
-        },
-        links: {
-          self: [
-            {
-              href: `${test1RepoUrl}`,
-            },
-          ],
-        },
-        defaultBranch: defaultBranch,
-      };
-      return HttpResponse.json(response);
-    }),
+          archived: options.archived ?? false,
+          defaultBranch: defaultBranch,
+        };
+        return HttpResponse.json(response);
+      },
+    ),
   );
 }
 
@@ -1014,6 +1029,11 @@ describe('BitbucketServerEntityProvider', () => {
               host: host,
               apiBaseUrl: `https://${host}/rest/api/1.0`,
               catalogPath: `/added-module:/catalog-info.yaml`,
+              filters: {
+                projectKey: '^TEST$',
+                repoSlug: '^test1$',
+                skipArchivedRepos: true,
+              },
             },
           },
         },
@@ -1049,6 +1069,69 @@ describe('BitbucketServerEntityProvider', () => {
       added: addedEntities,
       removed: removedEntities,
     });
+  });
+
+  it('ignores onRepoPush events excluded by provider filters', async () => {
+    const scenarios = [
+      { projectKey: 'OTHER', repoSlug: 'test1', archived: false },
+      { projectKey: 'TEST', repoSlug: 'other', archived: false },
+      { projectKey: 'TEST', repoSlug: 'test1', archived: true },
+    ];
+
+    for (const scenario of scenarios) {
+      const schedule = new PersistingTaskRunner();
+      const scenarioEvents = DefaultEventsService.create({ logger });
+      const entityProviderConnection: EntityProviderConnection = {
+        applyMutation: jest.fn(),
+        refresh: jest.fn(),
+      };
+      setupRepositoryReqHandler('master', scenario);
+
+      const config = new ConfigReader({
+        integrations: {
+          bitbucketServer: [{ host }],
+        },
+        catalog: {
+          providers: {
+            bitbucketServer: {
+              mainProvider: {
+                host,
+                apiBaseUrl: `https://${host}/rest/api/1.0`,
+                filters: {
+                  projectKey: '^TEST$',
+                  repoSlug: '^test1$',
+                  skipArchivedRepos: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      const provider = BitbucketServerEntityProvider.fromConfig(config, {
+        catalogApi: catalogServiceMock({ entities: [] }),
+        logger,
+        schedule,
+        events: scenarioEvents,
+        auth: authService,
+      })[0];
+      const event = {
+        ...repoPushEventParams,
+        eventPayload: {
+          ...repoPushEvent,
+          repository: {
+            ...repoPushEvent.repository,
+            slug: scenario.repoSlug,
+            project: { key: scenario.projectKey },
+          },
+        },
+      };
+
+      await provider.connect(entityProviderConnection);
+      await scenarioEvents.publish(event);
+
+      expect(entityProviderConnection.refresh).not.toHaveBeenCalled();
+      expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
+    }
   });
 
   it('fail add onRepoPush from wrong default branch', async () => {

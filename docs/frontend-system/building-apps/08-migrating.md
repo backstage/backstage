@@ -18,6 +18,12 @@ This section describes how to migrate an existing Backstage app package to use t
 > - Yarn workspaces and monorepo setup
 > - Access to run `yarn` commands and update dependencies
 
+:::tip
+
+To have an AI coding assistant do this migration, install the `new-frontend-system-migration` skill. It also migrates the app's plugins, in the right order. See [Published skills](../../ai/skills.md).
+
+:::
+
 ## Migration
 
 We recommend a **two-phase migration process** to ensure a smooth and manageable transition:
@@ -41,6 +47,7 @@ Before you begin, review this checklist to track your progress:
 - [ ] Complete minimal changes for hybrid configuration (Phase 1)
 - [ ] App starts and works in hybrid mode
 - [ ] Gradually migrate and remove legacy code and helpers (Phase 2)
+- [ ] Remove legacy plugin routes and imports after migrating their replacements
 - [ ] App runs fully on the new frontend system
 
 :::info
@@ -273,6 +280,24 @@ If your app starts and works in hybrid mode, you’re ready to begin Phase 2. If
 
 At this point, the contents of your app should have moved past the initial migration stage. Let's continue by gradually removing legacy code and helpers to fully adopt the new system.
 
+### Choose a customization mechanism
+
+During Phase 2, prefer the least invasive mechanism that meets your needs.
+This keeps your app closer to the default frontend system and reduces the
+amount of migration code that you need to maintain.
+
+| When you need to...                                                                     | Use...                                                                                        |
+| :-------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------- |
+| Change behavior that an extension already exposes as a setting.                         | The extension's configuration.                                                                |
+| Add a new page, app root element, theme, API, or other independent extension.           | An extension blueprint and a frontend module.                                                 |
+| Change an existing extension in a way that its configuration and inputs do not support. | An extension override. Keep the override focused on the missing customization.                |
+| Preserve existing legacy app code while you migrate it.                                 | The compatibility helpers in Phase 1, then remove them as the corresponding code is migrated. |
+
+For an overview of available blueprints, look for `*Blueprint` exports in the
+relevant frontend package. Before adding an override, check the extension's
+configuration and inputs. Those mechanisms are intended for common
+customizations and avoid replacing extension behavior.
+
 ### Migrating `createApp` options
 
 Many of the `createApp` options have been migrated to use extensions instead. Each will have their own [extension blueprint](../architecture/23-extension-blueprints.md) that you use to create a custom extension. To add these standalone extensions to the app they need to be passed to `createFrontendModule`, which bundles them into a _feature_ that you can install in the app. See the [frontend module](../architecture/25-extension-overrides.md#creating-a-frontend-module) section for more information.
@@ -378,9 +403,38 @@ app:
   packages: all # ✨
 ```
 
+#### Auto-discovery and explicit imports
+
+When feature discovery is enabled, the app still allows you to import plugins
+explicitly and pass them to `createApp`. If the same plugin is both
+auto-discovered and imported manually, the app deduplicates them by plugin ID
+and the **manual import wins**. In practice, this means an explicit import
+overrides the auto-discovered version of that plugin.
+
+This matters during migration because some core plugins still expose the legacy
+plugin as their package's default export, while the new frontend-system plugin
+is only available from an `/alpha` subpath — for example
+`@backstage/plugin-home/alpha`. Feature discovery only picks up the default
+export, so for those plugins you must import the `/alpha` version manually.
+Once you do, the auto-discovered legacy version is ignored.
+
+If a plugin already exports its new-system version from the package root,
+auto-discovery will install it without any manual import, and you can safely
+remove the import from your app code.
+
+### Removing legacy routes
+
+After migrating a plugin page to the new frontend system, verify that the
+new extension is installed and working correctly. You can then remove the
+plugin's legacy route, page import, and related route wiring from the app.
+
+Before removing route references or external route bindings, make sure they
+are not still used by another plugin or app component.
+
 #### `featureFlags`
 
-Declaring features flags in the app is no longer supported, move these declarations to the appropriate plugins instead.
+Declare feature flags on plugins or frontend modules instead of passing them
+to `createApp`.
 
 For example, the following app feature flags configuration:
 
@@ -417,7 +471,65 @@ This would get added to the `features` array as part of your `createApp` options
 
 Many app components are now installed as extensions instead using `createComponentExtension`. See the section on [configuring app components](./01-index.md#configure-your-app) for more information.
 
-The `Router` component is now a built-in extension that you can [override](../architecture/25-extension-overrides.md) using `createRouterExtension`.
+The `Router` component has no replacement, and `convertLegacyAppOptions` throws
+if you pass one. The app owns browser history itself and exposes it as
+`AppHistoryApi`, so a root component that installs its own router would create a
+second history that the app cannot observe. What to do with your old `Router`
+depends on what it actually did:
+
+- If it only rendered `BrowserRouter`, delete it. The app provides history now.
+- If it wrapped the router in global providers, move those providers to
+  `AppRootWrapperBlueprint` from `@backstage/plugin-app-react`.
+- If it installed a different router library, render that library's page router
+  inside the lazily loaded component of each page that needs it. A page or sub-page that
+  declares no adapter retains implicit React Router v6 matches for compatibility. See
+  [Choose a router for a page](../building-plugins/10-page-routers.md).
+
+Pages that `convertLegacyAppRoot` converts for you already have a React Router
+v6 adapter: the converter declares one at each route it collects, so a legacy
+page keeps working without its author changing anything. Pages you migrate
+by hand can declare an explicit adapter to migrate away from implicit compatibility. It belongs on the page. An entity
+content or card extension never declares one, because that content already
+renders inside the adapter its page declared.
+
+Moving a provider to an app root wrapper looks like this:
+
+```tsx
+import { AppRootWrapperBlueprint } from '@backstage/plugin-app-react';
+
+const queryClientWrapper = AppRootWrapperBlueprint.make({
+  name: 'query-client',
+  params: {
+    component: ({ children }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    ),
+  },
+});
+```
+
+In tests, replace a root `MemoryRouter` with `renderInTestApp` or
+`renderTestApp` from `@backstage/frontend-test-utils` and navigate through
+`apis.get(appHistoryApiRef)` on the render result. The old frontend system still accepts
+`components.Router`, so a plugin that has to run under both systems does not
+need to change its own React Router usage.
+
+For hash-based deployments, embedded views or a host application that owns
+navigation, register your own implementation of `AppHistoryApi` for
+`appHistoryApiRef` through an `ApiBlueprint` factory. The app uses that
+implementation instead of creating its default browser history. All adapters
+must observe the same history; do not also mount a router that owns a separate
+browser history.
+
+The history factory must be available during app initialization. Do not put an
+`if` predicate on its extension or on the attachment path leading to it:
+predicate context is evaluated after the app history is selected. Such a
+factory is rejected with an error.
+
+A custom history supplies location, navigation and href resolution. The public
+`AppHistorySnapshot` optionally includes `entry`, `index`, and `length` metadata. Router features
+that depend on those details can have reduced behavior with a custom history;
+see the adapter's documentation. Tests can use the memory history provided by
+`renderInTestApp` and `renderTestApp`.
 
 The Sign-in page is now installed as an extension, created using the `SignInPageBlueprint` instead.
 
@@ -532,16 +644,16 @@ const app = createApp({
 
 #### `icons`
 
-Icons are now installed as extensions, using the `IconBundleBlueprint` to make new instances which can be added to the app.
+Icons are now installed as extensions, using the `IconBundleBlueprint` to make new instances which can be added to the app. Pass icon elements rather than components, and set `fontSize="inherit"` for Material UI icons.
 
-```ts
+```tsx
 import { IconBundleBlueprint } from '@backstage/plugin-app-react';
 
 const exampleIconBundle = IconBundleBlueprint.make({
   name: 'example-bundle',
   params: {
     icons: {
-      user: MyOwnUserIcon,
+      user: <MyOwnUserIcon fontSize="inherit" />,
     },
   },
 });
@@ -736,11 +848,13 @@ export const SidebarContent = NavContentBlueprint.make({
 });
 ```
 
-The deprecated `items` prop (a flat list compatible with `<SidebarItem {...item} />`) remains supported for backward compatibility. If you don't want to auto-populate the list, simply remove the rendering of that `SidebarGroup`.
+If your custom sidebar uses the removed flat `items` prop, use `navItems.rest()` to get the remaining items. Replace `item.to` with `item.href` and `item.text` with `item.title`. The `item.icon` value is a React element rather than a component type, so replace `<SidebarItem {...item} />` with `<SidebarItem icon={() => item.icon} to={item.href} text={item.title} />`, as shown above.
+
+If you don't want to auto-populate the list, remove the rendering of that `SidebarGroup`.
 
 You might also notice that when you're rendering additional fixed icons for plugins (e.g. Search in a dedicated group) these might become duplicated, since that page is also included in `nav.rest()`. To exclude an item from the remaining list, call `nav.take('page:search')` before calling `nav.rest()` — you can discard the return value. Items that have been taken will not appear in `rest()`.
 
-To hide a page from the sidebar without disabling the page itself, use `nav.take('page:...')` in your custom sidebar implementation before calling `nav.rest()`, or disable the page extension in config with `page:<plugin-id>: false`.
+To hide a page from the sidebar without disabling the page itself, use `nav.take('page:...')` in your custom sidebar implementation before calling `nav.rest()`. To disable the page entirely, disable its extension in config with `page:<plugin-id>: false`.
 
 #### App Root Routes
 
@@ -817,25 +931,66 @@ Refer to the [plugin migration guide](../building-plugins/05-migrating.md) for i
 
 #### Catalog Entity Page
 
-The entity pages are typically defined in `packages/app/src/components/catalog` and rendered as a child of the `/catalog/:namespace/:kind/:name` route. The entity pages are typically quite large and bringing in content from quite a lot of different plugins. To help gradually migrate entity pages we provide the `entityPage` option in the `convertLegacyAppRoot` helper. This option lets you pass in an entity page app element tree that will be converted to extensions that are added to the features returned from `convertLegacyAppRoot`.
+You can migrate the entity-page shell separately from its content. Start with
+the new frontend system (NFS) catalog page and convert your existing content to
+extensions, then replace those contributions gradually.
 
-To start the gradual migration of entity pages, add your `entityPages` to the `convertLegacyAppRoot` call:
+This approach switches directly to the native entity layout. The
+[feature-flagged approach](#feature-flagged-catalog-entity-page-migration)
+adds setup, but keeps the legacy layout available while you migrate plugin
+contributions and validate the new composition.
 
-```tsx title="in packages/app/src/App.tsx"
-/* highlight-remove-next-line */
-const convertedRootFeatures = convertLegacyAppRoot(routes);
-/* highlight-add-next-line */
-const convertedRootFeatures = convertLegacyAppRoot(routes, { entityPage });
+##### Convert the existing entity page
+
+Keep your existing `entityPage` JSX tree, typically defined in
+`packages/app/src/components/catalog/EntityPage.tsx`, and pass it explicitly to
+`convertLegacyAppRoot`:
+
+```tsx
+import { convertLegacyAppRoot } from '@backstage/core-compat-api';
+
+// highlight-remove-next-line
+const legacyFeatures = convertLegacyAppRoot(routes);
+// highlight-add-next-line
+const legacyFeatures = convertLegacyAppRoot(routes, { entityPage });
 ```
 
-Next, you will need to fully migrate the catalog plugin itself. This is because only a single version of a plugin can be installed in the app at a time, so in order to start using the new version of the catalog plugin you need to remove all usage of the old one. This includes both the routes and entity pages. You will need to keep the structural helpers for the entity pages, such as `EntityLayout` and `EntitySwitch`, but remove any extensions like the `<CatalogIndexPage/>` and entity cards and content like `<EntityAboutCard/>` and `<EntityOrphanWarning/>`.
+The explicit option lets conversion find entity content even after you remove
+the legacy catalog route.
 
-Remove the following routes:
+Conversion walks the JSX children, recognizing `EntityLayout.Route` and
+`EntitySwitch` cases. Each overview route (`path="/"`) becomes one
+`EntityCardBlueprint` extension of type `content`, containing the whole route
+body. Other routes become `EntityContentBlueprint` extensions with their paths
+and titles. Synchronous route and switch predicates are preserved, including
+first-match switch behavior; async switch predicates are not supported.
 
-```tsx title="in packages/app/src/App.tsx"
+Keep these structures visible in the supplied JSX. Conversion does not inspect
+the output of arbitrary React components, split nested overview components into
+separate cards, or reproduce every legacy layout customization.
+
+The catalog plugin supplies both the page shell and built-in cards such as
+About. Remove its legacy routes to select the native plugin. When enabling its
+native cards, also remove their legacy JSX to avoid duplicates. Keep conversion
+for content that does not yet have a native replacement.
+
+Remove both legacy catalog routes (`/catalog` and
+`/catalog/:namespace/:kind/:name`) from `FlatRoutes`, keeping your other routes.
+Install the native catalog plugin before the converted features:
+
+```tsx title="packages/app/src/App.tsx"
+import { Route } from 'react-router-dom';
+import { FlatRoutes } from '@backstage/core-app-api';
+import { convertLegacyAppRoot } from '@backstage/core-compat-api';
+import { createApp } from '@backstage/frontend-defaults';
+// highlight-remove-next-line
+import { CatalogEntityPage, CatalogIndexPage } from '@backstage/plugin-catalog';
+// highlight-add-next-line
+import catalogPlugin from '@backstage/plugin-catalog/alpha';
+import { entityPage } from './components/catalog/EntityPage';
+
 const routes = (
   <FlatRoutes>
-    ...
     {/* highlight-remove-start */}
     <Route path="/catalog" element={<CatalogIndexPage />} />
     <Route
@@ -845,62 +1000,343 @@ const routes = (
       {entityPage}
     </Route>
     {/* highlight-remove-end */}
-    ...
+    {/* Keep your other legacy routes here. */}
   </FlatRoutes>
 );
-```
-
-And explicitly install the catalog plugin before the converted legacy features:
-
-```tsx title="in packages/app/src/App.tsx"
-/* highlight-add-next-line */
-import { default as catalogPlugin } from '@backstage/plugin-catalog/alpha';
-
-const app = createApp({
-  /* highlight-remove-next-line */
-  features: [convertedOptionsModule, ...convertedRootFeatures],
-  /* highlight-add-next-line */
-  features: [catalogPlugin, convertedOptionsModule, ...convertedRootFeatures],
-});
-```
-
-If you are not using the default `<CatalogIndexPage />` you can install your custom catalog page as an override for now instead, and fully migrate it to the new system later.
-
-```tsx title="in packages/app/src/App.tsx"
-/* highlight-add-start */
-const catalogPluginOverride = catalogPlugin.withOverrides({
-  extensions: [
-    catalogPlugin.getExtension('page:catalog').override({
-      params: {
-        loader: async () => (
-          <CatalogIndexPage
-            pagination={{ mode: 'offset', limit: 20 }}
-            filters={<>{/* ... */}</>}
-          />
-        ),
-      },
-    }),
-  ],
-});
-/* highlight-add-end */
+const legacyFeatures = convertLegacyAppRoot(routes, { entityPage });
 
 const app = createApp({
   features: [
-    /* highlight-remove-next-line */
+    // highlight-add-next-line
     catalogPlugin,
-    /* highlight-add-next-line */
-    catalogPluginOverride,
-    convertedOptionsModule,
-    ...convertedRootFeatures,
+    // Keep your convertedOptionsModule here, if used.
+    ...legacyFeatures,
+  ],
+  // Keep your existing bindRoutes here, if used.
+});
+
+export default app.createRoot();
+```
+
+Repeated references to the same plugin instance are removed first. Among the
+remaining plugins with the same ID, the last one wins. Leaving a legacy catalog
+route in place would let the converted `catalog` plugin override the native one.
+With [feature discovery](../architecture/10-app.md#feature-discovery), discovered
+features come before explicit features. Remove any other explicit
+catalog plugin registrations.
+
+If you have a custom catalog index, use `catalogPlugin.withOverrides(...)` in
+the same position, overriding `page:catalog` to load your index component.
+
+Converted contributions attach to NFS extension inputs, separately from the
+native catalog plugin. Prefer native cards and tabs where they are available,
+and remove their legacy JSX. For example, the catalog plugin supplies the
+About card, so remove it from your existing overview:
+
+```tsx
+<EntityLayout.Route path="/" title="Overview">
+  <>
+    {/* highlight-remove-next-line */}
+    <EntityAboutCard />
+    <OtherExistingContent />
+  </>
+</EntityLayout.Route>
+```
+
+Convert the remaining content until native replacements are available. Keep the
+native overview content extension enabled to receive both converted overview
+bodies and native cards. Only disable a native extension if you deliberately
+keep its legacy counterpart, for example to preserve a customization.
+
+##### Replace individual contributions
+
+As more plugins gain NFS support, replace their remaining legacy JSX with the
+native extensions. Install each plugin's native entrypoint or use feature
+discovery, following its migration instructions for extensions and defaults.
+
+Only one registration of each plugin is selected. Coordinate its remaining
+legacy page routes, converted tabs, and API factories when switching to the
+native registration; see [App Root Routes](#app-root-routes). Retained overview
+components also cause conversion to discover their plugins. To keep components
+from a plugin while enabling its native contributions, exclude its package from
+feature discovery and explicitly register its native plugin after
+`legacyFeatures`, as in the
+[TechDocs example](#replace-contributions-while-keeping-the-fallback).
+
+Remove replaced JSX and enable native contributions together to avoid missing
+or duplicated content. Preserve applicability predicates and tab paths, and
+configure groups as needed; see
+[Configure groups, titles, and icons](../../features/software-catalog/catalog-customization.md#configure-groups-titles-and-icons).
+
+Adjust the overview layout as cards move out: conversion keeps the inner layout
+of each overview body, while NFS arranges native cards outside it.
+
+Once all entity contributions and routing compatibility are replaced, remove
+the `entityPage` option and legacy tree.
+
+For more on entity card and tab extensions, see
+[Plugin specific extensions](../building-plugins/01-index.md#plugin-specific-extensions)
+and [Common Extension Blueprints](../building-plugins/03-common-extension-blueprints.md).
+
+#### Feature-flagged catalog entity-page migration
+
+A feature flag lets migration owners preview the NFS pages while other users
+stay on the legacy layout. This adds setup, but each user can switch between
+the layouts while the migration is in progress.
+
+Keep the shared `entityPage` tree and native plugins from the setup above, but
+conditionally register the legacy catalog routes and retain replaced JSX for
+legacy mode. Apply this variant before removing the legacy routes and
+contributions. Plugin selection still follows the precedence rules above.
+
+##### Choose the page experience at app startup
+
+Register a feature flag to switch between the legacy and NFS entity pages.
+Creating a Utility API outside its factory is an anti-pattern in NFS, but the
+legacy routes and entity-page JSX are constructed before the app's APIs are
+available. This temporary workaround lets them read the flag early. Remove it
+as soon as the migration is complete.
+
+```ts title="packages/app/src/modules/entityPageMigration.ts"
+import { ReactElement } from 'react';
+import { LocalStorageFeatureFlags } from '@backstage/core-app-api';
+import {
+  ApiBlueprint,
+  createFrontendModule,
+  featureFlagsApiRef,
+} from '@backstage/frontend-plugin-api';
+
+// Temporary migration workaround; remove when the migration is complete.
+const featureFlags = new LocalStorageFeatureFlags();
+
+export const isNfsEntityPageEnabled = featureFlags.isActive('nfs-entity-page');
+
+export function notInNfs(element: ReactElement) {
+  return isNfsEntityPageEnabled ? null : element;
+}
+
+export const entityPageMigrationModule = createFrontendModule({
+  pluginId: 'app',
+  featureFlags: [{ name: 'nfs-entity-page' }],
+  extensions: [
+    ApiBlueprint.make({
+      name: 'feature-flags',
+      params: defineParams =>
+        defineParams({
+          api: featureFlagsApiRef,
+          deps: {},
+          factory: () => featureFlags,
+        }),
+    }),
   ],
 });
 ```
 
-At this point you should be able to run the app and see that you're not using the new version of the catalog plugin. If you navigate to the entity pages you will likely see a lot of duplicate content at the bottom of the page. These are the duplicates of the entity cards provided by the catalog plugin itself that we mentioned earlier that you need to remove. Clean up the entity pages by removing cards and content from the catalog plugin such as `<EntityAboutCard/>` and `<EntityOrphanWarning/>`.
+The module registers the flag and overrides `api:app/feature-flags` to return
+the same instance. If your app already customizes this API, share that
+implementation instead of adding a second override. The exported value and
+`notInNfs` helper are app code, not framework APIs.
 
-Once the cleanup is complete you should be left with clean entity pages that are built using a mix of the old and new frontend system. From this point you can continue to gradually migrate plugins that provide content for the entity pages, until all plugins have been fully moved to the new system and the `entityPage` option can be removed.
+Gate both legacy catalog routes together. Keep other legacy routes in the same
+`FlatRoutes`, and retain your existing converted options and route bindings:
 
-Migrating across the tabs for the Entity Pages should be as simple as removing the `EntityLayout.Route` for each of the plugins that provide tab content, and then this tab should be sourced from the `EntityContent` extensions created by the plugins themselves which will be automatically detected and added to the App.
+```tsx title="packages/app/src/App.tsx"
+import { Route } from 'react-router-dom';
+import { FlatRoutes } from '@backstage/core-app-api';
+import { convertLegacyAppRoot } from '@backstage/core-compat-api';
+import { createApp } from '@backstage/frontend-defaults';
+import { CatalogEntityPage, CatalogIndexPage } from '@backstage/plugin-catalog';
+import catalogPlugin from '@backstage/plugin-catalog/alpha';
+import { entityPage } from './components/catalog/EntityPage';
+// highlight-add-start
+import {
+  entityPageMigrationModule,
+  isNfsEntityPageEnabled,
+} from './modules/entityPageMigration';
+// highlight-add-end
+
+const routes = (
+  <FlatRoutes>
+    {/* highlight-remove-start */}
+    <Route path="/catalog" element={<CatalogIndexPage />} />
+    <Route
+      path="/catalog/:namespace/:kind/:name"
+      element={<CatalogEntityPage />}
+    >
+      {entityPage}
+    </Route>
+    {/* highlight-remove-end */}
+    {/* highlight-add-start */}
+    {isNfsEntityPageEnabled ? null : (
+      <Route path="/catalog" element={<CatalogIndexPage />} />
+    )}
+    {isNfsEntityPageEnabled ? null : (
+      <Route
+        path="/catalog/:namespace/:kind/:name"
+        element={<CatalogEntityPage />}
+      >
+        {entityPage}
+      </Route>
+    )}
+    {/* highlight-add-end */}
+    {/* Keep your other legacy routes here. */}
+  </FlatRoutes>
+);
+
+const legacyFeatures = convertLegacyAppRoot(routes, { entityPage });
+
+const app = createApp({
+  features: [
+    catalogPlugin,
+    // Keep your convertedOptionsModule here, if used.
+    ...legacyFeatures,
+    // highlight-add-next-line
+    entityPageMigrationModule,
+  ],
+  // Keep your existing bindRoutes here, if used.
+});
+
+export default app.createRoot();
+```
+
+Keep `catalogPlugin` before `legacyFeatures`, as in the setup above. With
+the flag off, the legacy routes produce a converted `catalog` plugin that takes
+precedence. With the flag on, neither legacy catalog route is registered, so the
+native plugin supplies both pages at the same URLs.
+
+This ordering also works with feature discovery. Conditionally adding
+`catalogPlugin` alone would not disable a discovered copy.
+
+Keep passing `entityPage` to conversion in **both flag states**. In legacy mode,
+`CatalogEntityPage` renders the original JSX and does not consume the generated
+NFS card and content inputs. Other converted features, such as pages, API
+factories, route references, and routing compatibility, may still be needed.
+
+##### Replace contributions while keeping the fallback
+
+Keep legacy content for users who have not enabled the flag. Use the module's
+`notInNfs` helper to omit it from conversion once its native replacement is
+enabled.
+
+Wrap the plugin's legacy contribution in your existing overview. For example,
+to use the catalog plugin's native About card only in the new layout:
+
+```tsx
+// highlight-add-next-line
+import { notInNfs } from '../../modules/entityPageMigration';
+
+<EntityLayout.Route path="/" title="Overview">
+  <>
+    {/* highlight-remove-next-line */}
+    <EntityAboutCard />
+    {/* highlight-add-next-line */}
+    {notInNfs(<EntityAboutCard />)}
+    <OtherExistingContent />
+  </>
+</EntityLayout.Route>;
+```
+
+Keep the native About card enabled. In NFS mode, the native catalog plugin
+supplies it and `notInNfs` omits its legacy counterpart. In legacy mode, the
+original JSX renders the card.
+
+Use the same pattern for other plugins' contributions. Ensure their native
+plugin is selected in NFS mode, and keep the original JSX for the legacy
+layout. Native contributions attach to NFS inputs and are not rendered by the
+legacy page. Check each plugin's remaining routes and API factories before
+changing its registration.
+
+| Contribution                                       | Legacy-page mode                   | NFS-page mode                                 |
+| -------------------------------------------------- | ---------------------------------- | --------------------------------------------- |
+| Not yet migrated                                   | Original JSX                       | Converted overview body or tab                |
+| Migrated with `notInNfs` and a native registration | Original JSX retained for rollback | Native extension; omitted from converted body |
+
+For tabs, combine the exported `isNfsEntityPageEnabled` value with the existing
+applicability predicate:
+
+```tsx
+// highlight-add-next-line
+import { isNfsEntityPageEnabled } from '../../modules/entityPageMigration';
+
+<EntityLayout.Route
+  path="/example"
+  title="Example"
+  // highlight-remove-next-line
+  if={entity => isFeatureAvailable(entity)}
+  // highlight-add-next-line
+  if={entity => !isNfsEntityPageEnabled && isFeatureAvailable(entity)}
+>
+  <ExistingExampleContent />
+</EntityLayout.Route>;
+```
+
+Enable the plugin's native `EntityContentBlueprint` extension for NFS mode,
+keeping its applicability rule and tab path. A false legacy `if` predicate hides
+the tab but still lets conversion discover its plugin.
+
+To select the native plugin while retaining that JSX, exclude its package from
+feature discovery and explicitly register it after `legacyFeatures` in NFS
+mode. For example, for TechDocs:
+
+```yaml title="app-config.yaml"
+app:
+  packages:
+    exclude:
+      # highlight-add-next-line
+      - '@backstage/plugin-techdocs'
+```
+
+```tsx title="packages/app/src/App.tsx"
+// highlight-add-next-line
+import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
+
+const app = createApp({
+  features: [
+    catalogPlugin,
+    ...legacyFeatures,
+    entityPageMigrationModule,
+    // highlight-add-next-line
+    ...(isNfsEntityPageEnabled ? [techdocsPlugin] : []),
+  ],
+});
+```
+
+Without the exclusion, discovery can retain the native instance at its earlier
+position, letting the converted plugin win. Check the plugin's page routes and
+API factories before changing precedence.
+
+Configure the replacement's group as needed; see
+[Configure groups, titles, and icons](../../features/software-catalog/catalog-customization.md#configure-groups-titles-and-icons).
+
+Use the same flag value for layout changes as cards move into native
+composition. For example, a remaining column could use
+`isNfsEntityPageEnabled ? 12 : 6` for its width. Check the layout in both states.
+
+##### Roll out and retire the fallback
+
+1. During migration, owners enable the flag in their own settings to preview
+   and validate the NFS pages. Other users stay on the legacy pages by default.
+   Test both states with representative entities, checking content, layout,
+   tabs, deep links, and actions that use plugin APIs or route bindings.
+1. Optionally roll out NFS as the default before final cleanup, with a temporary
+   opt-out. Invert the check in the shared module: register `legacy-entity-page`
+   and set `isNfsEntityPageEnabled = !featureFlags.isActive('legacy-entity-page')`.
+   The route checks and `notInNfs` helper follow the new default. You can skip
+   this step and switch everyone directly when the migration is complete.
+1. Once all entity content is native and the new layout is ready, remove the
+   legacy catalog routes, entity-page JSX, and `entityPage` conversion option.
+   Remove the rollout flag, helpers, and migration-only API override together.
+   Keep any pre-existing custom API wiring, and retire any remaining conversion
+   helpers as described below.
+
+### Retire `convertLegacyAppRoot`
+
+Treat the removal of `convertLegacyAppRoot` as a Phase 2 milestone. You can
+remove it when the call no longer receives legacy root elements, routes, or the
+`entityPage` option. Remove the call, its import, and the converted features
+from the `features` array. Then start your app to verify that the new frontend
+system provides the expected routes, navigation, and page content without the
+compatibility helper.
 
 ## Enable the new templates for `yarn new`
 
@@ -914,29 +1350,11 @@ The `yarn new` command now defaults to the new frontend system templates for fro
 
 ### Using the App Visualizer Plugin
 
-We'd recommend that you install the `app-visualizer` plugin to help your troubleshooting. It provides a visual overview of your app's extension tree, making it easy to verify that plugins are installed correctly, see how extensions are wired together, and identify issues during migration.
+We'd recommend that you install the `app-visualizer` plugin to help your troubleshooting.
 
-#### Installation
+For installation instructions, please read [App Visualizer](./09-app-visualizer.md).
 
-Install the plugin in your app package:
-
-```bash
-yarn --cwd packages/app add @backstage/plugin-app-visualizer
-```
-
-When integrated into your app, the plugin provides the `/visualizer` route. Depending on your app setup, it may also appear in the sidebar as a **Visualizer** entry.
-
-#### Available Views
-
-The app visualizer provides three views, each accessible via tabs at the top of the page:
-
-- **Tree** — Displays the full extension tree as an interactive hierarchy. Each node represents an extension, showing its ID, the plugin it belongs to, and whether it is enabled or disabled. This is the most useful view during migration, as it lets you verify which plugins are being automatically detected and which legacy extensions have been converted. Expand nodes to see child extensions and their configuration.
-
-- **Detailed** — Shows a list of all extensions with additional metadata. Use this view to inspect individual extension properties, configuration, and attachment points. It is helpful for debugging configuration overrides and understanding how extensions are resolved.
-
-- **Text** — Renders the extension tree as plain text. This is useful for copying and pasting into GitHub issues or Discord when asking for help, since it provides a compact, readable snapshot of your app's structure.
-
-#### Using the Visualizer During Migration
+#### Using the App Visualizer During Migration
 
 During migration, the tree view is particularly helpful for:
 
@@ -950,9 +1368,13 @@ You can also use the **Copy tree as JSON** button in the page header to export t
 
 ### I'm seeing duplicate cards for Entity Pages
 
-When using the `entityPage` option with `convertLegacyAppRoot`, you may notice duplicate cards appearing on your Entity Pages. This happens because the migration helper automatically extracts cards from your existing Entity Page component and adds them to the new system, while the new Entity Page system also automatically includes cards from any plugins installed in your `packages/app` package. This results in the same card appearing twice - once from your legacy component and once from the plugin.
-
-To fix this, simply remove the card definitions from your old Entity Page component. The new system will automatically provide these cards through the installed plugins, so your manual definitions are no longer needed.
+Conversion contributes each legacy overview body to the new entity page alongside
+native cards from installed plugins. If both supply the same content, suppress
+one registration. During a feature-flagged rollout, keep the legacy JSX for
+rollback using the [incremental replacement pattern](#replace-contributions-while-keeping-the-fallback),
+and enable its native replacement at the same time. After retiring the fallback,
+you can remove the replaced JSX entirely. Also check which plugin is selected:
+converted plugins can take precedence over native plugins with the same ID.
 
 ### `Error: Invalid element inside FlatRoutes, expected Route but found element of type ...`
 
@@ -962,5 +1384,7 @@ If you have a use case where these are required, please reach out to us either t
 
 ## Next Steps
 
+- Explore the [Backstage demo repository](https://github.com/backstage/demo),
+  which uses the new frontend system, for a complete app reference.
 - See [architecture docs](../architecture/00-index.md) for more on the new system.
 - If you encounter issues, check [GitHub issues](https://github.com/backstage/backstage/issues) or ask in [Discord](https://discord.gg/backstage-687207715902193673).

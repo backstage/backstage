@@ -17,7 +17,6 @@ import { DetectedErrorsByCluster } from '@backstage/plugin-kubernetes-common';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { Event as Event_2 } from 'kubernetes-models/v1';
-import { FC } from 'react';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { GroupedResponses } from '@backstage/plugin-kubernetes-common';
 import { IContainer } from 'kubernetes-models/v1';
@@ -93,7 +92,7 @@ export type ClusterProps = {
 };
 
 // @public
-export const ContainerCard: FC<ContainerCardProps>;
+export function ContainerCard(input: ContainerCardProps): JSX_2.Element;
 
 // @public
 export interface ContainerCardProps {
@@ -215,7 +214,7 @@ export interface EventsProps {
 }
 
 // @public
-export const FixDialog: FC<FixDialogProps>;
+export function FixDialog(input: FixDialogProps): JSX_2.Element;
 
 // @public
 export interface FixDialogProps {
@@ -575,6 +574,7 @@ export const kubernetesReactTranslationRef: TranslationRef<
     readonly 'cluster.noPodsWithErrors': 'No pods with errors';
     readonly 'pods.pods_one': '{{count}} pod';
     readonly 'pods.pods_other': '{{count}} pods';
+    readonly 'podsTable.unknown': 'unknown';
     readonly 'podsTable.columns.name': 'name';
     readonly 'podsTable.columns.id': 'ID';
     readonly 'podsTable.columns.status': 'status';
@@ -583,7 +583,6 @@ export const kubernetesReactTranslationRef: TranslationRef<
     readonly 'podsTable.columns.totalRestarts': 'total restarts';
     readonly 'podsTable.columns.cpuUsage': 'CPU usage %';
     readonly 'podsTable.columns.memoryUsage': 'Memory usage %';
-    readonly 'podsTable.unknown': 'unknown';
     readonly 'podsTable.status.running': 'Running';
     readonly 'podsTable.status.ok': 'OK';
     readonly 'errorPanel.message': 'There was a problem retrieving some Kubernetes resources for the entity: {{entityName}}. This could mean that the Error Reporting card is not completely accurate.';
@@ -618,8 +617,8 @@ export const kubernetesReactTranslationRef: TranslationRef<
     readonly 'hpa.targetCpuUsageLabel': 'target CPU usage: {{value}}%';
     readonly 'errorReporting.columns.name': 'name';
     readonly 'errorReporting.columns.kind': 'kind';
-    readonly 'errorReporting.columns.namespace': 'namespace';
     readonly 'errorReporting.columns.messages': 'messages';
+    readonly 'errorReporting.columns.namespace': 'namespace';
     readonly 'errorReporting.columns.cluster': 'cluster';
     readonly 'errorReporting.title': 'Error Reporting';
     readonly 'podLogs.title': 'No logs emitted';
@@ -764,7 +763,7 @@ export interface PodExecTerminalProps {
 }
 
 // @public
-export const PodLogs: FC<PodLogsProps>;
+export function PodLogs(input: PodLogsProps): JSX_2.Element;
 
 // @public
 export const PodLogsDialog: (input: PodLogsDialogProps) => JSX_2.Element;

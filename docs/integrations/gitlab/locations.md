@@ -19,7 +19,7 @@ integrations:
       token: ${GITLAB_TOKEN}
 ```
 
-:::note Note
+:::note
 
 A public GitLab provider is added automatically at startup for convenience, so you only need to list it if you want to supply a [token](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html).
 

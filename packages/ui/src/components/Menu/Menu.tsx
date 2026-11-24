@@ -66,6 +66,7 @@ import { isInternalLink } from '../../utils/linkUtils';
 import { getNodeText } from '../../analytics/getNodeText';
 import { Box } from '../Box';
 import { BgReset } from '../../hooks/useBg';
+import { BUIRoutingProvider } from '../../navigation/BUIRoutingProvider';
 
 // The height will be used for virtualized menus. It should match the size set in CSS for each menu item.
 const rowHeight = 32;
@@ -99,12 +100,14 @@ export const Menu = (props: MenuProps<object>) => {
   let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
 
   const menuContent = (
-    <RAMenu
-      className={classes.content}
-      renderEmptyState={() => <MenuEmptyState />}
-      style={{ width: newMaxWidth, maxHeight, ...style }}
-      {...restProps}
-    />
+    <BUIRoutingProvider>
+      <RAMenu
+        className={classes.content}
+        renderEmptyState={() => <MenuEmptyState />}
+        style={{ width: newMaxWidth, maxHeight, ...style }}
+        {...restProps}
+      />
+    </BUIRoutingProvider>
   );
 
   return (
@@ -144,12 +147,14 @@ export const MenuListBox = (props: MenuListBoxProps<object>) => {
   let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
 
   const listBoxContent = (
-    <RAListBox
-      className={classes.content}
-      selectionMode={selectionMode}
-      style={{ width: newMaxWidth, maxHeight, ...style }}
-      {...restProps}
-    />
+    <BUIRoutingProvider>
+      <RAListBox
+        className={classes.content}
+        selectionMode={selectionMode}
+        style={{ width: newMaxWidth, maxHeight, ...style }}
+        {...restProps}
+      />
+    </BUIRoutingProvider>
   );
 
   return (
@@ -193,12 +198,14 @@ export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
   let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
 
   const menuContent = (
-    <RAMenu
-      className={classes.content}
-      renderEmptyState={() => <MenuEmptyState />}
-      style={{ width: newMaxWidth, maxHeight, ...style }}
-      {...restProps}
-    />
+    <BUIRoutingProvider>
+      <RAMenu
+        className={classes.content}
+        renderEmptyState={() => <MenuEmptyState />}
+        style={{ width: newMaxWidth, maxHeight, ...style }}
+        {...restProps}
+      />
+    </BUIRoutingProvider>
   );
 
   return (
@@ -259,13 +266,15 @@ export const MenuAutocompleteListbox = (
   let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
 
   const listBoxContent = (
-    <RAListBox
-      className={classes.content}
-      renderEmptyState={() => <MenuEmptyState />}
-      selectionMode={selectionMode}
-      style={{ width: newMaxWidth, maxHeight, ...style }}
-      {...restProps}
-    />
+    <BUIRoutingProvider>
+      <RAListBox
+        className={classes.content}
+        renderEmptyState={() => <MenuEmptyState />}
+        selectionMode={selectionMode}
+        style={{ width: newMaxWidth, maxHeight, ...style }}
+        {...restProps}
+      />
+    </BUIRoutingProvider>
   );
 
   return (
@@ -306,23 +315,24 @@ export const MenuAutocompleteListbox = (
 
 /** @public */
 export const MenuItem = (props: MenuItemProps) => {
-  const { ownProps, restProps, dataAttributes, analytics } = useDefinition(
-    MenuItemDefinition,
-    props,
-  );
-  const { classes, iconStart, children, href } = ownProps;
+  const definitionResult = useDefinition(MenuItemDefinition, props);
+  const { ownProps, restProps, dataAttributes, analytics } = definitionResult;
+  const { classes, iconStart, children } = ownProps;
+  const { href } = ownProps;
 
   const isExternal = href && !isInternalLink(href);
+  const target = restProps.target ?? (isExternal ? '_blank' : undefined);
+  const rel = restProps.rel ?? (isExternal ? 'noopener noreferrer' : undefined);
 
   return (
     <RAMenuItem
       className={classes.root}
       {...dataAttributes}
-      href={href}
-      target={isExternal ? '_blank' : undefined}
-      rel={isExternal ? 'noopener noreferrer' : undefined}
       textValue={typeof children === 'string' ? children : undefined}
-      {...restProps}
+      {...(restProps as React.ComponentProps<typeof RAMenuItem>)}
+      href={href}
+      target={target}
+      rel={rel}
       onAction={() => {
         restProps.onAction?.();
         if (href) {
@@ -347,17 +357,15 @@ export const MenuItem = (props: MenuItemProps) => {
 
 /** @public */
 export const MenuListBoxItem = (props: MenuListBoxItemProps) => {
-  const { ownProps, restProps } = useDefinition(
-    MenuListBoxItemDefinition,
-    props,
-  );
+  const definitionResult = useDefinition(MenuListBoxItemDefinition, props);
+  const { ownProps, restProps } = definitionResult;
   const { classes, children } = ownProps;
 
   return (
     <RAListBoxItem
       textValue={typeof children === 'string' ? children : undefined}
       className={classes.root}
-      {...restProps}
+      {...(restProps as React.ComponentProps<typeof RAListBoxItem>)}
     >
       <div className={classes.itemContent}>
         <div className={classes.check}>

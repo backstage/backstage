@@ -15,11 +15,8 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import {
-  entitiesResponseToObjects,
-  processEntitiesResponseItems,
-  processRawEntitiesResult,
-} from './process';
+import { performance } from 'node:perf_hooks';
+import { entitiesResponseToObjects, processRawEntitiesResult } from './process';
 
 const mockTransform = (entity: Entity): Entity => ({
   ...entity,
@@ -27,70 +24,108 @@ const mockTransform = (entity: Entity): Entity => ({
 });
 
 describe('processRawEntitiesResult', () => {
-  it('should prefer keeping results in raw form', () => {
-    expect(processRawEntitiesResult(['{"kind":"test"}', null])).toEqual({
+  it('should leave unprojected results untouched', async () => {
+    const entities = ['{ "kind": "test" }', null];
+    const result = await processRawEntitiesResult(entities);
+    expect(result).toEqual({
       type: 'raw',
-      entities: ['{"kind":"test"}', null],
+      entities: ['{ "kind": "test" }', null],
     });
-
-    expect(
-      processRawEntitiesResult(['{"kind":"test"}', null], mockTransform),
-    ).toEqual({
-      type: 'object',
-      entities: [{ kind: 'transformed-test' }, null],
-    });
+    expect(result.entities).toBe(entities);
   });
-});
 
-describe('processEntitiesResponseItems', () => {
-  it('should transform entities in object form', () => {
+  it('should serialize projected entities individually, preserving order and nulls', async () => {
     expect(
-      processEntitiesResponseItems({
-        type: 'object',
-        entities: [{ kind: 'test' } as Entity, null],
-      }),
-    ).toEqual({
-      type: 'object',
-      entities: [{ kind: 'test' }, null],
-    });
-
-    expect(
-      processEntitiesResponseItems(
-        {
-          type: 'object',
-          entities: [{ kind: 'test' } as Entity, null],
-        },
+      await processRawEntitiesResult(
+        ['{"kind":"first"}', null, '{"kind":"last"}', null],
         mockTransform,
       ),
     ).toEqual({
-      type: 'object',
-      entities: [{ kind: 'transformed-test' }, null],
+      type: 'raw',
+      entities: [
+        '{"kind":"transformed-first"}',
+        null,
+        '{"kind":"transformed-last"}',
+        null,
+      ],
+    });
+    expect(await processRawEntitiesResult([], mockTransform)).toEqual({
+      type: 'raw',
+      entities: [],
     });
   });
 
-  it('should transform entities in raw form', () => {
-    expect(
-      processEntitiesResponseItems({
-        type: 'raw',
-        entities: ['{"kind":"test"}', null],
-      }),
-    ).toEqual({
-      type: 'raw',
-      entities: ['{"kind":"test"}', null],
-    });
+  it('should let other event-loop work run after each 3 ms projection slice', async () => {
+    // Advance only the CPU clock: real immediates must get a turn, without
+    // requiring slow or timing-sensitive CPU work in the test itself.
+    let elapsed = 0;
+    const clock = jest
+      .spyOn(performance, 'now')
+      .mockImplementation(() => elapsed);
+    let processed = 0;
+    const progress: number[] = [];
+    let observer: NodeJS.Immediate;
+    const observe = () => {
+      progress.push(processed);
+      observer = setImmediate(observe);
+    };
+    observer = setImmediate(observe);
 
-    expect(
-      processEntitiesResponseItems(
-        {
-          type: 'raw',
-          entities: ['{"kind":"test"}', null],
+    try {
+      const result = await processRawEntitiesResult(
+        Array(3).fill('{"kind":"test"}'),
+        entity => {
+          ++processed;
+          elapsed += 3;
+          return mockTransform(entity);
         },
-        mockTransform,
-      ),
-    ).toEqual({
-      type: 'object',
-      entities: [{ kind: 'transformed-test' }, null],
+      );
+      expect(processed).toBe(3);
+      expect(progress).toEqual(expect.arrayContaining([1, 2]));
+      expect(entitiesResponseToObjects(result)).toEqual([
+        { kind: 'transformed-test' },
+        { kind: 'transformed-test' },
+        { kind: 'transformed-test' },
+      ]);
+    } finally {
+      clearImmediate(observer);
+      clock.mockRestore();
+    }
+  });
+
+  it('should not schedule a yield for a cheap projection', async () => {
+    let elapsed = 0;
+    const clock = jest
+      .spyOn(performance, 'now')
+      .mockImplementation(() => elapsed);
+    let yielded = false;
+    const observer = setImmediate(() => {
+      yielded = true;
     });
+    try {
+      await processRawEntitiesResult(
+        Array(3).fill('{"kind":"test"}'),
+        entity => {
+          elapsed += 1;
+          return mockTransform(entity);
+        },
+      );
+      expect(yielded).toBe(false);
+    } finally {
+      clearImmediate(observer);
+      clock.mockRestore();
+    }
+  });
+
+  it('should reject malformed JSON and failed transforms before returning a page', async () => {
+    await expect(async () =>
+      processRawEntitiesResult(['{"kind":"test"}', 'invalid'], mockTransform),
+    ).rejects.toThrow(SyntaxError);
+    await expect(async () =>
+      processRawEntitiesResult(['{"kind":"test"}'], () => {
+        throw new Error('projection failed');
+      }),
+    ).rejects.toThrow('projection failed');
   });
 });
 

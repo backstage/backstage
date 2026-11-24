@@ -17,7 +17,6 @@
 import express, { Response } from 'express';
 import Router from 'express-promise-router';
 import { z } from 'zod/v3';
-import zodToJsonSchema from 'zod-to-json-schema';
 import { InputError } from '@backstage/errors';
 import {
   AuthorizeResult,
@@ -39,6 +38,11 @@ import {
 } from './util';
 import { NotImplementedError } from '@backstage/errors';
 import { PermissionResourceRef } from './createPermissionResourceRef';
+import {
+  assertPermissionRuleParamsSchema,
+  permissionRuleParamsToJsonSchema,
+  validatePermissionRuleParams,
+} from './permissionRuleParams';
 
 const permissionCriteriaSchema: z.ZodSchema<
   PermissionCriteria<PermissionCondition>
@@ -152,11 +156,7 @@ const applyConditions = <TResourceType extends string, TResource>(
   }
 
   const rule = getRule(criteria.rule);
-  const result = rule.paramsSchema?.safeParse(criteria.params);
-
-  if (result && !result.success) {
-    throw new InputError(`Parameters to rule are invalid`, result.error);
-  }
+  validatePermissionRuleParams(rule, criteria.params);
 
   return rule.apply(resource, criteria.params ?? {});
 };
@@ -343,6 +343,7 @@ class PermissionIntegrationMetadataStore {
 
   addPermissionRules(rules: PermissionRule<unknown, unknown, string>[]) {
     for (const rule of rules) {
+      assertPermissionRuleParamsSchema(rule);
       const rulesByName =
         this.#rulesByTypeByName.get(rule.resourceType) ?? new Map();
       this.#rulesByTypeByName.set(rule.resourceType, rulesByName);
@@ -358,7 +359,7 @@ class PermissionIntegrationMetadataStore {
         name: rule.name,
         description: rule.description,
         resourceType: rule.resourceType,
-        paramsSchema: zodToJsonSchema(rule.paramsSchema ?? z.object({})),
+        paramsSchema: permissionRuleParamsToJsonSchema(rule),
       });
     }
   }

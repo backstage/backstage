@@ -1,5 +1,110 @@
 # @backstage/plugin-events-backend-module-google-pubsub
 
+## 0.2.9
+
+### Patch Changes
+
+- b03427c: Updated dependency `@google-cloud/pubsub` to `^6.3.2`. The new version requires Node.js 22 or later, which matches the Node.js versions that Backstage supports.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/plugin-events-node@0.5.0
+  - @backstage/config@1.3.11
+  - @backstage/filter-predicates@0.2.1
+
+## 0.2.9-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/plugin-events-node@0.5.0-next.2
+  - @backstage/config@1.3.11-next.0
+  - @backstage/filter-predicates@0.2.1-next.0
+
+## 0.2.9-next.1
+
+### Patch Changes
+
+- b03427c: Updated dependency `@google-cloud/pubsub` to `^6.3.2`. The new version requires Node.js 22 or later, which matches the Node.js versions that Backstage supports.
+- Updated dependencies
+  - @backstage/plugin-events-node@0.5.0-next.1
+
+## 0.2.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-events-node@0.4.28-next.0
+
+## 0.2.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/filter-predicates@0.2.0
+  - @backstage/plugin-events-node@0.4.27
+
+## 0.2.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+  - @backstage/plugin-events-node@0.4.27-next.1
+
+## 0.2.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/filter-predicates@0.1.6-next.0
+  - @backstage/plugin-events-node@0.4.27-next.0
+
+## 0.2.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/filter-predicates@0.1.5
+  - @backstage/config@1.3.9
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-events-node@0.4.26
+
+## 0.2.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/filter-predicates@0.1.5-next.1
+
+## 0.2.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/filter-predicates@0.1.5-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+  - @backstage/plugin-events-node@0.4.26-next.0
+
+## 0.2.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-events-node@0.4.25
+
 ## 0.2.6-next.0
 
 ### Patch Changes

@@ -193,7 +193,9 @@ export interface ElasticSearchConnectionConstructor {
     ALIVE: string;
     DEAD: string;
   };
-  roles: {
+  // The Elasticsearch v8 client exposes connection roles as an instance
+  // property rather than a static, so this is optional for compatibility.
+  roles?: {
     MASTER: string;
     DATA: string;
     INGEST: string;

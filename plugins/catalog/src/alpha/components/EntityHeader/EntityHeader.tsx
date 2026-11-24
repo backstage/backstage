@@ -22,8 +22,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 
 import { Header, Breadcrumbs } from '@backstage/core-components';
-import { useApi, useRouteRefParams } from '@backstage/core-plugin-api';
-import { IconComponent } from '@backstage/frontend-plugin-api';
+import {
+  IconComponent,
+  useApi,
+  useRouteRefParams,
+} from '@backstage/core-plugin-api';
 
 import {
   Entity,
@@ -63,10 +66,10 @@ function headerProps(
       namespace && namespace !== DEFAULT_NAMESPACE ? ` in ${namespace}` : ''
     }`,
     headerType: (() => {
-      let t = kind.toLocaleLowerCase('en-US');
+      let t = kind.toLowerCase();
       if (entity && entity.spec && 'type' in entity.spec) {
         t += ' — ';
-        t += (entity.spec as { type: string }).type.toLocaleLowerCase('en-US');
+        t += (entity.spec as { type: string }).type.toLowerCase();
       }
       return t;
     })(),

@@ -1,5 +1,94 @@
 # @backstage/plugin-scaffolder-node-test-utils
 
+## 0.3.17
+
+### Patch Changes
+
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/backend-test-utils@1.12.0
+  - @backstage/plugin-scaffolder-node@1.0.0
+
+## 0.3.17-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/backend-test-utils@1.12.0-next.2
+  - @backstage/plugin-scaffolder-node@1.0.0-next.2
+
+## 0.3.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.11.9-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-scaffolder-node@0.13.9-next.0
+
+## 0.3.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/backend-test-utils@1.11.8
+  - @backstage/plugin-scaffolder-node@0.13.8
+
+## 0.3.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+  - @backstage/backend-test-utils@1.11.8-next.1
+  - @backstage/plugin-scaffolder-node@0.13.8-next.1
+
+## 0.3.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.11.8-next.0
+  - @backstage/plugin-scaffolder-node@0.13.8-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+
+## 0.3.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.7
+  - @backstage/backend-test-utils@1.11.7
+  - @backstage/backend-plugin-api@1.10.1
+
+## 0.3.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.11.7-next.0
+  - @backstage/plugin-scaffolder-node@0.13.7-next.1
+  - @backstage/backend-plugin-api@1.10.1-next.0
+
+## 0.3.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.7-next.0
+
+## 0.3.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.6
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/backend-test-utils@1.11.6
+
 ## 0.3.14-next.0
 
 ### Patch Changes

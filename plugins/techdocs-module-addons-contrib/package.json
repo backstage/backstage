@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-techdocs-module-addons-contrib",
-  "version": "1.1.39-next.0",
+  "version": "1.2.0",
   "description": "Plugin module for contributed TechDocs Addons",
   "backstage": {
     "role": "frontend-plugin-module",
@@ -79,9 +79,9 @@
     "shadow-dom-testing-library": "^1.13.1"
   },
   "peerDependencies": {
-    "@types/react": "^17.0.0 || ^18.0.0",
-    "react": "^17.0.0 || ^18.0.0",
-    "react-dom": "^17.0.0 || ^18.0.0",
+    "@types/react": "^18.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
     "react-router-dom": "^6.30.2"
   },
   "peerDependenciesMeta": {

@@ -66,7 +66,7 @@ When you see `dir:.`, you can translate it to mean:
 
 The directory tree of the entity would look something like this:
 
-```
+```text
 ├── catalog-info.yaml
 ├── mkdocs.yml
 └── docs
@@ -77,7 +77,7 @@ If, for example, you wanted to keep a lean root directory, you could place your
 `mkdocs.yml` file in a subdirectory and update the `backstage.io/techdocs-ref`
 annotation value accordingly, e.g. to `dir:./sub-folder`:
 
-```
+```text
 ├── catalog-info.yaml
 └── sub-folder
     ├── mkdocs.yml
@@ -546,7 +546,7 @@ Start writing your documentation by adding more markdown (.md) files to this
 folder (/docs) or replace the content in this file.
 ```
 
-:::note Note
+:::note
 
 The values of `site_name`, `component_id` and `site_description` depends
 on how you have configured your `template.yaml`.
@@ -565,7 +565,7 @@ theme:
   font: false
 ```
 
-:::note Note
+:::note
 
 The addition `name: material` is necessary. Otherwise it will not work
 
@@ -721,7 +721,7 @@ plugins:
   - kroki
 ```
 
-:::note Note
+:::note
 
 You will very likely want to set a `kroki` `ServerURL` configuration in your
 `mkdocs.yml` as well. The default value is the publicly hosted `kroki.io`. If
@@ -903,7 +903,7 @@ backend.add(techdocsCustomBuildStrategy);
 backend.start();
 ```
 
-:::note Note
+:::note
 
 You may need to add the `@backstage/plugin-techdocs-node` package to your backend `package.json` if it's not been imported already.
 
@@ -1007,7 +1007,7 @@ You may want to make files available for download by your users such as PDF
 documents, images, or code templates. Download links for files included in your
 docs directory can be made by adding `{: download }` after a markdown link.
 
-```
+```markdown
 [Link text](https://example.com/foo.jpg){: download }
 ```
 
@@ -1017,6 +1017,6 @@ clicked.
 Specify a file name to control the name the file will be given when it is
 downloaded:
 
-```
+```markdown
 [Link text](https://example.com/foo.jpg){: download="foo.jpg" }
 ```

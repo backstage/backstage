@@ -34,7 +34,6 @@ import type {
   TabsContextValue,
   TabProps,
 } from './types';
-import { useLocation } from 'react-router-dom';
 import { TabsIndicators } from './TabsIndicators';
 import {
   Tabs as AriaTabs,
@@ -50,8 +49,13 @@ import {
   TabDefinition,
   TabPanelDefinition,
 } from './definition';
-import { isInternalLink } from '../../utils/linkUtils';
 import { getNodeText } from '../../analytics/getNodeText';
+import { getBUINavigationPathname } from '../../provider/BUINavigation';
+import {
+  BUIRoutingProvider,
+  useBUIRouting,
+} from '../../navigation/BUIRoutingProvider';
+import { isBrowserOwnedHref } from '../../utils/linkUtils';
 
 const TabsContext = createContext<TabsContextValue | undefined>(undefined);
 
@@ -75,22 +79,14 @@ const TabSelectionContext = createContext<TabSelectionContextValue | null>(
 );
 
 /**
- * Strips query params and hash from a href, leaving only the pathname.
- * Tab matching always compares against location.pathname which never includes them.
- */
-const hrefPathname = (href: string) => href.split('?')[0].split('#')[0];
-
-/**
  * Utility function to determine if a tab should be active based on the matching strategy.
  * This follows the pattern used in WorkaroundNavLink from the sidebar.
  */
 const isTabActive = (
-  tabHref: string,
+  pathname: string,
   currentPathname: string,
   matchStrategy: 'exact' | 'prefix',
 ): boolean => {
-  const pathname = hrefPathname(tabHref);
-
   if (matchStrategy === 'exact') {
     return pathname === currentPathname;
   }
@@ -255,21 +251,23 @@ export const TabList = (props: TabListProps) => {
   });
 
   return (
-    <div className={classes.root}>
-      <AriaTabList
-        className={classes.tabList}
-        aria-label="Toolbar tabs"
-        {...restProps}
-      >
-        {enhancedChildren}
-      </AriaTabList>
-      <TabsIndicators
-        tabRefs={tabRefs}
-        tabsRef={tabsRef}
-        hoveredKey={hoveredKey}
-        prevHoveredKey={prevHoveredKey}
-      />
-    </div>
+    <BUIRoutingProvider>
+      <div className={classes.root}>
+        <AriaTabList
+          className={classes.tabList}
+          aria-label="Toolbar tabs"
+          {...restProps}
+        >
+          {enhancedChildren}
+        </AriaTabList>
+        <TabsIndicators
+          tabRefs={tabRefs}
+          tabsRef={tabsRef}
+          hoveredKey={hoveredKey}
+          prevHoveredKey={prevHoveredKey}
+        />
+      </div>
+    </BUIRoutingProvider>
   );
 };
 
@@ -279,19 +277,18 @@ export const TabList = (props: TabListProps) => {
  * Separated to avoid conditional hook usage in Tab component.
  * @internal
  */
-function RoutedTabEffects({
+function TabSelectionEffects({
   id,
-  href,
+  pathname,
+  targetPathname,
   matchStrategy = 'exact',
 }: {
   id: string;
-  href: string;
+  pathname: string;
+  targetPathname: string | undefined;
   matchStrategy?: 'exact' | 'prefix';
 }) {
   const selectionCtx = useContext(TabSelectionContext);
-  const location = useLocation();
-
-  // Register as a routed tab (for controlled vs uncontrolled mode)
   useEffect(() => {
     if (selectionCtx) {
       selectionCtx.registerRoutedTab(id);
@@ -300,10 +297,10 @@ function RoutedTabEffects({
     return undefined;
   }, [id, selectionCtx]);
 
-  // Register as active tab when URL matches (for tab selection)
-  const isActive = isTabActive(href, location.pathname, matchStrategy);
-  const segmentCount = hrefPathname(href).split('/').filter(Boolean).length;
-
+  const isActive =
+    targetPathname !== undefined &&
+    isTabActive(targetPathname, pathname, matchStrategy);
+  const segmentCount = targetPathname?.split('/').filter(Boolean).length ?? 0;
   useEffect(() => {
     if (isActive && selectionCtx) {
       selectionCtx.registerActiveTab(id, segmentCount);
@@ -311,7 +308,6 @@ function RoutedTabEffects({
     }
     return undefined;
   }, [isActive, id, segmentCount, selectionCtx]);
-
   return null;
 }
 
@@ -325,7 +321,9 @@ export const Tab = (props: TabProps) => {
     TabDefinition,
     props,
   );
-  const { classes, matchStrategy, href, id } = ownProps;
+  const { classes, matchStrategy, id } = ownProps;
+  const { href } = ownProps;
+  const router = useBUIRouting();
   const { setTabRef } = useTabsContext();
 
   const handlePress = () => {
@@ -342,10 +340,11 @@ export const Tab = (props: TabProps) => {
 
   return (
     <>
-      {isInternalLink(href) && (
-        <RoutedTabEffects
+      {router && href && !isBrowserOwnedHref(href) && (
+        <TabSelectionEffects
           id={id as string}
-          href={href}
+          pathname={router.pathname}
+          targetPathname={getBUINavigationPathname(router.createHref(href))}
           matchStrategy={matchStrategy}
         />
       )}
@@ -353,8 +352,8 @@ export const Tab = (props: TabProps) => {
         id={id}
         className={classes.root}
         ref={el => setTabRef(id as string, el as HTMLDivElement)}
+        {...(restProps as AriaTabProps)}
         href={href}
-        {...restProps}
         onPress={e => {
           restProps.onPress?.(e);
           handlePress();

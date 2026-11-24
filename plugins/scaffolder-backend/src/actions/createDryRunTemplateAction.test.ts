@@ -61,6 +61,20 @@ describe('createDryRunTemplateAction', () => {
     jest.resetAllMocks();
   });
 
+  it('requires dry-run permission for action visibility', () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+
+    createDryRunTemplateAction({
+      actionsRegistry: mockActionsRegistry,
+      scaffolderService: mockScaffolderService,
+    });
+
+    expect(
+      mockActionsRegistry.actions.get('test:dry-run-template')
+        ?.visibilityPermission?.name,
+    ).toBe('scaffolder.template.dry-run');
+  });
+
   it('should return success with logs when dry-run succeeds', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
     const dryRunResult = {

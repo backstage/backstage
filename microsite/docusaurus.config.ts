@@ -16,13 +16,16 @@
 
 // @ts-check
 
+// Adds the devServer option to the webpack config that plugins can return
+/// <reference types="webpack-dev-server" />
+
 /** @type{import('prism-react-renderer').PrismTheme} **/
 // @ts-ignore
 import { themes } from 'prism-react-renderer';
-import { cpSync, existsSync } from 'node:fs';
+import { cpSync, existsSync, readFileSync } from 'node:fs';
 import { resolve as resolvePath } from 'node:path';
 import type * as Preset from '@docusaurus/preset-classic';
-import { Config } from '@docusaurus/types';
+import { Config, Plugin } from '@docusaurus/types';
 import RedirectPlugin from '@docusaurus/plugin-client-redirects';
 import { releases } from './releases';
 import type * as OpenApiPlugin from 'docusaurus-plugin-openapi-docs';
@@ -31,23 +34,32 @@ const backstageTheme = themes.vsDark;
 backstageTheme.plain.backgroundColor = '#232323';
 
 const useVersionedDocs = existsSync('versions.json');
-const wellKnownDocsPath = resolvePath(__dirname, '../docs/.well-known');
-const wellKnownPublicPath = '/.well-known';
+// Agent skills live in the repo root so that agents working in the repo find
+// them. Only the skills listed in index.json are published.
+const skillsPath = resolvePath(__dirname, '../.agents/skills');
+const skillsPublicPath = '/.well-known/skills';
 
 // This patches the redirect plugin to ignore the error when it tries to override existing fields.
 // This lets us add redirects that only apply to the next docs, while the stable docs still contain the source path.
-const PatchedRedirectPlugin: typeof RedirectPlugin = (ctx, opts) => {
-  const plugin = RedirectPlugin(ctx, opts);
+const PatchedRedirectPlugin = (
+  ...[ctx, opts]: Parameters<typeof RedirectPlugin>
+): Plugin | null => {
+  // The redirect plugin returns Plugin<void>, which the plugins option doesn't accept
+  const plugin = RedirectPlugin(ctx, opts) as Plugin | null;
+  if (!plugin) {
+    return null;
+  }
 
   return {
     ...plugin,
     async postBuild(...args) {
       try {
-        await plugin.postBuild(...args);
+        await plugin.postBuild?.(...args);
       } catch (error) {
         if (
+          error instanceof Error &&
           error.message ===
-          'The redirect plugin is not supposed to override existing files.'
+            'The redirect plugin is not supposed to override existing files.'
         ) {
           // Bit of a hack to make sure all remaining redirects are written, since the write uses Promise.all
           await new Promise(resolve => setTimeout(resolve, 1000));
@@ -131,7 +143,6 @@ const config: Config = {
     'https://unpkg.com/medium-zoom@1.0.6/dist/medium-zoom.min.js',
     '/js/medium-zoom.js',
     '/js/dismissable-banner.js',
-    '/js/scroll-nav-to-view-in-docs.js',
     {
       src: 'https://widget.kapa.ai/kapa-widget.bundle.js',
       'data-website-id': '4f3b7b51-4ea6-4a5b-aede-44fbe128c0f2',
@@ -155,27 +166,17 @@ const config: Config = {
     repoUrl: 'https://github.com/backstage/backstage',
   },
   onBrokenLinks: 'log',
+  storage: {
+    type: 'localStorage',
+    namespace: true,
+  },
   future: {
-    v4: {
-      removeLegacyPostBuildHeadAttribute: true,
-    },
-    experimental_faster: {
-      swcJsLoader: true,
-      swcJsMinimizer: true,
-      lightningCssMinimizer: true,
-      rspackBundler: true,
-      mdxCrossCompilerCache: true,
-      rspackPersistentCache: true,
-      // TODO: React has an issue with server rendering here.
-      // ssgWorkerThreads: true,
-      // TODO: This prints extra warnings in the console, add back when we have a fix.
-      // swcHtmlMinimizer: true,
-    },
+    v4: true,
+    faster: true,
   },
   presets: [
     [
       '@docusaurus/preset-classic',
-      /** @type {import('@docusaurus/preset-classic').Options} */
       {
         docs: {
           editUrl: ({ docPath }) => {
@@ -215,34 +216,58 @@ const config: Config = {
           onInlineAuthors: 'ignore',
         },
         theme: {
-          customCss: 'src/theme/customTheme.scss',
+          customCss: require.resolve('./src/theme/customTheme.scss'),
         },
         gtag: {
           trackingID: 'G-KSEVGGNCJW',
         },
-      },
+      } satisfies Preset.Options,
     ],
   ],
   markdown: {
-    preprocessor({ fileContent }) {
-      // Replace all HTML comments with empty strings as these are not supported by MDXv2.
-      function removeHtmlComments(input) {
-        let previous;
-        do {
-          previous = input;
-          input = input.replace(/<!--.*?-->/gs, '');
-        } while (input !== previous);
-        return input;
-      }
-      return removeHtmlComments(fileContent);
-    },
+    mermaid: true,
     format: 'detect',
     hooks: {
       onBrokenMarkdownLinks: 'log',
     },
   },
   plugins: [
-    'docusaurus-plugin-sass',
+    [
+      'docusaurus-plugin-sass',
+      {
+        sassOptions: {
+          loadPaths: [resolvePath(__dirname)],
+        },
+      },
+    ],
+    // Workaround: postcss-preset-env polyfills @layer by converting it to
+    // :not(#\#) specificity hacks, which breaks useCssCascadeLayers.
+    // Disable the cascade-layers polyfill so native @layer is preserved.
+    // See https://github.com/facebook/docusaurus/pull/11142
+    function disableCascadeLayersPolyfillPlugin() {
+      return {
+        name: 'disable-cascade-layers-polyfill',
+        configurePostCss(postCssOptions) {
+          postCssOptions.plugins = postCssOptions.plugins.map(plugin => {
+            if (
+              Array.isArray(plugin) &&
+              typeof plugin[0] === 'string' &&
+              plugin[0].includes('postcss-preset-env')
+            ) {
+              return [
+                plugin[0],
+                {
+                  ...plugin[1],
+                  features: { ...plugin[1]?.features, 'cascade-layers': false },
+                },
+              ];
+            }
+            return plugin;
+          });
+          return postCssOptions;
+        },
+      };
+    },
     function disableExpensiveBundlerOptimizationPlugin() {
       return {
         name: 'disable-expensive-bundler-optimizations',
@@ -271,12 +296,12 @@ const config: Config = {
       },
     }),
     () => ({
-      name: 'publish-well-known-docs',
+      name: 'publish-skills',
       getPathsToWatch() {
-        return [wellKnownDocsPath];
+        return [skillsPath];
       },
       configureWebpack() {
-        if (!existsSync(wellKnownDocsPath)) {
+        if (!existsSync(skillsPath)) {
           return undefined;
         }
 
@@ -284,8 +309,8 @@ const config: Config = {
           devServer: {
             static: [
               {
-                publicPath: wellKnownPublicPath,
-                directory: wellKnownDocsPath,
+                publicPath: skillsPublicPath,
+                directory: skillsPath,
                 staticOptions: {
                   dotfiles: 'allow',
                 },
@@ -295,13 +320,23 @@ const config: Config = {
         };
       },
       async postBuild({ outDir }: { outDir: string }) {
-        if (!existsSync(wellKnownDocsPath)) {
+        const indexPath = resolvePath(skillsPath, 'index.json');
+        if (!existsSync(indexPath)) {
           return;
         }
 
-        cpSync(wellKnownDocsPath, resolvePath(outDir, '.well-known'), {
-          recursive: true,
-        });
+        // Only publish the skills listed in index.json. Other skills in the
+        // folder are for working on this repository only.
+        const targetPath = resolvePath(outDir, `.${skillsPublicPath}`);
+        const { skills }: { skills: { name: string }[] } = JSON.parse(
+          readFileSync(indexPath, 'utf8'),
+        );
+        cpSync(indexPath, resolvePath(targetPath, 'index.json'));
+        for (const { name } of skills) {
+          cpSync(resolvePath(skillsPath, name), resolvePath(targetPath, name), {
+            recursive: true,
+          });
+        }
       },
     }),
     ctx =>
@@ -313,6 +348,76 @@ const config: Config = {
           {
             from: '/docs',
             to: '/docs/landing-page/doc-landing-page',
+          },
+          // Annotation and status keys look like URLs (e.g. backstage.io/orphan) and
+          // get auto-linked in many tools, so send them to their docs
+          {
+            from: '/managed-by-location',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiomanaged-by-location',
+          },
+          {
+            from: '/managed-by-origin-location',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiomanaged-by-origin-location',
+          },
+          {
+            from: '/orphan',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageioorphan',
+          },
+          {
+            from: '/techdocs-ref',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiotechdocs-ref',
+          },
+          {
+            from: '/techdocs-entity',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiotechdocs-entity',
+          },
+          {
+            from: '/techdocs-entity-path',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiotechdocs-entity-path',
+          },
+          {
+            from: '/view-url',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageioview-url-backstageioedit-url',
+          },
+          {
+            from: '/edit-url',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageioview-url-backstageioedit-url',
+          },
+          {
+            from: '/source-location',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiosource-location',
+          },
+          {
+            from: '/source-template',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiosource-template',
+          },
+          {
+            from: '/ldap-rdn',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageioldap-rdn-backstageioldap-uuid-backstageioldap-dn',
+          },
+          {
+            from: '/ldap-uuid',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageioldap-rdn-backstageioldap-uuid-backstageioldap-dn',
+          },
+          {
+            from: '/ldap-dn',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageioldap-rdn-backstageioldap-uuid-backstageioldap-dn',
+          },
+          {
+            from: '/code-coverage',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiocode-coverage',
+          },
+          {
+            from: '/github-actions-id',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiogithub-actions-id',
+          },
+          {
+            from: '/definition-at-location',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiodefinition-at-location',
+          },
+          {
+            from: '/catalog-processing',
+            to: '/docs/features/software-catalog/well-known-statuses#backstageiocatalog-processing',
           },
           {
             from: '/docs/features/software-catalog/software-catalog-overview',
@@ -431,7 +536,7 @@ const config: Config = {
       },
     ],
   ],
-  themes: ['docusaurus-theme-openapi-docs'],
+  themes: ['docusaurus-theme-openapi-docs', '@docusaurus/theme-mermaid'],
   themeConfig: {
     metadata: [
       {
@@ -577,13 +682,6 @@ const config: Config = {
       ],
     },
     image: 'img/sharing-opengraph.png',
-    metadata: [
-      {
-        name: 'description',
-        content:
-          'Backstage is an open source developer portal framework that centralizes your software catalog, unifies infrastructure tools, and helps teams ship high-quality code faster.',
-      },
-    ],
     footer: {
       links: [
         {
@@ -660,7 +758,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `<p style="text-align:center"><a href="https://spotify.github.io/">Made with ❤️ at Spotify</a></p><p class="copyright">Copyright © ${new Date().getFullYear()} Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: <a href="https://www.linuxfoundation.org/trademark-usage" />https://www.linuxfoundation.org/trademark-usage</a></p>`,
+      copyright: `<p style="text-align:center"><a href="https://spotify.github.io/">Made with ❤️ at Spotify</a></p><p class="copyright">Copyright © ${new Date().getFullYear()} Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: <a href="https://www.linuxfoundation.org/trademark-usage">https://www.linuxfoundation.org/trademark-usage</a></p>`,
     },
     algolia: {
       apiKey: '60d2643a9c6306463f15f8c3556e7f2e', // Owned by @Rugvip
@@ -672,7 +770,7 @@ const config: Config = {
       theme: backstageTheme,
       // Supported languages: https://prismjs.com/#supported-languages
       // Default languages: https://github.com/FormidableLabs/prism-react-renderer/blob/master/packages/generate-prism-languages/index.ts#L9-L23
-      additionalLanguages: ['docker', 'bash'],
+      additionalLanguages: ['docker', 'bash', 'log', 'shell-session'],
       magicComments: [
         // Extend the default highlight class name
         {

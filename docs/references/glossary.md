@@ -82,7 +82,7 @@ Backstage includes "default" collators for Catalog and TechDocs that you can use
 
 A Backstage component can implement [API](#api)s for other components to consume. In turn, it might consume APIs implemented by other components, or directly depend on components or resources that are attached to it at runtime.
 
-See the [Backstage System Model](https://backstage.io/docs/features/software-catalog/system-model/#component-catalog-plugin).
+See the [Backstage System Model](https://backstage.io/docs/features/software-catalog/system-model#component).
 
 ## Condition (permission plugin)
 
@@ -303,7 +303,7 @@ See [Plugin directory](https://backstage.io/plugins/) for a list of community dr
 
 The central component of the Backstage permission framework that dictates who can do what, to which resources, and under what conditions.
 
-Backstage policies are implemented as functions or sets of rules that receive a request (containing information about a user and a desired permission/action on a resource) and return an authorization decision (allow, deny, or a conditional decision). Policies are independent of the [authorization](#authorization) model, such as role-based access control or attribute-based access control. See [Policy](https://backstage.io/docs/permissions/concepts/#policy-permission-plugin).
+Backstage policies are implemented as functions or sets of rules that receive a request (containing information about a user and a desired permission/action on a resource) and return an authorization decision (allow, deny, or a conditional decision). Policies are independent of the [authorization](#authorization) model, such as role-based access control or attribute-based access control. See [Policy](https://backstage.io/docs/permissions/concepts#policy).
 
 Policies are defined in Typescript code in the permissions framework. See [Writing a permission policy](https://backstage.io/docs/permissions/writing-a-policy) for examples.
 

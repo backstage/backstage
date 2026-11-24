@@ -37,11 +37,16 @@ import type {
 export function ComboboxItem<T extends object = object>(
   props: ComboboxItemProps<T>,
 ) {
-  const { ownProps, restProps } = useDefinition(ComboboxItemDefinition, props);
+  const definitionResult = useDefinition(ComboboxItemDefinition, props);
+  const { ownProps, restProps } = definitionResult;
   const { classes, children, textValue, showSelectionIndicator } = ownProps;
 
   return (
-    <ListBoxItem {...restProps} className={classes.root} textValue={textValue}>
+    <ListBoxItem
+      {...(restProps as React.ComponentProps<typeof ListBoxItem>)}
+      className={classes.root}
+      textValue={textValue}
+    >
       {values => {
         const content =
           typeof children === 'function' ? children(values) : children;

@@ -105,6 +105,58 @@ describe.each(supportedDatabases.eachSupportedId())(
       ).toEqual([{ count: '2' }]);
     });
 
+    it('should re-index unchanged documents without re-inserting or failing', async () => {
+      const { store, knex } = await createStore();
+
+      const documents = [
+        {
+          title: 'TITLE 1',
+          text: 'TEXT 1',
+          location: 'LOCATION-1',
+        },
+        {
+          title: 'TITLE 2',
+          text: 'TEXT 2',
+          location: 'LOCATION-2',
+        },
+      ];
+
+      await store.transaction(async tx => {
+        await store.prepareInsert(tx);
+        await store.insertDocuments(tx, 'my-type', documents);
+        await store.completeInsert(tx, 'my-type');
+      });
+
+      expect(
+        await knex.count('*').where('type', 'my-type').from('documents'),
+      ).toEqual([{ count: '2' }]);
+
+      await store.transaction(async tx => {
+        await store.prepareInsert(tx);
+        await store.insertDocuments(tx, 'my-type', documents);
+        await tx.raw(`
+          CREATE FUNCTION pg_temp.reject_document_insert() RETURNS trigger
+          LANGUAGE plpgsql AS $$
+          BEGIN
+            RAISE EXCEPTION 'Unchanged documents must be filtered before insertion';
+          END;
+          $$;
+          CREATE TRIGGER reject_document_insert
+          BEFORE INSERT ON documents
+          FOR EACH ROW EXECUTE FUNCTION pg_temp.reject_document_insert();
+        `);
+        await store.completeInsert(tx, 'my-type');
+        await tx.raw(`
+          DROP TRIGGER reject_document_insert ON documents;
+          DROP FUNCTION pg_temp.reject_document_insert();
+        `);
+      });
+
+      expect(
+        await knex.count('*').where('type', 'my-type').from('documents'),
+      ).toEqual([{ count: '2' }]);
+    });
+
     it('should insert truncated documents', async () => {
       const { store, knex } = await createStore();
 
@@ -309,6 +361,41 @@ describe.each(supportedDatabases.eachSupportedId())(
           type: 'test',
         },
       ]);
+    });
+
+    it('supports punctuation in highlight options', async () => {
+      const { store } = await createStore();
+
+      await store.transaction(async tx => {
+        await store.prepareInsert(tx);
+        await store.insertDocuments(tx, 'test', [
+          {
+            title: 'Hello World',
+            text: 'Around the world',
+            location: 'LOCATION-1',
+          },
+        ]);
+        await store.completeInsert(tx, 'test');
+      });
+
+      const rows = await store.transaction(tx =>
+        store.query(tx, {
+          pgTerm: 'Hello',
+          offset: 0,
+          limit: 25,
+          normalization: 0,
+          options: {
+            ...highlightOptions,
+            useHighlight: true,
+            fragmentDelimiter: `that's "all", folks`,
+          },
+        }),
+      );
+
+      expect(rows).toHaveLength(1);
+      expect(rows[0].highlight).toEqual(
+        expect.objectContaining({ title: '<tag>Hello</tag> World' }),
+      );
     });
 
     it('query by term for specific type', async () => {

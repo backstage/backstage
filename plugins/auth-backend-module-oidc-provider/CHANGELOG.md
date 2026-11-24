@@ -1,5 +1,112 @@
 # @backstage/plugin-auth-backend-module-oidc-provider
 
+## 0.4.23
+
+### Patch Changes
+
+- 918ca98: Updated dependency `jose` to `^6.1.0`. Existing ES256 token issuance and verification are unchanged. ML-DSA algorithms can be used when the runtime supports them.
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.31.0
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/plugin-auth-node@0.7.8
+  - @backstage/config@1.3.11
+
+## 0.4.23-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.31.0-next.2
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/plugin-auth-node@0.7.8-next.2
+  - @backstage/config@1.3.11-next.0
+
+## 0.4.23-next.0
+
+### Patch Changes
+
+- 918ca98: Updated dependency `jose` to `^6.1.0`. Existing ES256 token issuance and verification are unchanged. ML-DSA algorithms can be used when the runtime supports them.
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.30.3-next.0
+  - @backstage/plugin-auth-node@0.7.8-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+
+## 0.4.22
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/config@1.3.10
+  - @backstage/plugin-auth-node@0.7.7
+  - @backstage/plugin-auth-backend@0.30.2
+
+## 0.4.22-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+  - @backstage/plugin-auth-backend@0.30.2-next.1
+  - @backstage/plugin-auth-node@0.7.7-next.1
+
+## 0.4.22-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/plugin-auth-backend@0.30.2-next.0
+  - @backstage/plugin-auth-node@0.7.7-next.0
+
+## 0.4.21
+
+### Patch Changes
+
+- a818233: Omit email addresses from the default OIDC profile unless the identity provider marks them as verified.
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.30.1
+  - @backstage/plugin-auth-node@0.7.6
+  - @backstage/config@1.3.9
+  - @backstage/backend-plugin-api@1.10.1
+
+## 0.4.21-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/plugin-auth-backend@0.30.1-next.2
+  - @backstage/plugin-auth-node@0.7.5-next.1
+
+## 0.4.21-next.1
+
+### Patch Changes
+
+- a818233: Omit email addresses from the default OIDC profile unless the identity provider marks them as verified.
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.30.1-next.1
+  - @backstage/plugin-auth-node@0.7.5-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+
+## 0.4.20-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.30.1-next.0
+
+## 0.4.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.30.0
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-auth-node@0.7.4
+
 ## 0.4.19-next.0
 
 ### Patch Changes

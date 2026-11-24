@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { z } from 'zod/v3';
+import { z } from 'zod';
 
 /**
  * Update the properties of a certain relation type between a given pair of
@@ -50,6 +50,10 @@ export const opUpdateRelationV1Schema = z.strictObject({
      * The technical type of the reverse relation, e.g. "ownerOf".
      */
     reverseType: z.string().optional(),
+    /**
+     * A human-readable title for the currently declared reverse relation.
+     */
+    reverseTitle: z.string().optional(),
     /**
      * A human-readable title for the relation type, e.g. "owned by".
      */

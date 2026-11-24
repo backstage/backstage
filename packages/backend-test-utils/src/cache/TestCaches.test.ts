@@ -29,7 +29,9 @@ describe.each(caches.eachSupportedId())('TestCaches, %p', cacheId => {
     await keyv.set('test', 'value');
     await expect(keyv.get('test')).resolves.toBe('value');
   });
+});
 
+describe('TestCaches, REDIS_7 clearing', () => {
   itIfDocker('clears between tests, part 1', async () => {
     const { keyv } = await caches.init('REDIS_7');
     // eslint-disable-next-line jest/no-standalone-expect

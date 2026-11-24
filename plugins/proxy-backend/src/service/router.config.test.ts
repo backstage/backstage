@@ -18,6 +18,8 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
+import { authServiceFactory } from '@backstage/backend-defaults/auth';
+import { httpAuthServiceFactory } from '@backstage/backend-defaults/httpAuth';
 import {
   registerMswTestHooks,
   startTestBackend,
@@ -66,6 +68,8 @@ describe('createRouter reloadable configuration', () => {
           deps: {},
           factory: () => config,
         }),
+        authServiceFactory,
+        httpAuthServiceFactory,
       ],
     });
 
@@ -96,6 +100,10 @@ describe('createRouter reloadable configuration', () => {
               target: 'https://non-existing-example.com',
               credentials: 'dangerously-allow-unauthenticated',
             },
+            '/test/protected': {
+              target: 'https://non-existing-example.com',
+              credentials: 'require',
+            },
           },
         },
       });
@@ -103,6 +111,9 @@ describe('createRouter reloadable configuration', () => {
       await expect(fetch(`${baseUrl}/api/proxy/test2`)).resolves.toMatchObject({
         status: 200,
       });
+      await expect(
+        fetch(`${baseUrl}/api/proxy/test/protected`).then(res => res.status),
+      ).resolves.toBe(401);
     } finally {
       await backend.stop();
     }

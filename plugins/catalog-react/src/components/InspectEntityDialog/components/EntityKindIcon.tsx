@@ -25,12 +25,12 @@ function getKind(
   entityRef: string | undefined,
 ): string | undefined {
   if (kind) {
-    return kind.toLocaleLowerCase('en-US');
+    return kind.toLowerCase();
   }
 
   if (entityRef) {
     try {
-      return parseEntityRef(entityRef).kind.toLocaleLowerCase('en-US');
+      return parseEntityRef(entityRef).kind.toLowerCase();
     } catch {
       return undefined;
     }

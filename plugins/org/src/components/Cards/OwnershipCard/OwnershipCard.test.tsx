@@ -288,7 +288,7 @@ describe('OwnershipCard', () => {
     // This env does not support URLSearchParams
     const queryParams = decodeURIComponent(href);
 
-    expect(queryParams).toContain('filters[owners]=my-team');
+    expect(queryParams).toContain('filters[owners]=group:default/my-team');
   });
 
   it('links to the catalog with the user and groups filters from an user profile', async () => {
@@ -311,7 +311,7 @@ describe('OwnershipCard', () => {
     // This env does not support URLSearchParams
     const queryParams = decodeURIComponent(href);
     expect(queryParams).toMatch(
-      /filters\[owners\]=custom\/some\-team.*filters\[owners\]=user:the-user/,
+      /filters\[owners\]=group:custom\/some\-team.*filters\[owners\]=user:default\/the-user/,
     );
   });
 

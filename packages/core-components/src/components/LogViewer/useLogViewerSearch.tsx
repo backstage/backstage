@@ -71,7 +71,7 @@ export interface LogViewerSearch {
 
 export function useLogViewerSearch(lines: AnsiLine[]): LogViewerSearch {
   const [searchInput, setSearchInput] = useState('');
-  const searchText = searchInput.toLocaleLowerCase('en-US');
+  const searchText = searchInput.toLowerCase();
 
   const [resultIndex, setResultIndex] = useState<number>(0);
 

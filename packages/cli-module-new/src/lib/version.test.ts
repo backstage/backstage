@@ -18,6 +18,37 @@ import { packageVersions, createPackageVersionProvider } from './version';
 import { Lockfile } from '@backstage/cli-node';
 import corePluginApiPkg from '@backstage/core-plugin-api/package.json';
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import fs from 'node:fs';
+import { resolve as resolvePath, join as joinPath } from 'node:path';
+
+describe('packageVersions', () => {
+  it('should include all @backstage packages used by templates without a version hint', () => {
+    const templatesDir = resolvePath(__dirname, '../../templates');
+    const missing: string[] = [];
+
+    function walk(dir: string) {
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const fullPath = joinPath(dir, entry.name);
+        if (entry.isDirectory()) {
+          walk(fullPath);
+        } else if (entry.name.endsWith('.hbs')) {
+          const content = fs.readFileSync(fullPath, 'utf8');
+          const re = /\{\{\s*versionQuery\s+'([^']+)'\s*\}\}/g;
+          for (const m of content.matchAll(re)) {
+            const pkg = m[1];
+            if (pkg.startsWith('@backstage/') && !packageVersions[pkg]) {
+              missing.push(pkg);
+            }
+          }
+        }
+      }
+    }
+
+    walk(templatesDir);
+
+    expect(missing).toEqual([]);
+  });
+});
 
 describe('createPackageVersionProvider', () => {
   const mockDir = createMockDirectory();
@@ -59,13 +90,17 @@ describe('createPackageVersionProvider', () => {
 
     expect(provider('a', '0.1.5')).toBe('^0.1.0');
     expect(provider('b', '1.0.0')).toBe('*');
-    expect(provider('c', '0.1.0')).toBe('^0.1.0');
+    // For 0.x the hint is a minimum within its minor, so newer compatible
+    // ranges are preferred but breaking 0.x minors are not
+    expect(provider('c', '0.1.0')).toBe('^0.1.4');
     expect(provider('c', '0.1.6')).toBe('^0.1.4');
-    expect(provider('c', '0.2.0')).toBe('^0.2.0');
+    expect(provider('c', '0.2.0')).toBe('^0.2.4');
     expect(provider('c', '0.2.6')).toBe('^0.2.4');
     expect(provider('c', '0.3.0-rc1')).toBe('0.3.0-rc1');
-    expect(provider('c', '0.3.0')).toBe('^0.3.0');
+    expect(provider('c', '0.3.0')).toBe('^0.3.4');
     expect(provider('c', '0.3.6')).toBe('^0.3.4');
+    // Nothing new enough in the lockfile
+    expect(provider('c', '0.4.0')).toBe('^0.4.0');
 
     // No special handling for @types packages.
     expect(provider('@types/t', '1.4.2')).toBe('^1.2.3');
@@ -81,6 +116,59 @@ describe('createPackageVersionProvider', () => {
     expect(provider('@backstage/frontend-dev-utils')).toBe(
       `^${packageVersions['@backstage/frontend-dev-utils']}`,
     );
+    expect(provider('unknown-package')).toBeUndefined();
+  });
+
+  it('should prefer newer existing ranges over the version hint', async () => {
+    mockDir.setContent({
+      'yarn.lock': `${HEADER}
+"@testing-library/react@^16.3.0":
+  version "16.3.0"
+
+"@testing-library/react@^12.1.3":
+  version "12.1.5"
+
+"d@^2.0.0-next.1":
+  version "2.0.0-next.3"
+
+"d@^1.2.0":
+  version "1.2.3"
+
+"react@^18.0.2", "react@^16.13.1 || ^17.0.0 || ^18.0.0":
+  version "18.3.1"
+
+"e@file:../e":
+  version "1.5.0"
+
+"f@^16.0.0":
+  version "17.6.0"
+`,
+    });
+
+    const lockfile = await Lockfile.load(mockDir.resolve('yarn.lock'));
+    const provider = createPackageVersionProvider(lockfile);
+
+    // Newer majors are not picked up
+    expect(provider('@testing-library/react', '14.0.0')).toBe('^14.0.0');
+    expect(provider('@testing-library/react', '12.0.0')).toBe('^12.1.3');
+    // Newer versions within the same major are
+    expect(provider('@testing-library/react', '16.0.0')).toBe('^16.3.0');
+    expect(provider('@testing-library/react', '12.1.4')).toBe('^12.1.3');
+    expect(provider('@testing-library/react', '17.0.0')).toBe('^17.0.0');
+    // Prerelease lockfile versions are not reused for stable hints, and
+    // prerelease hints keep the existing matching behaviour
+    expect(provider('d', '1.0.0')).toBe('^1.2.0');
+    expect(provider('d', '2.0.0-next.0')).toBe('2.0.0-next.0');
+    // Range hints keep the existing matching behaviour
+    expect(provider('react', '^16.13.1 || ^17.0.0 || ^18.0.0')).toBe(
+      '^16.13.1 || ^17.0.0 || ^18.0.0',
+    );
+    expect(provider('react', '17.0.0')).toBe('^16.13.1 || ^17.0.0 || ^18.0.0');
+    // Non-semver ranges are ignored
+    expect(provider('e', '1.0.0')).toBe('^1.0.0');
+    // Ranges whose resolved version is outside the range (e.g. forced by
+    // Yarn resolutions) are not reused
+    expect(provider('f', '17.2.4')).toBe('^17.2.4');
   });
 
   describe('with backstage protocol options', () => {

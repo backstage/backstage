@@ -1,5 +1,143 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.10.2
+
+### Patch Changes
+
+- 1368ad3: Added a `github:repo:rulesets:create` action that creates a ruleset in a GitHub repository. Rules and bypass actors are written in the same format as the GitHub REST API, so any rule type that GitHub supports can be used in templates.
+- 6c43d4f: Validates the `targetPath` input of the `gitlab:repo:push`, `publish:gitlab:merge-request` and `publish:github:pull-request` scaffolder actions, and the `filesToDelete` entries of `publish:github:pull-request`. The values must be relative paths within the target repository; absolute paths and paths containing `..` segments are now rejected, so changes are only applied inside the intended subdirectory of the repository.
+- Updated dependencies
+  - @backstage/integration@2.2.0
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/catalog-model@1.10.3
+  - @backstage/config@1.3.11
+  - @backstage/plugin-catalog-node@3.0.0
+  - @backstage/plugin-scaffolder-node@1.0.0
+
+## 0.10.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/integration@2.1.4-next.0
+  - @backstage/plugin-catalog-node@3.0.0-next.2
+  - @backstage/plugin-scaffolder-node@1.0.0-next.2
+  - @backstage/catalog-model@1.10.3-next.0
+  - @backstage/config@1.3.11-next.0
+
+## 0.10.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-catalog-node@2.2.7-next.0
+  - @backstage/plugin-scaffolder-node@0.13.9-next.0
+
+## 0.10.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.3
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/catalog-model@1.10.2
+  - @backstage/plugin-catalog-node@2.2.6
+  - @backstage/plugin-scaffolder-node@0.13.8
+
+## 0.10.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+  - @backstage/plugin-catalog-node@2.2.6-next.1
+  - @backstage/plugin-scaffolder-node@0.13.8-next.1
+
+## 0.10.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.3-next.0
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/plugin-scaffolder-node@0.13.8-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-catalog-node@2.2.6-next.0
+
+## 0.10.0
+
+### Minor Changes
+
+- aced3e4: **BREAKING**: Removed unused inputs from the `github:repo:create` action schema. The following inputs were previously accepted but silently ignored, and have now been removed: `blockCreations`, `branch`, `bypassPullRequestAllowances`, `defaultBranch`, `dismissStaleReviews`, `gitAuthorEmail`, `gitAuthorName`, `gitCommitMessage`, `protectDefaultBranch`, `protectEnforceAdmins`, `requireBranchesToBeUpToDate`, `requireCodeOwnerReviews`, `requiredApprovingReviewCount`, `requiredCommitSigning`, `requiredConversationResolution`, `requiredLinearHistory`, `requiredStatusCheckContexts`, `requireLastPushApproval`, `restrictions`, and `sourcePath`. If your templates pass any of these to `github:repo:create`, remove them. Most of these inputs are supported by the `github:repo:push` action for branch protection, git authoring, and content publishing.
+
+### Patch Changes
+
+- bbba6b5: Added support for requiring user-provided credentials for GitHub mutation actions when `scaffolder.requireScmUserCredentials` is enabled.
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- Updated dependencies
+  - @backstage/integration@2.1.2
+  - @backstage/catalog-model@1.10.1
+  - @backstage/config@1.3.9
+  - @backstage/plugin-scaffolder-node@0.13.7
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-catalog-node@2.2.5
+
+## 0.9.14-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/plugin-scaffolder-node@0.13.7-next.2
+  - @backstage/plugin-catalog-node@2.2.5-next.1
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/integration@2.1.2-next.1
+
+## 0.9.14-next.1
+
+### Patch Changes
+
+- bbba6b5: Added support for requiring user-provided credentials for GitHub mutation actions when `scaffolder.requireScmUserCredentials` is enabled.
+- Updated dependencies
+  - @backstage/integration@2.1.2-next.0
+  - @backstage/plugin-scaffolder-node@0.13.7-next.1
+  - @backstage/backend-plugin-api@1.10.1-next.0
+  - @backstage/plugin-catalog-node@2.2.5-next.0
+
+## 0.9.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.7-next.0
+
+## 0.9.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/plugin-scaffolder-node@0.13.6
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/integration@2.1.0
+  - @backstage/plugin-catalog-node@2.2.4
+
+## 0.9.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.0-next.0
+  - @backstage/plugin-scaffolder-node@0.13.6-next.1
+
 ## 0.9.12-next.0
 
 ### Patch Changes

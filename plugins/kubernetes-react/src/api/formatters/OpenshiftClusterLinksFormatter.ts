@@ -34,7 +34,7 @@ export class OpenshiftClusterLinksFormatter {
     const namespace = encodeURIComponent(
       options.object.metadata?.namespace ?? '',
     );
-    const validKind = kindMappings[options.kind.toLocaleLowerCase('en-US')];
+    const validKind = kindMappings[options.kind.toLowerCase()];
     if (!basePath.pathname.endsWith('/')) {
       // a dashboard url with a path should end with a slash otherwise
       // the new combined URL will replace the last segment with the appended path!

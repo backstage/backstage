@@ -14,128 +14,132 @@
  * limitations under the License.
  */
 
-import { useState } from 'react';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
+import { useRef, useState } from 'react';
+import type { KeyboardEvent, ReactNode } from 'react';
 import {
   ErrorPanel,
   Progress,
   Table,
   TableColumn,
 } from '@backstage/core-components';
-import Alert from '@material-ui/lab/Alert';
+import { ResponseError } from '@backstage/errors';
+import {
+  Alert,
+  Box,
+  ButtonIcon,
+  Combobox,
+  Flex,
+  Text,
+  Tooltip,
+  TooltipTrigger,
+  VisuallyHidden,
+  useBgConsumer,
+} from '@backstage/ui';
+import { Focusable } from 'react-aria-components';
 import { useScheduledTasks, useScheduledTasksOperations } from '../../../hooks';
-import { TaskApiTasksResponse } from '@backstage/plugin-devtools-common/alpha';
-import { alertApiRef, configApiRef, useApi } from '@backstage/core-plugin-api';
-import RefreshIcon from '@material-ui/icons/Refresh';
-import StopIcon from '@material-ui/icons/Stop';
-import NightsStay from '@material-ui/icons/NightsStay';
-import ErrorIcon from '@material-ui/icons/Error';
-import BlockIcon from '@material-ui/icons/Block';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import {
+  devToolsTaskSchedulerCreatePermission,
+  TaskApiTasksResponse,
+} from '@backstage/plugin-devtools-common/alpha';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import {
+  RiErrorWarningFill,
+  RiForbidLine,
+  RiLoader4Line,
+  RiMoonClearLine,
+  RiRefreshLine,
+  RiStopFill,
+} from '@remixicon/react';
 import { ScheduledTaskDetailPanel } from './ScheduledTaskDetailedPanel';
 import { RequirePermission } from '@backstage/plugin-permission-react';
-import { devToolsTaskSchedulerCreatePermission } from '@backstage/plugin-devtools-common/alpha';
+import { toastApiRef } from '@backstage/frontend-plugin-api';
+import styles from './ScheduledTasksContent.module.css';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    paperStyle: {
-      display: 'flex',
-      marginBottom: theme.spacing(2),
-    },
-    flexContainer: {
-      display: 'flex',
-      flexDirection: 'row',
-      padding: 0,
-    },
-    formControl: {
-      minWidth: 240,
-      marginBottom: theme.spacing(2),
-    },
-    detailPanel: {
-      padding: theme.spacing(2),
-      backgroundColor: theme.palette.background.default,
-    },
-    detailLabel: {
-      fontWeight: 'bold',
-      marginRight: theme.spacing(1),
-    },
-    errorIcon: {
-      color: theme.palette.error.main,
-      marginRight: theme.spacing(1),
-      fontSize: '1.2rem',
-    },
-    detailPanelAlert: {
-      marginBottom: theme.spacing(2),
-    },
-  }),
-);
-
-const StatusDisplay = ({
-  icon,
-  text,
-}: {
-  icon: React.ReactNode;
-  text: string;
-}) => (
-  <Box display="flex" alignItems="center">
+const StatusDisplay = ({ icon, text }: { icon: ReactNode; text: string }) => (
+  <Flex align="center" gap="2">
     {icon}
-    <Typography variant="body2" style={{ marginLeft: 8 }}>
-      {text}
-    </Typography>
-  </Box>
+    <Text variant="body-small">{text}</Text>
+  </Flex>
 );
 
-const CreateNotAllowed = () => (
-  <Tooltip title="You are not allowed to perform this action">
-    <BlockIcon color="disabled" />
-  </Tooltip>
-);
+const CreateNotAllowed = () => {
+  const { bg } = useBgConsumer();
+
+  return (
+    <TooltipTrigger>
+      <Focusable>
+        <span
+          className={styles.permissionIndicator}
+          data-on-bg={bg}
+          role="img"
+          aria-label="You are not allowed to perform this action"
+        >
+          <RiForbidLine aria-hidden="true" />
+        </span>
+      </Focusable>
+      <Tooltip>You are not allowed to perform this action</Tooltip>
+    </TooltipTrigger>
+  );
+};
 
 /** @public */
 export const ScheduledTasksContent = () => {
-  const classes = useStyles();
   const configApi = useApi(configApiRef);
-  const alertApi = useApi(alertApiRef);
+  const toastApi = useApi(toastApiRef);
   const plugins =
     configApi.getOptionalStringArray('devTools.scheduledTasks.plugins') || [];
   const [selectedPlugin, setSelectedPlugin] = useState(plugins[0] || '');
-  const { scheduledTasks, loading, error, refresh } =
+  const { scheduledTasks, loading, error, refresh, loadedPlugin } =
     useScheduledTasks(selectedPlugin);
   const { triggerTask, cancelTask, isLoading } = useScheduledTasksOperations();
 
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState(selectedPlugin);
+  // Skip the Enter that picked an option, so it doesn't also commit the typed text
+  const optionSelectedRef = useRef(false);
 
-  const handleAutocompleteChange = (_event: any, newValue: string | null) => {
-    setSelectedPlugin(newValue || '');
+  const handleSelectionChange = (key: string | number | null) => {
+    if (key === null) {
+      return;
+    }
+    const pluginId = String(key);
+    optionSelectedRef.current = true;
+    setSelectedPlugin(pluginId);
+    setInputValue(pluginId);
+  };
+
+  const handleInputChange = (value: string) => {
+    optionSelectedRef.current = false;
+    setInputValue(value);
   };
 
   const handleCommitChange = () => {
-    if (inputValue !== selectedPlugin) {
-      setSelectedPlugin(inputValue);
+    const pluginId = inputValue.trim();
+    if (!pluginId) {
+      setInputValue(selectedPlugin);
+      return;
+    }
+    if (pluginId !== selectedPlugin) {
+      setSelectedPlugin(pluginId);
     }
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent) => {
+  const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === 'Enter') {
+      if (optionSelectedRef.current) {
+        optionSelectedRef.current = false;
+        return;
+      }
       handleCommitChange();
-      // Prevent Autocomplete's default behavior (which might select a filtered item)
-      event.preventDefault();
-      event.stopPropagation();
     }
   };
 
   if (!plugins || plugins.length === 0) {
     return (
-      <Alert severity="info">
-        No plugins configured for scheduled tasks. Please configure
-        `devTools.scheduledTasks.plugins` in app-config.yaml.
-      </Alert>
+      <Alert
+        status="info"
+        icon
+        description="No plugins configured for scheduled tasks. Please configure `devTools.scheduledTasks.plugins` in app-config.yaml."
+      />
     );
   }
 
@@ -144,23 +148,19 @@ export const ScheduledTasksContent = () => {
       title: 'Task ID',
       field: 'taskId',
       width: '35%',
-      render: (rowData: TaskApiTasksResponse) => {
-        const errorIconStyle: React.CSSProperties = {
-          color: '#f44336',
-          marginRight: '8px',
-          fontSize: '1.2rem',
-          verticalAlign: 'middle',
-        };
-
-        return (
-          <Box display="flex" alignItems="center">
-            {rowData.taskState?.lastRunError && (
-              <ErrorIcon style={errorIconStyle} />
-            )}
-            <Typography>{rowData.taskId}</Typography>
-          </Box>
-        );
-      },
+      render: (rowData: TaskApiTasksResponse) => (
+        <Flex align="center" gap="2">
+          {rowData.taskState?.lastRunError && (
+            <RiErrorWarningFill
+              size={20}
+              className={styles.errorIcon}
+              aria-label="Last run failed"
+              role="img"
+            />
+          )}
+          <Text variant="body-medium">{rowData.taskId}</Text>
+        </Flex>
+      ),
     },
     {
       title: 'Status',
@@ -171,20 +171,26 @@ export const ScheduledTasksContent = () => {
 
         if (status === 'idle') {
           return (
-            <StatusDisplay icon={<NightsStay fontSize="small" />} text="Idle" />
+            <StatusDisplay icon={<RiMoonClearLine size={20} />} text="Idle" />
           );
         }
 
         if (status === 'running') {
           return (
             <StatusDisplay
-              icon={<CircularProgress color="inherit" size="30px" />}
+              icon={
+                <RiLoader4Line
+                  size={20}
+                  className={styles.spinner}
+                  aria-hidden
+                />
+              }
               text="Running"
             />
           );
         }
 
-        return <Typography variant="body2">{status || 'N/A'}</Typography>;
+        return <Text variant="body-small">{status || 'N/A'}</Text>;
       },
     },
     {
@@ -211,56 +217,58 @@ export const ScheduledTasksContent = () => {
           permission={devToolsTaskSchedulerCreatePermission}
           errorPage={<CreateNotAllowed />}
         >
-          <Box display="flex" justifyContent="center">
-            <Tooltip title="Run Task">
-              <IconButton
+          <Flex justify="center" gap="1">
+            <TooltipTrigger>
+              <ButtonIcon
                 aria-label="Trigger"
-                disabled={isLoading}
-                onClick={async () => {
+                variant="tertiary"
+                icon={<RiRefreshLine />}
+                isDisabled={isLoading}
+                onPress={async () => {
                   try {
                     await triggerTask(selectedPlugin, rowData.taskId);
-                    alertApi.post({
-                      message: `Successfully triggered task ${rowData.taskId}`,
-                      severity: 'success',
+                    toastApi.post({
+                      title: `Successfully triggered task ${rowData.taskId}`,
+                      status: 'success',
                     });
                   } catch (e) {
-                    alertApi.post({
-                      message: `Error triggering task ${rowData.taskId}: ${e.message}`,
-                      severity: 'error',
+                    toastApi.post({
+                      title: `Error triggering task ${rowData.taskId}: ${e.message}`,
+                      status: 'danger',
                     });
                   } finally {
                     refresh();
                   }
                 }}
-              >
-                <RefreshIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Cancel Task">
-              <IconButton
+              />
+              <Tooltip>Run Task</Tooltip>
+            </TooltipTrigger>
+            <TooltipTrigger>
+              <ButtonIcon
                 aria-label="Cancel"
-                disabled={isLoading}
-                onClick={async () => {
+                variant="tertiary"
+                icon={<RiStopFill />}
+                isDisabled={isLoading}
+                onPress={async () => {
                   try {
                     await cancelTask(selectedPlugin, rowData.taskId);
-                    alertApi.post({
-                      message: `Successfully cancelled task ${rowData.taskId}`,
-                      severity: 'success',
+                    toastApi.post({
+                      title: `Successfully cancelled task ${rowData.taskId}`,
+                      status: 'success',
                     });
                   } catch (e) {
-                    alertApi.post({
-                      message: `Error cancelling task ${rowData.taskId}: ${e.message}`,
-                      severity: 'error',
+                    toastApi.post({
+                      title: `Error cancelling task ${rowData.taskId}: ${e.message}`,
+                      status: 'danger',
                     });
                   } finally {
                     refresh();
                   }
                 }}
-              >
-                <StopIcon />
-              </IconButton>
-            </Tooltip>
-          </Box>
+              />
+              <Tooltip>Cancel Task</Tooltip>
+            </TooltipTrigger>
+          </Flex>
         </RequirePermission>
       ),
       sorting: false,
@@ -269,60 +277,77 @@ export const ScheduledTasksContent = () => {
     },
   ];
 
+  const isLoadingDifferentPlugin = loading && selectedPlugin !== loadedPlugin;
+  const isNotFoundError =
+    error?.name === 'ResponseError' &&
+    (error as ResponseError).statusCode === 404;
+
   return (
     <Box>
-      <Autocomplete
-        className={classes.formControl}
-        classes={{ root: classes.formControl }}
-        freeSolo
-        options={plugins}
-        value={selectedPlugin}
-        inputValue={inputValue}
-        onChange={handleAutocompleteChange}
-        onInputChange={(_event, newInputValue) => {
-          setInputValue(newInputValue);
-        }}
-        renderInput={params => (
-          <TextField
-            {...params}
-            label="Select Plugin"
-            variant="outlined"
-            onKeyDown={handleKeyDown}
-            onBlur={handleCommitChange}
-          />
-        )}
-      />
+      <Box mb="4">
+        <Combobox
+          label="Select Plugin"
+          className={styles.pluginSelect}
+          size="medium"
+          allowsCustomValue
+          options={plugins.map(plugin => ({ id: plugin, label: plugin }))}
+          value={plugins.includes(selectedPlugin) ? selectedPlugin : null}
+          onChange={handleSelectionChange}
+          search={{ inputValue, onInputChange: handleInputChange }}
+          onKeyDown={handleKeyDown}
+          onBlur={handleCommitChange}
+        />
+      </Box>
 
-      {loading && !scheduledTasks && <Progress />}
+      <VisuallyHidden role="status">
+        {!loading &&
+        !error &&
+        loadedPlugin === selectedPlugin &&
+        scheduledTasks?.length === 0
+          ? `No scheduled tasks found for ${selectedPlugin}.`
+          : ''}
+      </VisuallyHidden>
 
-      {error && (
+      {isLoadingDifferentPlugin && <Progress />}
+
+      {!isLoadingDifferentPlugin && error && (
         <ErrorPanel
-          error={new Error(`No scheduled tasks found for "${selectedPlugin}"`)}
-          title="No Scheduled Tasks Found"
+          error={error}
+          title={
+            isNotFoundError
+              ? 'No Scheduled Tasks Found'
+              : 'Error Loading Scheduled Tasks'
+          }
         >
-          <Typography variant="body2">
-            The plugin ID "{selectedPlugin}" doesn't have any scheduled tasks or
-            may contain a typo.
-          </Typography>
-          <Typography variant="body2" style={{ marginTop: 8 }}>
-            Please verify:
-          </Typography>
-          <ul>
-            <li>
-              <Typography variant="body2">
-                The plugin ID is spelled correctly
-              </Typography>
-            </li>
-            <li>
-              <Typography variant="body2">
-                The plugin has registered scheduled tasks
-              </Typography>
-            </li>
-          </ul>
+          {isNotFoundError && (
+            <>
+              <Text as="p" variant="body-small">
+                The plugin ID "{selectedPlugin}" doesn't have any scheduled
+                tasks or may contain a typo.
+              </Text>
+              <Box mt="2">
+                <Text as="p" variant="body-small">
+                  Please verify:
+                </Text>
+              </Box>
+              <ul>
+                <li>
+                  <Text variant="body-small">
+                    The plugin ID is spelled correctly
+                  </Text>
+                </li>
+                <li>
+                  <Text variant="body-small">
+                    The plugin has registered scheduled tasks
+                  </Text>
+                </li>
+              </ul>
+            </>
+          )}
         </ErrorPanel>
       )}
 
-      {scheduledTasks && (
+      {!isLoadingDifferentPlugin && !error && scheduledTasks && (
         <Table
           title={`Scheduled Tasks (${selectedPlugin})`}
           options={{
@@ -335,9 +360,11 @@ export const ScheduledTasksContent = () => {
           columns={columns}
           data={scheduledTasks || []}
           emptyContent={
-            <Alert severity="info">
-              No scheduled tasks found for {selectedPlugin}.
-            </Alert>
+            <Alert
+              status="info"
+              icon
+              description={`No scheduled tasks found for ${selectedPlugin}.`}
+            />
           }
           detailPanel={({ rowData }) => {
             return <ScheduledTaskDetailPanel rowData={rowData} />;

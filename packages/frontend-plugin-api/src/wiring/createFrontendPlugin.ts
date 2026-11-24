@@ -22,6 +22,7 @@ import {
 import {
   resolveExtensionDefinition,
   resolveExtensionDefinitions,
+  throwOnDuplicateExtensionIds,
 } from './resolveExtensionDefinition';
 import { FeatureFlagConfig } from './types';
 import { MakeSortedExtensionsMap } from './MakeSortedExtensionsMap';
@@ -111,6 +112,11 @@ export interface OverridableFrontendPlugin<
     id: TId,
   ): OverridableExtensionDefinition<TExtensionMap[TId]['T']>;
   withOverrides(options: {
+    /**
+     * Extensions to add to the plugin. An extension that overrides an existing
+     * extension replaces it at its original position in the plugin's list of
+     * extensions, while other extensions are appended at the end.
+     */
     extensions?: Array<ExtensionDefinition>;
 
     /**
@@ -149,12 +155,6 @@ export interface FrontendPlugin<
    * The plugin ID.
    */
   readonly pluginId: string;
-  /**
-   * Deprecated alias for `pluginId`.
-   *
-   * @deprecated Use `pluginId` instead.
-   */
-  readonly id: string;
   /**
    * The display title of the plugin, used in page headers and navigation.
    * Falls back to the plugin ID if not provided.
@@ -201,17 +201,6 @@ export interface CreateFrontendPluginOptions<
   if?: FilterPredicate;
   info?: FrontendPluginInfoOptions;
 }
-
-/**
- * @deprecated Use {@link CreateFrontendPluginOptions} instead.
- * @public
- */
-export type PluginOptions<
-  TId extends string,
-  TRoutes extends { [name in string]: RouteRef | SubRouteRef },
-  TExternalRoutes extends { [name in string]: ExternalRouteRef },
-  TExtensions extends readonly ExtensionDefinition[],
-> = CreateFrontendPluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>;
 
 /**
  * Creates a new plugin that can be installed in a Backstage app.
@@ -313,24 +302,43 @@ export function createFrontendPlugin<
         ifPredicate = overrides.if;
       }
       const overrideExtensions = overrides.extensions ?? [];
-      const overriddenExtensionIds = new Set(
-        overrideExtensions.map(
-          e => resolveExtensionDefinition(e, { namespace: pluginId }).id,
-        ),
+      const overrideExtensionEntries = overrideExtensions.map(
+        extension =>
+          [
+            resolveExtensionDefinition(extension, { namespace: pluginId }).id,
+            extension,
+          ] as const,
       );
-      const nonOverriddenExtensions = (options.extensions ?? []).filter(
-        e =>
-          !overriddenExtensionIds.has(
-            resolveExtensionDefinition(e, { namespace: pluginId }).id,
-          ),
+      throwOnDuplicateExtensionIds(
+        overrideExtensionEntries.map(([id]) => id),
+        { namespace: pluginId, featureType: 'Plugin' },
       );
+      const overrideExtensionsById = new Map(overrideExtensionEntries);
+      // Extensions that override an existing one replace it in place, keeping
+      // the original registration order, since the order affects the order of
+      // attachments in the app. Remaining extensions are appended at the end.
+      const replacedExtensionIds = new Set<string>();
+      const mergedExtensions = (options.extensions ?? []).map(extension => {
+        const id = resolveExtensionDefinition(extension, {
+          namespace: pluginId,
+        }).id;
+        const overrideExtension = overrideExtensionsById.get(id);
+        if (overrideExtension) {
+          replacedExtensionIds.add(id);
+          return overrideExtension;
+        }
+        return extension;
+      });
+      const appendedExtensions = overrideExtensionEntries
+        .filter(([id]) => !replacedExtensionIds.has(id))
+        .map(([, extension]) => extension);
       return createFrontendPlugin({
         ...options,
         pluginId,
         if: ifPredicate,
         title: overrides.title ?? options.title,
         icon: overrides.icon ?? options.icon,
-        extensions: [...nonOverriddenExtensions, ...overrideExtensions],
+        extensions: [...mergedExtensions, ...appendedExtensions],
         info: {
           ...options.info,
           ...overrides.info,

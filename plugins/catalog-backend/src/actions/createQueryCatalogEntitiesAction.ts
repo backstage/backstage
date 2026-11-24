@@ -128,8 +128,20 @@ export const createQueryCatalogEntitiesAction = ({
       ? MODEL_REFERENCE_DESCRIPTION
       : INLINE_MODEL_DESCRIPTION,
     schema: {
-      input: z =>
-        z.object({
+      input: z => {
+        // MCP/LLM clients often send numeric arguments as strings. Convert numeric
+        // strings to numbers, but leave everything else untouched so Zod rejects the
+        // original value (e.g. reports "received string" for 'abc' rather than
+        // "received NaN", and doesn't silently turn true/null/'' into 1/0/0).
+        const numericFromString = (value: unknown) => {
+          if (typeof value === 'string' && value.trim() !== '') {
+            const parsed = Number(value);
+            return Number.isFinite(parsed) ? parsed : value;
+          }
+          return value;
+        };
+
+        return z.object({
           query: createZodV3FilterPredicateSchema(z)
             .optional()
             .describe(
@@ -142,15 +154,11 @@ export const createQueryCatalogEntitiesAction = ({
               'Specific fields to include in the response. If not provided, all fields are returned. Each entry is a dot separated path into an entity, e.g. `spec.type`.',
             ),
           limit: z
-            .number()
-            .int()
-            .positive()
+            .preprocess(numericFromString, z.number().int().positive())
             .optional()
             .describe('Maximum number of entities to return at a time.'),
           offset: z
-            .number()
-            .int()
-            .min(0)
+            .preprocess(numericFromString, z.number().int().min(0))
             .optional()
             .describe('Number of entities to skip before returning results.'),
           orderFields: z
@@ -196,7 +204,8 @@ export const createQueryCatalogEntitiesAction = ({
             .describe(
               'Cursor for pagination. This can be used only after the first request with a response containing a cursor. If a cursor is given it takes precedence over `offset`.',
             ),
-        }),
+        });
+      },
       output: z =>
         z.object({
           items: z

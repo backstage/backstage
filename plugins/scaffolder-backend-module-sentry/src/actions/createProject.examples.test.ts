@@ -291,7 +291,13 @@ describe('sentry:project:create action', () => {
       console.error('Failed to parse YAML:', error);
     }
 
-    const action = createSentryCreateProjectAction(createScaffolderConfig());
+    const action = createSentryCreateProjectAction(
+      createScaffolderConfig({
+        sentry: {
+          apiBaseUrl: input.apiBaseUrl,
+        },
+      }),
+    );
     const actionContext = getActionContext();
 
     worker.use(

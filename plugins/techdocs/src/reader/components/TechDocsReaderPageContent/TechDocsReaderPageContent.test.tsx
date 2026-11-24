@@ -68,6 +68,10 @@ const mockTechDocsMetadata = {
   site_description: 'test-site-desc',
 };
 
+const mockAppComponents = {
+  NotFoundErrorPage: () => <span>Custom not found page</span>,
+};
+
 const getEntityMetadata = jest.fn();
 const getTechDocsMetadata = jest.fn();
 
@@ -148,7 +152,36 @@ describe('<TechDocsReaderPageContent />', () => {
     });
 
     const entityRef = getCompoundEntityRef(mockEntityMetadata);
-    expect(useTechDocsReaderDom).toHaveBeenCalledWith(entityRef, defaultPath);
+    expect(useTechDocsReaderDom).toHaveBeenCalledWith(entityRef, {
+      defaultPath,
+    });
+  });
+
+  it('should forward withFeedbackLink to the reader dom', async () => {
+    getEntityMetadata.mockResolvedValue(mockEntityMetadata);
+    getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
+    useTechDocsReaderDom.mockReturnValue(document.createElement('html'));
+    useReaderState.mockReturnValue({ state: 'cached' });
+
+    const rendered = await renderInTestApp(
+      <Wrapper>
+        <TechDocsReaderPageContent
+          withSearch={false}
+          withFeedbackLink={false}
+        />
+      </Wrapper>,
+    );
+
+    await waitFor(() => {
+      expect(
+        rendered.getByTestId('techdocs-native-shadowroot'),
+      ).toBeInTheDocument();
+    });
+
+    const entityRef = getCompoundEntityRef(mockEntityMetadata);
+    expect(useTechDocsReaderDom).toHaveBeenCalledWith(entityRef, {
+      withFeedbackLink: false,
+    });
   });
 
   it('should not render techdocs content if entity metadata is missing', async () => {
@@ -181,15 +214,16 @@ describe('<TechDocsReaderPageContent />', () => {
       <Wrapper>
         <TechDocsReaderPageContent withSearch={false} />
       </Wrapper>,
+      {
+        components: mockAppComponents,
+      },
     );
 
     await waitFor(() => {
       expect(
         rendered.queryByTestId('techdocs-native-shadowroot'),
       ).not.toBeInTheDocument();
-      expect(
-        rendered.getByText('ERROR 404: Documentation not found'),
-      ).toBeInTheDocument();
+      expect(rendered.getByText('Custom not found page')).toBeInTheDocument();
     });
   });
 

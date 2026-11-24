@@ -1,5 +1,128 @@
 # @backstage/plugin-events-backend
 
+## 0.6.8
+
+### Patch Changes
+
+- a1ca033: Fixed the database event bus listener connection inheriting the trace context of the request that first opened it. Its keepalive queries are now recorded as separate root spans instead of being attached to that request's trace for as long as the connection stays open.
+- 6a0de59: Backend plugins now locate their database migrations relative to their own package directory, without requiring the package to be resolvable by name.
+- a70aaea: The requests passed to request validators now include the parsed query string. The request rejection details now also
+  support an optional `contentType` option for the provided payload, defaulting to `application/json` but also allowing
+  `text/plain`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/backend-openapi-utils@0.7.4
+  - @backstage/plugin-events-node@0.5.0
+  - @backstage/config@1.3.11
+
+## 0.6.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/backend-openapi-utils@0.7.4-next.1
+  - @backstage/plugin-events-node@0.5.0-next.2
+  - @backstage/config@1.3.11-next.0
+
+## 0.6.8-next.1
+
+### Patch Changes
+
+- a70aaea: The requests passed to request validators now include the parsed query string. The request rejection details now also
+  support an optional `contentType` option for the provided payload, defaulting to `application/json` but also allowing
+  `text/plain`.
+- Updated dependencies
+  - @backstage/plugin-events-node@0.5.0-next.1
+
+## 0.6.8-next.0
+
+### Patch Changes
+
+- a1ca033: Fixed the database event bus listener connection inheriting the trace context of the request that first opened it. Its keepalive queries are now recorded as separate root spans instead of being attached to that request's trace for as long as the connection stays open.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-events-node@0.4.28-next.0
+  - @backstage/backend-openapi-utils@0.7.4-next.0
+
+## 0.6.7
+
+### Patch Changes
+
+- 02fd3bf: Improve database event cleanup under large backlogs and speed up reading events for subscriptions with many retained events.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/backend-openapi-utils@0.7.3
+  - @backstage/plugin-events-node@0.4.27
+
+## 0.6.7-next.2
+
+### Patch Changes
+
+- 02fd3bf: Improve database event cleanup under large backlogs and speed up reading events for subscriptions with many retained events.
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.7.3-next.2
+
+## 0.6.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+  - @backstage/backend-openapi-utils@0.7.3-next.1
+  - @backstage/plugin-events-node@0.4.27-next.1
+
+## 0.6.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/backend-openapi-utils@0.7.3-next.0
+  - @backstage/plugin-events-node@0.4.27-next.0
+
+## 0.6.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.7.2
+  - @backstage/config@1.3.9
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-events-node@0.4.26
+
+## 0.6.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.1
+
+## 0.6.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.7.2-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+  - @backstage/plugin-events-node@0.4.26-next.0
+
+## 0.6.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/backend-openapi-utils@0.7.1
+  - @backstage/plugin-events-node@0.4.25
+
 ## 0.6.5-next.0
 
 ### Patch Changes

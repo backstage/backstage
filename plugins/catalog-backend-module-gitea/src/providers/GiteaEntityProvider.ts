@@ -204,7 +204,7 @@ export class GiteaEntityProvider implements EntityProvider {
     // Filter for repos that have catalog-info.yaml at root
     const { default: pLimit } = await import('p-limit');
     const limit = pLimit(5);
-    const validRepos: string[] = [];
+    const validRepos: { url: string; defaultBranch?: string }[] = [];
 
     await Promise.all(
       allRepos.map(repo =>
@@ -219,12 +219,18 @@ export class GiteaEntityProvider implements EntityProvider {
             this.config.catalogPath
           }`;
 
+          // No `ref` query param: Gitea resolves this against the
+          // repository's actual default branch, which may not be "main".
+          // API reference: https://gitea.com/api/swagger#/repository/repoGetContents
           const res = await fetch(contentsApiUrl, {
             method: 'GET',
             ...getGiteaRequestOptions(this.integration.config),
           });
           if (res.ok) {
-            validRepos.push(repo.html_url);
+            validRepos.push({
+              url: repo.html_url,
+              defaultBranch: repo.default_branch,
+            });
           } else {
             logger.warn(
               `Repo ${repo.html_url} does not contain a catalog-info.yaml file`,
@@ -257,10 +263,24 @@ export class GiteaEntityProvider implements EntityProvider {
     );
   }
 
-  private async createLocationSpec(repo: string): Promise<LocationSpec> {
+  private async createLocationSpec(repo: {
+    url: string;
+    defaultBranch?: string;
+  }): Promise<LocationSpec> {
+    // An explicitly configured branch always wins; otherwise fall back to
+    // this repository's actual default branch rather than assuming 'main'.
+    const branch = this.config.branch ?? repo.defaultBranch ?? 'main';
+    // A default branch can itself contain '/' (e.g. "release/v1"). parseGiteaUrl
+    // (packages/integration/src/gitea/core.ts) splits the target on '/' and takes
+    // only the first segment after "/src/branch/" as the ref, so an unencoded
+    // slash would silently truncate the branch and shift the rest into the path.
+    // Percent-encoding collapses the branch to one path segment; every consumer
+    // of the resulting `ref` (edit URL, `?ref=` query param, archive/commit URLs)
+    // already treats it as an opaque, still-encoded value, so no decoding is needed.
+    const encodedBranch = encodeURIComponent(branch);
     return {
       type: 'url',
-      target: `${repo}/src/branch/${this.config.branch}/${this.config.catalogPath}`,
+      target: `${repo.url}/src/branch/${encodedBranch}/${this.config.catalogPath}`,
     };
   }
 }

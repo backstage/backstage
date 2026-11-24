@@ -17,12 +17,27 @@
 
 /* eslint-disable @backstage/no-undeclared-imports */
 
-const { resolve: resolvePath, join: joinPath, dirname } = require('node:path');
+const {
+  resolve: resolvePath,
+  join: joinPath,
+  dirname,
+  relative: relativePath,
+  sep: pathSeparator,
+} = require('node:path');
 const fs = require('node:fs').promises;
 const { existsSync, statSync } = require('node:fs');
+const { execFileSync } = require('node:child_process');
 
 const IGNORED_DIRS = ['node_modules', 'dist', 'bin', '.git'];
 const projectRoot = resolvePath(__dirname, '..');
+// Stable docs are built from a patch branch with docs/releases overlaid from
+// master. This optional ref lets patch-branch CI validate that same view.
+const releaseDocsRefArgument = process.argv.find(arg =>
+  arg.startsWith('--release-docs-ref='),
+);
+const releaseDocsRef = releaseDocsRefArgument?.slice(
+  '--release-docs-ref='.length,
+);
 
 // Zero-width and other invisible Unicode characters that shouldn't appear in URLs
 const INVISIBLE_CHAR_PATTERN =
@@ -91,6 +106,41 @@ function extractHeadingAnchors(content) {
 
 // Cache for file content and extracted anchors to avoid repeated reads
 const anchorCache = new Map();
+const releaseDocsCache = new Map();
+
+function getReleaseDocFromFallback(filePath) {
+  if (!releaseDocsRef) {
+    return undefined;
+  }
+
+  const repoPath = relativePath(projectRoot, filePath)
+    .split(pathSeparator)
+    .join('/');
+  if (!repoPath.startsWith('docs/releases/')) {
+    return undefined;
+  }
+
+  if (releaseDocsCache.has(repoPath)) {
+    return releaseDocsCache.get(repoPath);
+  }
+
+  try {
+    const content = execFileSync(
+      'git',
+      ['cat-file', 'blob', `${releaseDocsRef}:${repoPath}`],
+      {
+        cwd: projectRoot,
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'ignore'],
+      },
+    );
+    releaseDocsCache.set(repoPath, content);
+    return content;
+  } catch {
+    releaseDocsCache.set(repoPath, undefined);
+    return undefined;
+  }
+}
 
 async function getAnchorsForFile(filePath) {
   const absPath = resolvePath(projectRoot, filePath);
@@ -242,6 +292,17 @@ async function verifyUrl(basePath, absUrl, docPages) {
   }
 
   if (!existsSync(path)) {
+    const fallbackContent = getReleaseDocFromFallback(path);
+    if (fallbackContent !== undefined) {
+      if (
+        anchor &&
+        path.endsWith('.md') &&
+        !extractHeadingAnchors(fallbackContent).has(anchor)
+      ) {
+        return { url: absUrl, basePath, problem: 'bad-anchor' };
+      }
+      return undefined;
+    }
     return { url, basePath, problem: 'missing' };
   }
 

@@ -15,10 +15,10 @@
  */
 import { z } from 'zod/v4';
 import { InputError } from '@backstage/errors';
-import type { JsonObject } from '@backstage/types';
+import type { Expand, JsonObject } from '@backstage/types';
 import type {
-  ConnectionType,
-  MatchAuth,
+  ConnectionTypeDefinition,
+  ConnectionLookupIdentity,
   PortableSchema,
   WithoutReservedAuthMethods,
   WithoutReservedFields,
@@ -33,47 +33,26 @@ type ConnectionAuthMethodSchema<
   configSchema: TConfigSchema;
 };
 
-type ConfigFromSchema<TConfigSchema extends z.ZodObject> =
+type ConnectionConfigSchema =
+  | z.ZodObject
+  | z.ZodPipe<z.ZodObject, z.ZodType<Record<string, unknown>>>;
+
+type ConfigFromSchema<TConfigSchema extends z.ZodType> =
   z.infer<TConfigSchema> extends Record<string, never>
     ? Record<never, never>
     : z.infer<TConfigSchema>;
 
-type RootConnectionAuthFromSchema<
+// Expand flattens the intersection into a single object literal so that
+// editor tooltips show each auth method variant as a readable flat shape
+// rather than a chain of truncated intersections.
+type ConfiguredConnectionAuthFromSchema<
   TAuthMethod extends ConnectionAuthMethodSchema,
 > = TAuthMethod extends ConnectionAuthMethodSchema<
   infer TMethod,
   infer TConfigSchema
 >
-  ? ConfigFromSchema<TConfigSchema> & {
-      method: TMethod;
-      title?: string;
-      match?: { plugins: string[] };
-    }
+  ? Expand<{ method: TMethod } & ConfigFromSchema<TConfigSchema>>
   : never;
-
-type RootConnectionFromSchemas<
-  TType extends string,
-  TConfigSchema extends z.ZodObject,
-  TAuthMethods extends readonly ConnectionAuthMethodSchema[],
-> = ConfigFromSchema<TConfigSchema> & {
-  type: TType;
-  title?: string;
-  match?: { plugins: string[] };
-  auth: Array<RootConnectionAuthFromSchema<TAuthMethods[number]>>;
-};
-
-type RootConnectionAuthMethodsFromSchemas<
-  TAuthMethods extends readonly ConnectionAuthMethodSchema[],
-> = {
-  readonly [I in keyof TAuthMethods]: RootConnectionAuthFromSchema<
-    TAuthMethods[I]
-  >;
-};
-
-const matchSchema = z
-  .object({ plugins: z.array(z.string()) })
-  .strict()
-  .optional();
 
 function createPortableSchema<TSchema extends z.ZodType>(
   schema: TSchema,
@@ -105,63 +84,84 @@ function createPortableSchema<TSchema extends z.ZodType>(
 
 export function createConnectionType<
   TType extends string,
-  TConfigSchema extends z.ZodObject,
+  TConfigSchema extends ConnectionConfigSchema,
   const TAuthMethods extends readonly ConnectionAuthMethodSchema[],
+  TQuery extends object = { url: string },
+  TCardinality extends 'singleton' | 'multiton' = 'multiton',
 >({
   configSchema,
   type,
   title,
+  cardinality,
+  getLookupIdentity,
   authMethods,
   matchAuth,
+  validate,
 }: {
   type: TType;
   title: string;
+  cardinality?: TCardinality;
+  getLookupIdentity: (
+    config: ConfigFromSchema<TConfigSchema>,
+  ) => ConnectionLookupIdentity | undefined;
   configSchema: WithoutReservedFields<TConfigSchema>;
   authMethods: WithoutReservedAuthMethods<TAuthMethods>;
-  matchAuth?: MatchAuth<
-    RootConnectionAuthMethodsFromSchemas<TAuthMethods>[number]
-  >;
-}): ConnectionType<
-  RootConnectionFromSchemas<TType, TConfigSchema, TAuthMethods>
-> {
+  matchAuth?: (
+    authMethods: Expand<
+      ConfiguredConnectionAuthFromSchema<TAuthMethods[number]> & {
+        title: string;
+      }
+    >[],
+    query: TQuery,
+  ) =>
+    | Expand<
+        ConfiguredConnectionAuthFromSchema<TAuthMethods[number]> & {
+          title: string;
+        }
+      >
+    | undefined;
+  // Checks the connection as a whole once every schema has accepted its own
+  // part — for rules like "only one entry may be the fallback" that no
+  // single entry can verify. Entries include their plugin `match` so that
+  // rules can take scoping into account. Throwing rejects the connection.
+  validate?: (connection: {
+    config: ConfigFromSchema<TConfigSchema>;
+    auth: readonly Expand<
+      ConfiguredConnectionAuthFromSchema<TAuthMethods[number]> & {
+        match?: { plugins: string[] };
+      }
+    >[];
+  }) => void;
+}): ConnectionTypeDefinition<{
+  type: TType;
+  cardinality: TCardinality;
+  query: TQuery;
+  configSchema: ConfigFromSchema<TConfigSchema>;
+  auth: readonly ConfiguredConnectionAuthFromSchema<TAuthMethods[number]>[];
+}> {
   const validatedAuthMethods = authMethods as TAuthMethods;
   if (validatedAuthMethods.length < 1) {
     throw new InputError(
       `Connection type "${type}" must declare at least one auth method`,
     );
   }
-  const authOptions = validatedAuthMethods.map(am =>
-    am.configSchema
-      .extend({
-        method: z.literal(am.method),
-        title: z.string().min(1).optional(),
-        match: matchSchema,
-      })
-      .strict(),
-  );
-  const validated = configSchema as unknown as TConfigSchema;
-  const schema = validated
-    .extend({
-      type: z.literal(type),
-      title: z.string().min(1).optional(),
-      match: matchSchema,
-      auth: z.array(
-        authOptions.length === 1
-          ? authOptions[0]
-          : z.discriminatedUnion(
-              'method',
-              authOptions as [(typeof authOptions)[0], ...typeof authOptions],
-            ),
-      ),
-    })
-    .strict();
-  const portableSchema = createPortableSchema(
-    schema,
+  const schema = configSchema as unknown as TConfigSchema;
+  // Make the input object strict while retaining the pipe's output transform
+  // and any refinements attached to the pipe itself.
+  const strictSchema =
+    schema instanceof z.ZodPipe
+      ? schema.clone({ ...schema.def, in: schema.in.strict() })
+      : schema.strict();
+  const portableConfigSchema = createPortableSchema(
+    strictSchema,
     `Invalid configuration for connection type "${type}"`,
   );
-  const connectionType = {
+
+  return {
     type,
     title,
+    cardinality: cardinality ?? 'multiton',
+    getLookupIdentity,
     authMethods: validatedAuthMethods.map(
       ({ method, title: authTitle, configSchema: authConfigSchema }) => ({
         method,
@@ -172,10 +172,14 @@ export function createConnectionType<
         ),
       }),
     ),
-    configSchema: portableSchema,
+    configSchema: portableConfigSchema,
     matchAuth,
-  } as unknown as ConnectionType<
-    RootConnectionFromSchemas<TType, TConfigSchema, TAuthMethods>
-  >;
-  return connectionType;
+    validate,
+  } as unknown as ConnectionTypeDefinition<{
+    type: TType;
+    cardinality: TCardinality;
+    query: TQuery;
+    configSchema: ConfigFromSchema<TConfigSchema>;
+    auth: readonly ConfiguredConnectionAuthFromSchema<TAuthMethods[number]>[];
+  }>;
 }

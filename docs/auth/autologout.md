@@ -42,7 +42,7 @@ export default app.createRoot(
 );
 ```
 
-## Configuration
+## Configuration
 
 You can further adjust the Auto Logout settings by tweaking the available `<AutoLogout>` properties:
 

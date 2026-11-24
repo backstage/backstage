@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog",
-  "version": "2.0.8-next.0",
+  "version": "2.1.0",
   "description": "The Backstage plugin for browsing the Backstage catalog",
   "backstage": {
     "role": "frontend-plugin",
@@ -64,6 +64,7 @@
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
+    "@backstage/filter-predicates": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/integration-react": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
@@ -96,6 +97,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
+    "@backstage/frontend-adapter-react-router-v6": "workspace:^",
     "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/test-utils": "workspace:^",
@@ -111,9 +113,9 @@
     "swr": "^2.2.5"
   },
   "peerDependencies": {
-    "@types/react": "^17.0.0 || ^18.0.0",
-    "react": "^17.0.0 || ^18.0.0",
-    "react-dom": "^17.0.0 || ^18.0.0",
+    "@types/react": "^18.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
     "react-router-dom": "^6.30.2"
   },
   "peerDependenciesMeta": {

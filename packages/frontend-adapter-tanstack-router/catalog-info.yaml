@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-frontend-adapter-tanstack-router
+  title: '@backstage/frontend-adapter-tanstack-router'
+  description: >-
+    TanStack Router adapter for the Backstage router-agnostic plugin routing
+    system
+spec:
+  lifecycle: experimental
+  type: backstage-web-library
+  owner: framework-maintainers

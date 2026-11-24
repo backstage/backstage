@@ -21,9 +21,21 @@ import { scaffolderTranslationRef } from '../../../translation';
 import { useScaffolderTheme } from '@backstage/plugin-scaffolder-react/alpha';
 import { TextField as BuiTextField } from '@backstage/ui';
 
-export const GerritRepoPicker = (props: BaseRepoUrlPickerProps) => {
+export const GerritRepoPicker = (
+  props: BaseRepoUrlPickerProps<{
+    ownerLabel?: string;
+    ownerDescription?: string;
+  }>,
+) => {
   const theme = useScaffolderTheme();
-  const { onChange, rawErrors, state, isDisabled } = props;
+  const {
+    onChange,
+    rawErrors,
+    state,
+    isDisabled,
+    ownerLabel,
+    ownerDescription,
+  } = props;
   const { t } = useTranslationRef(scaffolderTranslationRef);
   const { workspace, owner } = state;
 
@@ -31,8 +43,10 @@ export const GerritRepoPicker = (props: BaseRepoUrlPickerProps) => {
     return (
       <>
         <BuiTextField
-          label={t('fields.gerritRepoPicker.owner.title')}
-          description={t('fields.gerritRepoPicker.owner.description')}
+          label={ownerLabel ?? t('fields.gerritRepoPicker.owner.title')}
+          description={
+            ownerDescription ?? t('fields.gerritRepoPicker.owner.description')
+          }
           onChange={value => onChange({ owner: value })}
           isDisabled={isDisabled}
           value={owner ?? ''}
@@ -56,9 +70,11 @@ export const GerritRepoPicker = (props: BaseRepoUrlPickerProps) => {
       <FormControl margin="normal" error={rawErrors?.length > 0 && !workspace}>
         <MuiTextField
           id="ownerInput"
-          label={t('fields.gerritRepoPicker.owner.title')}
+          label={ownerLabel ?? t('fields.gerritRepoPicker.owner.title')}
           onChange={e => onChange({ owner: e.target.value })}
-          helperText={t('fields.gerritRepoPicker.owner.description')}
+          helperText={
+            ownerDescription ?? t('fields.gerritRepoPicker.owner.description')
+          }
           disabled={isDisabled}
           value={owner}
         />

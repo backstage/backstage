@@ -1,5 +1,174 @@
 # @backstage/plugin-auth-backend
 
+## 0.31.0
+
+### Minor Changes
+
+- 352ad44: **BREAKING**: The deprecated experimental Dynamic Client Registration (DCR) support has been removed. Use Client ID Metadata Documents (CIMD) instead and remove `auth.experimentalDynamicClientRegistration` from your configuration. The database migration deletes registered clients and their authorization and offline sessions, invalidating existing DCR authorization codes and refresh tokens. Users must sign in again through a CIMD client. Already-issued user tokens remain valid until they expire. See the [migration guide](https://backstage.io/docs/ai/mcp-actions#migrating-from-dynamic-client-registration).
+- 9e22c4b: Added support for pre-registered OAuth clients through the new `auth.staticClients` configuration. This allows integrations that support neither Client ID Metadata Documents nor Dynamic Client Registration to act on behalf of signed-in users using a fixed client ID, an optional client secret, and exact redirect URIs. All clients must use PKCE. Clients with a secret must also authenticate at the token endpoint.
+
+  The token endpoint verifies client credentials for both authorization code and refresh token grants. Missing or incorrect credentials for confidential clients return `invalid_client` with HTTP 401. Public clients can identify themselves using HTTP Basic with an empty secret. Codes issued to a different client are rejected.
+
+  Removing a configured client rejects its outstanding authorization codes and refresh tokens. HTTP Basic authentication supports form-encoded client IDs and secrets.
+
+  PKCE now requires the `S256` challenge method for all clients, including existing CIMD clients. The `plain` method is no longer accepted or advertised. Update clients that use `plain` to generate SHA-256 challenges.
+
+### Patch Changes
+
+- 5fc15b7: Fixed authorization-code exchanges to reject supplied client IDs that do not match the client that obtained the code. These requests return `invalid_grant` without consuming the code. Exchanges that omit `client_id` remain supported for older clients but now log a deprecation warning; a future release will require it.
+- 97ee785: Allow Cursor clients to use Client ID Metadata Documents by default.
+- 8965c27: User tokens issued by sign-in resolvers now always have the entity refs in their `sub` and `ent` claims in canonical form, for example `user:default/jane.doe` rather than `User:default/Jane.Doe`, and duplicate `ent` refs are removed. Previously, a custom sign-in resolver could issue valid but non-canonical refs, which then failed to match stored user info and offline sessions on case-sensitive databases.
+- 1892d2f: chore(deps): bump `minimatch` from 10.2.6 to 11.0.1
+- 6a0de59: Backend plugins now locate their database migrations relative to their own package directory, without requiring the package to be resolvable by name.
+- 7db7c52: Respect the `auth.backstageTokenExpiration` configuration when issuing OAuth access and ID tokens from the OIDC service, instead of hard-coding a 1-hour expiry.
+- fa0eb7a: Added a `POST /v1/offline-sessions/revoke` endpoint that lets other backend services revoke all offline sessions (refresh tokens) of a user. The endpoint only accepts service credentials, records an audit event, and is only available when `auth.experimentalRefreshToken.enabled` is set.
+- 918ca98: Updated dependency `jose` to `^6.1.0`. Existing ES256 token issuance and verification are unchanged. ML-DSA algorithms can be used when the runtime supports them.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/plugin-auth-node@0.7.8
+  - @backstage/catalog-model@1.10.3
+  - @backstage/config@1.3.11
+  - @backstage/plugin-catalog-node@3.0.0
+
+## 0.31.0-next.2
+
+### Minor Changes
+
+- 352ad44: **BREAKING**: The deprecated experimental Dynamic Client Registration (DCR) support has been removed. Use Client ID Metadata Documents (CIMD) instead and remove `auth.experimentalDynamicClientRegistration` from your configuration. The database migration deletes registered clients and their authorization and offline sessions, invalidating existing DCR authorization codes and refresh tokens. Users must sign in again through a CIMD client. Already-issued user tokens remain valid until they expire. See the [migration guide](https://backstage.io/docs/ai/mcp-actions#migrating-from-dynamic-client-registration).
+
+### Patch Changes
+
+- 5fc15b7: Fixed authorization-code exchanges to reject supplied client IDs that do not match the client that obtained the code. These requests return `invalid_grant` without consuming the code. Exchanges that omit `client_id` remain supported for older clients but now log a deprecation warning; a future release will require it.
+- 1892d2f: chore(deps): bump `minimatch` from 10.2.6 to 11.0.1
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/plugin-auth-node@0.7.8-next.2
+  - @backstage/plugin-catalog-node@3.0.0-next.2
+  - @backstage/catalog-model@1.10.3-next.0
+  - @backstage/config@1.3.11-next.0
+
+## 0.30.3-next.1
+
+### Patch Changes
+
+- 97ee785: Allow Cursor clients to use Client ID Metadata Documents by default.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.8-next.1
+  - @backstage/plugin-catalog-node@2.2.7-next.1
+
+## 0.30.3-next.0
+
+### Patch Changes
+
+- 8965c27: User tokens issued by sign-in resolvers now always have the entity refs in their `sub` and `ent` claims in canonical form, for example `user:default/jane.doe` rather than `User:default/Jane.Doe`, and duplicate `ent` refs are removed. Previously, a custom sign-in resolver could issue valid but non-canonical refs, which then failed to match stored user info and offline sessions on case-sensitive databases.
+- fa0eb7a: Added a `POST /v1/offline-sessions/revoke` endpoint that lets other backend services revoke all offline sessions (refresh tokens) of a user. The endpoint only accepts service credentials, records an audit event, and is only available when `auth.experimentalRefreshToken.enabled` is set.
+- 918ca98: Updated dependency `jose` to `^6.1.0`. Existing ES256 token issuance and verification are unchanged. ML-DSA algorithms can be used when the runtime supports them.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.8-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-catalog-node@2.2.7-next.0
+
+## 0.30.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/plugin-auth-node@0.7.7
+  - @backstage/catalog-model@1.10.2
+  - @backstage/plugin-catalog-node@2.2.6
+
+## 0.30.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+  - @backstage/plugin-auth-node@0.7.7-next.1
+  - @backstage/plugin-catalog-node@2.2.6-next.1
+
+## 0.30.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/plugin-auth-node@0.7.7-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-catalog-node@2.2.6-next.0
+
+## 0.30.1
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- 08c5d9b: Fixed inconsistent URL pattern matching in token revocation.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.1
+  - @backstage/plugin-auth-node@0.7.6
+  - @backstage/config@1.3.9
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-catalog-node@2.2.5
+
+## 0.30.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/plugin-catalog-node@2.2.5-next.1
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/plugin-auth-node@0.7.5-next.1
+
+## 0.30.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.5-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+  - @backstage/plugin-catalog-node@2.2.5-next.0
+
+## 0.30.1-next.0
+
+### Patch Changes
+
+- 08c5d9b: Fixed inconsistent URL pattern matching in token revocation.
+
+## 0.30.0
+
+### Minor Changes
+
+- 274acc5: **BREAKING**: The OAuth redirect URI and client ID metadata document allowlists now match patterns against each URL component separately instead of against the full URL string. Wildcards no longer match across the host and path boundary, patterns must include an explicit protocol and are otherwise rejected as invalid configuration instead of being silently ignored, and redirect URIs that contain embedded credentials are always rejected.
+
+  A wildcard port also no longer implicitly matches every path: a pattern such as `http://localhost:*` now only matches the root path. Use `http://localhost:*/*` to allow any port and any path. The built-in loopback defaults have been updated accordingly, so this only affects explicitly configured patterns.
+
+### Patch Changes
+
+- 4e884d2: Skip SSRF protection for CIMD metadata fetches when the `client_id` matches an exact (non-wildcard) entry in `allowedClientIdPatterns`. Exact patterns mean the administrator explicitly listed a specific URL, so the DNS resolution is trusted. Wildcard patterns still enforce the SSRF check to protect against attacker-controlled subdomains resolving to internal addresses.
+- a995892: Allow ChatGPT Codex clients to use Client ID Metadata Documents by default.
+- 827989d: Fixed the built-in CLI client being rejected when `allowedClientIdPatterns` is configured for Client ID Metadata Documents.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-auth-node@0.7.4
+  - @backstage/plugin-catalog-node@2.2.4
+
+## 0.30.0-next.1
+
+### Patch Changes
+
+- 4e884d2: Skip SSRF protection for CIMD metadata fetches when the `client_id` matches an exact (non-wildcard) entry in `allowedClientIdPatterns`. Exact patterns mean the administrator explicitly listed a specific URL, so the DNS resolution is trusted. Wildcard patterns still enforce the SSRF check to protect against attacker-controlled subdomains resolving to internal addresses.
+- 827989d: Fixed the built-in CLI client being rejected when `allowedClientIdPatterns` is configured for Client ID Metadata Documents.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.1
+
 ## 0.30.0-next.0
 
 ### Minor Changes

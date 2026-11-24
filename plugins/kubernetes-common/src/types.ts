@@ -330,3 +330,62 @@ export interface GroupedResponses extends DeploymentResources {
   persistentVolumes: V1PersistentVolume[];
   persistentVolumeClaims: V1PersistentVolumeClaim[];
 }
+
+/**
+ * Kubernetes watch event types from the API
+ * @public
+ */
+export type KubernetesWatchEventType =
+  | 'ADDED'
+  | 'MODIFIED'
+  | 'DELETED'
+  | 'BOOKMARK'
+  | 'ERROR';
+
+/**
+ * Watch event emitted by the Kubernetes watch stream
+ * @public
+ */
+export type KubernetesWatchEvent =
+  | {
+      type: Exclude<KubernetesWatchEventType, 'ERROR'>;
+      object: JsonObject;
+      resourceVersion?: string;
+    }
+  | {
+      type: 'ERROR';
+      error: KubernetesFetchError;
+    };
+
+/**
+ * Options for watching Kubernetes resources
+ * @public
+ */
+export interface KubernetesWatchOptions {
+  /** Namespace to watch resources in (optional for cluster-scoped resources) */
+  namespace?: string;
+  /** Label selector to filter resources */
+  labelSelector?: string;
+  /** Resource version to start watching from */
+  resourceVersion?: string;
+  /** Timeout in seconds for the watch operation */
+  timeoutSeconds?: number;
+  /** Allow watch bookmarks (for efficient resource version tracking) */
+  allowWatchBookmarks?: boolean;
+  /**
+   * When true, the watch stream begins with synthetic events that reproduce
+   * the current state of the collection, followed by a bookmark with the
+   * annotation `k8s.io/initial-events-end`. Requires `allowWatchBookmarks`
+   * and `resourceVersionMatch` set to `'NotOlderThan'`.
+   * See KEP-3157 (watch-list). Supported in Kubernetes 1.32+ (Beta).
+   */
+  sendInitialEvents?: boolean;
+  /**
+   * How the resourceVersion constraint is applied. Set to `'NotOlderThan'`
+   * when using `sendInitialEvents` so the server can serve from its watch
+   * cache rather than quorum-reading etcd.
+   */
+  resourceVersionMatch?: 'NotOlderThan' | 'Exact';
+  /** AbortSignal to cancel the watch from outside the iteration loop */
+  signal?: AbortSignal;
+}

@@ -4,7 +4,7 @@ This catalog-backend module adds support for viewing unprocessed entities. An un
 
 A distinction is made between `failed` and `pending` entities.
 
-A `failed` entity has validation error that breaks processing.
+A `failed` entity has a validation error that breaks processing.
 
 A `pending` entity has not been processed yet.
 
@@ -19,3 +19,7 @@ In `packages/backend/src/index.ts` add the module:
 ```ts title="packages/backend/src/index.ts"
 backend.add(import('@backstage/plugin-catalog-backend-module-unprocessed'));
 ```
+
+## Documentation
+
+See the [Backstage documentation](https://backstage.io/docs/features/software-catalog/unprocessed-entities) for configuration and usage instructions.

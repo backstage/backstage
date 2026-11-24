@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-openshift-provider",
-  "version": "0.1.10-next.0",
+  "version": "0.1.13",
   "description": "The OpenShift backend module for the auth plugin.",
   "backstage": {
     "role": "backend-plugin-module",
@@ -48,7 +48,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/plugin-auth-backend": "workspace:^",
     "express": "^4.22.0",
-    "msw": "^2.7.3",
+    "msw": "^3.0.4",
     "supertest": "^7.1.0"
   },
   "configSchema": "config.d.ts"

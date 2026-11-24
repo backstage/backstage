@@ -1,5 +1,94 @@
 # @backstage/plugin-app-module-user-settings
 
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@1.0.0
+  - @backstage/plugin-signals-react@0.0.28
+  - @backstage/plugin-user-settings@0.9.9
+
+## 0.1.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+  - @backstage/plugin-user-settings@0.9.9-next.1
+
+## 0.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.3-next.0
+  - @backstage/plugin-user-settings@0.9.9-next.0
+  - @backstage/plugin-signals-react@0.0.28-next.0
+
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/plugin-signals-react@0.0.27
+  - @backstage/plugin-user-settings@0.9.8
+
+## 0.1.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+  - @backstage/plugin-user-settings@0.9.8-next.0
+  - @backstage/plugin-signals-react@0.0.27-next.0
+
+## 0.1.2
+
+### Patch Changes
+
+- 4cba335: Fixes published entry point configurations so it can be imported reliably in Jest/Node resolution.
+- Updated dependencies
+  - @backstage/plugin-user-settings@0.9.7
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/plugin-signals-react@0.0.26
+
+## 0.1.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.1-next.0
+  - @backstage/plugin-user-settings@0.9.7-next.1
+  - @backstage/plugin-signals-react@0.0.26-next.0
+
+## 0.1.2-next.0
+
+### Patch Changes
+
+- 4cba335: Fixes published entry point configurations so it can be imported reliably in Jest/Node resolution.
+- Updated dependencies
+  - @backstage/plugin-user-settings@0.9.7-next.0
+
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-user-settings@0.9.6
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/plugin-signals-react@0.0.25
+
+## 0.1.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.0-next.0
+  - @backstage/plugin-user-settings@0.9.6-next.1
+  - @backstage/plugin-signals-react@0.0.25-next.0
+
 ## 0.1.1-next.0
 
 ### Patch Changes

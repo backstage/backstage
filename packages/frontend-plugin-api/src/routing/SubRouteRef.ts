@@ -22,7 +22,7 @@ import { AnyRouteRefParams } from './types';
 const PARAM_PATTERN = /^\w+$/;
 
 /**
- * Descriptor of a route relative to an absolute {@link RouteRef}.
+ * Descriptor of a route relative to a {@link RouteRef} or another sub-route.
  *
  * @remarks
  *
@@ -33,10 +33,13 @@ const PARAM_PATTERN = /^\w+$/;
 export interface SubRouteRef<
   TParams extends AnyRouteRefParams = AnyRouteRefParams,
 > {
+  /** Marker for an opaque route reference. */
   readonly $$type: '@backstage/SubRouteRef';
 
+  /** The route parameters that the bound path must supply. */
   readonly T: TParams;
 
+  /** The path pattern of this sub-route, relative to its parent route. */
   readonly path: string;
 }
 
@@ -111,14 +114,19 @@ export function createSubRouteRef<
   ParentParams extends AnyRouteRefParams = never,
 >(config: {
   path: Path;
-  parent: RouteRef<ParentParams>;
+  parent: RouteRef<ParentParams> | SubRouteRef<ParentParams>;
 }): MakeSubRouteRef<PathParams<Path>, ParentParams> {
   const { path, parent } = config;
   type Params = PathParams<Path>;
 
-  const internalParent = OpaqueRouteRef.toInternal(parent);
-  const parentParams = internalParent.getParams();
-  const parentDescription = internalParent.getDescription();
+  const subRouteParent = OpaqueSubRouteRef.isType(parent)
+    ? OpaqueSubRouteRef.toInternal(parent)
+    : undefined;
+  const parentRef = subRouteParent?.getParent() ?? (parent as RouteRef);
+  const internalParent = OpaqueRouteRef.toInternal(parentRef);
+  const parentParams =
+    subRouteParent?.getParams() ?? internalParent.getParams();
+  const subPath = subRouteParent ? `${subRouteParent.path}${path}` : path;
 
   // Collect runtime parameters from the path, e.g. ['bar', 'baz'] from '/foo/:bar/:baz'
   const pathParams = path
@@ -148,18 +156,18 @@ export function createSubRouteRef<
     T: undefined as unknown as TrimEmptyParams<
       MergeParams<Params, ParentParams>
     >,
-    path,
+    path: subPath,
     getParams() {
       return params;
     },
     getParent() {
-      return parent;
+      return parentRef;
     },
     getDescription() {
-      return `at ${path} with parent ${parentDescription}`;
+      return `at ${subPath} with parent ${internalParent.getDescription()}`;
     },
     toString() {
-      return `subRouteRef{path='${path}',parent=${parent}}`;
+      return `subRouteRef{path='${subPath}',parent=${parentRef}}`;
     },
   });
 }

@@ -97,7 +97,7 @@ With that, Backstage's cli and backend will detect public entry point and serve 
    yarn start-backend
    ```
 
-4. Visit http://localhost:7007 to see the public app and validate that the _index.html_ response only contains a minimal application.
+4. Visit <http://localhost:7007> to see the public app and validate that the _index.html_ response only contains a minimal application.
    :::note
    Regular app serving will always serve protected apps without authenticating.
    :::
@@ -105,3 +105,10 @@ With that, Backstage's cli and backend will detect public entry point and serve 
 5. Finally, as soon as you log in, you will be redirected to the main app home page (inspect the page and see that the protected bundle was served from the app backend after the redirect).
 
 That's it!
+
+## Restricting public configuration
+
+To restrict configuration exposed to unauthenticated users, see
+[Restricting public configuration](../conf/writing.md#restricting-public-configuration)
+in the configuration guide. These configuration options also apply to apps using
+the old frontend system.

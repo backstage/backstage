@@ -1,5 +1,330 @@
 # @backstage/plugin-catalog-backend
 
+## 4.0.3
+
+### Patch Changes
+
+- 9c76a81: Documented that the `entities/by-query` endpoint currently applies only the first `orderField`; any additional order fields are ignored. Updated the OpenAPI spec parameter description and the Software Catalog API docs accordingly. No behavior change. Refs #17560.
+- 7d765b6: Improved repository validation for catalog entity placeholders. Placeholder-driven reads, including `$openapi` and `$asyncapi` document references, are now restricted to the entity's own repository on SCM hosts; cross-repository references are rejected.
+- 2c223ee: Fixed a `Item of type "refresh" was emitted after processing had completed` warning that could appear when one of several placeholders in an entity failed to resolve. Processing now waits for all placeholders to finish before reporting the first failure.
+- c4b7cb1: The `entities/by-refs` endpoint now resolves entity references case-insensitively, matching `entities/by-name` and the documented entity reference contract where receivers treat refs case-insensitively. Previously, a ref whose casing differed from the stored lowercased ref returned `null`. Fixes #36743.
+- 3b97016: Improved the performance of entity facets and total item counts on PostgreSQL when the filter contains `$any` or `$not` conditions, such as those produced by conditional permission policies for catalog entity reads.
+- 3b97016: Entity filter predicates that combine `$all`, `$any` or `$not` with other keys in the same object, or that give `$all` or `$any` a non-array value, are now rejected with a 400 error. Previously the extra keys were silently ignored.
+- cd5fa5f: Improved the performance of entity queries on PostgreSQL when a filter matches a field against a long list of values, such as the ownership claims used by conditional permission policies for catalog entity reads.
+- eb5875d: Improved repository validation for catalog entity placeholders on Azure DevOps. Placeholder-driven reads on a configured Azure DevOps integration are now restricted to the entity's own repository on every Azure DevOps host shape, including legacy `{org}.visualstudio.com` hosts and Azure DevOps Server hosts, and targets that cannot be attributed to a repository are rejected as well.
+- 32e6642: Adds internal publication bookkeeping as groundwork for future catalog change tracking. Existing catalog APIs and deletion behavior are unchanged.
+
+  The PostgreSQL upgrade builds an index concurrently without rewriting existing entities, but still scans the catalog table. Large installations may need to prepare this index out of band before upgrading; see [Upgrading large installations](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/README.md#upgrading-large-installations).
+
+- 2a9f08b: Match URL locations in catalog rules in canonical form.
+
+  URL locations are now matched against catalog rules in a canonical form of the URL, so that rule decisions agree with how the location target is resolved when its content is fetched. URL patterns that relied on percent-encoded characters being matched as written, or on default ports being kept, no longer match and should be updated.
+
+- 1892d2f: chore(deps): bump `minimatch` from 10.2.6 to 11.0.1
+- f7ce914: Fixed an issue where `/validate-entity` would not return after sending a 400 response on invalid entity validation, causing an unhandled `ERR_HTTP_HEADERS_SENT` error and triggering duplicate success/fail audit events.
+- 6a0de59: Backend plugins now locate their database migrations relative to their own package directory, without requiring the package to be resolvable by name.
+- 9120c46: Updated dependency `glob` to `^14.0.0`.
+- 20746bc: Location annotations on entities submitted to the validate-entity endpoint can no longer override the location of the request.
+- Updated dependencies
+  - @backstage/integration@2.2.0
+  - @backstage/catalog-client@1.16.4
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/backend-openapi-utils@0.7.4
+  - @backstage/plugin-events-node@0.5.0
+  - @backstage/catalog-model@1.10.3
+  - @backstage/config@1.3.11
+  - @backstage/filter-predicates@0.2.1
+  - @backstage/plugin-catalog-common@1.2.2
+  - @backstage/plugin-catalog-node@3.0.0
+  - @backstage/plugin-permission-common@0.9.13
+  - @backstage/plugin-permission-node@0.11.6
+
+## 4.0.3-next.2
+
+### Patch Changes
+
+- c4b7cb1: The `entities/by-refs` endpoint now resolves entity references case-insensitively, matching `entities/by-name` and the documented entity reference contract where receivers treat refs case-insensitively. Previously, a ref whose casing differed from the stored lowercased ref returned `null`. Fixes #36743.
+- 1892d2f: chore(deps): bump `minimatch` from 10.2.6 to 11.0.1
+- 9120c46: Updated dependency `glob` to `^14.0.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/integration@2.1.4-next.0
+  - @backstage/backend-openapi-utils@0.7.4-next.1
+  - @backstage/plugin-permission-node@0.11.6-next.1
+  - @backstage/plugin-catalog-node@3.0.0-next.2
+  - @backstage/plugin-events-node@0.5.0-next.2
+  - @backstage/catalog-client@1.16.4-next.1
+  - @backstage/catalog-model@1.10.3-next.0
+  - @backstage/config@1.3.11-next.0
+  - @backstage/filter-predicates@0.2.1-next.0
+  - @backstage/plugin-permission-common@0.9.13-next.0
+  - @backstage/plugin-catalog-common@1.2.2-next.0
+
+## 4.0.3-next.1
+
+### Patch Changes
+
+- 9c76a81: Documented that the `entities/by-query` endpoint currently applies only the first `orderField`; any additional order fields are ignored. Updated the OpenAPI spec parameter description and the Software Catalog API docs accordingly. No behavior change. Refs #17560.
+- 3b97016: Improved the performance of entity facets and total item counts on PostgreSQL when the filter contains `$any` or `$not` conditions, such as those produced by conditional permission policies for catalog entity reads.
+- 3b97016: Entity filter predicates that combine `$all`, `$any` or `$not` with other keys in the same object, or that give `$all` or `$any` a non-array value, are now rejected with a 400 error. Previously the extra keys were silently ignored.
+- f7ce914: Fixed an issue where `/validate-entity` would not return after sending a 400 response on invalid entity validation, causing an unhandled `ERR_HTTP_HEADERS_SENT` error and triggering duplicate success/fail audit events.
+- Updated dependencies
+  - @backstage/catalog-client@1.16.4-next.0
+  - @backstage/plugin-events-node@0.5.0-next.1
+  - @backstage/plugin-catalog-node@2.2.7-next.1
+
+## 4.0.3-next.0
+
+### Patch Changes
+
+- 7d765b6: Improved repository validation for catalog entity placeholders. Placeholder-driven reads, including `$openapi` and `$asyncapi` document references, are now restricted to the entity's own repository on SCM hosts; cross-repository references are rejected.
+- 2a9f08b: Match URL locations in catalog rules in canonical form.
+
+  URL locations are now matched against catalog rules in a canonical form of the URL, so that rule decisions agree with how the location target is resolved when its content is fetched. URL patterns that relied on percent-encoded characters being matched as written, or on default ports being kept, no longer match and should be updated.
+
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.11.6-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-catalog-node@2.2.7-next.0
+  - @backstage/plugin-events-node@0.4.28-next.0
+  - @backstage/backend-openapi-utils@0.7.4-next.0
+
+## 4.0.2
+
+### Patch Changes
+
+- Bumped version to account for a patch release.
+
+## 4.0.1
+
+### Patch Changes
+
+- 589dcef: Fixed an issue where successfully processed entities could remain unavailable if stitch scheduling was interrupted.
+- a08e746: Improved large entity provider mutations by yielding to the event loop while preparing database changes.
+- aa6e7c6: Reduce repeated work for entities that fail stitching by gradually increasing retry delays with jitter. Failed entities remain eligible for recovery, and new stitching requests reset their failure count.
+- d7cc6e5: Reject non-positive stitching polling intervals and lease durations at startup to prevent continuous polling and immediate lease expiry. Configuration errors identify the setting that needs correction.
+- 727d53f: Improve responsiveness to other requests while reading large sets of entities with field selection, without reducing page sizes.
+
+  Like full-entity responses, projected list responses may now be streamed without a `Content-Length` or automatically generated `ETag` header.
+
+- 11f608b: Entity and location queries with a primitive value at the root of the filter predicate are now rejected with an "Invalid query" error, rather than "Query must be an object".
+- e783f4b: Fixed catalog processing error messages to report stable processor names in minified builds.
+- 7c376ff: Improved the performance and planner stability of orphan entity cleanup on large PostgreSQL catalogs. Orphan deletion and updates to related entities are now atomic, so a failed cleanup does not leave related entities waiting indefinitely for updated relations. Cleanup also preserves entities when a new reference is committed while it waits to delete them.
+- a69d971: Improved the reliability of deferred stitching. Pending stitching work is no longer lost when entities are deleted and re-added, and updated instances prevent timed-out stitching attempts from overwriting or removing work taken over by another updated instance. During rolling upgrades from older versions, instances may still perform redundant stitching. On MySQL, protection against overlapping writes remains best-effort.
+- 476f042: Fixed entities disappearing from filtered and sorted catalog queries after a database error during stitching. The final entity and its search index rows are now written together, so a failure part way through is rolled back and retried in full. Previously the entity could be left with a search index that no longer matched it, and because the entity itself looked up to date, every later stitch attempt skipped it. Such an entity stayed readable by direct lookup while missing from list queries that filter or sort, until it was next edited.
+
+  PostgreSQL and MySQL deadlocks trigger prompt, bounded retries of the entire write transaction, skipping the write if newer stitching work has superseded it. If retries are exhausted, queued work remains available for recovery after the stitching timeout.
+
+- Updated dependencies
+  - @backstage/integration@2.1.3
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/catalog-client@1.16.3
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/filter-predicates@0.2.0
+  - @backstage/backend-openapi-utils@0.7.3
+  - @backstage/catalog-model@1.10.2
+  - @backstage/plugin-catalog-common@1.2.1
+  - @backstage/plugin-catalog-node@2.2.6
+  - @backstage/plugin-events-node@0.4.27
+  - @backstage/plugin-permission-common@0.9.12
+  - @backstage/plugin-permission-node@0.11.5
+
+## 4.0.1-next.3
+
+### Patch Changes
+
+- aa6e7c6: Reduce repeated work for entities that fail stitching by gradually increasing retry delays with jitter. Failed entities remain eligible for recovery, and new stitching requests reset their failure count.
+- d7cc6e5: Reject non-positive stitching polling intervals and lease durations at startup to prevent continuous polling and immediate lease expiry. Configuration errors identify the setting that needs correction.
+- 7c376ff: Improved the performance and planner stability of orphan entity cleanup on large PostgreSQL catalogs. Orphan deletion and updates to related entities are now atomic, so a failed cleanup does not leave related entities waiting indefinitely for updated relations. Cleanup also preserves entities when a new reference is committed while it waits to delete them.
+- Updated dependencies
+  - @backstage/catalog-client@1.16.3-next.1
+  - @backstage/backend-plugin-api@1.11.0-next.2
+
+## 4.0.1-next.2
+
+### Patch Changes
+
+- 589dcef: Fixed an issue where successfully processed entities could remain unavailable if stitch scheduling was interrupted.
+- a69d971: Improved the reliability of deferred stitching. Pending stitching work is no longer lost when entities are deleted and re-added, and updated instances prevent timed-out stitching attempts from overwriting or removing work taken over by another updated instance. During rolling upgrades from older versions, instances may still perform redundant stitching. On MySQL, protection against overlapping writes remains best-effort.
+- 476f042: Fixed entities disappearing from filtered and sorted catalog queries after a database error during stitching. The final entity and its search index rows are now written together, so a failure part way through is rolled back and retried in full. Previously the entity could be left with a search index that no longer matched it, and because the entity itself looked up to date, every later stitch attempt skipped it. Such an entity stayed readable by direct lookup while missing from list queries that filter or sort, until it was next edited.
+
+  PostgreSQL and MySQL deadlocks trigger prompt, bounded retries of the entire write transaction, skipping the write if newer stitching work has superseded it. If retries are exhausted, queued work remains available for recovery after the stitching timeout.
+
+- Updated dependencies
+  - @backstage/integration@2.1.3-next.1
+  - @backstage/backend-openapi-utils@0.7.3-next.2
+
+## 4.0.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+  - @backstage/backend-openapi-utils@0.7.3-next.1
+  - @backstage/plugin-catalog-node@2.2.6-next.1
+  - @backstage/plugin-events-node@0.4.27-next.1
+  - @backstage/plugin-permission-node@0.11.5-next.1
+
+## 4.0.1-next.0
+
+### Patch Changes
+
+- a08e746: Improved large entity provider mutations by yielding to the event loop while preparing database changes.
+- 727d53f: Improve responsiveness to other requests while reading large sets of entities with field selection, without reducing page sizes.
+
+  Like full-entity responses, projected list responses may now be streamed without a `Content-Length` or automatically generated `ETag` header.
+
+- e783f4b: Fixed catalog processing error messages to report stable processor names in minified builds.
+- Updated dependencies
+  - @backstage/integration@2.1.3-next.0
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/filter-predicates@0.1.6-next.0
+  - @backstage/plugin-permission-common@0.9.12-next.0
+  - @backstage/plugin-permission-node@0.11.5-next.0
+  - @backstage/backend-openapi-utils@0.7.3-next.0
+  - @backstage/catalog-client@1.16.3-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-catalog-node@2.2.6-next.0
+  - @backstage/plugin-events-node@0.4.27-next.0
+  - @backstage/plugin-catalog-common@1.2.1-next.0
+
+## 4.0.0
+
+### Major Changes
+
+- b0d8a53: **BREAKING**: Removed the deprecated `CodeOwnersProcessor` and `AnnotateScmSlugEntityProcessor` exports. To retain their behavior, install and register the corresponding community backend module:
+
+  - `CodeOwnersProcessor`: [`@backstage-community/plugin-catalog-backend-module-codeowners`](https://github.com/backstage/community-plugins/tree/main/workspaces/catalog/plugins/catalog-backend-module-codeowners)
+  - `AnnotateScmSlugEntityProcessor`: [`@backstage-community/plugin-catalog-backend-module-annotate-scm-slug`](https://github.com/backstage/community-plugins/tree/main/workspaces/catalog/plugins/catalog-backend-module-annotate-scm-slug)
+
+  Add the module to your backend with `backend.add(import('<module-package>'))` and remove the custom registration of the old processor. For explicit processor configuration, follow the replacement module's documentation.
+
+- b0d8a53: **BREAKING**: Removed the deprecated `catalog.stitchingStrategy.mode` configuration setting and its startup warnings. Remove this key from your configuration, whether it is set to `immediate` or `deferred`. Stitching continues to run asynchronously via the worker queue. The `catalog.stitchingStrategy.pollingInterval` and `catalog.stitchingStrategy.stitchTimeout` settings remain supported and should be kept if you use them.
+- d2cf99f: **BREAKING**: Removed the deprecated `catalog.enableRelationsCompatibility` config option and its associated compatibility layer. Entity relations are now always returned in the standard format with only `targetRef`. If you were relying on the `target` field in relations, update your code to use `targetRef` instead.
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- f5119cc: Improved PostgreSQL catalog query planning by correcting entity cardinality statistics for the search table.
+- 72c16f5: Use stable PostgreSQL array parameters for `$in` filter predicates.
+- 78656f8: Fixed catalog model relations to inherit the source entity namespace when no default namespace is configured, as documented. Explicit namespaces in entity references and explicitly configured default namespaces continue to take precedence.
+- 7761a50: Improved path validation for catalog entity placeholders.
+- 49b41f6: Fixed a bug where catalog entities could fail to process when catalog model sources are enabled and the catalog mixes `backstage.io/v1alpha1` and `backstage.io/v1beta1` for the same kind.
+- 4b922b3: The `catalog:query-catalog-entities` action now accepts `limit` and `offset` when they are passed as strings, coercing them to numbers before validation. Previously the action failed with a validation error when a client sent these pagination arguments as strings, which is common for MCP/LLM clients.
+- fda0ef1: Correct catalog property permission matching.
+- ff327e0: Apply catalog location analysis permissions consistently when using a custom location analyzer.
+- 05e2005: Fixed PostgreSQL catalog migrations sometimes failing during search index deduplication when using a database connection pool.
+- 7629e5e: Use stable PostgreSQL array parameters for batched refresh state lookups and updates.
+- c26a19b: Improved catalog database performance stability for large PostgreSQL installations with frequent entity updates.
+- e363ae2: Allowed location type restrictions are now applied consistently during catalog processing.
+- Updated dependencies
+  - @backstage/integration@2.1.2
+  - @backstage/plugin-catalog-common@1.2.0
+  - @backstage/backend-openapi-utils@0.7.2
+  - @backstage/catalog-client@1.16.2
+  - @backstage/catalog-model@1.10.1
+  - @backstage/filter-predicates@0.1.5
+  - @backstage/config@1.3.9
+  - @backstage/plugin-permission-node@0.11.4
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-catalog-node@2.2.5
+  - @backstage/plugin-events-node@0.4.26
+  - @backstage/plugin-permission-common@0.9.11
+
+## 4.0.0-next.1
+
+### Major Changes
+
+- d2cf99f: **BREAKING**: Removed the deprecated `catalog.enableRelationsCompatibility` config option and its associated compatibility layer. Entity relations are now always returned in the standard format with only `targetRef`. If you were relying on the `target` field in relations, update your code to use `targetRef` instead.
+
+### Patch Changes
+
+- f5119cc: Improved PostgreSQL catalog query planning by correcting entity cardinality statistics for the search table.
+- 72c16f5: Use stable PostgreSQL array parameters for `$in` filter predicates.
+- 7629e5e: Use stable PostgreSQL array parameters for batched refresh state lookups and updates.
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.2.0-next.0
+  - @backstage/config@1.3.9-next.0
+  - @backstage/catalog-client@1.16.2-next.1
+  - @backstage/plugin-catalog-node@2.2.5-next.1
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/filter-predicates@0.1.5-next.1
+  - @backstage/integration@2.1.2-next.1
+  - @backstage/plugin-permission-common@0.9.11-next.0
+  - @backstage/plugin-permission-node@0.11.4-next.1
+
+## 3.9.2-next.0
+
+### Patch Changes
+
+- 7761a50: Improved path validation for catalog entity placeholders.
+- fda0ef1: Correct catalog property permission matching.
+- e363ae2: Allowed location type restrictions are now applied consistently during catalog processing.
+- Updated dependencies
+  - @backstage/integration@2.1.2-next.0
+  - @backstage/backend-openapi-utils@0.7.2-next.0
+  - @backstage/filter-predicates@0.1.5-next.0
+  - @backstage/plugin-permission-node@0.11.4-next.0
+  - @backstage/catalog-client@1.16.2-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+  - @backstage/plugin-catalog-node@2.2.5-next.0
+  - @backstage/plugin-events-node@0.4.26-next.0
+
+## 3.9.0
+
+### Minor Changes
+
+- c7c0ec3: Added a `refresh-catalog-entity` action so agents and MCP clients can re-queue a single entity for processing after creating or updating it — useful for reading back fresh data immediately after a scaffolder run without waiting for the next scheduled processing loop.
+
+### Patch Changes
+
+- aa318d0: Migrated internal query filter handling from `EntityFilter` to `FilterPredicate`, simplifying the filter parsing and query application pipeline.
+- 10f0713: Replaced the delete-all and reinsert pattern for the `relations` table with a diff-based sync that only touches rows that actually changed. In steady state (the common case), zero writes occur, eliminating write churn, dead tuples, and WAL traffic from the processing path. Stitching is now also skipped for relation neighbors that did not change.
+- ee40136: Fixed a missing promise return in a database migration rollback function.
+- eb6dff2: Fixed an issue where PostgreSQL deadlock errors during entity provider mutations were silently swallowed, causing entities to be dropped until the next full refresh. Transactions are now automatically retried on deadlock with exponential back-off.
+- dd562f0: Fixed a potential MySQL deadlock during concurrent entity processing by retrying the `updateProcessedEntity` transaction on deadlock errors.
+- b031a48: Fixed an issue where SCM `location.moved` events would generate new locations in the database for files that were not actively tracked.
+- b7650ad: Simplified internal router setup by removing unnecessary conditional guards around route registrations.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/integration@2.1.0
+  - @backstage/plugin-permission-common@0.9.10
+  - @backstage/plugin-permission-node@0.11.3
+  - @backstage/backend-openapi-utils@0.7.1
+  - @backstage/plugin-catalog-node@2.2.4
+  - @backstage/plugin-events-node@0.4.25
+
+## 3.9.0-next.2
+
+### Minor Changes
+
+- c7c0ec3: Added a `refresh-catalog-entity` action so agents and MCP clients can re-queue a single entity for processing after creating or updating it — useful for reading back fresh data immediately after a scaffolder run without waiting for the next scheduled processing loop.
+
+### Patch Changes
+
+- aa318d0: Migrated internal query filter handling from `EntityFilter` to `FilterPredicate`, simplifying the filter parsing and query application pipeline.
+- 10f0713: Replaced the delete-all and reinsert pattern for the `relations` table with a diff-based sync that only touches rows that actually changed. In steady state (the common case), zero writes occur, eliminating write churn, dead tuples, and WAL traffic from the processing path. Stitching is now also skipped for relation neighbors that did not change.
+- eb6dff2: Fixed an issue where PostgreSQL deadlock errors during entity provider mutations were silently swallowed, causing entities to be dropped until the next full refresh. Transactions are now automatically retried on deadlock with exponential back-off.
+- dd562f0: Fixed a potential MySQL deadlock during concurrent entity processing by retrying the `updateProcessedEntity` transaction on deadlock errors.
+- b031a48: Fixed an issue where SCM `location.moved` events would generate new locations in the database for files that were not actively tracked.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.1
+
+## 3.8.2-next.1
+
+### Patch Changes
+
+- ee40136: Fixed a missing promise return in a database migration rollback function.
+- b7650ad: Simplified internal router setup by removing unnecessary conditional guards around route registrations.
+- Updated dependencies
+  - @backstage/integration@2.1.0-next.0
+
 ## 3.8.2-next.0
 
 ### Patch Changes

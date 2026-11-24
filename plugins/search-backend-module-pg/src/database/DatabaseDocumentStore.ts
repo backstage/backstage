@@ -27,10 +27,11 @@ import {
 } from './types';
 import { queryPostgresMajorVersion } from './util';
 
-const migrationsDir = resolvePackagePath(
-  '@backstage/plugin-search-backend-module-pg',
-  'migrations',
-);
+const migrationsDir = resolvePackagePath(import.meta.url, 'migrations');
+
+function quoteHeadlineOption(value: string | undefined): string {
+  return `"${String(value).replace(/"/g, '""')}"`;
+}
 
 /** @public */
 export class DatabaseDocumentStore implements DatabaseStore {
@@ -111,6 +112,10 @@ export class DatabaseDocumentStore implements DatabaseStore {
     type: string,
     truncate = false,
   ): Promise<void> {
+    // Temporary tables are never analyzed automatically, so give the planner
+    // accurate statistics before querying or joining against it
+    await tx.raw('ANALYZE documents_to_insert');
+
     const documentSelect = truncate
       ? tx.raw(
           `jsonb_set(document, '{text}', to_jsonb(LEFT(document->>'text', 50000))) as document`,
@@ -118,14 +123,16 @@ export class DatabaseDocumentStore implements DatabaseStore {
       : 'document';
 
     // Copy all new rows into the documents table
+    const rowsToInsert = tx<RawDocumentRow>('documents_to_insert')
+      .select('type', documentSelect, 'hash')
+      .whereNotExists(
+        tx<RawDocumentRow>('documents')
+          .select(tx.raw('1'))
+          .whereRaw('documents.hash = documents_to_insert.hash'),
+      );
+
     await tx
-      .insert(
-        tx<RawDocumentRow>('documents_to_insert').select(
-          'type',
-          documentSelect,
-          'hash',
-        ),
-      )
+      .insert(rowsToInsert)
       .into(tx.raw('documents (type, document, hash)'))
       .onConflict('hash')
       .ignore();
@@ -136,6 +143,7 @@ export class DatabaseDocumentStore implements DatabaseStore {
       .leftJoin<RawDocumentRow>('documents_to_insert', {
         'documents.hash': 'documents_to_insert.hash',
       })
+      .where('documents.type', type)
       .whereNull('documents_to_insert.hash');
 
     await tx<RawDocumentRow>('documents')
@@ -218,18 +226,27 @@ export class DatabaseDocumentStore implements DatabaseStore {
     query.select(tx.raw('COUNT(*) OVER() AS total_count'));
 
     if (pgTerm && options.useHighlight) {
-      const headlineOptions = `MaxWords=${options.maxWords}, MinWords=${options.minWords}, ShortWord=${options.shortWord}, HighlightAll=${options.highlightAll}, MaxFragments=${options.maxFragments}, FragmentDelimiter=${options.fragmentDelimiter}, StartSel=${options.preTag}, StopSel=${options.postTag}`;
+      const headlineOptions = [
+        `MaxWords=${options.maxWords}`,
+        `MinWords=${options.minWords}`,
+        `ShortWord=${options.shortWord}`,
+        `HighlightAll=${options.highlightAll}`,
+        `MaxFragments=${options.maxFragments}`,
+        `FragmentDelimiter=${quoteHeadlineOption(options.fragmentDelimiter)}`,
+        `StartSel=${quoteHeadlineOption(options.preTag)}`,
+        `StopSel=${quoteHeadlineOption(options.postTag)}`,
+      ].join(', ');
       query
-        .select(tx.raw(`ts_rank_cd(body, query, ${normalization}) AS "rank"`))
+        .select(tx.raw('ts_rank_cd(body, query, ?) AS "rank"', [normalization]))
         .select(
-          tx.raw(
-            `ts_headline(\'english\', document, query, '${headlineOptions}') as "highlight"`,
-          ),
+          tx.raw(`ts_headline('english', document, query, ?) as "highlight"`, [
+            headlineOptions,
+          ]),
         )
         .orderBy('rank', 'desc');
     } else if (pgTerm && !options.useHighlight) {
       query
-        .select(tx.raw(`ts_rank_cd(body, query, ${normalization}) AS "rank"`))
+        .select(tx.raw('ts_rank_cd(body, query, ?) AS "rank"', [normalization]))
         .orderBy('rank', 'desc');
     } else {
       query.select(tx.raw('1 as rank'));

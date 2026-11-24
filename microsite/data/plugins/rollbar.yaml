@@ -1,7 +1,7 @@
 ---
 title: Rollbar
-author: '@andrewthauer'
-authorUrl: https://github.com/andrewthauer
+author: Backstage Community
+authorUrl: https://github.com/backstage/community-plugins
 category: Monitoring
 description: View Rollbar errors for your services in Backstage.
 documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/rollbar/plugins/rollbar

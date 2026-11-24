@@ -59,11 +59,7 @@ export const TechDocsReaderEntityCard = (
               </Text>
             </dt>
             <dd className={styles.definitionValue}>
-              <EntityRefLink
-                entityRef={entityRef}
-                title={entityMetadata.metadata.title}
-                defaultKind="Component"
-              />
+              <EntityRefLink entityRef={entityRef} defaultKind="Component" />
             </dd>
           </div>
           {ownedByRelations.length > 0 && (

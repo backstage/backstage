@@ -1,5 +1,156 @@
 # @backstage/plugin-catalog-graph
 
+## 0.6.10
+
+### Patch Changes
+
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+- Updated dependencies
+  - @backstage/frontend-plugin-api@1.0.0
+  - @backstage/core-plugin-api@1.13.0
+  - @backstage/catalog-client@1.16.4
+  - @backstage/core-components@0.18.16
+  - @backstage/plugin-catalog-react@4.0.0
+  - @backstage/ui@0.20.0
+  - @backstage/catalog-model@1.10.3
+
+## 0.6.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.16-next.1
+  - @backstage/ui@0.20.0-next.0
+  - @backstage/frontend-plugin-api@0.19.0-next.2
+  - @backstage/catalog-client@1.16.4-next.1
+  - @backstage/catalog-model@1.10.3-next.0
+  - @backstage/core-plugin-api@1.12.12-next.2
+  - @backstage/plugin-catalog-react@4.0.0-next.2
+
+## 0.6.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.4-next.0
+  - @backstage/core-plugin-api@1.12.12-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+  - @backstage/plugin-catalog-react@4.0.0-next.1
+
+## 0.6.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.3-next.0
+  - @backstage/core-plugin-api@1.12.12-next.0
+  - @backstage/plugin-catalog-react@4.0.0-next.0
+  - @backstage/core-components@0.18.16-next.0
+
+## 0.6.9
+
+### Patch Changes
+
+- cc7eccf: The catalog graph page in the new frontend system no longer renders its own legacy header, and instead uses the page header provided by the app. Apps that use the old frontend system are not affected.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/ui@0.19.0
+  - @backstage/catalog-client@1.16.3
+  - @backstage/plugin-catalog-react@3.3.0
+  - @backstage/core-components@0.18.15
+  - @backstage/catalog-model@1.10.2
+  - @backstage/core-plugin-api@1.12.11
+
+## 0.6.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2-next.1
+  - @backstage/catalog-client@1.16.3-next.1
+  - @backstage/plugin-catalog-react@3.3.0-next.2
+  - @backstage/core-components@0.18.15-next.3
+  - @backstage/ui@0.19.0-next.0
+
+## 0.6.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.15-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+  - @backstage/catalog-client@1.16.3-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-catalog-react@3.2.4-next.0
+
+## 0.6.8
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- Updated dependencies
+  - @backstage/core-components@0.18.14
+  - @backstage/ui@0.18.0
+  - @backstage/catalog-client@1.16.2
+  - @backstage/catalog-model@1.10.1
+  - @backstage/plugin-catalog-react@3.2.3
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/core-plugin-api@1.12.10
+
+## 0.6.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.0
+  - @backstage/plugin-catalog-react@3.2.3-next.1
+  - @backstage/ui@0.18.0-next.1
+  - @backstage/core-plugin-api@1.12.10-next.0
+  - @backstage/catalog-client@1.16.2-next.0
+
+## 0.6.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.17.2-next.0
+  - @backstage/plugin-catalog-react@3.2.2-next.0
+  - @backstage/core-components@0.18.14-next.0
+
+## 0.6.7
+
+### Patch Changes
+
+- 8babce3: Fixed the catalog graph page so configured filter and graph defaults are applied when the page opens.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/core-components@0.18.13
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/plugin-catalog-react@3.2.1
+  - @backstage/ui@0.17.1
+  - @backstage/frontend-plugin-api@0.18.0
+
+## 0.6.7-next.2
+
+### Patch Changes
+
+- 8babce3: Fixed the catalog graph page so configured filter and graph defaults are applied when the page opens.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.9-next.1
+  - @backstage/plugin-catalog-react@3.2.1-next.3
+
+## 0.6.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.1-next.2
+  - @backstage/frontend-plugin-api@0.18.0-next.0
+  - @backstage/core-plugin-api@1.12.9-next.0
+  - @backstage/core-components@0.18.13-next.2
+
 ## 0.6.7-next.0
 
 ### Patch Changes

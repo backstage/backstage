@@ -23,13 +23,13 @@ const mockConnectionsConfig = (connections: JsonArray) =>
 
 const githubConnection = {
   type: 'github' as const,
-  host: 'github.com',
+  baseUrl: 'https://github.com/',
   auth: [{ method: 'token' as const, token: 'test-token' }],
 };
 
 const gitlabConnection = {
   type: 'gitlab' as const,
-  host: 'gitlab.com',
+  baseUrl: 'https://gitlab.com/',
   auth: [{ method: 'token' as const, token: 'gl-token' }],
 };
 
@@ -46,11 +46,11 @@ describe('withDeclaredConnections', () => {
 
     const connection = await wrapped.find({
       type: 'github',
-      url: 'https://github.com/my-org/my-repo',
+      query: { url: 'https://github.com/my-org/my-repo' },
       authMethods: ['token'],
     });
 
-    expect(connection.host).toBe('github.com');
+    expect(connection.baseUrl).toBe('https://github.com/');
     expect(connection.auth.method).toBe('token');
   });
 
@@ -67,7 +67,7 @@ describe('withDeclaredConnections', () => {
     await expect(
       wrapped.find({
         type: 'gitlab',
-        url: 'https://gitlab.com/my-org/my-repo',
+        query: { url: 'https://gitlab.com/my-org/my-repo' },
         authMethods: ['token'],
       }),
     ).rejects.toThrow(
@@ -92,15 +92,15 @@ describe('withDeclaredConnections', () => {
     await expect(
       moduleA.find({
         type: 'github',
-        url: 'https://github.com/my-org/my-repo',
+        query: { url: 'https://github.com/my-org/my-repo' },
         authMethods: ['token'],
       }),
-    ).resolves.toMatchObject({ host: 'github.com' });
+    ).resolves.toMatchObject({ baseUrl: 'https://github.com/' });
 
     await expect(
       moduleA.find({
         type: 'gitlab',
-        url: 'https://gitlab.com/my-org/my-repo',
+        query: { url: 'https://gitlab.com/my-org/my-repo' },
         authMethods: ['token'],
       }),
     ).rejects.toThrow(/undeclared connection of type "gitlab"/);
@@ -108,15 +108,15 @@ describe('withDeclaredConnections', () => {
     await expect(
       moduleB.find({
         type: 'gitlab',
-        url: 'https://gitlab.com/my-org/my-repo',
+        query: { url: 'https://gitlab.com/my-org/my-repo' },
         authMethods: ['token'],
       }),
-    ).resolves.toMatchObject({ host: 'gitlab.com' });
+    ).resolves.toMatchObject({ baseUrl: 'https://gitlab.com/' });
 
     await expect(
       moduleB.find({
         type: 'github',
-        url: 'https://github.com/my-org/my-repo',
+        query: { url: 'https://github.com/my-org/my-repo' },
         authMethods: ['token'],
       }),
     ).rejects.toThrow(/undeclared connection of type "github"/);

@@ -98,4 +98,24 @@ describe('fetch:plain', () => {
       }),
     );
   });
+
+  it('requires an explicit token for SCM reads when configured', async () => {
+    const requiredAction = createFetchPlainAction({
+      integrations,
+      reader,
+      requireScmUserCredentials: true,
+    });
+
+    await expect(
+      requiredAction.handler({
+        ...mockContext,
+        input: {
+          url: 'https://github.com/backstage/community/tree/main',
+        },
+      }),
+    ).rejects.toThrow(
+      'No user credentials provided for host github.com, but scaffolder.requireScmUserCredentials is enabled',
+    );
+    expect(fetchContents).not.toHaveBeenCalled();
+  });
 });

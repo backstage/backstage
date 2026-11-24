@@ -46,5 +46,6 @@ export function createSpecializedBackend(
   return new BackstageBackend(
     options.defaultServiceFactories,
     options.extensionPointFactoryMiddleware,
+    options.instanceId,
   );
 }

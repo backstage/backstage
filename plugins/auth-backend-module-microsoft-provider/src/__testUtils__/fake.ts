@@ -37,11 +37,14 @@ export class FakeMicrosoftAPI {
     id_token?: string;
   } {
     const scopeParameter = formData.get('scope');
-    const claims =
-      (scopeParameter && this.allClaimsForScope(scopeParameter)) ??
-      formData.get('grant_type') === 'refresh_token'
-        ? this.decodeClaims(formData.get('refresh_token')!)
-        : this.decodeClaims(formData.get('code')!);
+    let claims: Claims;
+    if (scopeParameter) {
+      claims = this.allClaimsForScope(scopeParameter);
+    } else if (formData.get('grant_type') === 'refresh_token') {
+      claims = this.decodeClaims(formData.get('refresh_token')!);
+    } else {
+      claims = this.decodeClaims(formData.get('code')!);
+    }
     return {
       ...this.tokenWithClaims(claims),
       ...(this.hasScope(claims, 'offline_access') && {

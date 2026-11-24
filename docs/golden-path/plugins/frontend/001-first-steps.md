@@ -23,7 +23,7 @@ Creating the plugin takes a moment. Once the command finishes, a new folder
 appears at `plugins/todo` (the path depends on the plugin ID you chose) with
 a structure like this:
 
-```
+```text
 plugins/todo/
 ├── dev/          # Standalone dev server setup
 ├── src/

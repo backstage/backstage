@@ -77,6 +77,46 @@ describe('serialization', () => {
     expect(withoutStack2.cause.stack).not.toBeDefined();
   });
 
+  it('serializes stack traces only when allowed with nested error causes', () => {
+    const root = new Error('root');
+    const mid = new Error('mid');
+    mid.cause = root;
+    const top = new CustomError('top');
+    top.cause = mid;
+
+    const withStack: any = serializeError(top, { includeStack: true });
+    const withoutStack1: any = serializeError(top, { includeStack: false });
+    const withoutStack2: any = serializeError(top);
+
+    // Stacks are preserved at every level of the cause chain when requested.
+    expect(withStack.stack).toBeDefined();
+    expect(withStack.cause.stack).toBeDefined();
+    expect(withStack.cause.cause.stack).toBeDefined();
+
+    // Stacks are stripped at every level of the cause chain when not requested.
+    expect(withoutStack1.stack).not.toBeDefined();
+    expect(withoutStack1.cause.stack).not.toBeDefined();
+    expect(withoutStack1.cause.cause.stack).not.toBeDefined();
+    expect(withoutStack2.stack).not.toBeDefined();
+    expect(withoutStack2.cause.stack).not.toBeDefined();
+    expect(withoutStack2.cause.cause.stack).not.toBeDefined();
+  });
+
+  it('does not hang or throw on a cyclic error cause chain', () => {
+    const a = new Error('a');
+    const b = new Error('b');
+    a.cause = b;
+    b.cause = a;
+
+    let withoutStack: any;
+    expect(() => {
+      withoutStack = serializeError(a, { includeStack: false });
+    }).not.toThrow();
+
+    expect(withoutStack.stack).not.toBeDefined();
+    expect(withoutStack.cause.stack).not.toBeDefined();
+  });
+
   it('round-trips a ServiceUnavailableError', () => {
     const before = new ServiceUnavailableError('service down');
     const after = deserializeError(

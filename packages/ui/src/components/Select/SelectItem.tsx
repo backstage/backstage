@@ -37,11 +37,15 @@ import type {
 export function SelectItem<T extends object = object>(
   props: SelectItemProps<T>,
 ) {
-  const { ownProps, restProps } = useDefinition(SelectItemDefinition, props);
+  const definitionResult = useDefinition(SelectItemDefinition, props);
+  const { ownProps, restProps } = definitionResult;
   const { classes, children, showSelectionIndicator } = ownProps;
 
   return (
-    <ListBoxItem className={classes.root} {...restProps}>
+    <ListBoxItem
+      className={classes.root}
+      {...(restProps as React.ComponentProps<typeof ListBoxItem>)}
+    >
       {values => {
         const content =
           typeof children === 'function' ? children(values) : children;

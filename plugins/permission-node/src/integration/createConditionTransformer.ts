@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { InputError } from '@backstage/errors';
 import {
   AllOfCriteria,
   AnyOfCriteria,
@@ -27,6 +26,7 @@ import {
   isNotCriteria,
   isOrCriteria,
 } from './util';
+import { validatePermissionRuleParams } from './permissionRuleParams';
 
 const mapConditions = <TQuery>(
   criteria: PermissionCriteria<PermissionCondition>,
@@ -47,11 +47,7 @@ const mapConditions = <TQuery>(
   }
 
   const rule = getRule(criteria.rule);
-  const result = rule.paramsSchema?.safeParse(criteria.params);
-
-  if (result && !result.success) {
-    throw new InputError(`Parameters to rule are invalid`, result.error);
-  }
+  validatePermissionRuleParams(rule, criteria.params);
 
   return rule.toQuery(criteria.params ?? {});
 };

@@ -17,12 +17,20 @@
 import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 import { Knex } from 'knex';
 import { DateTime } from 'luxon';
+import { randomUUID } from 'node:crypto';
 import { timestampToDateTime } from '../../conversion';
 import { DbStitchQueueRow } from '../../tables';
 
-// TODO(freben): There is no retry counter or similar. If items start
-// perpetually crashing during stitching, they'll just get silently retried over
-// and over again, for better or worse. This will be visible in metrics though.
+/**
+ * Opaque lease value captured by a deferred stitch claim. Pass it unchanged
+ * back to completion using the same database. Do not parse or normalize it:
+ * PostgreSQL requires its exact timestamp text to retain microsecond precision;
+ * MySQL uses timestamp text to avoid timezone/DST conversion through a Date.
+ * SQLite also returns its stored timestamp text.
+ */
+export type StitchLeaseExpiresAt = DbStitchQueueRow['next_stitch_at'] & {
+  readonly __stitchLeaseExpiresAt: unique symbol;
+};
 
 /**
  * Finds entities that are marked for deferred stitching.
@@ -31,11 +39,13 @@ import { DbStitchQueueRow } from '../../tables';
  *
  * This assumes that the stitching strategy is set to deferred.
  *
- * They are expected to already have the stitch_ticket set (by
- * markForStitching) so that their tickets can be returned with each item.
+ * Each claim replaces stitch_ticket, fencing workers whose leases expired even
+ * when no new stitch request was made. A ticket may be shared across a batch;
+ * it is always checked together with entity_ref.
  *
  * All returned items have their next_stitch_at updated to be moved forward by
- * the given timeout duration. This has the effect that they will be picked up
+ * the configured timeout, extended by quadratic backoff and jitter after
+ * failures. This has the effect that they will be picked up
  * for stitching again in the future, if it hasn't completed by that point for
  * some reason (restarts, crashes, etc).
  */
@@ -48,6 +58,7 @@ export async function getDeferredStitchableEntities(options: {
     entityRef: string;
     stitchTicket: string;
     stitchRequestedAt: DateTime; // the time BEFORE moving it forward by the timeout
+    stitchLeaseExpiresAt: StitchLeaseExpiresAt;
   }>
 > {
   const { knex, batchSize, stitchTimeout } = options;
@@ -60,9 +71,11 @@ export async function getDeferredStitchableEntities(options: {
   // next_stitch_at has been bumped. Without the transaction the locks
   // are released after the SELECT auto-commits, and another worker can
   // claim the same rows before the UPDATE runs.
+  // SQLite also keeps selection and ticket/lease replacement in one transaction,
+  // without attempting the row-locking clauses that it does not support.
   const run = async (tx: Knex | Knex.Transaction) => {
     const items: DbStitchQueueRow[] = await tx('stitch_queue')
-      .select('entity_ref', 'next_stitch_at', 'stitch_ticket')
+      .select('entity_ref', 'next_stitch_at', 'stitch_ticket', 'failure_count')
       .where('next_stitch_at', '<=', tx.fn.now())
       .orderBy('next_stitch_at', 'asc')
       .limit(batchSize)
@@ -76,29 +89,76 @@ export async function getDeferredStitchableEntities(options: {
       return [];
     }
 
-    await tx('stitch_queue')
+    const stitchTicket = randomUUID();
+    const base = durationToMilliseconds(stitchTimeout);
+    const nextStitchAt = (failureCount: number) => {
+      const delay = Math.max(
+        base,
+        Math.min(base * (failureCount + 1) ** 2, 3_600_000),
+      );
+      const jitter = failureCount > 0 ? delay * 0.1 * Math.random() : 0;
+      return nowPlus(tx, delay + jitter);
+    };
+    const update = tx<DbStitchQueueRow>('stitch_queue')
       .whereIn(
         'entity_ref',
         items.map(i => i.entity_ref),
       )
       .update({
-        next_stitch_at: nowPlus(tx, stitchTimeout),
+        next_stitch_at: tx.raw(
+          `case entity_ref ${items.map(() => 'when ? then ?').join(' ')} end`,
+          items.flatMap(item => [
+            item.entity_ref,
+            nextStitchAt(item.failure_count),
+          ]),
+        ),
+        stitch_ticket: stitchTicket,
       });
+
+    // Preserve PostgreSQL's full timestamp precision for the completion guard;
+    // converting it to a JavaScript Date would truncate microseconds.
+    let leases: Pick<DbStitchQueueRow, 'entity_ref' | 'next_stitch_at'>[];
+    if (tx.client.config.client === 'pg') {
+      leases = await update.returning([
+        'entity_ref',
+        tx.raw('next_stitch_at::text as next_stitch_at'),
+      ]);
+    } else if (String(tx.client.config.client).includes('mysql')) {
+      // MySQL has no UPDATE RETURNING; read the lease on the same locked
+      // connection before committing the claim. Cast to text so the driver
+      // cannot normalize the value through a Date across a local DST gap.
+      await update;
+      leases = await tx<DbStitchQueueRow>('stitch_queue')
+        .select<Pick<DbStitchQueueRow, 'entity_ref' | 'next_stitch_at'>[]>(
+          'entity_ref',
+          tx.raw('CAST(next_stitch_at AS CHAR) as next_stitch_at'),
+        )
+        .whereIn(
+          'entity_ref',
+          items.map(i => i.entity_ref),
+        );
+    } else {
+      leases = await update.returning(['entity_ref', 'next_stitch_at']);
+    }
+    const leaseByRef = new Map(
+      leases.map(i => [i.entity_ref, i.next_stitch_at]),
+    );
 
     return items.map(i => ({
       entityRef: i.entity_ref,
-      stitchTicket: i.stitch_ticket,
+      stitchTicket,
       stitchRequestedAt: timestampToDateTime(i.next_stitch_at),
+      stitchLeaseExpiresAt: leaseByRef.get(
+        i.entity_ref,
+      )! as StitchLeaseExpiresAt,
     }));
   };
 
-  return knex.isTransaction || !useLocking
-    ? await run(knex)
-    : await knex.transaction(run);
+  return knex.isTransaction ? await run(knex) : await knex.transaction(run);
 }
 
-function nowPlus(knex: Knex, duration: HumanDuration): Knex.Raw {
-  const seconds = durationToMilliseconds(duration) / 1000;
+function nowPlus(knex: Knex, milliseconds: number): Knex.Raw {
+  const seconds = milliseconds / 1000;
   if (knex.client.config.client.includes('sqlite3')) {
     return knex.raw(`datetime('now', ?)`, [`${seconds} seconds`]);
   } else if (knex.client.config.client.includes('mysql')) {

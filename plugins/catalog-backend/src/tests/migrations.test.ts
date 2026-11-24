@@ -44,7 +44,185 @@ jest.setTimeout(60_000);
 
 const databases = TestDatabases.create();
 
+it('runs the search entity ID statistics migration without a transaction wrapper', () => {
+  const migration = jest.requireActual<{
+    config?: { transaction?: boolean };
+  }>('../../migrations/20260904000000_fix_search_entity_id_ndistinct');
+
+  expect(migration.config).toEqual({ transaction: false });
+});
+
+it('runs the refresh state maintenance migration without a transaction wrapper', () => {
+  const migration = jest.requireActual<{
+    config?: { transaction?: boolean };
+  }>('../../migrations/20260912000000_refresh_state_maintenance');
+
+  expect(migration.config).toEqual({ transaction: false });
+});
+
 describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
+  if (databaseId.startsWith('POSTGRES')) {
+    it('installs and removes the commit-time generation trigger', async () => {
+      const knex = await databases.init(databaseId);
+      await migrateUntilBefore(
+        knex,
+        '20261013000000_final_entity_generations.js',
+      );
+      const readTrigger = async () => {
+        const { rows } = await knex.raw(`
+          SELECT t.tgdeferrable, t.tginitdeferred, p.proconfig
+          FROM pg_trigger t JOIN pg_proc p ON p.oid = t.tgfoid
+          WHERE t.tgrelid = 'final_entities'::regclass
+            AND t.tgname = 'final_entities_assign_generation_at_commit'
+        `);
+        return rows;
+      };
+      const functions = async () =>
+        (
+          await knex.raw(
+            "SELECT count(*)::int AS n FROM pg_proc WHERE proname = 'final_entities_assign_generation_at_commit'",
+          )
+        ).rows[0].n;
+      await migrateUpOnce(knex);
+      const [trigger] = await readTrigger();
+      expect(trigger).toMatchObject({
+        tgdeferrable: true,
+        tginitdeferred: true,
+      });
+      expect(trigger.proconfig).toEqual([
+        expect.stringMatching(/^search_path=/),
+      ]);
+      await migrateDownOnce(knex);
+      expect(await readTrigger()).toEqual([]);
+      expect(await functions()).toBe(0);
+    });
+
+    it('preserves a prebuilt generation index and repairs an interrupted build', async () => {
+      const knex = await databases.init(databaseId);
+      await knex.migrate.latest({ directory: migrationsDir });
+      const migration = jest.requireActual<{ up: (db: Knex) => Promise<void> }>(
+        '../../migrations/20261013000000_final_entity_generations',
+      );
+      const readIndex = async () => {
+        const { rows } = await knex.raw(`
+          SELECT c.oid, i.indisvalid, i.indnkeyatts, i.indnatts,
+                 pg_get_expr(i.indpred, i.indrelid) AS predicate
+          FROM pg_class c JOIN pg_index i ON i.indexrelid = c.oid
+          JOIN pg_namespace n ON n.oid = c.relnamespace
+          WHERE c.relname = 'final_entities_generation_idx'
+            AND n.nspname = current_schema()
+        `);
+        return rows[0];
+      };
+      const index = await readIndex();
+      expect(index).toMatchObject({
+        indisvalid: true,
+        indnkeyatts: 1,
+        indnatts: 2,
+        predicate: '(generation IS NOT NULL)',
+      });
+      await migration.up(knex);
+      expect(await readIndex()).toEqual(index);
+      await knex.raw('DROP INDEX CONCURRENTLY final_entities_generation_idx');
+      await knex('refresh_state').insert(
+        ['one', 'two'].map(id => ({
+          entity_id: id,
+          entity_ref: `k:ns/${id}`,
+          unprocessed_entity: '{}',
+          errors: '[]',
+          next_update_at: knex.fn.now(),
+          last_discovery_at: knex.fn.now(),
+        })),
+      );
+      await knex('final_entities').insert(
+        ['one', 'two'].map(id => ({
+          entity_id: id,
+          entity_ref: `k:ns/${id}`,
+          hash: 'h',
+          final_entity: '{}',
+        })),
+      );
+      // Writing only the generation does not fire the allocation trigger,
+      // so both rows keep the same value.
+      await knex('final_entities').update({ generation: 5 });
+      // Failed concurrent uniqueness validation leaves a real invalid index.
+      await expect(
+        knex.raw(
+          'CREATE UNIQUE INDEX CONCURRENTLY final_entities_generation_idx ON final_entities (generation)',
+        ),
+      ).rejects.toMatchObject({ code: '23505' });
+      expect((await readIndex()).indisvalid).toBe(false);
+      await migration.up(knex);
+      expect(await readIndex()).toMatchObject({
+        indisvalid: true,
+        indnkeyatts: 1,
+        indnatts: 2,
+        predicate: '(generation IS NOT NULL)',
+      });
+    });
+  }
+
+  it('adds publication generations without backfilling or resetting existing data', async () => {
+    const knex = await databases.init(databaseId);
+    await migrateUntilBefore(
+      knex,
+      '20261013000000_final_entity_generations.js',
+    );
+
+    const migration = jest.requireActual<{
+      up: (db: Knex) => Promise<void>;
+    }>('../../migrations/20261013000000_final_entity_generations');
+    await knex('refresh_state').insert({
+      entity_id: 'legacy',
+      entity_ref: 'k:ns/legacy',
+      unprocessed_entity: '{}',
+      errors: '[]',
+      next_update_at: knex.fn.now(),
+      last_discovery_at: knex.fn.now(),
+    });
+    await knex('final_entities').insert({
+      entity_id: 'legacy',
+      entity_ref: 'k:ns/legacy',
+      hash: 'h',
+      final_entity: '{}',
+    });
+    await knex('search').insert({
+      entity_id: 'legacy',
+      key: 'kind',
+      value: 'k',
+    });
+    const original = await knex('final_entities');
+    const search = await knex('search');
+    await migrateUpOnce(knex);
+    expect(await knex.schema.hasColumn('final_entities', 'generation')).toBe(
+      true,
+    );
+    expect(await knex('final_entities')).toEqual(
+      original.map(row => ({ ...row, generation: null })),
+    );
+    expect(await knex('search')).toEqual(search);
+    await knex('catalog_generation_counter')
+      .where('id', 1)
+      .update({ generation: '123' });
+    await migration.up(knex);
+    expect(
+      String((await knex('catalog_generation_counter').first()).generation),
+    ).toBe('123');
+    await migrateDownOnce(knex);
+    expect(await knex.schema.hasColumn('final_entities', 'generation')).toBe(
+      false,
+    );
+    expect(await knex.schema.hasTable('catalog_generation_counter')).toBe(
+      false,
+    );
+    expect(await knex('final_entities')).toEqual(original);
+    expect(await knex('search')).toEqual(search);
+    await migrateUpOnce(knex);
+    expect(
+      String((await knex('catalog_generation_counter').first()).generation),
+    ).toBe('0');
+  });
+
   it('latest version correctly cascades deletions', async () => {
     const knex = await databases.init(databaseId);
     await knex.migrate.latest({ directory: migrationsDir });
@@ -1074,8 +1252,42 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
       { entity_id: 'e1', key: 'k3', value: 'v3', original_value: 'v3' }, // unique — kept
     ]);
 
-    // Preconditions NOT met: dedup runs
-    await migrateUpOnce(knex);
+    // Preconditions NOT met: dedup runs. On PostgreSQL, occupy the connection
+    // that creates the temporary table before allowing the migration to
+    // continue. This verifies that all temporary-table work is pinned to one
+    // connection rather than relying on the pool returning the same one.
+    const originalReleaseConnection = knex.client.releaseConnection.bind(
+      knex.client,
+    );
+    let heldConnection: unknown;
+    if (knex.client.config.client.includes('pg')) {
+      knex.client.pool.max = 2;
+      let tempTableCreated = false;
+      knex.on('query-response', (_response, queryData: { sql: string }) => {
+        if (
+          queryData.sql.includes('CREATE TEMP TABLE _search_dedup_groups AS')
+        ) {
+          tempTableCreated = true;
+        }
+      });
+      knex.client.releaseConnection = async (connection: unknown) => {
+        if (tempTableCreated) {
+          tempTableCreated = false;
+          heldConnection = connection;
+          return;
+        }
+        await originalReleaseConnection(connection);
+      };
+    }
+
+    try {
+      await migrateUpOnce(knex);
+    } finally {
+      knex.client.releaseConnection = originalReleaseConnection;
+      if (heldConnection) {
+        await originalReleaseConnection(heldConnection);
+      }
+    }
 
     // 5 rows collapsed to 3 unique (entity_id, key, value) combinations
     const rows = await knex('search').orderBy('key');
@@ -1225,7 +1437,7 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
     function expectedRef(type: string, target: string): string {
       return `location:default/generated-${createHash('sha1')
         .update(`${type}:${target}`)
-        .digest('hex')}`.toLocaleLowerCase('en-US');
+        .digest('hex')}`.toLowerCase();
     }
 
     // Non-bootstrap rows get their entity ref backfilled
@@ -1443,5 +1655,210 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
       expect(await hasAutovacuumOptions(table)).toBe(false);
     }
     expect(await hasNdistinctOverride()).toBe(false);
+  });
+
+  it('20260904000000_fix_search_entity_id_ndistinct.js', async () => {
+    const knex = await databases.init(databaseId);
+    const client = knex.client.config.client;
+    const isPg = typeof client === 'string' && client.includes('pg');
+
+    await migrateUntilBefore(
+      knex,
+      '20260904000000_fix_search_entity_id_ndistinct.js',
+    );
+
+    await knex('refresh_state').insert([
+      {
+        entity_id: 'e1',
+        entity_ref: 'k:ns/n1',
+        unprocessed_entity: '{}',
+        errors: '[]',
+        next_update_at: knex.fn.now(),
+        last_discovery_at: knex.fn.now(),
+      },
+      {
+        entity_id: 'e2',
+        entity_ref: 'k:ns/n2',
+        unprocessed_entity: '{}',
+        errors: '[]',
+        next_update_at: knex.fn.now(),
+        last_discovery_at: knex.fn.now(),
+      },
+    ]);
+    await knex('final_entities').insert([
+      {
+        entity_id: 'e1',
+        entity_ref: 'k:ns/n1',
+        hash: 'h1',
+        final_entity: '{}',
+      },
+      {
+        entity_id: 'e2',
+        entity_ref: 'k:ns/n2',
+        hash: 'h2',
+        final_entity: '{}',
+      },
+    ]);
+    await knex('search').insert([
+      { entity_id: 'e1', key: 'kind', value: 'component' },
+      { entity_id: 'e1', key: 'metadata.name', value: 'one' },
+      { entity_id: 'e2', key: 'kind', value: 'component' },
+      { entity_id: 'e2', key: 'metadata.name', value: 'two' },
+      { entity_id: 'e2', key: 'metadata.namespace', value: 'default' },
+      { entity_id: null, key: 'global', value: 'setting' },
+    ]);
+
+    async function readNdistinct(): Promise<{
+      option?: number;
+      statistic?: number;
+    }> {
+      if (!isPg) return {};
+
+      const result = await knex.raw(
+        `SELECT a.attoptions, s.n_distinct
+         FROM pg_attribute AS a
+         LEFT JOIN pg_stats AS s
+           ON s.schemaname = current_schema()
+          AND s.tablename = 'search'
+          AND s.attname = a.attname
+         WHERE a.attrelid = 'search'::regclass
+           AND a.attname = 'entity_id'`,
+      );
+      const option = result.rows[0]?.attoptions?.find((item: string) =>
+        item.startsWith('n_distinct='),
+      );
+      return {
+        option: option ? Number(option.split('=')[1]) : undefined,
+        statistic: result.rows[0]?.n_distinct,
+      };
+    }
+
+    expect((await readNdistinct()).option).toBe(isPg ? -1 : undefined);
+
+    await migrateUpOnce(knex);
+    const populated = await readNdistinct();
+    expect({
+      option: populated.option?.toFixed(6),
+      statistic: populated.statistic?.toFixed(6),
+    }).toEqual(
+      isPg
+        ? { option: '-0.333333', statistic: '-0.333333' }
+        : { option: undefined, statistic: undefined },
+    );
+
+    await migrateDownOnce(knex);
+    expect((await readNdistinct()).option).toBe(isPg ? -1 : undefined);
+
+    await knex('search').delete();
+    await knex('search').insert([
+      { entity_id: null, key: 'global', value: 'one' },
+      { entity_id: null, key: 'global', value: 'two' },
+    ]);
+    await migrateUpOnce(knex);
+    expect((await readNdistinct()).option).toBeUndefined();
+
+    await migrateDownOnce(knex);
+    expect((await readNdistinct()).option).toBe(isPg ? -1 : undefined);
+  });
+
+  it('20260912000000_refresh_state_maintenance.js', async () => {
+    const knex = await databases.init(databaseId);
+    const client = knex.client.config.client;
+    const isPg = typeof client === 'string' && client.includes('pg');
+
+    await migrateUntilBefore(
+      knex,
+      '20260912000000_refresh_state_maintenance.js',
+    );
+
+    await knex('refresh_state').insert({
+      entity_id: 'e1',
+      entity_ref: 'k:ns/n1',
+      unprocessed_entity: '{}',
+      errors: '[]',
+      next_update_at: knex.fn.now(),
+      last_discovery_at: knex.fn.now(),
+    });
+
+    async function hasAutovacuumOptions(): Promise<boolean> {
+      if (!isPg) return false;
+      const result = await knex.raw(
+        `SELECT reloptions FROM pg_class WHERE oid = 'refresh_state'::regclass`,
+      );
+      const options: string[] | null = result.rows[0]?.reloptions;
+      return (
+        !!options &&
+        options.includes('autovacuum_vacuum_scale_factor=0.01') &&
+        options.includes('autovacuum_analyze_scale_factor=0.01')
+      );
+    }
+
+    async function estimatedRows(): Promise<number | undefined> {
+      if (!isPg) return undefined;
+      const result = await knex.raw(
+        `SELECT reltuples::bigint AS rows
+         FROM pg_class
+         WHERE oid = 'refresh_state'::regclass`,
+      );
+      return Number(result.rows[0]?.rows);
+    }
+
+    expect(await hasAutovacuumOptions()).toBe(false);
+    expect(await estimatedRows()).not.toBe(1);
+
+    await migrateUpOnce(knex);
+    expect(await hasAutovacuumOptions()).toBe(isPg);
+    expect(await estimatedRows()).toBe(isPg ? 1 : undefined);
+
+    await migrateDownOnce(knex);
+    expect(await hasAutovacuumOptions()).toBe(false);
+  });
+
+  it('20261007000000_stitch_failure_count.js', async () => {
+    const knex = await databases.init(databaseId);
+    await migrateUntilBefore(knex, '20261007000000_stitch_failure_count.js');
+
+    await knex('stitch_queue').insert({
+      entity_ref: 'component:default/existing',
+      stitch_ticket: 'existing-ticket',
+      next_stitch_at: '2099-01-01 00:00:00',
+    });
+    const existing = await knex('stitch_queue').first();
+
+    await migrateUpOnce(knex);
+    expect(await knex('stitch_queue').first()).toEqual({
+      ...existing,
+      failure_count: 0,
+    });
+
+    // Older workers omit the new column when enqueueing during a rollout.
+    await knex('stitch_queue').insert({
+      entity_ref: 'component:default/new',
+      stitch_ticket: 'new-ticket',
+      next_stitch_at: '2099-01-02 00:00:00',
+    });
+    const inserted = await knex('stitch_queue')
+      .where('entity_ref', 'component:default/new')
+      .first();
+    expect(inserted.failure_count).toBe(0);
+
+    await knex('stitch_queue')
+      .where('entity_ref', existing.entity_ref)
+      .update({ failure_count: 3 });
+    await migrateDownOnce(knex);
+    expect(await knex.schema.hasColumn('stitch_queue', 'failure_count')).toBe(
+      false,
+    );
+    const { failure_count: _failureCount, ...newRequest } = inserted;
+    expect(await knex('stitch_queue').orderBy('entity_ref')).toEqual([
+      existing,
+      newRequest,
+    ]);
+
+    await migrateUpOnce(knex);
+    expect(await knex('stitch_queue').orderBy('entity_ref')).toEqual([
+      { ...existing, failure_count: 0 },
+      { ...newRequest, failure_count: 0 },
+    ]);
   });
 });

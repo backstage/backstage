@@ -24,7 +24,7 @@ import type { CliCommandContext } from '@backstage/cli-node';
 
 export default async ({ args, info }: CliCommandContext) => {
   const {
-    flags: { merge, format, package: pkg },
+    flags: { merge, format, package: pkg, strict },
   } = cli(
     {
       name: info.usage,
@@ -36,6 +36,10 @@ export default async ({ args, info }: CliCommandContext) => {
           type: Boolean,
           description: 'Merge all schemas into a single schema',
         },
+        strict: {
+          type: Boolean,
+          description: 'Treat TypeScript configuration schema errors as fatal',
+        },
       },
     },
     undefined,
@@ -46,6 +50,7 @@ export default async ({ args, info }: CliCommandContext) => {
     args: [],
     fromPackage: pkg,
     mockEnv: true,
+    strict,
   });
 
   let configSchema: JsonObject | JSONSchema;

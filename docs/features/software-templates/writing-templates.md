@@ -230,6 +230,27 @@ spec:
             inputType: tel
 ```
 
+### Array item headings in the BUI theme
+
+When using the experimental BUI form theme, array cards use the `title` from the item
+schema followed by its position, such as **Service 1**. Without a title, the
+heading is **Item 1**. Set `ui:title` within `items` to supply an exact
+heading without a position suffix:
+
+```yaml
+services:
+  type: array
+  items:
+    type: object
+    title: Service
+    ui:title: New service
+    properties:
+      name:
+        type: string
+```
+
+This heading changes presentation only; it does not change submitted values.
+
 ### Using Secrets
 
 You may want to mark things as secret and make sure that these values are protected and not available through REST endpoints. You can do this by using the built in `ui:field: Secret`.
@@ -443,6 +464,59 @@ spec:
         message: |
         ...
 ```
+
+### Conditionally showing parameter steps
+
+When `spec.parameters` is an array of steps, you can use the `when` field to conditionally show or hide entire steps based on values from earlier steps. This is useful when different inputs require different follow-up configuration, such as cloud-provider-specific settings.
+
+The frontend wizard and backend validation use Nunjitsu to evaluate `when` conditions. The field uses the `${{ }}` delimiter syntax and supports expressions for comparing parameter values:
+
+```yaml
+spec:
+  parameters:
+    - title: Choose Cloud Provider
+      properties:
+        cloudProvider:
+          type: string
+          enum: [AWS, GCP, Azure]
+
+    - title: AWS Configuration
+      when: ${{ parameters.cloudProvider === 'AWS' }}
+      properties:
+        awsRegion:
+          type: string
+
+    - title: GCP Configuration
+      when: ${{ parameters.cloudProvider === 'GCP' }}
+      properties:
+        gcpProjectId:
+          type: string
+
+    - title: Azure Configuration
+      when: ${{ parameters.cloudProvider === 'Azure' }}
+      properties:
+        azureSubscriptionId:
+          type: string
+```
+
+In this example, only the step matching the selected provider is shown in the wizard. The other steps are hidden, and their fields are excluded from the submitted parameters.
+
+The `when` field supports:
+
+- **Equality:** `${{ parameters.field === 'value' }}` and `${{ parameters.field !== 'value' }}`
+- **Truthiness checks:** `${{ parameters.field }}` follows the same rules as the `if` field on `spec.steps`. Empty strings, `0`, `false`, empty arrays, and missing values are false. Objects are always true, even when empty, so use `${{ parameters.field | length }}` or check a specific property instead
+- **Negation:** `${{ not parameters.field }}`
+- **Combined conditions:** `${{ parameters.enabled and parameters.count > 1 }}`
+- **Membership and built-in filters:** `${{ parameters.provider | lower in ["aws", "gcp"] }}`
+- **Boolean values:** `when: true` or `when: false`
+
+Custom templating filters and globals are not available in parameter step conditions. Invalid conditions keep the step visible and its parameter validation enabled.
+
+When a step becomes hidden because its condition evaluates to false, any values previously entered in that step are preserved but excluded from the final parameters passed to `spec.steps`. If the user goes back and changes an earlier answer so that the step becomes visible again, their previously entered values are restored. Filtering follows nested fields and array items, so a hidden field can be removed without removing visible fields in the same object. Fields shared with a visible step are retained, including values explicitly allowed by `additionalProperties`. Local `$ref` references are resolved within each parameter step schema. If a reference can't be resolved, the values are kept rather than filtered. Any field referenced in a `when` condition should be validated by an earlier unconditional step — because `when` conditions also control which steps are validated on the backend, a field that is not itself validated could allow users to skip conditional steps unexpectedly.
+
+:::note
+The `when` field controls the visibility of wizard steps in the frontend. It uses a different keyword from the `if` field on `spec.steps` to avoid colliding with the `if`/`then`/`else` keywords in JSON Schema.
+:::
 
 ### The Repository Picker
 
@@ -713,7 +787,7 @@ template. These follow the same standard format:
       name: ${{ parameters.name }}
 ```
 
-:::warning Action ID Naming
+:::warning[Action ID Naming]
 
 When using custom actions, **use camelCase for action IDs** to avoid issues with template expressions. Action IDs with dashes will cause expressions like `${{ steps.my-action.output.value }}` to return `NaN` instead of the expected value.
 
@@ -725,7 +799,8 @@ By default we ship some [built in actions](./builtin-actions.md) that you can
 take a look at, or you can
 [create your own custom actions](./writing-custom-actions.md).
 
-When `each` is provided, the current iteration value is available in the `${{ each }}` input.
+The `each` value must resolve to an array or object. The current iteration value
+is available in the `${{ each }}` input.
 
 Examples:
 
@@ -913,8 +988,10 @@ spec:
 ```
 
 Afterwards, if you are using the builtin templating action, you can start using
-the variables in your code. You can use also any other templating functions from
-[Nunjucks](https://mozilla.github.io/nunjucks/templating.html#tags) as well.
+the variables in your code. You can also use the template tags and functions
+supported by [Nunjitsu](https://github.com/Rugvip/nunjitsu). Check the
+[Nunjitsu compatibility guide](https://github.com/Rugvip/nunjitsu/blob/main/docs/compatibility.md)
+before using syntax from the Nunjucks documentation.
 
 ```bash
 #!/bin/bash
@@ -934,9 +1011,29 @@ code part of the `JSONSchema`, or you can read more about our
 ### More about expressions
 
 The `${{ }}` constructs in your template are evaluated using the
-powerful [Nunjucks templating engine](https://mozilla.github.io/nunjucks/).
-To learn more about basic Nunjucks templating please see
-[templating documentation](https://mozilla.github.io/nunjucks/templating.html).
+[Nunjitsu template engine](https://github.com/Rugvip/nunjitsu), which supports a
+focused subset of Nunjucks syntax. Use the
+[Nunjucks templating documentation](https://mozilla.github.io/nunjucks/templating.html)
+as a general syntax reference, and check the
+[Nunjitsu compatibility guide](https://github.com/Rugvip/nunjitsu/blob/main/docs/compatibility.md)
+for the supported features.
+
+#### How step values are typed
+
+The type of a templated value in `spec.steps` depends on how you write it:
+
+- **A single `${{ }}` expression** keeps the type of its result. For example, `${{ parameters.enabledDB }}` passes a boolean, and `${{ parameters.tags }}` passes an array.
+- **A single `{% %}` block** passes a boolean, number, `null`, array or object if it outputs one, and a string otherwise. For example, the following `if` gets the boolean `true` or `false`, so the step is skipped as expected:
+
+  ```yaml
+  if: "{% if parameters.selection == 'new' %}true{% else %}false{% endif %}"
+  ```
+
+  Expressions inside the block keep the type of their result, so `{% if parameters.enabled %}${{ parameters.count }}{% endif %}` passes a number. If the block outputs nothing, the value is left out, as if it wasn't set.
+
+- **Anything else**, such as text combined with an expression (`v${{ parameters.version }}`), or whitespace around a block, passes a string.
+
+A `{% %}` block that outputs a number doesn't keep its formatting, so `1.10` becomes `1.1`. To pass a value such as a version number as a string, use a `${{ }}` expression instead.
 
 Information about Backstage's built-in templating extensions, as well as how to
 create your own customizations, may be found at

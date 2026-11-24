@@ -1,5 +1,146 @@
 # @techdocs/cli
 
+## 1.15.0
+
+### Minor Changes
+
+- a4604d2: Add Zensical support to `serve`, `serve:raw` and `generate` via `--engine zensical` (or the `backstage.io/techdocs-engine` annotation in `catalog-info.yaml`), including live reload in the preview app. The default `--docker-image` is now chosen per engine instead of always being `spotify/techdocs`, and matches the image the TechDocs backend uses for that engine, so MkDocs previews now use `spotify/techdocs:v1.2.8` instead of `latest`. Passing `--docker-image` explicitly behaves as before.
+
+  The `serve` flags `--mkdocs-port`, `--mkdocs-config-file-name` and `--mkdocs-parameter-*` are deprecated in favor of `--engine-port`, `--config-file-name` and `--parameter-*`. If both the old and new flag are given, the new one wins and the warning says the old one is ignored.
+
+### Patch Changes
+
+- bc73976: Restricts `markdown_extensions` in `mkdocs.yml` to known extension names before documentation generation, in both the MkDocs and Zensical engines. Extension names outside the permitted set are removed from the configuration with a warning. Allow additional extensions, for example from a custom build image, with the new `techdocs.generator.mkdocs.dangerouslyAllowAdditionalExtensions` configuration, or the `--dangerouslyAllowAdditionalExtensions` flag when using the TechDocs CLI.
+- Updated dependencies
+  - @backstage/backend-defaults@0.19.0
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/plugin-techdocs-node@2.3.0
+  - @backstage/catalog-model@1.10.3
+  - @backstage/cli-common@0.3.3
+  - @backstage/config@1.3.11
+
+## 1.14.2-next.1
+
+### Patch Changes
+
+- Bumped version to account for a patch release.
+
+## 1.14.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.19.0-next.2
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/plugin-techdocs-node@2.2.1-next.2
+  - @backstage/catalog-model@1.10.3-next.0
+  - @backstage/cli-common@0.3.3-next.0
+  - @backstage/config@1.3.11-next.0
+
+## 1.14.1-next.0
+
+### Patch Changes
+
+- Bumped version to account for a patch release.
+
+## 1.14.0-next.0
+
+### Minor Changes
+
+- a4604d2: Add Zensical support to `serve`, `serve:raw` and `generate` via `--engine zensical` (or the `backstage.io/techdocs-engine` annotation in `catalog-info.yaml`), including live reload in the preview app. The default `--docker-image` is now chosen per engine instead of always being `spotify/techdocs`, and matches the image the TechDocs backend uses for that engine, so MkDocs previews now use `spotify/techdocs:v1.2.8` instead of `latest`. Passing `--docker-image` explicitly behaves as before.
+
+  The `serve` flags `--mkdocs-port`, `--mkdocs-config-file-name` and `--mkdocs-parameter-*` are deprecated in favor of `--engine-port`, `--config-file-name` and `--parameter-*`. If both the old and new flag are given, the new one wins and the warning says the old one is ignored.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.18.2-next.0
+  - @backstage/plugin-techdocs-node@2.2.0-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+
+## 1.13.0
+
+### Minor Changes
+
+- 4d4f987: Add engine abstraction layer for multi-engine TechDocs support. Introduces `--engine` flag, engine config map, generator registry with `backstage.io/techdocs-engine` annotation support, `engine` field in `techdocs_metadata.json`, `serve:raw` command, and live-reload adapter interface. MkDocs remains the default with no behavior change.
+
+  The built-in generator is now registered under `mkdocs`; the previous `techdocs` key is kept as an alias, so existing `generators.register('techdocs', ...)` calls continue to work. The CLI's `--engine` flag takes precedence over the `backstage.io/techdocs-engine` annotation for all commands, and `serve:mkdocs` and the `--mkdocs-parameter-*` flags now print deprecation warnings.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@2.1.0
+  - @backstage/backend-defaults@0.18.1
+  - @backstage/config@1.3.10
+  - @backstage/catalog-model@1.10.2
+  - @backstage/cli-common@0.3.2
+
+## 1.12.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/backend-defaults@0.18.1-next.0
+  - @backstage/plugin-techdocs-node@2.0.1-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/cli-common@0.3.2-next.0
+
+## 1.12.0
+
+### Minor Changes
+
+- 57205a0: Added a `--dangerouslyAllowAdditionalKeys` option to `techdocs-cli generate`
+- c4976e0: The `generate` command now automatically computes a sha256 content hash of the generated site output and stores it as the etag in `techdocs_metadata.json` when no `--etag` value is explicitly provided.
+
+  Added `--skip-if-unchanged` flag to `publish` that compares the local etag against the remote etag before uploading. When they match, the publish step is skipped entirely. This avoids redundant uploads in CI pipelines when docs haven't changed between builds.
+
+### Patch Changes
+
+- de92fae: Fixed an issue where `techdocs-cli serve` would silently stop detecting documentation changes and no longer refresh the browser when the Python environment (TechDocs container image or local) contains `click` 8.3.x. The CLI now explicitly enables MkDocs live reload when serving.
+- 4441911: Improved MkDocs configuration file handling.
+- Updated dependencies
+  - @backstage/backend-defaults@0.18.0
+  - @backstage/catalog-model@1.10.1
+  - @backstage/cli-common@0.3.1
+  - @backstage/plugin-techdocs-node@2.0.0
+  - @backstage/config@1.3.9
+
+## 1.11.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.16.0-next.1
+  - @backstage/config@1.3.9-next.0
+  - @backstage/backend-defaults@0.17.9-next.1
+
+## 1.11.5-next.1
+
+### Patch Changes
+
+- 4441911: Improved MkDocs configuration file handling.
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.9-next.0
+  - @backstage/plugin-techdocs-node@1.16.0-next.0
+
+## 1.11.4-next.0
+
+### Patch Changes
+
+- de92fae: Fixed an issue where `techdocs-cli serve` would silently stop detecting documentation changes and no longer refresh the browser when the Python environment (TechDocs container image or local) contains `click` 8.3.x. The CLI now explicitly enables MkDocs live reload when serving.
+
+## 1.11.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/backend-defaults@0.17.7
+  - @backstage/plugin-techdocs-node@1.15.3
+
 ## 1.11.3-next.0
 
 ### Patch Changes

@@ -17,6 +17,7 @@
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
+import { requestSentryApi, resolveSentryApiBaseUrl } from './sentryApi';
 
 /**
  * Creates the `sentry:fetch:dsn` Scaffolder action.
@@ -55,7 +56,7 @@ export function createSentryFetchDSNAction(options: { config: Config }) {
           z
             .string({
               description:
-                'Optional base URL for the Sentry API. e.g. https://sentry.io/api/0',
+                'Optional compatibility value that must match the configured Sentry API base URL, or the default Sentry API URL if none is configured',
             })
             .optional(),
       },
@@ -80,35 +81,22 @@ export function createSentryFetchDSNAction(options: { config: Config }) {
         throw new InputError(`No valid sentry token given`);
       }
 
-      const baseUrl =
-        apiBaseUrl ||
-        config.getOptionalString('scaffolder.sentry.apiBaseUrl') ||
-        'https://sentry.io/api/0';
+      const baseUrl = resolveSentryApiBaseUrl({
+        config,
+        inputApiBaseUrl: apiBaseUrl,
+      });
 
-      const response = await fetch(
-        `${baseUrl}/projects/${organizationSlug}/${projectSlug}/keys/`,
-        {
+      const { body: keys } = await requestSentryApi<unknown>({
+        url: `${baseUrl}/projects/${organizationSlug}/${projectSlug}/keys/`,
+        init: {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         },
-      );
-
-      if (!response.headers.get('content-type')?.includes('application/json')) {
-        throw new InputError(
-          `Unexpected Sentry Response Type: ${await response.text()}`,
-        );
-      }
-
-      const keys = await response.json();
-
-      if (response.status !== 200) {
-        throw new InputError(
-          `Sentry Response was: ${keys.detail || 'Unknown error'}`,
-        );
-      }
+        expectedStatus: 200,
+      });
 
       if (!Array.isArray(keys) || keys.length === 0) {
         throw new InputError('No keys found for the specified project');

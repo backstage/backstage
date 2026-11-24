@@ -1,5 +1,94 @@
 # @backstage/plugin-auth-backend-module-pinniped-provider
 
+## 0.3.20
+
+### Patch Changes
+
+- 918ca98: Updated dependency `jose` to `^6.1.0`. Existing ES256 token issuance and verification are unchanged. ML-DSA algorithms can be used when the runtime supports them.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/plugin-auth-node@0.7.8
+  - @backstage/config@1.3.11
+
+## 0.3.20-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/plugin-auth-node@0.7.8-next.2
+  - @backstage/config@1.3.11-next.0
+
+## 0.3.20-next.0
+
+### Patch Changes
+
+- 918ca98: Updated dependency `jose` to `^6.1.0`. Existing ES256 token issuance and verification are unchanged. ML-DSA algorithms can be used when the runtime supports them.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.8-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+
+## 0.3.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/config@1.3.10
+  - @backstage/plugin-auth-node@0.7.7
+
+## 0.3.19-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+  - @backstage/plugin-auth-node@0.7.7-next.1
+
+## 0.3.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/plugin-auth-node@0.7.7-next.0
+
+## 0.3.18
+
+### Patch Changes
+
+- 623e9d4: Prevented an unavailable Pinniped supervisor during provider startup from causing an unhandled promise rejection before the first authentication request.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.6
+  - @backstage/config@1.3.9
+  - @backstage/backend-plugin-api@1.10.1
+
+## 0.3.18-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/plugin-auth-node@0.7.5-next.1
+
+## 0.3.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.5-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+
+## 0.3.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-auth-node@0.7.4
+
 ## 0.3.17-next.0
 
 ### Patch Changes

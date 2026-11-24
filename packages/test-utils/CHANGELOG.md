@@ -1,5 +1,124 @@
 # @backstage/test-utils
 
+## 1.8.0
+
+### Minor Changes
+
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+
+### Patch Changes
+
+- ee1c5af: `registerMswTestHooks` now also fails tests on unhandled requests when used with msw 3.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.13.0
+  - @backstage/core-app-api@1.20.7
+  - @backstage/plugin-permission-react@0.5.7
+  - @backstage/theme@0.7.4
+  - @backstage/config@1.3.11
+  - @backstage/plugin-permission-common@0.9.13
+
+## 1.7.24-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.20.7-next.2
+  - @backstage/config@1.3.11-next.0
+  - @backstage/core-plugin-api@1.12.12-next.2
+  - @backstage/plugin-permission-common@0.9.13-next.0
+  - @backstage/plugin-permission-react@0.5.7-next.1
+
+## 1.7.24-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.12-next.0
+  - @backstage/core-app-api@1.20.7-next.0
+  - @backstage/plugin-permission-react@0.5.7-next.0
+
+## 1.7.23
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10
+  - @backstage/core-app-api@1.20.6
+  - @backstage/core-plugin-api@1.12.11
+  - @backstage/plugin-permission-common@0.9.12
+  - @backstage/plugin-permission-react@0.5.6
+
+## 1.7.23-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/core-app-api@1.20.6-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/plugin-permission-common@0.9.12-next.0
+  - @backstage/plugin-permission-react@0.5.6-next.0
+
+## 1.7.22
+
+### Patch Changes
+
+- 279fdf6: Declared the DOM Testing Library dependency required by React Testing Library.
+- Updated dependencies
+  - @backstage/core-app-api@1.20.5
+  - @backstage/config@1.3.9
+  - @backstage/core-plugin-api@1.12.10
+  - @backstage/plugin-permission-common@0.9.11
+  - @backstage/plugin-permission-react@0.5.5
+
+## 1.7.22-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/core-app-api@1.20.5-next.2
+  - @backstage/core-plugin-api@1.12.10-next.1
+  - @backstage/plugin-permission-common@0.9.11-next.0
+  - @backstage/plugin-permission-react@0.5.5-next.1
+
+## 1.7.22-next.1
+
+### Patch Changes
+
+- 279fdf6: Declared the DOM Testing Library dependency required by React Testing Library.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.10-next.0
+  - @backstage/core-app-api@1.20.5-next.1
+  - @backstage/plugin-permission-react@0.5.5-next.0
+
+## 1.7.22-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.20.5-next.0
+
+## 1.7.21
+
+### Patch Changes
+
+- a4759e6: Migrated tests from MSW v1 to MSW v2.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/core-app-api@1.20.4
+  - @backstage/plugin-permission-common@0.9.10
+  - @backstage/plugin-permission-react@0.5.4
+
+## 1.7.21-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.9-next.0
+  - @backstage/core-app-api@1.20.4-next.1
+  - @backstage/plugin-permission-react@0.5.4-next.0
+
 ## 1.7.21-next.0
 
 ### Patch Changes

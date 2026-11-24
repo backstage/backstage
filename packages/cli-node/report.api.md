@@ -132,6 +132,18 @@ export interface CliModule {
 }
 
 // @public
+export interface CliPackageCommand extends Omit<CliCommand, 'path'> {
+  if?: (context: CliPackageContext) => boolean | Promise<boolean>;
+  path: string[];
+}
+
+// @public
+export interface CliPackageContext {
+  dir: string;
+  packageJson: BackstagePackageJson;
+}
+
+// @public
 export type ConcurrentTasksOptions<TItem> = {
   concurrencyFactor?: number;
   items: Iterable<TItem>;
@@ -145,6 +157,7 @@ export function createCliModule(options: {
   };
   init: (registry: {
     addCommand: (command: CliCommand) => void;
+    addPackageCommand: (command: CliPackageCommand) => void;
   }) => Promise<void>;
 }): CliModule;
 
@@ -198,6 +211,7 @@ export const packageFeatureType: readonly [
   '@backstage/BackstagePlugin',
   '@backstage/FrontendPlugin',
   '@backstage/FrontendModule',
+  '@backstage/FrontendFeatureLoader',
 ];
 
 // @public
@@ -267,6 +281,16 @@ export class PackageRoles {
   static getRoleFromPackage(pkgJson: unknown): PackageRole | undefined;
   static getRoleInfo(role: string): PackageRoleInfo;
 }
+
+// @public
+export function parseCommaSeparatedList(
+  value: string | undefined,
+): string[] | undefined;
+
+// @public
+export function parseKeyValuePairs(
+  pairs: string[] | undefined,
+): Record<string, unknown> | undefined;
 
 // @public
 export function runCli(options: {

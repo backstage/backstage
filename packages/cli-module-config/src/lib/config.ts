@@ -64,6 +64,9 @@ export async function loadCliConfig(options: Options) {
     // Include the package.json in the project root if it exists
     packagePaths: [targetPaths.resolveRoot('package.json')],
     noUndeclaredProperties: options.strict,
+    onSchemaError: options.strict
+      ? undefined
+      : error => console.warn(error.message),
   });
 
   const source = ConfigSources.default({

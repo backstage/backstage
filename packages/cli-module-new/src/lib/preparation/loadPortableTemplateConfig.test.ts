@@ -312,7 +312,7 @@ describe('loadPortableTemplateConfig', () => {
         packagePath: mockDir.resolve('package.json'),
       }),
     ).rejects.toThrow(
-      /^Failed to load templating configuration from '.*'; caused by Validation error: Expected array/,
+      /^Failed to load templating configuration from '.*'; caused by Validation error: Invalid input: expected array/,
     );
   });
 

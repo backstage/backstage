@@ -1,5 +1,217 @@
 # @backstage/frontend-plugin-api
 
+## 1.0.0
+
+### Major Changes
+
+- b3befd0: Released version 1.0 of this frontend framework package. Its public APIs are now stable under the [package versioning policy](https://backstage.io/docs/overview/versioning-policy/#package-versioning-policy). Alpha and beta APIs retain their existing stability levels.
+
+### Minor Changes
+
+- 5a539ca: **BREAKING**: The `pluginId` property of plugins passed as a `FrontendFeature` is now required. Plugins built against framework versions that predate `pluginId` must be rebuilt against a current version.
+- 6540a44: **BREAKING**: `useApi` now unwraps promise-valued APIs, suspending while pending
+  and throwing rejection reasons to an error boundary. Its return type is
+  `Awaited<T>`. Existing consumers that intentionally used the promise returned by
+  `useApi` must use a direct holder lookup instead.
+
+  Declare lazy implementations with `ApiRef<Promise<MyApi>>`. API holders,
+  factories, and dependencies keep their existing contracts and pass the declared
+  value through unchanged.
+
+  See the [Utility API documentation](https://backstage.io/docs/frontend-system/utility-apis/creating/#lazy-api-implementations)
+  for lazy implementations, Suspense boundaries, and migration requirements.
+
+- d514e4d: **BREAKING**: Removed the deprecated `ExtensionFactoryMiddleware` type export. Import it from `@backstage/frontend-app-api` instead:
+
+  ```diff
+  -import type { ExtensionFactoryMiddleware } from '@backstage/frontend-plugin-api';
+  +import type { ExtensionFactoryMiddleware } from '@backstage/frontend-app-api';
+  ```
+
+  Add `@backstage/frontend-app-api` as a dependency of your app package if it is not already declared. Middleware behavior is unchanged.
+
+- 0a552cf: **BREAKING**: Removed the `ExtensionAttachTo` type export. Use `Extension<unknown>['attachTo']` if you need to reference the attachment type.
+- 62268a9: **BREAKING**: Removed the `AnalyticsImplementation` type and the deprecated `AnalyticsImplementationBlueprint` and `AnalyticsImplementationFactory` exports. Import them from `@backstage/plugin-app-react` instead. No changes to their usage are needed beyond updating the imports.
+- 86ff5a3: Removed the deprecated `PageTab` and `PluginOptions` types. Use `PageLayoutTab` and `CreateFrontendPluginOptions` instead.
+- 8ae0b8e: **BREAKING**: Removed the deprecated `IconComponent` export. Use `IconElement` and pass `<MyIcon />` rather than `MyIcon` when working with icons in the new frontend system. Legacy integrations that still need a component type can import `IconComponent` from `@backstage/core-plugin-api`. Auth provider icons continue to accept components with the same optional `fontSize` prop.
+- 806a9cf: **BREAKING**: Removed the `/alpha` entry point. All of its exports are already available from `@backstage/frontend-plugin-api`; update imports to use the main entry point instead:
+
+  ```diff
+  -import { PluginWrapperBlueprint } from '@backstage/frontend-plugin-api/alpha';
+  +import { PluginWrapperBlueprint } from '@backstage/frontend-plugin-api';
+  ```
+
+  The exported APIs retain the same behavior and identity. For the deprecated `pluginWrapperApiRef`, prefer `coreApis.internal.pluginWrapper` from the main entry point.
+
+- dafdab8: **BREAKING**: Removed the deprecated `withApis` export. Wrap class components in a function component that uses `useApi` instead:
+
+  ```tsx
+  import { errorApiRef, useApi } from '@backstage/frontend-plugin-api';
+  import { MyClassComponent, MyClassComponentProps } from './MyClassComponent';
+
+  export function MyComponent(props: Omit<MyClassComponentProps, 'errorApi'>) {
+    const errorApi = useApi(errorApiRef);
+    return <MyClassComponent {...props} errorApi={errorApi} />;
+  }
+  ```
+
+- 0f2ffc9: **BREAKING**: Removed the `ProgressProps` type. Replace imports and usages of this type with its existing shape, `{}`. The `Progress` component and its props contract are unchanged.
+- a5b3445: Added router-independent navigation and routing APIs: `RouterLink`, `AppHistoryApi` (also available as `coreApis.appHistory`), `useAppNavigate`, `useAppHref`, `useAppLocation`, `useAppSearchParams`, and `RouteResolutionApi.resolvePath` for matched routing ancestry. **BREAKING**: `useRouteRefParams` returns only parameters declared by the supplied route ref, with `undefined` for unmatched parameters, and no longer includes the splat `*`. See the [1.57 migration notes](https://backstage.io/docs/frontend-system/architecture/migrations#157) for detailed migration steps.
+
+  The stable public `/routing` entry point exposes `RoutingProvider`, `RoutingIntegration`, and `useRoutingIntegration` for router and component-library integrations. It has the same stability and compatibility guarantees as the main entry point; app history APIs, plugin navigation hooks, and route refs remain in the main entry point. `AppNavigate` describes the navigation function returned by `useAppNavigate`.
+
+- e55a4a8: **BREAKING**: Removed the deprecated `FrontendPlugin.id` property from the public interface. Use `pluginId` instead. The runtime alias is retained for compatibility with older apps.
+- 7285912: **BREAKING PRODUCERS**: `TranslationSnapshot` now requires `t` even when `ready` is false. Custom `TranslationApi` implementations must provide a translator using available messages and language fallbacks.
+- d84cf73: Removed the deprecated `DialogApi.show`, `DialogApi.showModal`, and `IconsApi.getIcon` methods. Use `DialogApi.open` with your own dialog presentation, and `IconsApi.icon` to retrieve icon elements.
+
+  The API references now use `core.dialog.v2` and `core.icons.v2`. Upgrade `@backstage/plugin-app` alongside this package, and update custom API implementations to use the new references.
+
+### Patch Changes
+
+- ca02018: API reference IDs now use plugin ID validation for each dot-separated component.
+  This accepts numeric dash groups and mixed case, including IDs such as
+  `plugin.example-2.todos`.
+- ac2de0f: Fixed a "Type instantiation is excessively deep and possibly infinite" error from `createFrontendPlugin` in plugins with many extensions, in particular with TypeScript 5.9 and later. In rare cases, the extensions in the type of a plugin may be in a different order or include extensions that were missing before.
+- d5e1d51: Deprecated `AnyApiRef` and `AnyApiFactory`. Use `ApiRef` and `ApiFactory` without type arguments instead; their new defaults match the existing aliases. The deprecated aliases remain available for compatibility.
+- d47986a: Improved type inference for deeply nested and cyclic translation messages. Required replacement values and plural counts are inferred at any depth, and count interpolation requires a numeric value.
+- 8ca78a2: Added `coreApis`, an object of core Utility API refs, with framework infrastructure APIs grouped under `coreApis.internal`: app lifecycle, OAuth requests, plugin header actions, plugin wrappers, and swappable components. The nested object is public. The deprecated Alert API is excluded in favor of Toast. The individual refs with object equivalents are deprecated in favor of their matching object members, while remaining compatible. Provider-specific authentication refs remain separate and are not deprecated.
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+- 9d0a31b: Removed an unused `use-sync-external-store` dependency, which is no longer needed now that React 18 is the minimum supported version.
+- 6928d62: Fixed swappable components losing their mounted state when their props change. The resolved component remains stable while its props update.
+- 641ac02: Added `coreExtensionData.titleTranslation` to provide a translation message selection alongside a static title. Consumers can opt in to translated titles. The selection must not require formatting values.
+- 7594fd4: Page and sub-page blueprints now accept typed translation message selections in their `title` parameter, using existing translation resources. Select a message by calling a translation ref, for example `myTranslationRef('page.title')`. TypeScript checks the key and rejects messages that require formatting values.
+
+  Resolved translations take precedence over configured titles in every language, including the default language. Titles wait for the selected language on first load and retain resolved values during later loads or failures, preserving page state.
+
+  `TranslationRef` values are now callable functions. Treat refs as opaque values rather than checking for plain objects or cloning them.
+
+- Updated dependencies
+  - @backstage/errors@1.4.0
+  - @backstage/version-bridge@1.1.0
+  - @backstage/config@1.3.11
+  - @backstage/filter-predicates@0.2.1
+
+## 0.19.0-next.2
+
+### Minor Changes
+
+- a5b3445: Added router-independent navigation and routing APIs: `RouterLink`, `AppHistoryApi` with `useAppNavigate`, `useAppHref`, `useAppLocation`, `useAppSearchParams`, and `RouteResolutionApi.resolvePath` for matched routing ancestry. **BREAKING**: `useRouteRefParams` returns only parameters declared by the supplied route ref, with `undefined` for unmatched parameters, and no longer includes the splat `*`. See the [1.57 migration notes](https://backstage.io/docs/frontend-system/architecture/migrations#157) for detailed migration steps.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/config@1.3.11-next.0
+  - @backstage/filter-predicates@0.2.1-next.0
+
+## 0.19.0-next.1
+
+### Minor Changes
+
+- d514e4d: **BREAKING**: Removed the deprecated `ExtensionFactoryMiddleware` type export. Import it from `@backstage/frontend-app-api` instead:
+
+  ```diff
+  -import type { ExtensionFactoryMiddleware } from '@backstage/frontend-plugin-api';
+  +import type { ExtensionFactoryMiddleware } from '@backstage/frontend-app-api';
+  ```
+
+  Add `@backstage/frontend-app-api` as a dependency of your app package if it is not already declared. Middleware behavior is unchanged.
+
+- 62268a9: **BREAKING**: Removed the deprecated `AnalyticsImplementationBlueprint` and `AnalyticsImplementationFactory` exports. Import them from `@backstage/plugin-app-react` instead. No changes to their usage are needed beyond updating the imports.
+- 86ff5a3: Removed the deprecated `PageTab` and `PluginOptions` types. Use `PageLayoutTab` and `CreateFrontendPluginOptions` instead.
+- dafdab8: **BREAKING**: Removed the deprecated `withApis` export. Wrap class components in a function component that uses `useApi` instead:
+
+  ```tsx
+  import { errorApiRef, useApi } from '@backstage/frontend-plugin-api';
+  import { MyClassComponent, MyClassComponentProps } from './MyClassComponent';
+
+  export function MyComponent(props: Omit<MyClassComponentProps, 'errorApi'>) {
+    const errorApi = useApi(errorApiRef);
+    return <MyClassComponent {...props} errorApi={errorApi} />;
+  }
+  ```
+
+- e55a4a8: **BREAKING**: Removed the deprecated `FrontendPlugin.id` property from the public interface. Use `pluginId` instead. The runtime alias is retained for compatibility with older apps.
+- d84cf73: Removed the deprecated `DialogApi.show`, `DialogApi.showModal`, and `IconsApi.getIcon` methods. Use `DialogApi.open` with your own dialog presentation, and `IconsApi.icon` to retrieve icon elements.
+
+  The API references now use `core.dialog.v2` and `core.icons.v2`. Upgrade `@backstage/plugin-app` alongside this package, and update custom API implementations to use the new references.
+
+## 0.18.3-next.0
+
+### Patch Changes
+
+- ac2de0f: Fixed a "Type instantiation is excessively deep and possibly infinite" error from `createFrontendPlugin` in plugins with many extensions, in particular with TypeScript 5.9 and later. In rare cases, the extensions in the type of a plugin may be in a different order or include extensions that were missing before.
+- 8ca78a2: Added `coreApis`, a namespace of core Utility API refs. The deprecated Alert API is excluded in favor of Toast. The individual refs with namespace equivalents are deprecated in favor of their `coreApis` equivalents, while remaining compatible. Provider-specific authentication refs remain separate and are not deprecated.
+
+## 0.18.2
+
+### Patch Changes
+
+- a650c4f: Added `AppLifecycleApi` and `appLifecycleApiRef`, which let you check whether the app has been finalized and subscribe to changes in its lifecycle.
+- a650c4f: The `useRouteRef` hook now resolves the route again once the app has been finalized, so that elements rendered before finalization, such as `app/root.elements` extensions, can link to pages instead of getting `undefined`.
+- Updated dependencies
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/filter-predicates@0.2.0
+
+## 0.18.2-next.1
+
+### Patch Changes
+
+- a650c4f: Added `AppLifecycleApi` and `appLifecycleApiRef`, which let you check whether the app has been finalized and subscribe to changes in its lifecycle.
+- a650c4f: The `useRouteRef` hook now resolves the route again once the app has been finalized, so that elements rendered before finalization, such as `app/root.elements` extensions, can link to pages instead of getting `undefined`.
+
+## 0.18.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/filter-predicates@0.1.6-next.0
+
+## 0.18.1
+
+### Patch Changes
+
+- 024c0ef: Updated internal type imports to avoid circular declaration chunks in package builds.
+- bd6cf43: Fixed a bug where overriding a plugin extension with `withOverrides` moved the overridden extension to the end of the plugin's extension list. This caused overridden extensions to lose their original position, for example making an overridden sub page tab move to the end of the tabs on its page. Overridden extensions now keep their original order, while extensions that don't override an existing one are appended at the end.
+- Updated dependencies
+  - @backstage/filter-predicates@0.1.5
+  - @backstage/config@1.3.9
+
+## 0.18.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/filter-predicates@0.1.5-next.1
+
+## 0.18.1-next.0
+
+### Patch Changes
+
+- 024c0ef: Updated internal type imports to avoid circular declaration chunks in package builds.
+- Updated dependencies
+  - @backstage/filter-predicates@0.1.5-next.0
+
+## 0.18.0
+
+### Minor Changes
+
+- 907793c: **BREAKING**: Removed the deprecated `config.schema` option for extensions and extension blueprints. Use the top-level `configSchema` option with Standard Schema-compatible schema values, such as Zod v4.
+
+### Patch Changes
+
+- e156f1e: Added support for using a `SubRouteRef` as the parent of another `SubRouteRef`. Child paths are combined with ancestor paths at creation, and nested sub-routes inherit parameters from their complete ancestor chain.
+
+## 0.18.0-next.0
+
+### Minor Changes
+
+- 907793c: **BREAKING**: Removed the deprecated `config.schema` option for extensions and extension blueprints. Use the top-level `configSchema` option with Standard Schema-compatible schema values, such as Zod v4.
+
 ## 0.17.3
 
 ### Patch Changes

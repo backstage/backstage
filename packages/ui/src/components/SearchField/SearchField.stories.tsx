@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { TestRouter } from '../../testUtils/TestRouter';
 import preview from '../../../../../.storybook/preview';
 import { useState } from 'react';
 import { SearchField } from './SearchField';
@@ -26,7 +27,7 @@ import { ButtonIcon } from '../ButtonIcon';
 import { RiCactusLine, RiEBike2Line } from '@remixicon/react';
 import { Button } from '../Button';
 import { PluginHeader } from '../PluginHeader';
-import { MemoryRouter } from 'react-router-dom';
+
 import { BUIProvider } from '../../provider';
 
 const meta = preview.meta({
@@ -188,11 +189,11 @@ export const StartCollapsedWithValue = meta.story({
 export const InHeader = meta.story({
   decorators: [
     Story => (
-      <MemoryRouter>
+      <TestRouter>
         <BUIProvider>
           <Story />
         </BUIProvider>
-      </MemoryRouter>
+      </TestRouter>
     ),
   ],
   render: args => (
@@ -227,11 +228,11 @@ export const StartCollapsedInHeader = meta.story({
   },
   decorators: [
     Story => (
-      <MemoryRouter>
+      <TestRouter>
         <BUIProvider>
           <Story />
         </BUIProvider>
-      </MemoryRouter>
+      </TestRouter>
     ),
   ],
   render: args => (

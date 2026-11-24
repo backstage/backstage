@@ -18,7 +18,7 @@ import { useState, useEffect } from 'react';
 import preview from '../../../../../.storybook/preview';
 import type { StoryFn } from '@storybook/react-vite';
 import { Tabs, TabList, Tab, TabPanel } from './Tabs';
-import { MemoryRouter } from 'react-router-dom';
+import { TestRouter } from '../../testUtils/TestRouter';
 import { BUIProvider } from '../../provider';
 import { Box } from '../Box';
 import { Text } from '../Text';
@@ -29,11 +29,11 @@ const meta = preview.meta({
 });
 
 const withRouter = (Story: StoryFn) => (
-  <MemoryRouter>
+  <TestRouter>
     <BUIProvider>
       <Story />
     </BUIProvider>
-  </MemoryRouter>
+  </TestRouter>
 );
 
 export const Default = meta.story({
@@ -82,7 +82,7 @@ export const WithMockedURLTab2 = meta.story({
     children: '',
   },
   render: () => (
-    <MemoryRouter initialEntries={['/tab2']}>
+    <TestRouter initialEntries={['/tab2']}>
       <BUIProvider>
         <Tabs>
           <TabList>
@@ -107,7 +107,7 @@ export const WithMockedURLTab2 = meta.story({
           </Text>
         </Box>
       </BUIProvider>
-    </MemoryRouter>
+    </TestRouter>
   ),
 });
 
@@ -116,7 +116,7 @@ export const WithMockedURLTab3 = meta.story({
     children: '',
   },
   render: () => (
-    <MemoryRouter initialEntries={['/tab3']}>
+    <TestRouter initialEntries={['/tab3']}>
       <BUIProvider>
         <Tabs>
           <TabList>
@@ -141,7 +141,7 @@ export const WithMockedURLTab3 = meta.story({
           </Text>
         </Box>
       </BUIProvider>
-    </MemoryRouter>
+    </TestRouter>
   ),
 });
 
@@ -150,7 +150,7 @@ export const WithMockedURLNoMatch = meta.story({
     children: '',
   },
   render: () => (
-    <MemoryRouter initialEntries={['/some-other-page']}>
+    <TestRouter initialEntries={['/some-other-page']}>
       <BUIProvider>
         <Tabs>
           <TabList>
@@ -179,7 +179,7 @@ export const WithMockedURLNoMatch = meta.story({
           </Text>
         </Box>
       </BUIProvider>
-    </MemoryRouter>
+    </TestRouter>
   ),
 });
 
@@ -190,7 +190,7 @@ export const ExactMatchingDefault = meta.story({
     children: '',
   },
   render: () => (
-    <MemoryRouter initialEntries={['/mentorship/events']}>
+    <TestRouter initialEntries={['/mentorship/events']}>
       <BUIProvider>
         <Tabs>
           <TabList>
@@ -219,7 +219,7 @@ export const ExactMatchingDefault = meta.story({
           </Text>
         </Box>
       </BUIProvider>
-    </MemoryRouter>
+    </TestRouter>
   ),
 });
 
@@ -228,7 +228,7 @@ export const PrefixMatchingForNestedRoutes = meta.story({
     children: '',
   },
   render: () => (
-    <MemoryRouter initialEntries={['/mentorship/events']}>
+    <TestRouter initialEntries={['/mentorship/events']}>
       <BUIProvider>
         <Tabs>
           <TabList>
@@ -261,7 +261,7 @@ export const PrefixMatchingForNestedRoutes = meta.story({
           </Text>
         </Box>
       </BUIProvider>
-    </MemoryRouter>
+    </TestRouter>
   ),
 });
 
@@ -270,7 +270,7 @@ export const PrefixMatchingDeepNesting = meta.story({
     children: '',
   },
   render: () => (
-    <MemoryRouter initialEntries={['/catalog/users/john/details']}>
+    <TestRouter initialEntries={['/catalog/users/john/details']}>
       <BUIProvider>
         <Tabs>
           <TabList>
@@ -298,7 +298,7 @@ export const PrefixMatchingDeepNesting = meta.story({
           </Text>
         </Box>
       </BUIProvider>
-    </MemoryRouter>
+    </TestRouter>
   ),
 });
 
@@ -307,7 +307,7 @@ export const MixedMatchingStrategies = meta.story({
     children: '',
   },
   render: () => (
-    <MemoryRouter initialEntries={['/dashboard/analytics/reports']}>
+    <TestRouter initialEntries={['/dashboard/analytics/reports']}>
       <BUIProvider>
         <Tabs>
           <TabList>
@@ -355,7 +355,7 @@ export const MixedMatchingStrategies = meta.story({
           </Text>
         </Box>
       </BUIProvider>
-    </MemoryRouter>
+    </TestRouter>
   ),
 });
 
@@ -364,7 +364,7 @@ export const PrefixMatchingEdgeCases = meta.story({
     children: '',
   },
   render: () => (
-    <MemoryRouter initialEntries={['/foobar']}>
+    <TestRouter initialEntries={['/foobar']}>
       <BUIProvider>
         <Tabs>
           <TabList>
@@ -399,7 +399,7 @@ export const PrefixMatchingEdgeCases = meta.story({
           </Text>
         </Box>
       </BUIProvider>
-    </MemoryRouter>
+    </TestRouter>
   ),
 });
 
@@ -408,7 +408,7 @@ export const PrefixMatchingWithSlash = meta.story({
     children: '',
   },
   render: () => (
-    <MemoryRouter initialEntries={['/foo/bar']}>
+    <TestRouter initialEntries={['/foo/bar']}>
       <BUIProvider>
         <Tabs>
           <TabList>
@@ -442,7 +442,7 @@ export const PrefixMatchingWithSlash = meta.story({
           </Text>
         </Box>
       </BUIProvider>
-    </MemoryRouter>
+    </TestRouter>
   ),
 });
 
@@ -451,7 +451,7 @@ export const RootPathMatching = meta.story({
     children: '',
   },
   render: () => (
-    <MemoryRouter initialEntries={['/']}>
+    <TestRouter initialEntries={['/']}>
       <BUIProvider>
         <Tabs>
           <TabList>
@@ -480,7 +480,7 @@ export const RootPathMatching = meta.story({
           </Text>
         </Box>
       </BUIProvider>
-    </MemoryRouter>
+    </TestRouter>
   ),
 });
 
@@ -489,7 +489,7 @@ export const HrefWithQueryParams = meta.story({
     children: '',
   },
   render: () => (
-    <MemoryRouter initialEntries={['/cost-insights/dashboard?group=bar']}>
+    <TestRouter initialEntries={['/cost-insights/dashboard?group=bar']}>
       <BUIProvider>
         <Tabs>
           <TabList>
@@ -527,7 +527,7 @@ export const HrefWithQueryParams = meta.story({
           </Text>
         </Box>
       </BUIProvider>
-    </MemoryRouter>
+    </TestRouter>
   ),
 });
 
@@ -581,7 +581,7 @@ export const AutoSelectionOfTabs = meta.story({
     children: '',
   },
   render: () => (
-    <MemoryRouter initialEntries={['/random-page']}>
+    <TestRouter initialEntries={['/random-page']}>
       <BUIProvider>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <Text style={{ fontSize: '16px', color: '#666' }}>
@@ -633,6 +633,6 @@ export const AutoSelectionOfTabs = meta.story({
           </Tabs>
         </div>
       </BUIProvider>
-    </MemoryRouter>
+    </TestRouter>
   ),
 });

@@ -9,11 +9,17 @@ This guide allows you to migrate a frontend plugin and its own components, route
 
 The main concept is that routes, components, apis are now extensions. You can use the appropriate [extension blueprints](../architecture/23-extension-blueprints.md) to migrate all of them to extensions.
 
+:::tip
+
+To have an AI coding assistant do this migration, install the `new-frontend-system-migration` skill. See [Published skills](../../ai/skills.md).
+
+:::
+
 ## Migrating the plugin
 
-:::note Note
+:::note
 
-Unless you are migrating a plugin that is only used within your own project, we recommend all plugins to keep support for the old system intact. The code added in these examples should be added to a new `src/alpha.tsx` entry point of your plugin.
+Unless you are migrating a plugin that is only used within your own project, we recommend all plugins to keep support for the old system intact. The examples below add the new plugin in a new `src/alpha.tsx` entry point. You can instead add it to the main entry point, next to the existing old-system exports.
 
 :::
 
@@ -55,7 +61,7 @@ In order to migrate the actual definition of the plugin you need to recreate the
   });
 ```
 
-The code above binds all the extensions to the plugin. _Important_: Make sure to export the plugin as default export of your package as a separate entrypoint, preferably `/alpha`, as suggested by the code snippet above. Make sure `src/alpha.tsx` is exported in your `package.json`:
+The code above binds all the extensions to the plugin. _Important_: Make sure to export the plugin as the default export of an entry point of your package, either the main entry point or a separate one such as `/alpha`, as in the code snippet above. If you use `/alpha`, make sure `src/alpha.tsx` is exported in your `package.json`:
 
 ```ts title="my-plugin/package.json"
   "exports": {
@@ -135,6 +141,42 @@ Then add the `fooPage` extension to the plugin:
     ...
   });
 ```
+
+### Pages that route with React Router
+
+Existing new frontend system pages retain implicit React Router v6 routing.
+Route parameters, relative links and nested routes continue to work without
+an immediate migration. In development, consuming this fallback logs a warning
+once per extension per app instance. Render an explicit page adapter to migrate
+that content; pages using only framework routing do not need an adapter.
+
+If the page only needs route parameters and links, switch it to `useRouteRef`, `useRouteRefParams` and `useAppHref` from `@backstage/frontend-plugin-api`. Those answer from the framework and need no router on any page. If the page genuinely drives a route tree of its own, render the matching adapter inside the lazily loaded component:
+
+```tsx
+const fooPage = PageBlueprint.make({
+  params: {
+    path: '/foo',
+    routeRef: rootRouteRef,
+    loader: () => import('./components/').then(m => <m.FooPage />),
+  },
+});
+```
+
+The adapter belongs in the lazily loaded component module. Wrap the page's existing JSX directly; only hooks that consume this router need to be in a child beneath it.
+
+```tsx title="./components/FooPage"
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
+
+export function FooPage() {
+  return (
+    <ReactRouterV6PageRouter>
+      {/* Existing page JSX and local routes go here. */}
+    </ReactRouterV6PageRouter>
+  );
+}
+```
+
+Declare it in the component that owns the page or sub-page route mount. an `EntityContentBlueprint` tab already renders inside the adapter its page declared, and a second one there drops the tab's route match. See [Choose a router for a page](./10-page-routers.md) for the other libraries and the full rules.
 
 ## Migrating Components
 

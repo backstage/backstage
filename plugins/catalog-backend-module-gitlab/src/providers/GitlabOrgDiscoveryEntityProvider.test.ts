@@ -26,6 +26,7 @@ import {
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { DefaultEventsService } from '@backstage/plugin-events-node';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { handlers } from '../__testUtils__/handlers';
 import * as mock from '../__testUtils__/mocks';
@@ -705,6 +706,66 @@ describe('GitlabOrgDiscoveryEntityProvider with events support', () => {
       added: mock.expected_single_user_entity,
       removed: [],
     });
+  });
+
+  it('should only apply user creation events for users in the configured group', async () => {
+    server.use(
+      http.get(`${mock.apiBaseUrl}/users/2`, () =>
+        HttpResponse.json(mock.all_users_response[1]),
+      ),
+      http.get(
+        `${mock.apiBaseUrl}/groups/group1/members/all/:userId`,
+        ({ params }) => {
+          const user = mock.all_self_hosted_group1_members.find(
+            member => member.id === Number(params.userId),
+          );
+          return user
+            ? HttpResponse.json(user)
+            : HttpResponse.json({ message: '404 Not found' }, { status: 404 });
+        },
+      ),
+    );
+
+    const config = new ConfigReader(
+      mock.config_org_group_restrictUsers_true_selfHosted,
+    );
+    const schedule = new PersistingTaskRunner();
+    const events = DefaultEventsService.create({ logger });
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+      events,
+    })[0];
+
+    await provider.connect(entityProviderConnection);
+
+    await events.publish(mock.user_create_event);
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'delta',
+      added: mock.expected_single_user_entity,
+      removed: [],
+    });
+
+    await events.publish({
+      topic: 'gitlab.user_create',
+      eventPayload: {
+        event_name: 'user_create',
+        created_at: '2024-02-02T10:53:09Z',
+        updated_at: '2024-02-02T10:53:09Z',
+        email: 'jane.doe@company.com',
+        name: 'Jane Doe',
+        username: 'janedoe',
+        user_id: 2,
+      },
+    });
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
   });
 
   it('should apply a delta mutation if gitlab.user_destroy event received', async () => {

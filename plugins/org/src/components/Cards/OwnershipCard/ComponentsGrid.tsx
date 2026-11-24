@@ -99,9 +99,7 @@ const EntityCountTile = ({
           className={`${classes.bold} ${isLongText && classes.smallFont}`}
           variant="h6"
         >
-          <OverflowTooltip
-            text={pluralize(rawTitle.toLocaleUpperCase('en-US'), counter)}
-          />
+          <OverflowTooltip text={pluralize(rawTitle.toUpperCase(), counter)} />
         </Typography>
       </Box>
       {type && <Typography variant="subtitle1">{kind}</Typography>}

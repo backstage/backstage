@@ -142,16 +142,6 @@ export interface Config {
     }>;
 
     /**
-     * Enables the compatibility layer for relations in returned entities that
-     * ensures that all relations objects have both `target` and `targetRef`.
-     *
-     * Enabling this option significantly increases the memory usage of the
-     * catalog, and slightly reduces performance, but may avoid breaking consumers that
-     * rely on the existence of `target` in the relations objects.
-     */
-    enableRelationsCompatibility?: boolean;
-
-    /**
      * Disables the default backstage processors.
      *
      * Enabling this option allows more complete control of which processors are included
@@ -178,11 +168,12 @@ export interface Config {
      * The strategy to use when stitching together the final entities.
      */
     stitchingStrategy?: {
-      /** @deprecated Immediate mode has been removed. This field is ignored. */
-      mode?: string;
-      /** Polling interval for tasks in seconds */
+      /** Interval between queue polls. Must be greater than zero. */
       pollingInterval?: HumanDuration | string;
-      /** How long to wait for a stitch to complete before giving up in seconds */
+      /**
+       * Lease duration before unfinished work can be reclaimed. Must be greater
+       * than zero. This does not cancel an attempt when its lease expires.
+       */
       stitchTimeout?: HumanDuration | string;
     };
 

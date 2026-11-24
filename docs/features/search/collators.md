@@ -1,7 +1,7 @@
 ---
 id: collators
 title: Collators
-description: Indexing you Backstage content with Collators
+description: Indexing your Backstage content with collators
 ---
 
 Backstage includes 2 [collators](./concepts.md#collators) out of the box for the [Catalog](#catalog) and [TechDocs](#techdocs). There's also some from the [Backstage Community](#community-collators) too!
@@ -168,12 +168,17 @@ export const exampleCustomCatalogFiltering = createBackendModule({
 
 ## Community Collators
 
-Here are some of the known Search Collators available in from the Backstage Community:
+Here are some of the known search collators available from the Backstage Community:
 
-- [`@backstage-community/plugin-search-backend-module-explore`](https://github.com/backstage/community-plugins/tree/main/workspaces/explore/plugins/search-backend-module-explore): will index content from the [Explore plugin](https://github.com/backstage/community-plugins/tree/main/workspaces/explore/plugins/explore).
-- [`@backstage/plugin-search-backend-module-stack-overflow-collator`](https://github.com/backstage/backstage/tree/master/plugins/search-backend-module-stack-overflow-collator): will index content from Stack Overflow.
-- [`@backstage-community/search-backend-module-adr`](https://github.com/backstage/community-plugins/tree/main/workspaces/adr/plugins/search-backend-module-adr): will index content from the [ADR plugin](https://github.com/backstage/community-plugins/tree/main/workspaces/adr/plugins/adr).
+- [`@backstage-community/plugin-search-backend-module-explore`](https://github.com/backstage/community-plugins/tree/main/workspaces/explore/plugins/search-backend-module-explore): indexes content from the [Explore plugin](https://github.com/backstage/community-plugins/tree/main/workspaces/explore/plugins/explore).
+- [`@backstage/plugin-search-backend-module-stack-overflow-collator`](https://github.com/backstage/backstage/tree/master/plugins/search-backend-module-stack-overflow-collator): indexes content from Stack Overflow.
+- [`@backstage-community/search-backend-module-adr`](https://github.com/backstage/community-plugins/tree/main/workspaces/adr/plugins/search-backend-module-adr): indexes content from the [ADR plugin](https://github.com/backstage/community-plugins/tree/main/workspaces/adr/plugins/adr).
+- [`@backstage-community/plugin-search-backend-module-announcements`](https://github.com/backstage/community-plugins/tree/main/workspaces/announcements/plugins/search-backend-module-announcements): indexes content from the [Announcements plugin](https://github.com/backstage/community-plugins/tree/main/workspaces/announcements/plugins/announcements).
+- [`@backstage-community/plugin-search-backend-module-azure-devops`](https://github.com/backstage/community-plugins/tree/main/workspaces/azure-devops/plugins/search-backend-module-azure-devops): indexes wiki documents from Azure DevOps.
+- [`@backstage-community/plugin-search-backend-module-confluence-collator`](https://github.com/backstage/community-plugins/tree/main/workspaces/confluence/plugins/search-backend-module-confluence-collator): indexes content from Confluence.
+- [`@backstage-community/plugin-search-backend-module-github-discussions`](https://github.com/backstage/community-plugins/tree/main/workspaces/github/plugins/search-backend-module-github-discussions): indexes content from GitHub Discussions.
+- [`@backstage-community/plugin-search-backend-module-report-portal`](https://github.com/backstage/community-plugins/tree/main/workspaces/report-portal/plugins/search-backend-module-report-portal): indexes content from ReportPortal.
 
-## Custom Collators
+## Custom collators
 
-To create your own collators/decorators modules, please use the [searchModuleCatalogCollator](https://github.com/backstage/backstage/blob/d7f955f300893f50c4882ea8f5c09aa42dfaacfd/plugins/search-backend-module-catalog/src/alpha.ts#L49) as an example, we recommend that modules are separated by plugin packages (e.g. `search-backend-module-<plugin-id>`). You can also find the available search engines and collator/decorator modules documentation in the Alpha API reports.
+To learn how to create your own collator, see the [Writing Custom Collators](./custom-collators.md) guide.

@@ -1,13 +1,23 @@
+// This file is not used by "docusaurus start/build" commands.
+// It is here to improve your IDE experience (type-checking, autocompletion...),
+// and can also run the package.json "typecheck" script manually.
 {
   "extends": "@docusaurus/tsconfig",
   "compilerOptions": {
-    "baseUrl": ".",
     "allowJs": true,
+    // Unset the deprecated baseUrl from @docusaurus/tsconfig 3.x and resolve
+    // @site/* relative to this file instead
+    "baseUrl": null,
+    "paths": {
+      "@site/*": ["./*"]
+    },
+    "strict": true,
     "types": [
-      "node",
       "@docusaurus/module-type-aliases",
       "@docusaurus/theme-classic",
-      "@types/webpack-env"
+      "docusaurus-plugin-sass",
+      "node",
+      "webpack-env"
     ]
   },
   "exclude": ["node_modules", "build", ".docusaurus", "static", "blog"]

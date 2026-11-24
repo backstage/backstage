@@ -95,7 +95,7 @@ function RenderOptionLabel(props: {
   mode: 'owners-only' | 'all';
 }) {
   const classes = useStyles();
-  const isGroup = props.entity.kind.toLocaleLowerCase('en-US') === 'group';
+  const isGroup = props.entity.kind.toLowerCase() === 'group';
   // owners-only stubs lack title/displayName; pass ref string so the presentation API fetches the full entity.
   const entityOrRef: Entity | string =
     props.mode === 'owners-only'
@@ -154,8 +154,12 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
     [ownersParameter],
   );
 
+  // Query parameters may contain humanized refs (e.g. `guests` rather than
+  // `group:default/guests`), so they are normalized before being stored.
   const [selectedOwners, setSelectedOwners] = useState<string[]>(
-    queryParamOwners.length ? queryParamOwners : filters.owners?.values ?? [],
+    queryParamOwners.length
+      ? new EntityOwnerFilter(queryParamOwners).values
+      : filters.owners?.values ?? [],
   );
 
   const [{ value, loading }, handleFetch, cache] = useFetchEntities({
@@ -163,7 +167,7 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
     initialSelectedOwnersRefs: selectedOwners,
   });
   useDebouncedEffect(
-    () => handleFetch({ text: text.toLocaleLowerCase('en-US') }),
+    () => handleFetch({ text: text.toLowerCase() }),
     [text, handleFetch],
     250,
   );
@@ -187,11 +191,7 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
     });
   }, [selectedOwners, updateFilters]);
 
-  if (
-    ['user', 'group'].includes(
-      filters.kind?.value.toLocaleLowerCase('en-US') || '',
-    )
-  ) {
+  if (['user', 'group'].includes(filters.kind?.value.toLowerCase() || '')) {
     return null;
   }
 

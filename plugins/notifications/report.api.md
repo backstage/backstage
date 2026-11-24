@@ -198,6 +198,7 @@ export type NotificationsTableProps = Pick<
   isLoading?: boolean;
   isUnread: boolean;
   notifications?: Notification_2[];
+  highlightedNotificationId?: string;
   onUpdate: () => void;
   setContainsText: (search: string) => void;
   pageSize: number;
@@ -266,6 +267,13 @@ export const notificationsTranslationRef: TranslationRef<
     readonly 'notificationsPage.tableTitle.unread_other': 'Unread notifications ({{count}})';
     readonly 'notificationsPage.tableTitle.read_one': 'Read notifications ({{count}})';
     readonly 'notificationsPage.tableTitle.read_other': 'Read notifications ({{count}})';
+    readonly 'unreadCard.emptyState': 'All caught up!';
+    readonly 'unreadCard.title_one': 'Last unread notifications ({{count}})';
+    readonly 'unreadCard.title_other': 'Last unread notifications ({{count}})';
+    readonly 'unreadCard.viewAll': 'View All';
+    readonly 'unreadCard.columnNotification': 'Notification';
+    readonly 'unreadCard.columnActions': 'Actions';
+    readonly 'unreadCard.resultsCount': '{{displayed}} results out of {{total}}';
   }
 >;
 

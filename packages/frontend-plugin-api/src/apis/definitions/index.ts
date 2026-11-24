@@ -34,6 +34,7 @@ export * from './auth';
 
 export * from './AlertApi';
 export * from './AppLanguageApi';
+export * from './AppLifecycleApi';
 export * from './AppThemeApi';
 export * from './SwappableComponentsApi';
 export * from './ConfigApi';
@@ -49,6 +50,13 @@ export * from './RouteResolutionApi';
 export * from './StorageApi';
 export * from './AnalyticsApi';
 export * from './ToastApi';
-export * from './TranslationApi';
+export {
+  type TranslationApi,
+  type TranslationFunction,
+  type TranslationSnapshot,
+  translationApiRef,
+} from './TranslationApi';
 export * from './PluginHeaderActionsApi';
 export * from './PluginWrapperApi';
+
+export { coreApis, type CoreApis, type InternalCoreApis } from './coreApis';

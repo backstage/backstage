@@ -10,7 +10,7 @@ Components inside Backstage. By default, it has the ability to load skeletons of
 code, template in some variables, and then publish the template to some
 locations like GitHub or GitLab.
 
-:::warning Important
+:::warning[Important]
 
 When creating custom scaffolder actions, **use camelCase for action IDs** instead of kebab-case. Action IDs with dashes (like `fetch-component-id`) will cause template expressions like `${{ steps.fetch-component-id.output.componentId }}` to return `NaN` because the dashes are evaluated as subtraction operators in JavaScript expressions.
 

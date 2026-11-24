@@ -19,6 +19,9 @@ import {
   CatalogModel,
   CatalogModelKind,
   CatalogModelRelation,
+  compileCatalogModel,
+  createCatalogModelLayer,
+  defaultCatalogEntityModel,
 } from '@backstage/catalog-model/alpha';
 import { ModelProcessor } from './ModelProcessor';
 import { ModelHolder } from '../model/ModelHolder';
@@ -346,6 +349,47 @@ describe('ModelProcessor', () => {
       );
     });
 
+    it('does not emit an inverse for an undeclared kind pair', async () => {
+      const model = compileCatalogModel([defaultCatalogEntityModel]);
+      const processor = new ModelProcessor(
+        ModelHolder.modelPassthroughForTest(model),
+      );
+      const emit = jest.fn();
+      const entity = createEntity({
+        type: 'service',
+        lifecycle: 'production',
+        owner: 'group:default/my-team',
+        system: 'domain:default/not-a-system',
+      });
+
+      await processor.postProcessEntity(entity, location, emit);
+
+      expect(emit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          relation: expect.objectContaining({
+            type: 'partOf',
+            target: {
+              kind: 'domain',
+              namespace: 'default',
+              name: 'not-a-system',
+            },
+          }),
+        }),
+      );
+      expect(emit).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          relation: expect.objectContaining({
+            type: 'hasPart',
+            source: {
+              kind: 'domain',
+              namespace: 'default',
+              name: 'not-a-system',
+            },
+          }),
+        }),
+      );
+    });
+
     it('skips both forward and reverse when target kind is not in allowedKinds', async () => {
       const processor = new ModelProcessor(createModel());
       const emit = jest.fn();
@@ -399,55 +443,80 @@ describe('ModelProcessor', () => {
       );
     });
 
-    it('uses defaultNamespace inherit to pick the entity namespace', async () => {
-      const processor = new ModelProcessor(createModel());
-      const emit = jest.fn();
-      const entity = createEntity({
-        type: 'service',
-        lifecycle: 'production',
-        owner: 'my-team',
-      });
-      entity.metadata.namespace = 'custom-ns';
+    it('resolves relation namespaces from model defaults and explicit references', async () => {
+      for (const [defaultNamespace, shorthandNamespace] of [
+        [undefined, 'custom-ns'],
+        ['inherit', 'custom-ns'],
+        ['default', 'default'],
+      ] as const) {
+        const layer = createCatalogModelLayer({
+          layerId: 'test/owner-namespace',
+          builder: builder => {
+            builder.updateKind({
+              names: { kind: 'Component' },
+              versions: [
+                {
+                  name: 'v1alpha1',
+                  relationFields: [
+                    {
+                      selector: { path: 'spec.owner' },
+                      relation: 'ownedBy',
+                      defaultKind: 'Group',
+                      defaultNamespace,
+                    },
+                  ],
+                },
+              ],
+            });
+          },
+        });
+        const processor = new ModelProcessor(
+          ModelHolder.modelPassthroughForTest(
+            compileCatalogModel([defaultCatalogEntityModel, layer]),
+          ),
+        );
 
-      await processor.postProcessEntity(entity, location, emit);
+        for (const [owner, entityNamespace, targetNamespace, targetKind] of [
+          ['my-team', 'custom-ns', shorthandNamespace, 'Group'],
+          ['group:other-ns/my-team', 'custom-ns', 'other-ns', 'group'],
+          ['my-team', undefined, 'default', 'Group'],
+        ] as const) {
+          const entity = createEntity({
+            type: 'service',
+            lifecycle: 'production',
+            owner,
+          });
+          entity.metadata.namespace = entityNamespace;
+          const emit = jest.fn();
 
-      expect(emit).toHaveBeenCalledWith(
-        expect.objectContaining({
-          type: 'relation',
-          relation: expect.objectContaining({
-            type: 'ownedBy',
-            target: { kind: 'Group', namespace: 'custom-ns', name: 'my-team' },
-          }),
-        }),
-      );
-    });
+          await processor.postProcessEntity(entity, location, emit);
 
-    it('uses default namespace when defaultNamespace is not inherit', async () => {
-      const processor = new ModelProcessor(createModel());
-      const emit = jest.fn();
-      const entity = createEntity({
-        type: 'service',
-        lifecycle: 'production',
-        owner: 'my-team',
-        dependsOn: ['service-a'],
-      });
-      entity.metadata.namespace = 'custom-ns';
-
-      await processor.postProcessEntity(entity, location, emit);
-
-      expect(emit).toHaveBeenCalledWith(
-        expect.objectContaining({
-          type: 'relation',
-          relation: expect.objectContaining({
-            type: 'dependsOn',
-            target: {
-              kind: 'Component',
-              namespace: 'default',
-              name: 'service-a',
-            },
-          }),
-        }),
-      );
+          const source = {
+            kind: 'Component',
+            namespace: entityNamespace ?? 'default',
+            name: 'my-component',
+          };
+          const target = {
+            kind: targetKind,
+            namespace: targetNamespace,
+            name: 'my-team',
+          };
+          expect(emit.mock.calls).toEqual([
+            [
+              {
+                type: 'relation',
+                relation: { source, type: 'ownedBy', target },
+              },
+            ],
+            [
+              {
+                type: 'relation',
+                relation: { source: target, type: 'ownerOf', target: source },
+              },
+            ],
+          ]);
+        }
+      }
     });
 
     it('handles entities with no spec gracefully', async () => {

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { BUINavigationOptions } from '../../provider/BUINavigation';
 import type { Breakpoint } from '../..';
 import type { ReactElement, ReactNode } from 'react';
 import type {
@@ -302,8 +303,13 @@ export type SelectItemOwnProps = {
 
 /** @public */
 export type SelectItemProps<T extends object = object> = SelectItemOwnProps &
-  Omit<ListBoxItemProps<T>, keyof SelectItemOwnProps | 'textValue'> & {
+  Omit<
+    ListBoxItemProps<T>,
+    keyof SelectItemOwnProps | 'render' | 'textValue' | 'routerOptions'
+  > & {
     textValue: string;
+    /** Options passed to the router configured on BUIProvider. */
+    routerOptions?: BUINavigationOptions;
   };
 
 /** @public */

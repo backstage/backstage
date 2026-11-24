@@ -5,7 +5,7 @@ description: Choosing and configuring your search engine for Backstage
 ---
 
 Backstage supports 3 search engines by default, an in-memory engine called [Lunr](#lunr), [Postgres](#postgres)
-and [Elasticsearch](#elasticsearch).
+and [Elasticsearch/OpenSearch](#elasticsearch-and-opensearch).
 
 ## Lunr
 
@@ -31,7 +31,7 @@ backend.add(import('@backstage/plugin-search-backend'));
 backend.start();
 ```
 
-:::note Note
+:::note
 
 Lunr is appropriate as a zero-config search engine when developing
 other parts of Backstage locally, however its use is highly discouraged when
@@ -102,11 +102,24 @@ search:
 
 The Postgres documentation on [Highlighting Results](https://www.postgresql.org/docs/current/textsearch-controls.html#TEXTSEARCH-HEADLINE) has more details.
 
-## Elasticsearch
+## Elasticsearch and OpenSearch
 
-Backstage supports Elasticsearch (and OpenSearch) search engine connections,
+Backstage supports Elasticsearch and OpenSearch search engine connections,
 indexing and querying out of the box. Available configuration options enable
 usage of either AWS or Elastic.co hosted solutions, or a custom self-hosted solution.
+
+### Supported versions
+
+| Search Engine | Supported Versions |
+| ------------- | ------------------ |
+| Elasticsearch | >= 8.19            |
+| OpenSearch    | 1.x, 2.x           |
+
+:::note
+Elasticsearch 7.x is no longer supported. See the [v1.55.0 release notes](../../releases/v1.55.0.md#breaking-elasticsearch-8-upgrade) for migration details.
+:::
+
+### Setup
 
 Similarly to Postgres above, Elasticsearch can be set up as follows.
 
@@ -137,10 +150,8 @@ Elasticsearch needs some additional configuration before it is ready to use
 within your instance. The configuration options are documented in the
 [configuration schema definition file.](https://github.com/backstage/backstage/blob/master/plugins/search-backend-module-elasticsearch/config.d.ts)
 
-The underlying functionality uses either the official Elasticsearch client
-version 7.x (meaning that Elasticsearch version 7 is the only one confirmed to
-be supported), or the OpenSearch client, when the `aws` or `opensearch` provider
-is configured.
+When the `aws` or `opensearch` provider is configured, the OpenSearch client is
+used instead of the Elasticsearch client.
 
 ### Example configurations
 
@@ -276,6 +287,21 @@ search:
 
 After applying this setting, an index name would look like this: `custom-prefix-software-catalog-index__20250219`
 
+### Elasticsearch index retention
+
+Each indexing run writes documents to a fresh index and then moves the search
+alias for that document type to it. To make sure searches that are already
+running can finish, the indexer keeps the previous index around for one more
+run:
+
+- The current and previous index are retained per document type, so in-flight
+  searches against the previous index can complete.
+- The previous index is deleted after the next successful indexing run for that
+  document type.
+- Your cluster's storage and shard capacity should allow for two indices per
+  document type between runs, and temporarily three while an indexing run is in
+  progress.
+
 ### Elasticsearch query config
 
 By default the default settings for the Elasticsearch queries is used. If you need to tweak the fuzziness of the query results you can do this with 2 parameters, `fuzziness` and `prefixLength`.
@@ -348,7 +374,7 @@ backend.start();
 
 The `getAuthHeaders` method is called before each request, allowing for just-in-time token retrieval and automatic rotation. When an auth provider is configured, it takes precedence over any static authentication in `app-config.yaml`.
 
-:::note Note
+:::note
 
 Custom authentication is supported for the `elastic`, `opensearch`, and default providers. The `aws` provider uses AWS SigV4 request signing and does not support custom auth providers.
 

@@ -23,37 +23,43 @@ import { GetSubscriptionEvents200Response } from '../models/GetSubscriptionEvent
 import { PostEventRequest } from '../models/PostEventRequest.model';
 import { PutSubscriptionRequest } from '../models/PutSubscriptionRequest.model';
 
+
 /**
- * @public
- */
+  * @public
+  */
 export type GetSubscriptionEvents = {
-  path: {
-    subscriptionId: string;
-  };
-  response: GetSubscriptionEvents200Response | void | Error;
-};
+    path: {
+            subscriptionId: string,
+    },
+    response:  GetSubscriptionEvents200Response  |   void  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type PostEvent = {
-  body: PostEventRequest;
-  response: void | void | Error;
-};
+        body: PostEventRequest,
+    response:  void  |   void  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type PutSubscription = {
-  path: {
-    subscriptionId: string;
-  };
-  body: PutSubscriptionRequest;
-  response: void | Error;
-};
+    path: {
+            subscriptionId: string,
+    },
+        body: PutSubscriptionRequest,
+    response:  void  |   Error  
+}
 
 export type EndpointMap = {
-  '#get|/bus/v1/subscriptions/{subscriptionId}/events': GetSubscriptionEvents;
+    
+    '#get|/bus/v1/subscriptions/{subscriptionId}/events': GetSubscriptionEvents,
+    
+    
+    '#post|/bus/v1/events': PostEvent,
+    
+    
+    '#put|/bus/v1/subscriptions/{subscriptionId}': PutSubscription,
+    
+}
 
-  '#post|/bus/v1/events': PostEvent;
-
-  '#put|/bus/v1/subscriptions/{subscriptionId}': PutSubscription;
-};

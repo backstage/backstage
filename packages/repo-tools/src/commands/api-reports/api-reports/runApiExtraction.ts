@@ -32,10 +32,8 @@ import {
 } from 'node:path';
 import { getPackageExportDetails } from '../../../lib/getPackageExportDetails';
 import { targetPaths } from '@backstage/cli-common';
-import { logApiReportInstructions } from '../common';
+import { logApiReportInstructions, logReportDiff } from '../common';
 import { patchApiReportGeneration } from './patchApiReportGeneration';
-
-const tmpDir = targetPaths.resolveRoot('./node_modules/.cache/api-extractor');
 
 export async function countApiReportWarnings(reportPath: string) {
   try {
@@ -295,20 +293,18 @@ export async function runApiExtraction({
         showVerboseMessages: false,
         showDiagnostics: false,
         messageCallback(message) {
-          if (message.text.includes('The API report file is missing')) {
-            shouldLogInstructions = true;
-          }
-
           // Detect messages like the following being output by the generator:
           // Warning: You have changed the API signature for this project. Please copy the file "/home/runner/work/backstage/backstage/node_modules/.cache/api-extractor/backend-test-utils/report.api.md" to "report.api.md", or perform a local build (which does this automatically). See the Git repo documentation for more info.
+          // The same instruction follows "The API report file is missing." for new reports.
           if (
+            message.text.includes('The API report file is missing') ||
             message.text.includes(
               'You have changed the API signature for this project.',
             )
           ) {
             shouldLogInstructions = true;
             const match = message.text.match(
-              /Please copy the file "(.*)" to "report\.api\.md"/,
+              /Please copy the file "(.*)" to "[^"]*\.api\.md"/,
             );
             if (match) {
               conflictingFile = match[1];
@@ -358,17 +354,20 @@ export async function runApiExtraction({
           logApiReportInstructions();
 
           if (conflictingFile) {
-            console.log('');
-            console.log(
-              `The conflicting file is ${relativePath(
-                tmpDir,
-                conflictingFile,
-              )}, with the following content:`,
+            const existing = await fs
+              .readFile(extractorConfig.reportFilePath, 'utf8')
+              .catch(error => {
+                if (error.code === 'ENOENT') {
+                  return undefined;
+                }
+                throw error;
+              });
+            const expected = await fs.readFile(conflictingFile, 'utf8');
+            logReportDiff(
+              relativePath(targetPaths.rootDir, extractorConfig.reportFilePath),
+              existing,
+              expected,
             );
-            console.log('');
-
-            const content = await fs.readFile(conflictingFile, 'utf8');
-            console.log(content);
 
             logApiReportInstructions();
           }

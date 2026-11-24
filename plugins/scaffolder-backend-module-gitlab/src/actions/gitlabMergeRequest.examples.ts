@@ -139,4 +139,44 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description:
+      'Create a merge request that auto-merges when the pipeline succeeds',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'createMergeRequest',
+          action: 'publish:gitlab:merge-request',
+          name: 'Create a Merge Request',
+          input: {
+            repoUrl: 'gitlab.com?repo=repo&owner=owner',
+            title: 'Create my new MR',
+            branchName: 'new-mr',
+            description: 'MR description',
+            autoMerge: true,
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description: 'Create a merge request that squashes commits when merged',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'createMergeRequest',
+          action: 'publish:gitlab:merge-request',
+          name: 'Create a Merge Request',
+          input: {
+            repoUrl: 'gitlab.com?repo=repo&owner=owner',
+            title: 'Create my new MR',
+            description: 'This MR is really good',
+            sourcePath: './path/to/my/changes',
+            branchName: 'new-mr',
+            squash: true,
+          },
+        },
+      ],
+    }),
+  },
 ];

@@ -22,6 +22,7 @@ export type {
   GeneratorBuilder,
   GeneratorRunOptions,
   SupportedGeneratorKey,
+  ContainerRunnerPullOptions,
   TechDocsContainerRunner,
 } from './types';
 import { getMkdocsYml } from './helpers';

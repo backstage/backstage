@@ -1,5 +1,175 @@
 # @backstage/backend-plugin-api
 
+## 1.12.0
+
+### Minor Changes
+
+- a5337d0: The `coreServices` export is now a frozen plain object instead of a TypeScript namespace, and its type is described by the new `CoreServices` interface. Usage is unchanged, and every service reference keeps its existing type. The object can no longer be modified at runtime.
+- 250e4c3: Add WebSocket upgrade routes to the HTTP router services. Routes require token authentication by default. The `unauthenticated` override leaves authentication to the handler. Cookie authentication is not supported. Browser clients can pass bearer tokens through the WebSocket protocol header.
+
+  ```ts
+  httpRouter.addWebSocketHandler({
+    path: '/events',
+    handler({ request, socket, head }) {
+      webSocketServer.handleUpgrade(request, socket, head, connection => {
+        webSocketServer.emit('connection', connection, request);
+      });
+    },
+  });
+  ```
+
+  **BREAKING PRODUCERS**: Custom implementations of `HttpRouterService` and `RootHttpRouterService` must implement `addWebSocketHandler`.
+
+- 6a0de59: Added support for passing a file URL string, such as `import.meta.url`, to `resolvePackagePath` to resolve assets relative to the containing package without specifying its name. The nearest ancestor directory containing `package.json` is used as the package root.
+
+### Patch Changes
+
+- 2b61a53: Fixed detection of PostgreSQL unique constraint violations when the database returns localized error messages. Catalog ingestion can now fall back to individual entity updates when a provider delivers duplicate entity references in the same batch.
+- Updated dependencies
+  - @backstage/errors@1.4.0
+  - @backstage/plugin-auth-node@0.7.8
+  - @backstage/cli-common@0.3.3
+  - @backstage/config@1.3.11
+  - @backstage/connections@0.4.2
+  - @backstage/plugin-permission-common@0.9.13
+  - @backstage/plugin-permission-node@0.11.6
+
+## 1.12.0-next.1
+
+### Minor Changes
+
+- a5337d0: The `coreServices` export is now a frozen plain object instead of a TypeScript namespace, and its type is described by the new `CoreServices` interface. Usage is unchanged, and every service reference keeps its existing type. The object can no longer be modified at runtime.
+- 250e4c3: Add WebSocket upgrade routes to the HTTP router services. Routes require token authentication by default. The `unauthenticated` override leaves authentication to the handler. Cookie authentication is not supported. Browser clients can pass bearer tokens through the WebSocket protocol header.
+
+  ```ts
+  httpRouter.addWebSocketHandler({
+    path: '/events',
+    handler({ request, socket, head }) {
+      webSocketServer.handleUpgrade(request, socket, head, connection => {
+        webSocketServer.emit('connection', connection, request);
+      });
+    },
+  });
+  ```
+
+  **BREAKING PRODUCERS**: Custom implementations of `HttpRouterService` and `RootHttpRouterService` must implement `addWebSocketHandler`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/plugin-auth-node@0.7.8-next.2
+  - @backstage/plugin-permission-node@0.11.6-next.1
+  - @backstage/cli-common@0.3.3-next.0
+  - @backstage/config@1.3.11-next.0
+  - @backstage/connections@0.4.2-next.0
+  - @backstage/plugin-permission-common@0.9.13-next.0
+
+## 1.11.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.8-next.0
+  - @backstage/plugin-permission-node@0.11.6-next.0
+
+## 1.11.0
+
+### Minor Changes
+
+- e956084: **BREAKING PRODUCERS**: Added an instance ID to the root instance metadata service. Custom implementations and mocks must now provide a globally unique ID that remains stable for the lifetime of the running backend instance.
+- f6054ac: Added experimental `declareConnection` and `connectionsServiceRef` exports to `@backstage/backend-plugin-api/alpha`. Plugins and modules can declare connection dependencies and request the connections service without importing private packages.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/connections@0.4.1
+  - @backstage/plugin-auth-node@0.7.7
+  - @backstage/cli-common@0.3.2
+  - @backstage/plugin-permission-common@0.9.12
+  - @backstage/plugin-permission-node@0.11.5
+
+## 1.11.0-next.2
+
+### Minor Changes
+
+- f6054ac: Added experimental `declareConnection` and `connectionsServiceRef` exports to `@backstage/backend-plugin-api/alpha`. Plugins and modules can declare connection dependencies and request the connections service without importing private packages.
+
+## 1.11.0-next.1
+
+### Minor Changes
+
+- e956084: **BREAKING PRODUCERS**: Added an instance ID to the root instance metadata service. Custom implementations and mocks must now provide a globally unique ID that remains stable for the lifetime of the running backend instance.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.7-next.1
+  - @backstage/plugin-permission-node@0.11.5-next.1
+
+## 1.10.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/plugin-auth-node@0.7.7-next.0
+  - @backstage/plugin-permission-common@0.9.12-next.0
+  - @backstage/plugin-permission-node@0.11.5-next.0
+  - @backstage/cli-common@0.3.2-next.0
+
+## 1.10.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.3.1
+  - @backstage/plugin-auth-node@0.7.6
+  - @backstage/config@1.3.9
+  - @backstage/plugin-permission-node@0.11.4
+  - @backstage/plugin-permission-common@0.9.11
+
+## 1.10.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/plugin-auth-node@0.7.5-next.1
+  - @backstage/plugin-permission-common@0.9.11-next.0
+  - @backstage/plugin-permission-node@0.11.4-next.1
+
+## 1.10.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.5-next.0
+  - @backstage/plugin-permission-node@0.11.4-next.0
+
+## 1.10.0
+
+### Minor Changes
+
+- 74d8cbf: Added `coreServices.rootSystemMetadata`, a new stable public service for reading metadata about the running Backstage system, including a list of installed plugins. Previously only available as an alpha API, it is now part of the standard `coreServices` namespace.
+
+### Patch Changes
+
+- b1b6c80: Documented the default destructive and read-only action attribute values.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.4
+  - @backstage/plugin-permission-common@0.9.10
+  - @backstage/plugin-permission-node@0.11.3
+
+## 1.10.0-next.1
+
+### Patch Changes
+
+- b1b6c80: Documented the default destructive and read-only action attribute values.
+
 ## 1.10.0-next.0
 
 ### Minor Changes

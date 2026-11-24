@@ -101,7 +101,7 @@ export class DefaultGithubCredentialsProvider
       const connection = await this.#connections
         .find({
           type: 'github',
-          url: opts.url,
+          query: { url: opts.url },
           authMethods: ['app', 'token', 'none'],
         })
         .catch(error => {
@@ -112,11 +112,12 @@ export class DefaultGithubCredentialsProvider
         });
 
       const { auth } = connection;
+      const host = new URL(connection.baseUrl).host;
 
       // Adapt the connection schema to the existing provider configuration so
       // credential creation and token caching stay in one implementation.
       const config: GithubIntegrationConfig = {
-        host: connection.host,
+        host,
         apiBaseUrl: connection.apiBaseUrl,
         rawBaseUrl: connection.rawBaseUrl,
       };
@@ -135,9 +136,7 @@ export class DefaultGithubCredentialsProvider
           );
         }
         const normalizedOrgs = auth.orgs?.length
-          ? Array.from(
-              new Set(auth.orgs.map(org => org.toLocaleLowerCase('en-US'))),
-            ).sort()
+          ? Array.from(new Set(auth.orgs.map(org => org.toLowerCase()))).sort()
           : undefined;
         config.apps = [
           {
@@ -150,13 +149,13 @@ export class DefaultGithubCredentialsProvider
             allowedInstallationOwners: normalizedOrgs,
           },
         ];
-        providerKey = `${connection.host}:app:${appId}:${JSON.stringify(
+        providerKey = `${host}:app:${appId}:${JSON.stringify(
           normalizedOrgs ?? [],
         )}:${String(auth.publicAccess ?? false)}`;
       } else if (auth.method === 'token') {
         config.token = auth.token;
       } else {
-        providerKey = `${connection.host}:none`;
+        providerKey = `${host}:none`;
       }
 
       let provider = providerKey ? this.providers.get(providerKey) : undefined;

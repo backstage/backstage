@@ -165,16 +165,15 @@ function resolveIcon(
     return undefined;
   }
   if (typeof icon === 'string') {
-    const Icon = iconsApi.getIcon(icon);
-    if (Icon) {
-      return <Icon />;
-    }
-    return undefined;
+    return iconsApi.icon(icon);
   }
   return icon;
 }
 
-const Tab = forwardRef(function Tab(props: EntityTabsGroupProps, ref: any) {
+const Tab = forwardRef(function EntityTabsGroupTab(
+  props: EntityTabsGroupProps,
+  ref: any,
+) {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const iconsApi = useApi(iconsApiRef);
 

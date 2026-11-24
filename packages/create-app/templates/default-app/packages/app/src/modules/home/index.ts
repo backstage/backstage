@@ -1,0 +1,1 @@
+export { homeModule } from './homeModule';

@@ -14,21 +14,61 @@
  * limitations under the License.
  */
 
-import { AuthenticationError } from '@backstage/errors';
 import {
   createRemoteJWKSet,
-  decodeJwt,
-  decodeProtectedHeader,
+  errors,
   FlattenedJWSInput,
+  GetKeyFunction,
   JWSHeaderParameters,
 } from 'jose';
-import { GetKeyFunction } from 'jose';
 
-const CLOCK_MARGIN_S = 10;
+const FORCED_RELOAD_LIMIT = 10;
+const FORCED_RELOAD_WINDOW_MS = 60_000;
+const KEY_STORE_CACHE_LIMIT = 100;
+
+type RemoteJWKSet = ReturnType<typeof createRemoteJWKSet>;
+
+class JwksKeyStore {
+  readonly #resolver: RemoteJWKSet;
+  readonly #tryUseForcedReload: () => boolean;
+
+  constructor(endpoint: URL, tryUseForcedReload: () => boolean) {
+    this.#resolver = createRemoteJWKSet(endpoint);
+    this.#tryUseForcedReload = tryUseForcedReload;
+  }
+
+  getKey: GetKeyFunction<JWSHeaderParameters, FlattenedJWSInput> = async (
+    protectedHeader,
+    token,
+  ) => {
+    const coolingDown = this.#resolver.coolingDown;
+
+    try {
+      return await this.#resolver(protectedHeader, token);
+    } catch (error) {
+      if (!(error instanceof errors.JWKSNoMatchingKey)) {
+        throw error;
+      }
+
+      if (!coolingDown || !(await this.#reload())) {
+        throw error;
+      }
+      return this.#resolver(protectedHeader, token);
+    }
+  };
+
+  async #reload(): Promise<boolean> {
+    if (!this.#resolver.reloading && !this.#tryUseForcedReload()) {
+      return false;
+    }
+    await this.#resolver.reload();
+    return true;
+  }
+}
 
 export class JwksClient {
-  #keyStore?: GetKeyFunction<JWSHeaderParameters, FlattenedJWSInput>;
-  #keyStoreUpdated: number = 0;
+  #keyStores = new Map<string, JwksKeyStore>();
+  #forcedReloads: number[] = [];
 
   private readonly getEndpoint: () => Promise<URL>;
 
@@ -37,43 +77,42 @@ export class JwksClient {
   }
 
   get getKey() {
-    if (!this.#keyStore) {
-      throw new AuthenticationError(
-        'refreshKeyStore must be called before jwksClient.getKey',
-      );
-    }
-    return this.#keyStore;
+    return this.#getKey;
   }
 
-  /**
-   * If the last keystore refresh is stale, update the keystore URL to the latest
-   */
-  async refreshKeyStore(rawJwtToken: string): Promise<void> {
-    const payload = await decodeJwt(rawJwtToken);
-    const header = await decodeProtectedHeader(rawJwtToken);
+  #getKey: GetKeyFunction<JWSHeaderParameters, FlattenedJWSInput> = async (
+    protectedHeader,
+    token,
+  ) => {
+    const keyStore = await this.#getKeyStore();
+    return keyStore.getKey(protectedHeader, token);
+  };
 
-    // Refresh public keys if needed
-    let keyStoreHasKey;
-    try {
-      if (this.#keyStore) {
-        // Check if the key is present in the keystore
-        const [_, rawPayload, rawSignature] = rawJwtToken.split('.');
-        keyStoreHasKey = await this.#keyStore(header, {
-          payload: rawPayload,
-          signature: rawSignature,
-        });
-      }
-    } catch (error) {
-      keyStoreHasKey = false;
+  async #getKeyStore(): Promise<JwksKeyStore> {
+    const endpoint = await this.getEndpoint();
+    let keyStore = this.#keyStores.get(endpoint.href);
+    if (keyStore) {
+      // Reinsert entries to keep the least recently used endpoint first.
+      this.#keyStores.delete(endpoint.href);
+    } else {
+      keyStore = new JwksKeyStore(endpoint, () => this.#tryUseForcedReload());
     }
-    // Refresh public key URL if needed
-    // Add a small margin in case clocks are out of sync
-    const issuedAfterLastRefresh =
-      payload?.iat && payload.iat > this.#keyStoreUpdated - CLOCK_MARGIN_S;
-    if (!this.#keyStore || (!keyStoreHasKey && issuedAfterLastRefresh)) {
-      const endpoint = await this.getEndpoint();
-      this.#keyStore = createRemoteJWKSet(endpoint);
-      this.#keyStoreUpdated = Date.now() / 1000;
+    this.#keyStores.set(endpoint.href, keyStore);
+    if (this.#keyStores.size > KEY_STORE_CACHE_LIMIT) {
+      this.#keyStores.delete(this.#keyStores.keys().next().value!);
     }
+    return keyStore;
+  }
+
+  #tryUseForcedReload(): boolean {
+    const windowStart = Date.now() - FORCED_RELOAD_WINDOW_MS;
+    this.#forcedReloads = this.#forcedReloads.filter(
+      timestamp => timestamp > windowStart,
+    );
+    if (this.#forcedReloads.length >= FORCED_RELOAD_LIMIT) {
+      return false;
+    }
+    this.#forcedReloads.push(Date.now());
+    return true;
   }
 }

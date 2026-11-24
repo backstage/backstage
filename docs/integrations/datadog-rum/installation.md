@@ -72,6 +72,8 @@ In case after a proper configuration, the events still are not being captured: C
 <% } %>
 ```
 
+:::
+
 The `clientToken` and `applicationId` are generated from the Datadog RUM page
 following
 [these instructions](https://docs.datadoghq.com/real_user_monitoring/browser/).

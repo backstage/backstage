@@ -17,7 +17,6 @@
 import {
   Entity,
   entityEnvelopeSchemaValidator,
-  stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { ProviderDatabase } from '../database/types';
 import {
@@ -50,12 +49,13 @@ class Connection implements EntityProviderConnection {
 
     if (mutation.type === 'full') {
       this.check(mutation.entities.map(e => e.entity));
+      const options = await db.prepareUnprocessedEntities({
+        sourceKey: this.config.id,
+        type: 'full',
+        items: mutation.entities,
+      });
       await db.transaction(async tx => {
-        await db.replaceUnprocessedEntities(tx, {
-          sourceKey: this.config.id,
-          type: 'full',
-          items: mutation.entities,
-        });
+        await db.replaceUnprocessedEntities(tx, options);
       });
     } else if (mutation.type === 'delta') {
       this.check(mutation.added.map(e => e.entity));
@@ -64,20 +64,14 @@ class Connection implements EntityProviderConnection {
           .map(e => ('entity' in e ? e.entity : undefined))
           .filter((e): e is Entity => Boolean(e)),
       );
+      const options = await db.prepareUnprocessedEntities({
+        sourceKey: this.config.id,
+        type: 'delta',
+        added: mutation.added,
+        removed: mutation.removed,
+      });
       await db.transaction(async tx => {
-        await db.replaceUnprocessedEntities(tx, {
-          sourceKey: this.config.id,
-          type: 'delta',
-          added: mutation.added,
-          removed: mutation.removed.map(r =>
-            'entityRef' in r
-              ? r
-              : {
-                  entityRef: stringifyEntityRef(r.entity),
-                  locationKey: r.locationKey,
-                },
-          ),
-        });
+        await db.replaceUnprocessedEntities(tx, options);
       });
     }
   }

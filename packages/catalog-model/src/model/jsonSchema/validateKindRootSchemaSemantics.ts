@@ -110,6 +110,10 @@ export function validateKindRootSchemaSemantics(
     throw new InputError('Schema must be an object');
   }
 
+  if (schema.type !== undefined && schema.type !== 'object') {
+    throw new InputError('Schema root type must be "object"');
+  }
+
   for (const field of FORBIDDEN_SCHEMA_STRUCTURAL_FIELDS) {
     if (field in schema) {
       throw new InputError(

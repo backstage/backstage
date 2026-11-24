@@ -67,9 +67,10 @@ export class SlackNotificationProcessor implements NotificationProcessor {
   private readonly messagesFailed: MetricsServiceCounter;
   private readonly messagesUpdated: MetricsServiceCounter;
   private db?: Knex;
+  private readonly frontendBaseUrl: string;
+  private readonly entityLoader: DataLoader<string, Entity | undefined>;
   private readonly broadcastChannels?: string[];
   private readonly broadcastRoutes?: BroadcastRoute[];
-  private readonly entityLoader: DataLoader<string, Entity | undefined>;
   private readonly username?: string;
   private readonly concurrencyLimit: number;
   private readonly throttleInterval: number;
@@ -104,6 +105,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
             readDurationFromConfig(c, { key: 'throttleInterval' }),
           )
         : durationToMilliseconds({ minutes: 1 });
+      const frontendBaseUrl = config.getString('app.baseUrl');
       return new SlackNotificationProcessor({
         slack,
         broadcastChannels,
@@ -111,6 +113,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
         username,
         concurrencyLimit,
         throttleInterval,
+        frontendBaseUrl,
         ...options,
       });
     });
@@ -122,6 +125,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     logger: LoggerService;
     catalog: CatalogService;
     metrics: MetricsService;
+    frontendBaseUrl: string;
     broadcastChannels?: string[];
     broadcastRoutes?: BroadcastRoute[];
     username?: string;
@@ -134,6 +138,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       catalog,
       logger,
       metrics,
+      frontendBaseUrl,
       slack,
       broadcastChannels,
       broadcastRoutes,
@@ -145,6 +150,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     this.logger = logger;
     this.catalog = catalog;
     this.auth = auth;
+    this.frontendBaseUrl = frontendBaseUrl;
     this.slack = slack;
     this.broadcastChannels = broadcastChannels;
     this.broadcastRoutes = broadcastRoutes;
@@ -259,6 +265,12 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     }
 
     const entityRefs = [options.recipients.entityRef].flat();
+    const metadataChannel = options.payload.metadata?.slackChannel as
+      | string
+      | undefined;
+    const formattedPayload = await this.formatPayloadDescriptionForSlack(
+      options.payload,
+    );
 
     const outbound: ChatPostMessageArguments[] = [];
     await Promise.all(
@@ -269,14 +281,18 @@ export class SlackNotificationProcessor implements NotificationProcessor {
           return;
         }
 
-        let channel;
-        try {
-          channel = await this.getSlackNotificationTarget(entityRef);
-        } catch (error) {
-          this.logger.error(
-            `Failed to get Slack channel for entity: ${toError(error).message}`,
-          );
-          return;
+        let channel = metadataChannel;
+        if (!channel) {
+          try {
+            channel = await this.getSlackNotificationTarget(entityRef);
+          } catch (error) {
+            this.logger.error(
+              `Failed to get Slack channel for entity: ${
+                toError(error).message
+              }`,
+            );
+            return;
+          }
         }
 
         if (!channel) {
@@ -292,7 +308,8 @@ export class SlackNotificationProcessor implements NotificationProcessor {
 
         const payload = toChatPostMessageArgs({
           channel,
-          payload: options.payload,
+          payload: formattedPayload,
+          frontendBaseUrl: this.frontendBaseUrl,
           username: this.username,
           blockKitRenderer: this.blockKitRenderer,
         });
@@ -361,6 +378,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       toChatPostMessageArgs({
         channel,
         payload: formattedPayload,
+        frontendBaseUrl: this.frontendBaseUrl,
         username: this.username,
         blockKitRenderer: this.blockKitRenderer,
       }),

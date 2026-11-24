@@ -15,6 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
+import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { ConfigReader } from '@backstage/config';
 import { TestPipeline } from '@backstage/plugin-search-backend-node';
 import {
@@ -22,7 +23,7 @@ import {
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { Readable } from 'node:stream';
 import { DefaultTechDocsCollatorFactory } from './DefaultTechDocsCollatorFactory';
@@ -111,9 +112,9 @@ describe('DefaultTechDocsCollatorFactory', () => {
       collator = await factory.getCollator();
 
       worker.use(
-        rest.get(
-          'http://test-backend/static/docs/default/Component/test-entity-with-docs/search/search_index.json',
-          (_, res, ctx) => res(ctx.status(200), ctx.json(mockSearchDocIndex)),
+        http.get(
+          'http://test-backend/static/docs/default/component/test-entity-with-docs/search/search_index.json',
+          () => HttpResponse.json(mockSearchDocIndex),
         ),
       );
     });
@@ -132,6 +133,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
     it('should create documents for each tech docs search index', async () => {
       const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
+      expect(documents).toHaveLength(mockSearchDocIndex.docs.length);
       const entity = expectedEntities[0];
       documents.forEach((document, idx) => {
         expect(document).toMatchObject({
@@ -143,7 +145,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
           componentType: entity!.spec!.type,
           lifecycle: entity!.spec!.lifecycle,
           owner: '',
-          kind: entity.kind.toLocaleLowerCase('en-US'),
+          kind: entity.kind.toLowerCase(),
           name: entity.metadata.name,
         });
       });
@@ -185,10 +187,15 @@ describe('DefaultTechDocsCollatorFactory', () => {
       expect(documents).toHaveLength(0);
     });
 
-    it('paginates through catalog entities using batchSize', async () => {
+    it('paginates through catalog entities using cursors', async () => {
       // parallelismLimit of 1 → batchSize of 50 per request.
-      // First page returns exactly 50 (no techdocs annotation) triggering a
-      // second request; second page returns the real entity with annotation.
+      const paginatedEntities = Array.from({ length: 51 }, (_, index) => ({
+        ...expectedEntities[0],
+        metadata: {
+          ...expectedEntities[0].metadata,
+          name: `test-entity-with-docs-${index}`,
+        },
+      }));
       const _config = new ConfigReader({
         ...config.get(),
         search: {
@@ -199,24 +206,48 @@ describe('DefaultTechDocsCollatorFactory', () => {
           },
         },
       });
-      const paginationCatalog = catalogServiceMock({ entities: [] });
-      jest
-        .spyOn(paginationCatalog, 'getEntities')
-        .mockResolvedValueOnce({ items: Array(50).fill({}) })
-        .mockResolvedValueOnce({ items: expectedEntities });
+      const paginationCatalog = catalogServiceMock({
+        entities: paginatedEntities,
+      });
+      const queryEntitiesSpy = jest.spyOn(paginationCatalog, 'queryEntities');
       factory = DefaultTechDocsCollatorFactory.fromConfig(_config, {
         ...options,
         catalog: paginationCatalog,
+        customCatalogApiFilters: { kind: 'Component' },
       });
       collator = await factory.getCollator();
+      worker.use(
+        http.get(
+          'http://test-backend/static/docs/default/component/:name/search/search_index.json',
+          () => HttpResponse.json(mockSearchDocIndex),
+        ),
+      );
 
       const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
 
-      expect(paginationCatalog.getEntities).toHaveBeenCalledTimes(2);
-      // First page: 50 entities with no techdocs annotation → 0 docs
-      // Second page: 1 entity × 3 search index docs → 3 docs
-      expect(documents).toHaveLength(3);
+      expect(queryEntitiesSpy).toHaveBeenNthCalledWith(
+        1,
+        {
+          filter: {
+            kind: 'Component',
+            'metadata.annotations.backstage.io/techdocs-ref':
+              CATALOG_FILTER_EXISTS,
+          },
+          limit: 50,
+          totalItems: 'exclude',
+        },
+        { credentials: expect.anything() },
+      );
+      expect(queryEntitiesSpy).toHaveBeenNthCalledWith(
+        2,
+        { cursor: expect.any(String), limit: 50 },
+        { credentials: expect.anything() },
+      );
+      expect(queryEntitiesSpy).toHaveBeenCalledTimes(2);
+      expect(documents).toHaveLength(
+        paginatedEntities.length * mockSearchDocIndex.docs.length,
+      );
     });
 
     describe('with legacyPathCasing configuration', () => {
@@ -231,11 +262,19 @@ describe('DefaultTechDocsCollatorFactory', () => {
           options,
         );
         collator = await factory.getCollator();
+
+        worker.use(
+          http.get(
+            'http://test-backend/static/docs/default/Component/test-entity-with-docs/search/search_index.json',
+            () => HttpResponse.json(mockSearchDocIndex),
+          ),
+        );
       });
 
       it('should create documents for each tech docs search index', async () => {
         const pipeline = TestPipeline.fromCollator(collator);
         const { documents } = await pipeline.execute();
+        expect(documents).toHaveLength(mockSearchDocIndex.docs.length);
         const entity = expectedEntities[0];
         documents.forEach((document, idx) => {
           expect(document).toMatchObject({
@@ -273,6 +312,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
 
       const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
+      expect(documents).toHaveLength(mockSearchDocIndex.docs.length);
       const entity = expectedEntities[0];
       documents.forEach((document, idx) => {
         expect(document).toMatchObject({
@@ -284,7 +324,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
           componentType: entity!.spec!.type,
           lifecycle: entity!.spec!.lifecycle,
           owner: '',
-          kind: entity.kind.toLocaleLowerCase('en-US'),
+          kind: entity.kind.toLowerCase(),
           name: entity.metadata.name,
           tags: entity.metadata.tags,
         });
@@ -310,6 +350,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
 
       const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
+      expect(documents).toHaveLength(mockSearchDocIndex.docs.length);
       const entity = expectedEntities[0];
       documents.forEach((document, idx) => {
         expect(document).toMatchObject({
@@ -321,7 +362,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
           componentType: entity!.spec!.type,
           lifecycle: entity!.spec!.lifecycle,
           owner: '',
-          kind: entity.kind.toLocaleLowerCase('en-US'),
+          kind: entity.kind.toLowerCase(),
           name: entity.metadata.name,
           tags: ['static-tag'],
         });

@@ -15,9 +15,10 @@
  */
 
 import { resolvePackagePath } from '@backstage/backend-plugin-api';
+import { ForwardedError } from '@backstage/errors';
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import YAML from 'js-yaml';
+import { loadYaml } from '../../../../../lib/yaml';
 import { dirname, join, resolve } from 'node:path';
 import { exec } from '../../../../../lib/exec';
 import {
@@ -34,10 +35,11 @@ import {
   getRelativePathToFile,
   toGeneratorAdditionalProperties,
 } from '../../../../../lib/openapi/helpers';
+import { writeManifest } from '../../../../../lib/openapi/manifest';
 
 async function generateSpecFile() {
   const openapiPath = await getPathToCurrentOpenApiSpec();
-  const yaml = YAML.load(await fs.readFile(openapiPath, 'utf8'));
+  const yaml = loadYaml(await fs.readFile(openapiPath, 'utf8'));
 
   const tsPath = targetPaths.resolve(TS_SCHEMA_PATH);
 
@@ -71,20 +73,9 @@ export const createOpenApiRouter = async (
   );
 
   const indexFile = join(schemaDir, '..', 'index.ts');
-  await fs.writeFile(
-    indexFile,
-    `//
-    export * from './generated';`,
-  );
+  await fs.writeFile(indexFile, `//\nexport * from './generated';\n`);
 
   await exec(`yarn backstage-cli package lint`, ['--fix', tsPath, indexFile]);
-  if (
-    await fs.pathExists(targetPaths.resolveRoot('node_modules/.bin/prettier'))
-  ) {
-    await exec(`yarn prettier`, ['--write', tsPath, indexFile], {
-      cwd: targetPaths.rootDir,
-    });
-  }
 }
 
 async function generate(
@@ -154,13 +145,6 @@ async function generate(
     },
   );
 
-  const prettier = targetPaths.resolveRoot('node_modules/.bin/prettier');
-  if (prettier) {
-    await exec(`${prettier} --write ${resolvedOutputDirectory}`, [], {
-      signal: abortSignal?.signal,
-    });
-  }
-
   fs.removeSync(resolve(resolvedOutputDirectory, '.openapi-generator-ignore'));
   fs.removeSync(resolve(resolvedOutputDirectory, '.gitattributes'));
 
@@ -174,6 +158,13 @@ async function generate(
   });
 
   await generateSpecFile();
+
+  await writeManifest({
+    kind: 'server',
+    generatedDir: resolvedOutputDirectory,
+    specPath: resolvedOpenapiPath,
+    additionalProperties,
+  });
 }
 
 export async function command(
@@ -199,9 +190,8 @@ export async function command(
       console.group();
       console.log(chalk.red(err.message));
       console.groupEnd();
-    } else {
-      console.log(chalk.red(err.message));
-      console.log(chalk.red(`OpenAPI server stub generation failed.`));
+      return;
     }
+    throw new ForwardedError('OpenAPI server stub generation failed', err);
   }
 }

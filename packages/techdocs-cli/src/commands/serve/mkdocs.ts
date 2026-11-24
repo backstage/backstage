@@ -17,18 +17,31 @@
 import { OptionValues } from 'commander';
 import openBrowser from 'react-dev-utils/openBrowser';
 import { createLogger } from '../../lib/utility';
-import { runMkdocsServer } from '../../lib/mkdocsServer';
+import { runEngineServer } from '../../lib/server';
 import { RunOnOutput } from '@backstage/cli-common';
 import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
 import { checkIfDockerIsOperational } from './utils';
+import { getEngineConfig } from '../../lib/engines';
+import { resolveEngine } from '../../lib/catalogEntity';
+import { prepareServeConfig } from '../../lib/prepareServeConfig';
 
 export default async function serveMkdocs(opts: OptionValues) {
   const logger = createLogger({ verbose: opts.verbose });
+  if (opts.deprecatedCommandAlias) {
+    logger.warn(
+      `${opts.deprecatedCommandAlias} is deprecated and will be removed in a future release. Use serve:raw instead.`,
+    );
+  }
 
-  const dockerAddr = `http://0.0.0.0:${opts.port}`;
+  const { engine, source: engineSource } = await resolveEngine(
+    process.cwd(),
+    opts.engine,
+    logger,
+  );
+  const engineConfig = getEngineConfig(engine, engineSource);
+
   const localAddr = `http://127.0.0.1:${opts.port}`;
-  const expectedDevAddr = opts.docker ? dockerAddr : localAddr;
 
   if (opts.docker) {
     const isDockerOperational = await checkIfDockerIsOperational(logger);
@@ -42,13 +55,19 @@ export default async function serveMkdocs(opts: OptionValues) {
     opts.siteName,
   );
 
+  const serveConfigPath = await prepareServeConfig(
+    engineConfig,
+    mkdocsYmlPath,
+    logger,
+  );
+
   // We want to open browser only once based on a log.
   let boolOpenBrowserTriggered = false;
 
   const logFunc: RunOnOutput = data => {
     // Sometimes the lines contain an unnecessary extra new line in between
     const logLines = data.toString().split('\n');
-    const logPrefix = opts.docker ? '[docker/mkdocs]' : '[mkdocs]';
+    const logPrefix = opts.docker ? `[docker/${engine}]` : `[${engine}]`;
     logLines.forEach(line => {
       if (line === '') {
         return;
@@ -60,28 +79,31 @@ export default async function serveMkdocs(opts: OptionValues) {
       // When the server has started, open a new browser tab for the user.
       if (
         !boolOpenBrowserTriggered &&
-        line.includes(`Serving on ${expectedDevAddr}`)
+        engineConfig.startupLogPattern.test(line)
       ) {
         // Always open the local address, since 0.0.0.0 belongs to docker
-        logger.info(`\nStarting mkdocs server on ${localAddr}\n`);
+        logger.info(`\nStarting ${engine} server on ${localAddr}\n`);
         openBrowser(localAddr);
         boolOpenBrowserTriggered = true;
       }
     });
   };
-  // mkdocs writes all of its logs to stderr by default, and not stdout.
-  // https://github.com/mkdocs/mkdocs/issues/879#issuecomment-203536006
-  // Had me questioning this whole implementation for half an hour.
+  // Engines may log to stderr rather than stdout (mkdocs does, see
+  // https://github.com/mkdocs/mkdocs/issues/879), so watch both streams.
 
-  // Commander stores --no-docker in cmd.docker variable
-  const childProcess = runMkdocsServer({
+  const childProcess = runEngineServer({
     port: opts.port,
-    dockerImage: opts.dockerImage,
+    dockerImage: opts.dockerImage ?? engineConfig.defaultImage,
     dockerEntrypoint: opts.dockerEntrypoint,
     dockerOptions: opts.dockerOption,
     useDocker: opts.docker,
     onStdout: logFunc,
     onStderr: logFunc,
+    engineBinary: engineConfig.binary,
+    engineServeArgs: engineConfig.serveArgs(opts.port, {
+      configFile: serveConfigPath,
+      useDocker: opts.docker,
+    }),
   });
 
   // Keep waiting for user to cancel the process

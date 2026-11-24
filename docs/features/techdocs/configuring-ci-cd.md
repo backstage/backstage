@@ -30,14 +30,19 @@ cd repo
 npm install -g @techdocs/cli
 pip install "mkdocs-techdocs-core==1.*"
 
-# Generate
+# Generate (automatically computes a content hash for change detection)
 techdocs-cli generate --no-docker
 
-# Publish
-techdocs-cli publish --publisher-type awsS3 --storage-name <bucket/container> --entity <Namespace/Kind/Name>
+# Publish (use --skip-if-unchanged to skip uploading when docs haven't changed)
+techdocs-cli publish --publisher-type awsS3 --storage-name <bucket/container> --entity <Namespace/Kind/Name> --skip-if-unchanged
 ```
 
 That's it!
+
+> **Tip:** The `generate` step automatically computes a content hash (etag) of
+> the generated site output. When `--skip-if-unchanged` is passed to `publish`, it
+> compares this etag against the previously published version and skips the
+> upload if they match — saving time and bandwidth in CI pipelines.
 
 Take a look at [`techdocs-cli`](./cli.md) for the complete command reference,
 details, and options.

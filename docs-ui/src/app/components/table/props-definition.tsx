@@ -61,7 +61,8 @@ export const useTableOptionsPropDefs: Record<string, PropDef> = {
         },
         pageSizeOptions: {
           type: 'number[]',
-          description: 'Available page size options for the dropdown.',
+          description:
+            'Available page size options for the dropdown. Pass an empty array to hide the dropdown.',
         },
         initialOffset: {
           type: 'number',
@@ -422,12 +423,14 @@ export const cellProfilePropDefs: Record<string, PropDef> = {
 export const tablePaginationPropDefs: Record<string, PropDef> = {
   pageSize: {
     type: 'number',
-    description: 'Number of items per page.',
+    description:
+      'Controlled number of items per page. Update this value in response to `onPageSizeChange`.',
   },
   pageSizeOptions: {
     type: 'enum',
     values: ['number[]'],
-    description: 'Available page size options for the dropdown.',
+    description:
+      'Available page size options for the dropdown. Pass an empty array to hide the dropdown.',
   },
   offset: {
     type: 'number',

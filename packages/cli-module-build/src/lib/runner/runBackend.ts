@@ -42,8 +42,10 @@ export type RunBackendOptions = {
   inspectEnabled?: boolean | string;
   /** Whether to forward the --inspect-brk flag to the node process */
   inspectBrkEnabled?: boolean | string;
-  /** Additional module to require via the --require flag to the node process */
-  require?: string | string[];
+  /** Additional modules to require via the --require flag to the node process */
+  require?: string[];
+  /** Additional modules to import via the --import flag to the node process */
+  import?: string[];
   /** An external linked workspace to override module resolution towards */
   linkedWorkspace?: string;
   /** Config file paths from --config flags */
@@ -51,7 +53,7 @@ export type RunBackendOptions = {
 };
 
 export async function runBackend(options: RunBackendOptions) {
-  const envEnv = process.env as { NODE_ENV: string; NODE_OPTIONS?: string };
+  const envEnv = process.env as { NODE_ENV: string };
   if (!envEnv.NODE_ENV) {
     envEnv.NODE_ENV = 'development';
   }
@@ -125,16 +127,14 @@ export async function runBackend(options: RunBackendOptions) {
       optionArgs.push(inspect);
     }
     if (options.require) {
-      const requires = [options.require].flat();
-      for (const r of requires) {
+      for (const r of options.require) {
         optionArgs.push(`--require=${r}`);
       }
     }
-
-    // Unless the user explicitly toggles node-snapshot, default to provide --no-node-snapshot to reduce number of steps to run scaffolder
-    //  on Node LTS.
-    if (!envEnv.NODE_OPTIONS?.includes('--node-snapshot')) {
-      optionArgs.push('--no-node-snapshot');
+    if (options.import) {
+      for (const i of options.import) {
+        optionArgs.push(`--import=${i}`);
+      }
     }
 
     const userArgs = process.argv

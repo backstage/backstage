@@ -1,5 +1,123 @@
 # @backstage/plugin-home-react
 
+## 0.1.44
+
+### Patch Changes
+
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+- Updated dependencies
+  - @backstage/frontend-plugin-api@1.0.0
+  - @backstage/core-plugin-api@1.13.0
+  - @backstage/core-components@0.18.16
+  - @backstage/core-compat-api@0.6.0
+
+## 0.1.44-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.16-next.1
+  - @backstage/core-compat-api@0.6.0-next.2
+  - @backstage/frontend-plugin-api@0.19.0-next.2
+  - @backstage/core-plugin-api@1.12.12-next.2
+
+## 0.1.44-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.5.17-next.1
+  - @backstage/core-plugin-api@1.12.12-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+
+## 0.1.44-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.3-next.0
+  - @backstage/core-compat-api@0.5.17-next.0
+  - @backstage/core-plugin-api@1.12.12-next.0
+  - @backstage/core-components@0.18.16-next.0
+
+## 0.1.43
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/core-compat-api@0.5.16
+  - @backstage/core-components@0.18.15
+  - @backstage/core-plugin-api@1.12.11
+
+## 0.1.43-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.15-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+  - @backstage/core-compat-api@0.5.16-next.0
+
+## 0.1.42
+
+### Patch Changes
+
+- cd4a9c7: Fixed `CardExtension` to avoid requiring app context when a custom `Renderer` is provided.
+- Updated dependencies
+  - @backstage/core-components@0.18.14
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/core-compat-api@0.5.15
+  - @backstage/core-plugin-api@1.12.10
+
+## 0.1.42-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.0
+  - @backstage/core-compat-api@0.5.15-next.1
+  - @backstage/core-plugin-api@1.12.10-next.0
+
+## 0.1.42-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.0
+  - @backstage/core-compat-api@0.5.15-next.0
+
+## 0.1.41
+
+### Patch Changes
+
+- a178067: Added `HomePageDefaultConfigItem` type and optional `defaultConfig` prop to `HomePageLayoutProps`.
+- Updated dependencies
+  - @backstage/core-components@0.18.13
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/core-compat-api@0.5.14
+
+## 0.1.41-next.2
+
+### Patch Changes
+
+- a178067: Added `HomePageDefaultConfigItem` type and optional `defaultConfig` prop to `HomePageLayoutProps`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.9-next.1
+
+## 0.1.41-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.0-next.0
+  - @backstage/core-compat-api@0.5.14-next.1
+  - @backstage/core-plugin-api@1.12.9-next.0
+  - @backstage/core-components@0.18.13-next.2
+
 ## 0.1.41-next.0
 
 ### Patch Changes

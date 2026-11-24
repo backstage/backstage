@@ -18,7 +18,6 @@ import { Response } from 'express';
 import { EntitiesResponseItems } from '../../catalog/types';
 import { createDeferred, DeferredPromise, JsonValue } from '@backstage/types';
 import { NotFoundError } from '@backstage/errors';
-import { processEntitiesResponseItems } from './process';
 
 const JSON_CONTENT_TYPE = 'application/json; charset=utf-8';
 
@@ -47,14 +46,9 @@ export async function writeEntitiesResponse(options: {
   res: Response;
   items: EntitiesResponseItems;
   responseWrapper?: (entities: JsonValue) => JsonValue;
-  alwaysUseObjectMode?: boolean;
 }) {
-  const { res, responseWrapper, alwaysUseObjectMode } = options;
+  const { res, items, responseWrapper } = options;
   const writer = createResponseDataWriter(res);
-
-  const items = alwaysUseObjectMode
-    ? processEntitiesResponseItems(options.items, e => e)
-    : options.items;
 
   if (items.type === 'object') {
     res.json(

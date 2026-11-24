@@ -38,9 +38,12 @@ export function createBinRunner(cwd: string, path: string) {
       const outPath = join(tmpdir(), `backstage-cli-out-${randomUUID()}.txt`);
       const outFd = openSync(outPath, 'w');
 
+      // FORCE_COLOR is removed since Node.js warns on stderr when it's set
+      // together with NO_COLOR, which would be treated as a failure below
+      const { FORCE_COLOR: _, ...env } = process.env;
       const child = spawn('node', args, {
         cwd,
-        env: { ...process.env, NO_COLOR: '1' },
+        env: { ...env, NO_COLOR: '1' },
         stdio: ['ignore', outFd, 'pipe'],
       });
 

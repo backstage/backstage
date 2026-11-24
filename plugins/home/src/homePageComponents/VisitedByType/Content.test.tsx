@@ -262,6 +262,35 @@ describe('<Content kind="recent"/>', () => {
   });
 });
 
+describe('<Content /> when visits API is not available', () => {
+  afterEach(() => jest.resetAllMocks());
+
+  it('renders a disabled message when the visits API is not registered', async () => {
+    const { getByText } = await renderInTestApp(
+      <ContextProvider>
+        <Content kind="recent" />
+      </ContextProvider>,
+    );
+    expect(getByText('Visit tracking is not enabled.')).toBeInTheDocument();
+    expect(
+      getByText(
+        'Enable visit tracking in your app-config.yaml to see your most visited and recently visited pages here.',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('still renders provided visits even without the API', async () => {
+    const { getByText } = await renderInTestApp(
+      <ContextProvider>
+        <Content kind="recent" visits={visits} />
+      </ContextProvider>,
+    );
+    await waitFor(() =>
+      expect(getByText('Explore Backstage')).toBeInTheDocument(),
+    );
+  });
+});
+
 describe('<Content kind="top"/>', () => {
   beforeEach(() => {
     mockVisitsApi = {

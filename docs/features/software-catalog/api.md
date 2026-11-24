@@ -37,6 +37,14 @@ process, not the raw originally ingested entity data. See
 [The Life of an Entity](./life-of-an-entity.md) for more details about this process and
 distinction.
 
+### Relation response format
+
+Catalog API responses represent relation targets using the `targetRef` field.
+The deprecated `target` object and the `catalog.enableRelationsCompatibility`
+setting have been removed. If an external catalog API consumer reads
+`relation.target`, update it to use `relation.targetRef` instead. The
+`targetRef` value is a full [entity reference](references.md).
+
 ### `GET /entities/by-query`
 
 Query entities. Supports the following query parameters, described in the section below:
@@ -190,7 +198,7 @@ Some more real world usable examples:
 
   `/entities/by-query?filter=kind=component,relations.ownedBy=group:default/my-team&fullTextFilterTerm=api&fullTextFilterFields=metadata.name`
 
-:::note Note
+:::note
 
 Full text filtering is mutually exclusive with cursor-based pagination. When a
 `cursor` is provided, `fullTextFilterTerm` and `fullTextFilterFields` are
@@ -231,6 +239,14 @@ For example, to return entities by their name:
 
 Each parameter can be followed by `asc` for ascending lexicographical order or
 `desc` for descending (reverse) lexicographical order.
+
+> **Note:** Although `orderField` can be supplied multiple times, the
+> `/entities/by-query` endpoint currently applies only the **first** one; any
+> additional `orderField` values are ignored (the backend logs a warning).
+> Multi-field ordering is tracked in
+> [backstage#17560](https://github.com/backstage/backstage/issues/17560). If you
+> need multi-field ordering today, use the legacy `GET /entities` endpoint, which
+> honors multiple `order` parameters.
 
 #### Pagination
 
@@ -446,7 +462,7 @@ meaning.
 
 Lists entities.
 
-:::note Note
+:::note
 
 This endpoint is deprecated in favor of `GET /entities/by-query`, which provides a more efficient implementation and cursor based pagination.
 

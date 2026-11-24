@@ -16,7 +16,7 @@
 
 import { isError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
-import { z } from 'zod/v3';
+import { z } from 'zod';
 import { isJsonObjectDeep } from './util';
 import { validateMetaSchema } from './validateMetaSchema';
 
@@ -28,14 +28,15 @@ export const jsonObjectSchema = z
 
 export const jsonSchemaSchema = z
   .record(z.string(), z.unknown())
-  .superRefine((x, ctx): x is JsonObject => {
+  .superRefine((x, ctx) => {
     try {
-      return validateMetaSchema(x);
+      validateMetaSchema(x);
     } catch (error) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: isError(error) ? error.message : 'Invalid JSON schema',
       });
-      return false;
     }
-  });
+  })
+  // Unlike in zod v3, superRefine does not narrow the output type
+  .transform(x => x as JsonObject);

@@ -39,6 +39,10 @@ export const ANNOTATION_KUBERNETES_AUTH_PROVIDER =
   'kubernetes.io/auth-provider';
 
 // @public
+export const ANNOTATION_KUBERNETES_AWS_ACCOUNT_ID =
+  'kubernetes.io/aws-account-id';
+
+// @public
 export const ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE =
   'kubernetes.io/aws-assume-role';
 
@@ -370,6 +374,38 @@ export interface KubernetesRequestBody {
 
 // @public
 export const kubernetesResourcesReadPermission: BasicPermission;
+
+// @public
+export type KubernetesWatchEvent =
+  | {
+      type: Exclude<KubernetesWatchEventType, 'ERROR'>;
+      object: JsonObject;
+      resourceVersion?: string;
+    }
+  | {
+      type: 'ERROR';
+      error: KubernetesFetchError;
+    };
+
+// @public
+export type KubernetesWatchEventType =
+  | 'ADDED'
+  | 'MODIFIED'
+  | 'DELETED'
+  | 'BOOKMARK'
+  | 'ERROR';
+
+// @public
+export interface KubernetesWatchOptions {
+  allowWatchBookmarks?: boolean;
+  labelSelector?: string;
+  namespace?: string;
+  resourceVersion?: string;
+  resourceVersionMatch?: 'NotOlderThan' | 'Exact';
+  sendInitialEvents?: boolean;
+  signal?: AbortSignal;
+  timeoutSeconds?: number;
+}
 
 // @public (undocumented)
 export interface LimitRangeFetchResponse {

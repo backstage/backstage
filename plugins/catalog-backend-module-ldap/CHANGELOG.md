@@ -1,5 +1,135 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.13.0
+
+### Minor Changes
+
+- f9a84cb: The LDAP org entity provider now reads users and groups in parallel by default. Set `disableParallelReads: true` to use one connection and read sequentially. Parallel reads open two binds and two connections per refresh. Directories with per-client connection limits may notice the extra load after upgrading.
+
+  The org entity provider and `LdapOrgReaderProcessor` request only the attributes used by configured mappings. LDAP connections are closed after each refresh.
+
+  **BREAKING**: Searches no longer request `['*', '+']` by default. This applies to both the org entity provider and `LdapOrgReaderProcessor`. When options.attributes is not explicitly configured, attributes required by map (including custom map.\* overrides and membership mappings) are requested automatically. When options.attributes is explicitly configured, the provided list is used as-is and must include all attributes required by mappings, vendor configuration, and custom transformers. Custom transformers that access other attributes from LDAP entries may now find those attributes missing.
+
+  If your transformers rely on additional LDAP attributes, include them in `options.attributes` or use `['*', '+']` to request all attributes:
+
+  ```diff
+   catalog:
+     providers:
+       ldapOrg:
+         default:
+           users:
+             options:
+  +            attributes: ['*', '+']
+           groups:
+             options:
+  +            attributes: ['*', '+']
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/catalog-model@1.10.3
+  - @backstage/config@1.3.11
+  - @backstage/plugin-catalog-common@1.2.2
+  - @backstage/plugin-catalog-node@3.0.0
+
+## 0.12.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/plugin-catalog-node@3.0.0-next.2
+  - @backstage/catalog-model@1.10.3-next.0
+  - @backstage/config@1.3.11-next.0
+  - @backstage/plugin-catalog-common@1.2.2-next.0
+
+## 0.12.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-catalog-node@2.2.7-next.0
+
+## 0.12.10
+
+### Patch Changes
+
+- 916e5b2: Improved the performance of LDAP organization ingestion, especially for large directories, without changing the resulting catalog entities.
+- 1a20364: Improved large LDAP organization refreshes by yielding to the event loop while resolving relations.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/catalog-model@1.10.2
+  - @backstage/plugin-catalog-common@1.2.1
+  - @backstage/plugin-catalog-node@2.2.6
+
+## 0.12.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+  - @backstage/plugin-catalog-node@2.2.6-next.1
+
+## 0.12.10-next.0
+
+### Patch Changes
+
+- 916e5b2: Improved the performance of LDAP organization ingestion, especially for large directories, without changing the resulting catalog entities.
+- 1a20364: Improved large LDAP organization refreshes by yielding to the event loop while resolving relations.
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-catalog-node@2.2.6-next.0
+  - @backstage/plugin-catalog-common@1.2.1-next.0
+
+## 0.12.9
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.2.0
+  - @backstage/catalog-model@1.10.1
+  - @backstage/config@1.3.9
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-catalog-node@2.2.5
+
+## 0.12.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.2.0-next.0
+  - @backstage/config@1.3.9-next.0
+  - @backstage/plugin-catalog-node@2.2.5-next.1
+  - @backstage/backend-plugin-api@1.10.1-next.1
+
+## 0.12.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.1-next.0
+  - @backstage/plugin-catalog-node@2.2.5-next.0
+
+## 0.12.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-catalog-node@2.2.4
+
 ## 0.12.8-next.0
 
 ### Patch Changes

@@ -22,11 +22,13 @@ import {
   AwsS3Integration,
   readAwsS3IntegrationConfig,
 } from '@backstage/integration';
-import { DefaultAwsCredentialsManager } from '@backstage/integration-aws-node';
+import {
+  AwsCredentialsManager,
+  DefaultAwsCredentialsManager,
+} from '@backstage/integration-aws-node';
 import { UrlReaderPredicateTuple } from './types';
 import path from 'node:path';
 import { NotModifiedError } from '@backstage/errors';
-import { mockClient } from 'aws-sdk-client-mock';
 import {
   S3Client,
   ListObjectsV2Command,
@@ -37,6 +39,8 @@ import {
 import { sdkStreamMixin } from '@aws-sdk/util-stream-node';
 import fs from 'node:fs';
 import { mockServices } from '@backstage/backend-test-utils';
+
+const s3SendMock = jest.fn();
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
@@ -236,6 +240,30 @@ describe('parseUrl', () => {
     ).toThrow('Invalid AWS S3 URL');
   });
 
+  it('decodes object path segments exactly once', () => {
+    expect(
+      parseUrl(
+        'https://bucket-1.s3.eu-west-1.amazonaws.com/sub/dir/%252e%252e/catalog-info.yaml',
+        { host: 'amazonaws.com' },
+      ),
+    ).toEqual({
+      path: 'sub/dir/%2e%2e/catalog-info.yaml',
+      bucket: 'bucket-1',
+      region: 'eu-west-1',
+    });
+  });
+
+  it.each([
+    'https://bucket-1.s3.eu-west-1.amazonaws.com/sub/dir/../catalog-info.yaml',
+    'https://bucket-1.s3.eu-west-1.amazonaws.com/sub/dir/%2e%2e/catalog-info.yaml',
+    'https://s3.eu-west-1.amazonaws.com/bucket-1/sub/dir/%2E%2E/%2e%2e/bucket-2/catalog-info.yaml',
+    String.raw`https://s3.eu-west-1.amazonaws.com\bucket-1\sub\dir\%2e%2e\catalog-info.yaml`,
+  ])('rejects dot path segments in %s', url => {
+    expect(() => parseUrl(url, { host: 'amazonaws.com' })).toThrow(
+      'Invalid AWS S3 URL',
+    );
+  });
+
   it('supports all non-aws formats', () => {
     expect(
       parseUrl('https://my-host.com/my.bucket-3/a/puppy.jpg', {
@@ -269,7 +297,10 @@ describe('parseUrl', () => {
 });
 
 describe('AwsS3UrlReader', () => {
-  const s3Client = mockClient(S3Client);
+  afterEach(() => {
+    jest.restoreAllMocks();
+    s3SendMock.mockReset();
+  });
 
   const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
     return AwsS3UrlReader.factory({
@@ -378,18 +409,22 @@ describe('AwsS3UrlReader', () => {
     });
 
     beforeEach(() => {
-      s3Client.reset();
-
-      s3Client.on(GetObjectCommand).resolves({
-        Body: sdkStreamMixin(
-          fs.createReadStream(
-            path.resolve(
-              __dirname,
-              '__fixtures__/awsS3/awsS3-mock-object.yaml',
+      jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
+      s3SendMock.mockImplementation(async command => {
+        if (command instanceof GetObjectCommand) {
+          return {
+            Body: sdkStreamMixin(
+              fs.createReadStream(
+                path.resolve(
+                  __dirname,
+                  '__fixtures__/awsS3/awsS3-mock-object.yaml',
+                ),
+              ),
             ),
-          ),
-        ),
-        ETag: '123abc',
+            ETag: '123abc',
+          };
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
       });
     });
 
@@ -426,19 +461,23 @@ describe('AwsS3UrlReader', () => {
     });
 
     beforeEach(() => {
-      s3Client.reset();
-
-      s3Client.on(GetObjectCommand).resolves({
-        Body: sdkStreamMixin(
-          fs.createReadStream(
-            path.resolve(
-              __dirname,
-              '__fixtures__/awsS3/awsS3-mock-object.yaml',
+      jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
+      s3SendMock.mockImplementation(async command => {
+        if (command instanceof GetObjectCommand) {
+          return {
+            Body: sdkStreamMixin(
+              fs.createReadStream(
+                path.resolve(
+                  __dirname,
+                  '__fixtures__/awsS3/awsS3-mock-object.yaml',
+                ),
+              ),
             ),
-          ),
-        ),
-        ETag: '123abc',
-        LastModified: new Date('2020-01-01T00:00:00Z'),
+            ETag: '123abc',
+            LastModified: new Date('2020-01-01T00:00:00Z'),
+          };
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
       });
     });
 
@@ -489,16 +528,22 @@ describe('AwsS3UrlReader', () => {
     });
 
     beforeEach(() => {
-      s3Client.on(GetObjectCommand).resolves({
-        Body: sdkStreamMixin(
-          fs.createReadStream(
-            path.resolve(
-              __dirname,
-              '__fixtures__/awsS3/awsS3-mock-object.yaml',
+      jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
+      s3SendMock.mockImplementation(async command => {
+        if (command instanceof GetObjectCommand) {
+          return {
+            Body: sdkStreamMixin(
+              fs.createReadStream(
+                path.resolve(
+                  __dirname,
+                  '__fixtures__/awsS3/awsS3-mock-object.yaml',
+                ),
+              ),
             ),
-          ),
-        ),
-        ETag: '123abc',
+            ETag: '123abc',
+          };
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
       });
     });
 
@@ -526,13 +571,18 @@ describe('AwsS3UrlReader', () => {
     });
 
     beforeEach(() => {
-      s3Client.reset();
       const t = new S3ServiceException({
         name: '304',
         $fault: 'client',
         $metadata: { httpStatusCode: 304 },
       });
-      s3Client.on(GetObjectCommand).rejects(t);
+      jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
+      s3SendMock.mockImplementation(async command => {
+        if (command instanceof GetObjectCommand) {
+          throw t;
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
+      });
     });
 
     it('returns contents of an object in a bucket', async () => {
@@ -561,13 +611,18 @@ describe('AwsS3UrlReader', () => {
     });
 
     beforeEach(() => {
-      s3Client.reset();
       const t = new S3ServiceException({
         name: '304',
         $fault: 'client',
         $metadata: { httpStatusCode: 304 },
       });
-      s3Client.on(GetObjectCommand).rejects(t);
+      jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
+      s3SendMock.mockImplementation(async command => {
+        if (command instanceof GetObjectCommand) {
+          throw t;
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
+      });
     });
 
     it('returns contents of an object in a bucket', async () => {
@@ -586,7 +641,7 @@ describe('AwsS3UrlReader', () => {
     let awsS3UrlReader: AwsS3UrlReader;
 
     beforeEach(() => {
-      s3Client.reset();
+      jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
 
       const object: Object = {
         Key: 'awsS3-mock-object.yaml',
@@ -597,17 +652,23 @@ describe('AwsS3UrlReader', () => {
         Contents: objectList,
       };
 
-      s3Client.on(ListObjectsV2Command).resolves(output);
-
-      s3Client.on(GetObjectCommand).resolves({
-        Body: sdkStreamMixin(
-          fs.createReadStream(
-            path.resolve(
-              __dirname,
-              '__fixtures__/awsS3/awsS3-mock-object.yaml',
+      s3SendMock.mockImplementation(async command => {
+        if (command instanceof ListObjectsV2Command) {
+          return output;
+        }
+        if (command instanceof GetObjectCommand) {
+          return {
+            Body: sdkStreamMixin(
+              fs.createReadStream(
+                path.resolve(
+                  __dirname,
+                  '__fixtures__/awsS3/awsS3-mock-object.yaml',
+                ),
+              ),
             ),
-          ),
-        ),
+          };
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
       });
 
       const config = new ConfigReader({
@@ -634,6 +695,51 @@ describe('AwsS3UrlReader', () => {
 
       expect(body.toString().trim()).toBe('site_name: Test');
     });
+
+    it.each([
+      ['literal dot-dot', 'prefix/uploads/../legitimate.yaml'],
+      ['deep traversal', 'prefix/uploads/../../etc/passwd'],
+      ['backslash', 'prefix/uploads\\../legitimate.yaml'],
+      ['encoded dot-dot', 'prefix/uploads/%2e%2e/legitimate.yaml'],
+      ['mixed encoded', 'prefix/uploads/.%2e/legitimate.yaml'],
+      ['uppercase encoded', 'prefix/uploads/%2E%2E/legitimate.yaml'],
+    ])(
+      'filters out objects with %s path traversal segments',
+      async (_label, maliciousKey) => {
+        const objectList: Object[] = [
+          { Key: 'prefix/legitimate.yaml' },
+          { Key: maliciousKey },
+        ];
+        const output: ListObjectsV2Output = { Contents: objectList };
+
+        s3SendMock.mockImplementation(async command => {
+          if (command instanceof ListObjectsV2Command) {
+            return output;
+          }
+          if (command instanceof GetObjectCommand) {
+            return {
+              Body: sdkStreamMixin(
+                fs.createReadStream(
+                  path.resolve(
+                    __dirname,
+                    '__fixtures__/awsS3/awsS3-mock-object.yaml',
+                  ),
+                ),
+              ),
+            };
+          }
+          throw new Error(`No mock for ${command.constructor.name}`);
+        });
+
+        const response = await awsS3UrlReader.readTree(
+          'https://test.s3.us-east-2.amazonaws.com/prefix/',
+        );
+        const files = await response.files();
+
+        expect(files).toHaveLength(1);
+        expect(files[0].path).toBe('legitimate.yaml');
+      },
+    );
   });
 
   describe('search', () => {
@@ -650,19 +756,23 @@ describe('AwsS3UrlReader', () => {
     });
 
     beforeEach(() => {
-      s3Client.reset();
-
-      s3Client.on(GetObjectCommand).resolves({
-        Body: sdkStreamMixin(
-          fs.createReadStream(
-            path.resolve(
-              __dirname,
-              '__fixtures__/awsS3/awsS3-mock-object.yaml',
+      jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
+      s3SendMock.mockImplementation(async command => {
+        if (command instanceof GetObjectCommand) {
+          return {
+            Body: sdkStreamMixin(
+              fs.createReadStream(
+                path.resolve(
+                  __dirname,
+                  '__fixtures__/awsS3/awsS3-mock-object.yaml',
+                ),
+              ),
             ),
-          ),
-        ),
-        ETag: '123abc',
-        LastModified: new Date('2020-01-01T00:00:00Z'),
+            ETag: '123abc',
+            LastModified: new Date('2020-01-01T00:00:00Z'),
+          };
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
       });
     });
 
@@ -688,5 +798,246 @@ describe('AwsS3UrlReader', () => {
         ),
       ).rejects.toThrow('Unsupported search pattern URL');
     });
+  });
+
+  describe('buildCredentials with roleArn', () => {
+    let getCredProviderMock: jest.SpyInstance;
+
+    beforeEach(() => {
+      getCredProviderMock = jest.spyOn(
+        DefaultAwsCredentialsManager.prototype,
+        'getCredentialProvider',
+      );
+      jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
+      s3SendMock.mockReset();
+      s3SendMock.mockImplementation(async command => {
+        if (command instanceof GetObjectCommand) {
+          return {
+            Body: sdkStreamMixin(
+              fs.createReadStream(
+                path.resolve(
+                  __dirname,
+                  '__fixtures__/awsS3/awsS3-mock-object.yaml',
+                ),
+              ),
+            ),
+            ETag: '123abc',
+          };
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
+      });
+    });
+
+    it('uses account-specific credentials as master credentials when account config exists for the role ARN', async () => {
+      const accountCreds = {
+        accessKeyId: 'account-key',
+        secretAccessKey: 'account-secret',
+      };
+      getCredProviderMock.mockImplementation(async (opts?: any) => {
+        if (opts?.arn) {
+          return {
+            accountId: '123456789012',
+            sdkCredentialProvider: async () => accountCreds,
+          };
+        }
+        return {
+          sdkCredentialProvider: async () => ({
+            accessKeyId: 'default-key',
+            secretAccessKey: 'default-secret',
+          }),
+        };
+      });
+
+      const config = new ConfigReader({
+        host: 'amazonaws.com',
+        roleArn: 'arn:aws:iam::123456789012:role/MyRole',
+      });
+
+      const credsManager = DefaultAwsCredentialsManager.fromConfig(config);
+      const reader = new AwsS3UrlReader(
+        credsManager,
+        new AwsS3Integration(readAwsS3IntegrationConfig(config)),
+        { treeResponseFactory },
+      );
+
+      await reader.readUrl(
+        'https://test-bucket.s3.us-east-2.amazonaws.com/file.yaml',
+      );
+
+      expect(getCredProviderMock).toHaveBeenCalledWith({
+        arn: 'arn:aws:iam::123456789012:role/MyRole',
+      });
+    });
+
+    it('falls back to default credentials when no account config exists for the role ARN', async () => {
+      const defaultCreds = {
+        accessKeyId: 'default-key',
+        secretAccessKey: 'default-secret',
+      };
+      getCredProviderMock.mockImplementation(async (opts?: any) => {
+        if (opts?.arn) {
+          throw new Error('No matching account');
+        }
+        return {
+          sdkCredentialProvider: async () => defaultCreds,
+        };
+      });
+
+      const config = new ConfigReader({
+        host: 'amazonaws.com',
+        roleArn: 'arn:aws:iam::123456789012:role/MyRole',
+      });
+
+      const credsManager = DefaultAwsCredentialsManager.fromConfig(config);
+      const reader = new AwsS3UrlReader(
+        credsManager,
+        new AwsS3Integration(readAwsS3IntegrationConfig(config)),
+        { treeResponseFactory },
+      );
+
+      await reader.readUrl(
+        'https://test-bucket.s3.us-east-2.amazonaws.com/file.yaml',
+      );
+
+      expect(getCredProviderMock).toHaveBeenCalledWith({
+        arn: 'arn:aws:iam::123456789012:role/MyRole',
+      });
+      expect(getCredProviderMock).toHaveBeenCalledWith();
+    });
+  });
+
+  describe('buildCredentials with account credentials for the role ARN', () => {
+    // The reader and AWS SDK are already loaded by the test setup, so a fresh
+    // module registry is needed for the mocked credential providers to apply
+    let IsolatedAwsS3UrlReader: typeof AwsS3UrlReader;
+    let IsolatedS3Client: typeof S3Client;
+    let fromTemporaryCredentials: jest.Mock;
+    jest.isolateModules(() => {
+      jest.doMock('@aws-sdk/credential-providers', () => ({
+        ...jest.requireActual('@aws-sdk/credential-providers'),
+        fromTemporaryCredentials: jest.fn(),
+      }));
+      fromTemporaryCredentials =
+        require('@aws-sdk/credential-providers').fromTemporaryCredentials;
+      IsolatedS3Client = require('@aws-sdk/client-s3').S3Client;
+      IsolatedAwsS3UrlReader = require('./AwsS3UrlReader').AwsS3UrlReader;
+    });
+
+    const roleArn = 'arn:aws:iam::111111111111:role/PortalAccessRole';
+    const accountCreds = {
+      accessKeyId: 'account-key',
+      secretAccessKey: 'account-secret',
+      sessionToken: 'account-session',
+    };
+    const defaultCreds = {
+      accessKeyId: 'default-key',
+      secretAccessKey: 'default-secret',
+    };
+    const assumedCreds = {
+      accessKeyId: 'assumed-key',
+      secretAccessKey: 'assumed-secret',
+      sessionToken: 'assumed-session',
+    };
+
+    let usedCreds: unknown;
+
+    beforeEach(() => {
+      usedCreds = undefined;
+      fromTemporaryCredentials.mockReset();
+      fromTemporaryCredentials.mockReturnValue(async () => assumedCreds);
+      jest
+        .spyOn(IsolatedS3Client.prototype, 'send')
+        .mockImplementation(async function send(this: S3Client) {
+          usedCreds = await this.config.credentials();
+          return {
+            Body: sdkStreamMixin(
+              fs.createReadStream(
+                path.resolve(
+                  __dirname,
+                  '__fixtures__/awsS3/awsS3-mock-object.yaml',
+                ),
+              ),
+            ),
+            ETag: '123abc',
+          };
+        });
+    });
+
+    // Resolves account credentials for the role ARN, reporting the given
+    // role as the one the credentials are for
+    const readWith = async (options: {
+      accountRoleArn: string | undefined;
+      integration: JsonObject;
+    }) => {
+      const credsManager: AwsCredentialsManager = {
+        async getCredentialProvider(opts) {
+          if (opts?.arn) {
+            return {
+              accountId: '111111111111',
+              roleArn: options.accountRoleArn,
+              sdkCredentialProvider: async () => accountCreds,
+            };
+          }
+          return { sdkCredentialProvider: async () => defaultCreds };
+        },
+      };
+      const config = new ConfigReader({
+        host: 'amazonaws.com',
+        ...options.integration,
+      });
+      const reader = new IsolatedAwsS3UrlReader(
+        credsManager,
+        new AwsS3Integration(readAwsS3IntegrationConfig(config)),
+        { treeResponseFactory },
+      );
+      await reader.readUrl(
+        'https://test-bucket.s3.us-east-1.amazonaws.com/file.yaml',
+      );
+    };
+
+    it('uses the account credentials directly when they are already for the role ARN', async () => {
+      await readWith({ accountRoleArn: roleArn, integration: { roleArn } });
+
+      expect(fromTemporaryCredentials).not.toHaveBeenCalled();
+      expect(usedCreds).toEqual(expect.objectContaining(accountCreds));
+    });
+
+    it.each([
+      {
+        name: 'the account credentials are for a different role',
+        accountRoleArn: 'arn:aws:iam::111111111111:role/OtherRole',
+        integration: { roleArn },
+      },
+      {
+        name: 'the account credentials are for the same role name in another partition',
+        accountRoleArn: 'arn:aws-cn:iam::111111111111:role/PortalAccessRole',
+        integration: { roleArn },
+      },
+      {
+        name: 'the account credentials are not for a role',
+        accountRoleArn: undefined,
+        integration: { roleArn },
+      },
+      {
+        name: 'an external ID is configured',
+        accountRoleArn: roleArn,
+        integration: { roleArn, externalId: 'my-external-id' },
+      },
+    ])(
+      'assumes the role using the account credentials when $name',
+      async ({ accountRoleArn, integration }) => {
+        await readWith({ accountRoleArn, integration });
+
+        expect(fromTemporaryCredentials).toHaveBeenCalledTimes(1);
+        const [options] = (fromTemporaryCredentials as jest.Mock).mock.calls[0];
+        expect(options.params).toEqual({
+          RoleSessionName: 'backstage-aws-s3-url-reader',
+          RoleArn: roleArn,
+          ExternalId: (integration as { externalId?: string }).externalId,
+        });
+        expect(await options.masterCredentials()).toEqual(accountCreds);
+        expect(usedCreds).toEqual(expect.objectContaining(assumedCreds));
+      },
+    );
   });
 });

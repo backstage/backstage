@@ -32,7 +32,11 @@ import path from 'node:path';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { InputError } from '@backstage/errors';
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
-import { createGitlabApi, getErrorMessage } from './helpers';
+import {
+  assertValidTargetPath,
+  createGitlabApi,
+  getErrorMessage,
+} from './helpers';
 import { examples } from './gitlabMergeRequest.examples';
 
 import { getFileAction } from '../util';
@@ -97,8 +101,9 @@ const commitActions = ['create', 'delete', 'update', 'skip', 'auto'] as const;
  */
 export const createPublishGitlabMergeRequestAction = (options: {
   integrations: ScmIntegrationRegistry;
+  requireScmUserCredentials?: boolean;
 }) => {
-  const { integrations } = options;
+  const { integrations, requireScmUserCredentials } = options;
 
   return createTemplateAction({
     id: 'publish:gitlab:merge-request',
@@ -161,6 +166,13 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
             .describe(
               'Option to delete source branch once the MR has been merged. Default: `false`',
             ),
+        squash: z =>
+          z
+            .boolean()
+            .optional()
+            .describe(
+              'Squash commits when the merge request is merged. If omitted, the squash setting of the GitLab project is respected. Leave unset if the project requires or disallows squashing.',
+            ),
         assignee: z =>
           z
             .string()
@@ -185,6 +197,13 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
             .or(z.string().array())
             .optional()
             .describe('Labels with which to tag the created merge request'),
+        autoMerge: z =>
+          z
+            .boolean()
+            .optional()
+            .describe(
+              'Automatically merge the MR when all merge checks succeed. Uses GitLab auto-merge. Default: `false`',
+            ),
       },
       output: {
         targetBranchName: z =>
@@ -209,7 +228,13 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
         title,
         token,
         labels,
+        autoMerge,
+        squash,
       } = ctx.input;
+
+      if (targetPath) {
+        assertValidTargetPath(targetPath);
+      }
 
       const { owner, repo, project } = parseRepoUrl(repoUrl, integrations);
       const repoID = project ? project : `${owner}/${repo}`;
@@ -218,6 +243,7 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
         integrations,
         token,
         repoUrl,
+        requireScmUserCredentials,
       });
 
       let assigneeId: number | undefined = undefined;
@@ -284,13 +310,15 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
         targetBranch = defaultBranch;
       }
 
-      let remoteFiles: RepositoryTreeSchema[] = [];
+      let remoteFiles: RepositoryTreeSchema[] | undefined = [];
       if ((ctx.input.commitAction ?? 'auto') === 'auto') {
         try {
           remoteFiles = await api.Repositories.allRepositoryTrees(repoID, {
             ref: targetBranch,
             recursive: true,
             path: targetPath ?? undefined,
+            // Pages are walked serially via the Link header, and GitLab's default is 20.
+            perPage: 100,
           });
         } catch (e) {
           ctx.logger.warn(
@@ -298,6 +326,9 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
               e,
             )}`,
           );
+          if (e.cause?.response?.status !== 404) {
+            remoteFiles = undefined;
+          }
         }
       }
       const actions: CommitAction[] =
@@ -418,6 +449,7 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
                 assigneeId,
                 reviewerIds,
                 labels,
+                ...(squash !== undefined && { squash }),
               },
             );
             return {
@@ -467,6 +499,25 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
           return { mrWebUrl };
         },
       });
+      if (autoMerge) {
+        await ctx.checkpoint({
+          key: `auto.merge.mr.${repoID}.${branchName}`,
+          fn: async () => {
+            try {
+              await api.MergeRequests.merge(repoID, mrId, {
+                autoMerge: true,
+              });
+              return null;
+            } catch (e) {
+              throw new InputError(
+                `Enabling auto-merge for merge request ${mrId} failed. ${getErrorMessage(
+                  e,
+                )}`,
+              );
+            }
+          },
+        });
+      }
 
       ctx.output('projectid', repoID);
       ctx.output('targetBranchName', targetBranch);

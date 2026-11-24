@@ -94,6 +94,7 @@ export class DefaultCatalogProcessingOrchestrator
     parser: CatalogProcessorParser;
     policy: EntityPolicy;
     rulesEnforcer: CatalogRulesEnforcer;
+    allowedLocationTypes?: string[];
   };
 
   constructor(options: {
@@ -103,6 +104,7 @@ export class DefaultCatalogProcessingOrchestrator
     parser: CatalogProcessorParser;
     policy: EntityPolicy;
     rulesEnforcer: CatalogRulesEnforcer;
+    allowedLocationTypes?: string[];
   }) {
     this.options = options;
   }
@@ -227,7 +229,7 @@ export class DefaultCatalogProcessingOrchestrator
               );
             } catch (e) {
               throw new InputError(
-                `Processor ${processor.constructor.name} threw an error while preprocessing`,
+                `Processor ${processor.getProcessorName()} threw an error while preprocessing`,
                 e,
               );
             }
@@ -320,7 +322,9 @@ export class DefaultCatalogProcessingOrchestrator
             }
           } catch (e) {
             throw new InputError(
-              `Processor ${processor.constructor.name} threw an error while validating the entity ${context.entityRef}`,
+              `Processor ${processor.getProcessorName()} threw an error while validating the entity ${
+                context.entityRef
+              }`,
               e,
             );
           }
@@ -350,6 +354,24 @@ export class DefaultCatalogProcessingOrchestrator
       );
       const { type = context.location.type, presence = 'required' } =
         entity.spec;
+
+      const { allowedLocationTypes } = this.options;
+      if (
+        allowedLocationTypes &&
+        type !== context.location.type &&
+        !allowedLocationTypes.includes(type)
+      ) {
+        context.collector.generic()(
+          processingResult.inputError(
+            context.location,
+            `Registered locations must be of an allowed type ${JSON.stringify(
+              allowedLocationTypes,
+            )}`,
+          ),
+        );
+        return;
+      }
+
       const targets = new Array<string>();
       if (entity.spec.target) {
         targets.push(entity.spec.target);
@@ -404,7 +426,7 @@ export class DefaultCatalogProcessingOrchestrator
               }
             } catch (e) {
               throw new InputError(
-                `Processor ${processor.constructor.name} threw an error while reading ${type}:${target}`,
+                `Processor ${processor.getProcessorName()} threw an error while reading ${type}:${target}`,
                 e,
               );
             }
@@ -449,7 +471,7 @@ export class DefaultCatalogProcessingOrchestrator
               );
             } catch (e) {
               throw new InputError(
-                `Processor ${processor.constructor.name} threw an error while postprocessing`,
+                `Processor ${processor.getProcessorName()} threw an error while postprocessing`,
                 e,
               );
             }

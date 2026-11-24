@@ -36,6 +36,7 @@ const useStyles = makeStyles(theme => ({
     letterSpacing: 0.5,
     overflow: 'hidden',
     whiteSpace: 'nowrap',
+    marginBottom: theme.spacing(1),
   },
 }));
 
@@ -70,7 +71,7 @@ export function AboutField(props: AboutFieldProps) {
     );
   return (
     <div className={className}>
-      <Typography variant="h2" className={classes.label}>
+      <Typography variant="inherit" component="h2" className={classes.label}>
         {label}
       </Typography>
       {content}

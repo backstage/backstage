@@ -4,7 +4,7 @@ title: Introduction to Plugins (Legacy)
 description: Legacy documentation for integrating various infrastructure and software development tools into Backstage through plugins using the old frontend system.
 ---
 
-:::caution Legacy Documentation
+:::caution[Legacy Documentation]
 
 This section covers plugin development using the **old frontend system**. For new development, please refer to the [new frontend system](../frontend-system/index.md) and [new backend system](../backend-system/index.md) documentation. The content here is kept for reference and for maintaining existing plugins that have not yet been migrated.
 

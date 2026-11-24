@@ -25,6 +25,8 @@ import {
 } from './rules';
 import { SerializedTask } from '@backstage/plugin-scaffolder-node';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import fs from 'fs-extra';
+import path from 'node:path';
 
 describe('hasTag', () => {
   describe('apply', () => {
@@ -288,6 +290,41 @@ describe('hasNumberProperty', () => {
         ).toEqual(true);
       },
     );
+
+    it.each([
+      ['gitlab:projectAccessToken:create', 'projectId'],
+      ['gitlab:projectDeployToken:create', 'projectId'],
+      ['gitlab:projectVariable:create', 'projectId'],
+      ['gitlab:issues:create', 'projectId'],
+      ['gitlab:group:access', 'path'],
+      ['bitbucketServer:group:access', 'path'],
+    ])(
+      'matches numeric string input values for integration identifiers, action=%s key=%s',
+      (action, key) => {
+        expect(
+          hasNumberProperty.apply(
+            { action, input: { [key]: '42' } },
+            { key, value: 42 },
+          ),
+        ).toEqual(true);
+      },
+    );
+
+    it.each([
+      ['custom:action', 'projectId', '42'],
+      ['gitlab:issues:create', 'title', '42'],
+      ['gitlab:group:access', 'path', 'example/team'],
+    ])(
+      'does not match unmatched input values, action=%s key=%s value=%s',
+      (action, key, value) => {
+        expect(
+          hasNumberProperty.apply(
+            { action, input: { [key]: value } },
+            { key, value: 42 },
+          ),
+        ).toEqual(false);
+      },
+    );
   });
 });
 
@@ -364,6 +401,120 @@ describe('hasStringProperty', () => {
         ).toEqual(true);
       },
     );
+
+    it.each(['path', '[path]', '["path"]', "['path']"])(
+      'matches group paths regardless of casing for %s',
+      key => {
+        expect(
+          hasStringProperty.apply(
+            {
+              action: 'gitlab:group:access',
+              input: { path: 'ExAmPlE/TeAm' },
+            },
+            { key, value: 'example/team' },
+          ),
+        ).toEqual(true);
+      },
+    );
+
+    it.each([
+      ['gitlab:issues:create', 'projectId', 'Example/Project'],
+      ['github:repo:create', 'owner', 'Example'],
+      ['publish:github', 'repoName', 'Example'],
+      ['publish:bitbucketCloud', 'repoUrl', 'BitBucket.org?repo=Example'],
+      ['publish:bitbucketServer', 'repoUrl', 'BitBucket.example?repo=Team'],
+      ['github:group:access', 'path', 'Example/Team'],
+      ['bitbucketCloud:group:access', 'path', 'Example/Team'],
+      ['custom:gitlab:group:access', 'path', 'Example/Team'],
+    ])('matches %s identifiers for %s', (action, key, value) => {
+      expect(
+        hasStringProperty.apply(
+          { action, input: { [key]: value } },
+          { key, value: value.toLowerCase() },
+        ),
+      ).toEqual(true);
+    });
+
+    it.each([
+      ['publish:github:pull-request', 'path', 'MAIN'],
+      ['gitlab:issues:create', 'path', 'MAIN'],
+      ['gitlab:group:access', 'branchName', 'MAIN'],
+      ['publish:github:pull-request', 'branchName', 'MAIN'],
+      ['custom:action', 'owner', 'Example'],
+    ])('preserves case-sensitive %s values for %s', (action, key, value) => {
+      expect(
+        hasStringProperty.apply(
+          { action, input: { [key]: value } },
+          { key, value: value.toLowerCase() },
+        ),
+      ).toEqual(false);
+    });
+
+    it.each([
+      ['gitlab:projectAccessToken:create', 'projectId'],
+      ['gitlab:projectDeployToken:create', 'projectId'],
+      ['gitlab:projectVariable:create', 'projectId'],
+      ['gitlab:issues:create', 'projectId'],
+      ['gitlab:group:access', 'path'],
+      ['bitbucketCloud:group:access', 'path'],
+    ])(
+      'matches numeric input values for integration identifiers, action=%s key=%s',
+      (action, key) => {
+        expect(
+          hasStringProperty.apply(
+            { action, input: { [key]: 42 } },
+            { key, value: '42' },
+          ),
+        ).toEqual(true);
+      },
+    );
+
+    it.each([
+      ['gitlab:issues:create', 'projectId', '042', '42'],
+      ['gitlab:issues:create', 'projectId', '42', '042'],
+      ['gitlab:group:access', 'path', '007', '7'],
+    ])(
+      'matches zero-padded digit identifiers, action=%s key=%s input=%s value=%s',
+      (action, key, inputValue, ruleValue) => {
+        expect(
+          hasStringProperty.apply(
+            { action, input: { [key]: inputValue } },
+            { key, value: ruleValue },
+          ),
+        ).toEqual(true);
+      },
+    );
+
+    it('does not match different digit identifiers', () => {
+      expect(
+        hasStringProperty.apply(
+          { action: 'gitlab:issues:create', input: { projectId: '042' } },
+          { key: 'projectId', value: '43' },
+        ),
+      ).toEqual(false);
+      expect(
+        hasNumberProperty.apply(
+          { action: 'gitlab:issues:create', input: { projectId: '042' } },
+          { key: 'projectId', value: 42 },
+        ),
+      ).toEqual(true);
+    });
+
+    it.each([
+      ['custom:action', 'projectId', 42, '42'],
+      ['gitlab:issues:create', 'title', 42, '42'],
+      ['gitlab:projectAccessToken:create', 'projectId', 42, 'example/project'],
+    ])(
+      'does not match unmatched input values, action=%s key=%s',
+      (action, key, value, match) => {
+        expect(
+          hasStringProperty.apply(
+            { action, input: { [key]: value } },
+            { key, value: match },
+          ),
+        ).toEqual(false);
+      },
+    );
   });
 });
 
@@ -438,5 +589,77 @@ describe('isTaskOwner', () => {
       key: 'created_by',
       values: ['user:default/user-1', 'user:default/user-2'],
     });
+  });
+});
+
+describe('integration identifier classification', () => {
+  it.each(['publish:gitea', 'publish:gerrit:review'])(
+    'does not normalize identifier aliases for %s',
+    action => {
+      expect(
+        hasNumberProperty.apply(
+          { action, input: { projectId: '42' } },
+          { key: 'projectId', value: 42 },
+        ),
+      ).toEqual(false);
+    },
+  );
+
+  it('classifies every in-repo scaffolder backend module', () => {
+    const pluginsDir = path.resolve(__dirname, '../../..');
+    if (!fs.existsSync(pluginsDir)) {
+      return;
+    }
+
+    // Modules whose integrations accept identifiers as either numbers or
+    // equivalent numeric strings, and are therefore covered by
+    // INTEGRATION_ACTION_SEGMENT_PATTERN in rules.ts. Their registered action
+    // namespaces are gitlab, github, bitbucket, bitbucketCloud and
+    // bitbucketServer.
+    const modulesWithIdentifierAliases = [
+      'scaffolder-backend-module-bitbucket-cloud',
+      'scaffolder-backend-module-bitbucket-server',
+      'scaffolder-backend-module-gitlab',
+      'scaffolder-backend-module-github',
+    ];
+    // Modules without number/numeric-string identifier aliases: gitea and
+    // gerrit identify repositories through parsed repoUrl strings, and the
+    // remaining modules do not register source code hosting actions.
+    const modulesWithoutIdentifierAliases = [
+      'scaffolder-backend-module-azure',
+      'scaffolder-backend-module-confluence-to-markdown',
+      'scaffolder-backend-module-cookiecutter',
+      'scaffolder-backend-module-gcp',
+      'scaffolder-backend-module-gerrit',
+      'scaffolder-backend-module-gitea',
+      'scaffolder-backend-module-notifications',
+      'scaffolder-backend-module-rails',
+      'scaffolder-backend-module-sentry',
+      'scaffolder-backend-module-workspace-database',
+      'scaffolder-backend-module-yeoman',
+    ];
+
+    const modules = fs
+      .readdirSync(pluginsDir)
+      .filter(name => name.startsWith('scaffolder-backend-module-'));
+
+    // A new scaffolder backend module must be classified here: if its
+    // integration accepts identifiers as both numbers and the equivalent
+    // numeric strings, extend INTEGRATION_ACTION_SEGMENT_PATTERN and
+    // INTEGRATION_IDENTIFIER_PROPERTIES in rules.ts and add it to
+    // modulesWithIdentifierAliases above; otherwise add it to
+    // modulesWithoutIdentifierAliases with a reason.
+    const unclassified = modules.filter(
+      name =>
+        !modulesWithIdentifierAliases.includes(name) &&
+        !modulesWithoutIdentifierAliases.includes(name),
+    );
+    expect(unclassified).toEqual([]);
+
+    const missing = [
+      ...modulesWithIdentifierAliases,
+      ...modulesWithoutIdentifierAliases,
+    ].filter(name => !modules.includes(name));
+    expect(missing).toEqual([]);
   });
 });

@@ -32,6 +32,31 @@ const schema = {
 };
 
 describe('SchemaValidator', () => {
+  it('resolves local and root-ID references independently for each schema', () => {
+    const validator = new SchemaValidator();
+    const createSchema = (minimum: number) => ({
+      $id: 'https://example.com/widget',
+      type: 'object',
+      definitions: { size: { type: 'number', minimum } },
+      properties: {
+        local: { $ref: '#/definitions/size' },
+        absolute: { $ref: 'https://example.com/widget#/definitions/size' },
+      },
+    });
+    const original = createSchema(1);
+    const stricter = createSchema(5);
+
+    expect(validator.validate(original, { local: 3, absolute: 3 })).toEqual([]);
+    expect(validator.validate(stricter, { local: 5, absolute: 5 })).toEqual([]);
+    expect(validator.validate(stricter, { local: 3, absolute: 5 })).not.toEqual(
+      [],
+    );
+    expect(validator.validate(stricter, { local: 5, absolute: 3 })).not.toEqual(
+      [],
+    );
+    expect(validator.validate(original, { local: 3, absolute: 3 })).toEqual([]);
+  });
+
   it('returns no errors for valid data', () => {
     const validator = new SchemaValidator();
     const errors = validator.validate(schema, {
@@ -92,5 +117,61 @@ describe('SchemaValidator', () => {
     } finally {
       jest.useRealTimers();
     }
+  });
+
+  it('handles distinct schema objects that share the same $id', () => {
+    const validator = new SchemaValidator();
+
+    const base = {
+      $id: 'ApiV1alpha1',
+      type: 'object',
+      required: ['apiVersion', 'spec'],
+      properties: {
+        apiVersion: { type: 'string' },
+        spec: {
+          type: 'object',
+          required: ['owner'],
+          properties: { owner: { type: 'string', minLength: 1 } },
+        },
+      },
+    };
+    const v1alpha1Schema = {
+      ...base,
+      properties: {
+        ...base.properties,
+        apiVersion: { const: 'backstage.io/v1alpha1' },
+      },
+    };
+    const v1beta1Schema = {
+      ...base,
+      properties: {
+        ...base.properties,
+        apiVersion: { const: 'backstage.io/v1beta1' },
+      },
+    };
+
+    // Both schemas carry the same `$id` but are distinct objects, as produced
+    // by the catalog model when a kind shares a schema across apiVersions.
+    // Validating the second one must not fail with an AJV `$id` collision.
+    expect(
+      validator.validate(v1alpha1Schema, {
+        apiVersion: 'backstage.io/v1alpha1',
+        spec: { owner: 'group:default/team-a' },
+      }),
+    ).toEqual([]);
+    expect(
+      validator.validate(v1beta1Schema, {
+        apiVersion: 'backstage.io/v1beta1',
+        spec: { owner: 'group:default/team-b' },
+      }),
+    ).toEqual([]);
+
+    // Each validator still enforces its own apiVersion constraint.
+    expect(
+      validator.validate(v1alpha1Schema, {
+        apiVersion: 'backstage.io/v1beta1',
+        spec: { owner: 'group:default/team-a' },
+      }).length,
+    ).toBeGreaterThan(0);
   });
 });

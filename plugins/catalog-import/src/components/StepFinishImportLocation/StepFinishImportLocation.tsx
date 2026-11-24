@@ -45,14 +45,11 @@ const filterComponentEntity = (
   for (const location of newLocations) {
     for (const entity of location.entities) {
       if (
-        ['component', 'api', 'resource'].includes(
-          entity.kind.toLocaleLowerCase('en-US'),
-        )
+        ['component', 'api', 'resource'].includes(entity.kind.toLowerCase())
       ) {
         return {
-          kind: entity.kind.toLocaleLowerCase('en-US'),
-          namespace:
-            entity.namespace?.toLocaleLowerCase('en-US') ?? DEFAULT_NAMESPACE,
+          kind: entity.kind.toLowerCase(),
+          namespace: entity.namespace?.toLowerCase() ?? DEFAULT_NAMESPACE,
           name: entity.name,
         };
       }

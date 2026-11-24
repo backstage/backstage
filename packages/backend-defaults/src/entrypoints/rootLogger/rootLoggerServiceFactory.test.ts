@@ -19,6 +19,8 @@ import {
 } from '@backstage/backend-test-utils';
 import { rootLoggerServiceFactory } from './rootLoggerServiceFactory';
 
+import { transports } from 'winston';
+import { MESSAGE } from 'triple-beam';
 import { WinstonLogger } from './WinstonLogger';
 
 describe('rootLoggerServiceFactory', () => {
@@ -39,6 +41,32 @@ describe('rootLoggerServiceFactory', () => {
       format: expect.anything(),
       transports: expect.anything(),
     });
+  });
+
+  it('should format logs as JSON with a timestamp in production', async () => {
+    const env = jest.replaceProperty(process, 'env', {
+      ...process.env,
+      NODE_ENV: 'production',
+    });
+    try {
+      await ServiceFactoryTester.from(rootLoggerServiceFactory, {
+        dependencies: [mockServices.rootConfig.factory()],
+      }).getSubject();
+
+      const { format } = jest.mocked(WinstonLogger.create).mock.lastCall![0];
+      const info = format!.transform({
+        level: 'info',
+        message: 'hello',
+      }) as unknown as Record<symbol, string>;
+
+      expect(JSON.parse(info[MESSAGE])).toEqual({
+        level: 'info',
+        message: 'hello',
+        timestamp: expect.any(String),
+      });
+    } finally {
+      env.restore();
+    }
   });
 
   it('should create WinstonLogger from config', async () => {
@@ -68,5 +96,41 @@ describe('rootLoggerServiceFactory', () => {
       format: expect.anything(),
       transports: expect.anything(),
     });
+  });
+
+  it('should redact secrets except allowlisted ones', async () => {
+    const mockTransportLog = jest
+      .spyOn(transports.Console.prototype, 'log')
+      .mockImplementation((_info, next) => (next as () => void)());
+
+    const logger = await ServiceFactoryTester.from(rootLoggerServiceFactory, {
+      dependencies: [
+        mockServices.rootConfig.factory({
+          data: {
+            backend: {
+              auth: {
+                keys: [{ secret: 'hidden-value' }, { secret: 'shown-value' }],
+              },
+              logger: {
+                redactAllowlist: ['shown-value'],
+              },
+            },
+          },
+        }),
+      ],
+    }).getSubject();
+
+    mockTransportLog.mockClear();
+    logger.info('a hidden-value message');
+    logger.info('a shown-value message');
+
+    expect(
+      mockTransportLog.mock.calls.map(
+        ([info]) => (info as Record<symbol, string>)[MESSAGE],
+      ),
+    ).toEqual([
+      expect.stringContaining('a *** message'),
+      expect.stringContaining('a shown-value message'),
+    ]);
   });
 });

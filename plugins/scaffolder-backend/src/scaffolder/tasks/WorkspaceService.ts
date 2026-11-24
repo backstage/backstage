@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
-import { CurrentClaimedTask } from './StorageTaskBroker';
-import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
-import { DatabaseWorkspaceProvider } from './DatabaseWorkspaceProvider';
-import { TaskStore } from './types';
+import type { Config } from '@backstage/config';
+import type { CurrentClaimedTask } from './StorageTaskBroker';
+import type { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
 import fs from 'fs-extra';
 
 export interface WorkspaceService {
@@ -32,39 +30,68 @@ export interface WorkspaceService {
   }): Promise<void>;
 }
 
+export function resolveWorkspaceProvider(
+  workspaceProviders?: Record<string, WorkspaceProvider>,
+  config?: Config,
+): WorkspaceProvider | undefined {
+  const legacySerializationEnabled =
+    config?.getOptionalBoolean(
+      'scaffolder.EXPERIMENTAL_workspaceSerialization',
+    ) ?? false;
+  const providerName =
+    config?.getOptionalString('scaffolder.taskRecovery.workspaceProvider') ??
+    (legacySerializationEnabled
+      ? config?.getOptionalString(
+          'scaffolder.EXPERIMENTAL_workspaceSerializationProvider',
+        ) ?? 'database'
+      : undefined);
+
+  if (!providerName) {
+    return undefined;
+  }
+
+  const workspaceProvider =
+    workspaceProviders &&
+    Object.prototype.hasOwnProperty.call(workspaceProviders, providerName)
+      ? workspaceProviders[providerName]
+      : undefined;
+
+  if (!workspaceProvider) {
+    const databaseProviderGuidance =
+      providerName === 'database'
+        ? ` For database storage, add '@backstage/plugin-scaffolder-backend-module-workspace-database'. ` +
+          `When running in production, also set ` +
+          `'scaffolder.taskRecovery.database.dangerouslyEnableInProduction' to true.`
+        : '';
+    throw new Error(
+      `Workspace provider '${providerName}' is configured but not available. Make sure to install and register the corresponding module.${databaseProviderGuidance}`,
+    );
+  }
+
+  return workspaceProvider;
+}
+
 export class DefaultWorkspaceService implements WorkspaceService {
   static create(
     task: CurrentClaimedTask,
-    storage: TaskStore,
-    additionalWorkspaceProviders?: Record<string, WorkspaceProvider>,
-    config?: Config,
+    workspaceProvider?: WorkspaceProvider,
   ) {
-    const workspaceProviderName =
-      config?.getOptionalString(
-        'scaffolder.EXPERIMENTAL_workspaceSerializationProvider',
-      ) ?? 'database';
-    const workspaceProvider =
-      additionalWorkspaceProviders?.[workspaceProviderName] ??
-      DatabaseWorkspaceProvider.create(storage);
-    return new DefaultWorkspaceService(task, workspaceProvider, config);
+    return new DefaultWorkspaceService(task, workspaceProvider);
   }
 
   private readonly task: CurrentClaimedTask;
-  private readonly workspaceProvider: WorkspaceProvider;
-  private readonly config?: Config;
+  private readonly workspaceProvider?: WorkspaceProvider;
 
   private constructor(
     task: CurrentClaimedTask,
-    workspaceProvider: WorkspaceProvider,
-    config?: Config,
+    workspaceProvider: WorkspaceProvider | undefined,
   ) {
     this.task = task;
     this.workspaceProvider = workspaceProvider;
-    this.config = config;
   }
 
   public async serializeWorkspace(options: { path: string }): Promise<void> {
-    if (this.isWorkspaceSerializationEnabled()) {
+    if (this.workspaceProvider) {
       await this.workspaceProvider.serializeWorkspace({
         path: options.path,
         taskId: this.task.taskId,
@@ -73,7 +100,7 @@ export class DefaultWorkspaceService implements WorkspaceService {
   }
 
   public async cleanWorkspace(): Promise<void> {
-    if (this.isWorkspaceSerializationEnabled()) {
+    if (this.workspaceProvider) {
       await this.workspaceProvider.cleanWorkspace({ taskId: this.task.taskId });
     }
   }
@@ -82,17 +109,9 @@ export class DefaultWorkspaceService implements WorkspaceService {
     taskId: string;
     targetPath: string;
   }): Promise<void> {
-    if (this.isWorkspaceSerializationEnabled()) {
+    if (this.workspaceProvider) {
       await fs.mkdirp(options.targetPath);
       await this.workspaceProvider.rehydrateWorkspace(options);
     }
-  }
-
-  private isWorkspaceSerializationEnabled(): boolean {
-    return (
-      this.config?.getOptionalBoolean(
-        'scaffolder.EXPERIMENTAL_workspaceSerialization',
-      ) ?? false
-    );
   }
 }

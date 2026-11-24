@@ -162,7 +162,11 @@ export type KubernetesProxyOptions = {
   authStrategy: AuthenticationStrategy;
   discovery: DiscoveryService;
   httpAuth: HttpAuthService;
-  auditor: AuditorService;
+  auditor?: AuditorService;
+  middlewareCache?: {
+    ttlMs?: number;
+    maxSize?: number;
+  };
 };
 
 // @public (undocumented)

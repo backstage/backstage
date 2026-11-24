@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
+import { templateDryRunPermission } from '@backstage/plugin-scaffolder-common/alpha';
 import { ScaffolderService } from '@backstage/plugin-scaffolder-node';
 import { JsonObject } from '@backstage/types';
 import yaml from 'yaml';
@@ -44,6 +45,7 @@ export const createDryRunTemplateAction = ({
     },
     description:
       'Dry-runs a scaffolder template to validate it without making changes. Returns success with execution logs, or errors for validation failures.',
+    visibilityPermission: templateDryRunPermission,
     schema: {
       input: z =>
         z.object({

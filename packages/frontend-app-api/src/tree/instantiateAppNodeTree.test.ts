@@ -21,12 +21,15 @@ import {
   ExtensionDataRef,
   ExtensionDefinition,
   PortableSchema,
+  coreExtensionData,
   createExtension,
   createExtensionBlueprint,
   createExtensionDataRef,
   createExtensionInput,
   createFrontendPlugin,
+  createRouteRef,
 } from '@backstage/frontend-plugin-api';
+import { createElement, isValidElement, type ReactElement } from 'react';
 import { ExtensionFactoryMiddleware } from '../wiring/types';
 import {
   createAppNodeInstance,
@@ -40,9 +43,13 @@ import {
   resolveExtensionDefinition,
 } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { createDeprecatedConfigSchema } from '../../../frontend-plugin-api/src/schema/createPortableSchema';
+import { AppNodeProvider } from '../../../frontend-plugin-api/src/components/AppNodeProvider';
+import { LegacyExtensionRouter } from '../routing/LegacyExtensionRouter';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { createConfigSchema } from '../../../frontend-plugin-api/src/schema/createPortableSchema';
 import { TestApiRegistry, withLogCollector } from '@backstage/test-utils';
 import { createErrorCollector } from '../wiring/createErrorCollector';
+import { z } from 'zod/v4';
 
 const testApis = TestApiRegistry.from();
 const testDataRef = createExtensionDataRef<string>().with({ id: 'test' });
@@ -181,9 +188,9 @@ describe('instantiateAppNodeTree', () => {
         test: testDataRef,
         other: otherDataRef.optional(),
       },
-      configSchema: createDeprecatedConfigSchema({
-        output: z => z.string().default('test'),
-        other: z => z.number().optional(),
+      configSchema: createConfigSchema({
+        output: z.string().default('test'),
+        other: z.number().optional(),
       }),
       factory({ config }) {
         return { test: config.output, other: config.other };
@@ -494,7 +501,7 @@ describe('instantiateAppNodeTree', () => {
           {
             code: 'EXTENSION_CONFIGURATION_INVALID',
             message:
-              "Invalid configuration for extension 'app/test'; caused by Error: Expected number, received string at 'other'",
+              "Invalid configuration for extension 'app/test'; caused by Error: Invalid input: expected number, received string at 'other'",
             context: { node },
           },
         ]);
@@ -848,11 +855,9 @@ describe('instantiateAppNodeTree', () => {
         name: 'test',
         attachTo: { id: 'ignored', input: 'ignored' },
         output: [testDataRef, otherDataRef.optional()],
-        config: {
-          schema: {
-            output: z => z.string().default('test'),
-            other: z => z.number().optional(),
-          },
+        configSchema: {
+          output: z.string().default('test'),
+          other: z.number().optional(),
         },
         factory({ config }) {
           return [
@@ -1120,7 +1125,7 @@ describe('instantiateAppNodeTree', () => {
           {
             code: 'EXTENSION_CONFIGURATION_INVALID',
             message:
-              "Invalid configuration for extension 'app/test'; caused by Error: Expected number, received string at 'other'",
+              "Invalid configuration for extension 'app/test'; caused by Error: Invalid input: expected number, received string at 'other'",
             context: { node },
           },
         ]);
@@ -1778,6 +1783,187 @@ describe('instantiateAppNodeTree', () => {
           ]);
         });
       });
+    });
+  });
+
+  describe('routing compatibility seam', () => {
+    const originalElement = createElement('main', null, 'legacy content');
+
+    /** The seam wraps route-bearing react elements for scoped routing. */
+    function expectRoutingWrapper(element: unknown, node: AppNode) {
+      expect(isValidElement(element)).toBe(true);
+      const wrapper = element as React.ReactElement<{
+        node: AppNode;
+        children: React.ReactElement<{ node: AppNode; children: unknown }>;
+      }>;
+      expect(wrapper.type).toBe(AppNodeProvider);
+      expect(wrapper.props.node).toBe(node);
+      expect(wrapper.props.children.type).toBe(LegacyExtensionRouter);
+      expect(wrapper.props.children.props.node).toBe(node);
+      expect(wrapper.props.children.props.children).toBe(originalElement);
+    }
+
+    it('should wrap route-bearing v1 named outputs, preserving routePath and routeRef identity', () => {
+      const routeRef = createRouteRef({ params: ['team'] });
+      const node = makeNode(
+        createV1Extension({
+          namespace: 'legacy-page',
+          attachTo: { id: 'app/routes', input: 'routes' },
+          output: {
+            routePath: coreExtensionData.routePath,
+            routeRef: coreExtensionData.routeRef,
+            reactElement: coreExtensionData.reactElement,
+          },
+          factory: () => ({
+            routePath: '/legacy/:team',
+            routeRef,
+            reactElement: originalElement,
+          }),
+        }),
+      );
+      const instance = createAppNodeInstance({
+        apis: testApis,
+        node,
+        attachments: new Map(),
+        collector,
+      })!;
+
+      expect(Array.from(instance.getDataRefs())).toEqual([
+        coreExtensionData.routePath,
+        coreExtensionData.routeRef,
+        coreExtensionData.reactElement,
+      ]);
+      expect(instance.getData(coreExtensionData.routePath)).toBe(
+        '/legacy/:team',
+      );
+      // The routeRef instance emitted by the factory is registered as-is.
+      expect(instance.getData(coreExtensionData.routeRef)).toBe(routeRef);
+      expectRoutingWrapper(
+        instance.getData(coreExtensionData.reactElement),
+        node,
+      );
+    });
+
+    it('should wrap route-bearing outputs introduced by extension factory middleware', () => {
+      const node = makeNode(
+        resolveExtensionDefinition(
+          createExtension({
+            name: 'middleware-scoped',
+            attachTo: { id: 'app/routes', input: 'routes' },
+            output: [
+              coreExtensionData.routePath,
+              coreExtensionData.reactElement.optional(),
+              testDataRef,
+            ],
+            factory: () => [
+              testDataRef('kept'),
+              coreExtensionData.routePath('/original'),
+            ],
+          }),
+          { namespace: 'app' },
+        ),
+      );
+      const instance = createAppNodeInstance({
+        apis: testApis,
+        node,
+        attachments: new Map(),
+        collector,
+        *extensionFactoryMiddleware(originalFactory) {
+          // Replace the route-bearing outputs, keep everything else.
+          yield* [...originalFactory()].filter(
+            value => value.id !== coreExtensionData.routePath.id,
+          );
+          yield coreExtensionData.routePath('/replaced');
+          yield coreExtensionData.reactElement(originalElement);
+        },
+      })!;
+
+      expect(instance.getData(coreExtensionData.routePath)).toBe('/replaced');
+      expect(instance.getData(testDataRef)).toBe('kept');
+      expect(Array.from(instance.getDataRefs()).map(ref => ref.id)).toEqual([
+        'core.routing.path',
+        'core.reactElement',
+        'test',
+      ]);
+      expectRoutingWrapper(
+        instance.getData(coreExtensionData.reactElement),
+        node,
+      );
+    });
+
+    it('should instantiate a route-bearing extension whose optional react element is omitted', () => {
+      const node = makeNode(
+        resolveExtensionDefinition(
+          createExtension({
+            name: 'ghost-route',
+            attachTo: { id: 'app/routes', input: 'routes' },
+            output: [
+              coreExtensionData.routePath,
+              coreExtensionData.reactElement.optional(),
+            ],
+            factory: () => [coreExtensionData.routePath('/ghost')],
+          }),
+          { namespace: 'app' },
+        ),
+      );
+      const instance = createAppNodeInstance({
+        apis: testApis,
+        node,
+        attachments: new Map(),
+        collector,
+      })!;
+
+      // The route mount is kept, and the seam leaves the declared outputs
+      // alone when there is no react element to wrap.
+      expect(Array.from(instance.getDataRefs())).toEqual([
+        coreExtensionData.routePath,
+      ]);
+      expect(instance.getData(coreExtensionData.routePath)).toBe('/ghost');
+      expect(instance.getData(coreExtensionData.reactElement)).toBeUndefined();
+    });
+
+    it('should instantiate a route-bearing extension with a null react element', () => {
+      const node = makeNode(
+        resolveExtensionDefinition(
+          createExtension({
+            name: 'null-route',
+            attachTo: { id: 'app/routes', input: 'routes' },
+            output: [
+              coreExtensionData.routePath,
+              coreExtensionData.reactElement,
+            ],
+            factory: () => [
+              coreExtensionData.routePath('/null-mount'),
+              // The runtime accepts a null element; the ref type does not.
+              coreExtensionData.reactElement(null as unknown as ReactElement),
+            ],
+          }),
+          { namespace: 'app' },
+        ),
+      );
+      const instance = createAppNodeInstance({
+        apis: testApis,
+        node,
+        attachments: new Map(),
+        collector,
+      })!;
+
+      expect(Array.from(instance.getDataRefs())).toEqual([
+        coreExtensionData.routePath,
+        coreExtensionData.reactElement,
+      ]);
+      expect(instance.getData(coreExtensionData.routePath)).toBe('/null-mount');
+      // A null element is still a present output, so the mount is wrapped
+      // like any other; it simply renders no content.
+      const element = instance.getData(coreExtensionData.reactElement);
+      expect(isValidElement(element)).toBe(true);
+      expect((element as React.ReactElement).type).toBe(AppNodeProvider);
+      expect(
+        (
+          (element as React.ReactElement<{ children: React.ReactElement }>)
+            .props.children as React.ReactElement
+        ).props.children,
+      ).toBeNull();
     });
   });
 

@@ -212,4 +212,58 @@ describe('getUsersForEntityRef', () => {
       }),
     ).resolves.toEqual({ userEntityRefs: [] });
   });
+
+  it('should handle cyclic group relationships without infinite loops', async () => {
+    const catalog = catalogServiceMock({
+      entities: [
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Group',
+          metadata: {
+            name: 'group_a',
+          },
+          relations: [
+            {
+              type: RELATION_HAS_MEMBER,
+              targetRef: 'user:default/user_a',
+            },
+            {
+              type: RELATION_PARENT_OF,
+              targetRef: 'group:default/group_b',
+            },
+          ],
+        },
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Group',
+          metadata: {
+            name: 'group_b',
+          },
+          relations: [
+            {
+              type: RELATION_HAS_MEMBER,
+              targetRef: 'user:default/user_b',
+            },
+            {
+              type: RELATION_PARENT_OF,
+              targetRef: 'group:default/group_a',
+            },
+          ],
+        },
+      ],
+    });
+
+    const resolver = new DefaultNotificationRecipientResolver(
+      mockServices.auth(),
+      catalog,
+    );
+    await expect(
+      resolver.resolveNotificationRecipients({
+        entityRefs: ['group:default/group_a'],
+        excludedEntityRefs: [],
+      }),
+    ).resolves.toEqual({
+      userEntityRefs: ['user:default/user_a', 'user:default/user_b'],
+    });
+  });
 });

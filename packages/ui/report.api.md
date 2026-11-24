@@ -500,11 +500,25 @@ export type BoxUtilityProps = {
 export type Breakpoint = 'initial' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 // @public
+export type BUINavigation = {
+  navigate: (href: string, options?: BUINavigationOptions) => void;
+  createHref: (href: string) => string;
+  pathname: string;
+};
+
+// @public
+export type BUINavigationOptions = {
+  replace?: boolean;
+  state?: unknown;
+};
+
+// @public
 export function BUIProvider(props: BUIProviderProps): JSX_2.Element;
 
 // @public (undocumented)
 export type BUIProviderProps = {
   useAnalytics?: UseAnalyticsFn;
+  useNavigation?: () => BUINavigation;
   children: ReactNode;
 };
 
@@ -646,8 +660,13 @@ export type ButtonLinkOwnProps = {
 
 // @public
 export interface ButtonLinkProps
-  extends Omit<LinkProps_2, keyof ButtonLinkOwnProps>,
-    ButtonLinkOwnProps {}
+  extends Omit<
+      LinkProps_2,
+      keyof ButtonLinkOwnProps | 'render' | 'routerOptions'
+    >,
+    ButtonLinkOwnProps {
+  routerOptions?: BUINavigationOptions;
+}
 
 // @public (undocumented)
 export type ButtonOwnProps = {
@@ -1280,7 +1299,13 @@ export type ComboboxItemProfileProps<T extends object = object> =
 
 // @public (undocumented)
 export type ComboboxItemProps<T extends object = object> =
-  ComboboxItemOwnProps & Omit<ListBoxItemProps<T>, keyof ComboboxItemOwnProps>;
+  ComboboxItemOwnProps &
+    Omit<
+      ListBoxItemProps<T>,
+      keyof ComboboxItemOwnProps | 'render' | 'routerOptions'
+    > & {
+      routerOptions?: BUINavigationOptions;
+    };
 
 // @public (undocumented)
 export type ComboboxItemSelectionProps<
@@ -1387,8 +1412,8 @@ export const ComboboxListBoxDefinition: {
     readonly options: {};
     readonly items: {};
     readonly children: {};
+    readonly hiddenKey: {};
     readonly dependencies: {};
-    readonly search: {};
     readonly loading: {};
     readonly isStale: {};
     readonly getItemTextValue: {};
@@ -2238,7 +2263,9 @@ export const HeaderDefinition: {
     readonly titleStack: 'bui-HeaderTitleStack';
     readonly title: 'bui-HeaderTitle';
     readonly titleSmall: 'bui-HeaderTitleSmall';
+    readonly tabsRow: 'bui-HeaderTabsRow';
     readonly tabsWrapper: 'bui-HeaderTabsWrapper';
+    readonly tabsScrollButton: 'bui-HeaderTabsScrollButton';
     readonly controls: 'bui-HeaderControls';
     readonly tags: 'bui-HeaderTags';
     readonly tag: 'bui-HeaderTag';
@@ -2376,7 +2403,6 @@ export type HeaderNavTabItem = HeaderNavTab | HeaderNavTabGroup;
 
 // @public
 export interface HeaderOwnProps {
-  // (undocumented)
   activeTabId?: string | null;
   // @deprecated (undocumented)
   breadcrumbs?: HeaderBreadcrumb[];
@@ -2421,7 +2447,9 @@ export const HeaderPageDefinition: {
     readonly titleStack: 'bui-HeaderTitleStack';
     readonly title: 'bui-HeaderTitle';
     readonly titleSmall: 'bui-HeaderTitleSmall';
+    readonly tabsRow: 'bui-HeaderTabsRow';
     readonly tabsWrapper: 'bui-HeaderTabsWrapper';
+    readonly tabsScrollButton: 'bui-HeaderTabsScrollButton';
     readonly controls: 'bui-HeaderControls';
     readonly tags: 'bui-HeaderTags';
     readonly tag: 'bui-HeaderTag';
@@ -2560,8 +2588,13 @@ export type LinkOwnProps = {
 
 // @public (undocumented)
 export interface LinkProps
-  extends Omit<LinkProps_2, 'children' | 'className'>,
-    LinkOwnProps {}
+  extends Omit<
+      LinkProps_2,
+      'children' | 'className' | 'render' | 'routerOptions'
+    >,
+    LinkOwnProps {
+  routerOptions?: BUINavigationOptions;
+}
 
 // @public
 export const List: <T extends object>(props: ListProps<T>) => JSX_2.Element;
@@ -2635,7 +2668,9 @@ export type ListRowOwnProps = {
 // @public
 export interface ListRowProps
   extends ListRowOwnProps,
-    Omit<GridListItemProps, keyof ListRowOwnProps> {}
+    Omit<GridListItemProps, keyof ListRowOwnProps | 'routerOptions'> {
+  routerOptions?: BUINavigationOptions;
+}
 
 // @public (undocumented)
 export type LoadingConfig = {
@@ -2738,7 +2773,9 @@ export type MenuItemOwnProps = {
 // @public (undocumented)
 export interface MenuItemProps
   extends MenuItemOwnProps,
-    Omit<MenuItemProps_2, keyof MenuItemOwnProps> {}
+    Omit<MenuItemProps_2, keyof MenuItemOwnProps | 'render' | 'routerOptions'> {
+  routerOptions?: BUINavigationOptions;
+}
 
 // @public (undocumented)
 export const MenuListBox: (props: MenuListBoxProps<object>) => JSX_2.Element;
@@ -2755,7 +2792,12 @@ export type MenuListBoxItemOwnProps = {
 // @public (undocumented)
 export interface MenuListBoxItemProps
   extends MenuListBoxItemOwnProps,
-    Omit<ListBoxItemProps, keyof MenuListBoxItemOwnProps> {}
+    Omit<
+      ListBoxItemProps,
+      keyof MenuListBoxItemOwnProps | 'render' | 'routerOptions'
+    > {
+  routerOptions?: BUINavigationOptions;
+}
 
 // @public (undocumented)
 export type MenuListBoxOwnProps = MenuPopoverOwnProps & {
@@ -2795,7 +2837,7 @@ export type MenuSectionOwnProps = {
   className?: string;
 };
 
-// @public (undocumented)
+// @public
 export interface MenuSectionProps<T>
   extends MenuSectionOwnProps,
     Omit<MenuSectionProps_2<T>, keyof MenuSectionOwnProps> {}
@@ -2958,7 +3000,6 @@ export interface PaginationOptions
       | 'showPaginationLabel'
     >
   > {
-  // (undocumented)
   initialOffset?: number;
 }
 
@@ -3225,7 +3266,9 @@ export type RowOwnProps<T = object> = {
 // @public (undocumented)
 export interface RowProps<T>
   extends RowOwnProps<T>,
-    Omit<RowProps_2<T>, keyof RowOwnProps> {}
+    Omit<RowProps_2<T>, keyof RowOwnProps | 'routerOptions'> {
+  routerOptions?: BUINavigationOptions;
+}
 
 // @public
 export type RowRenderFn<T extends TableItem> = (params: {
@@ -3291,7 +3334,12 @@ export type SearchAutocompleteItemOwnProps = {
 // @public (undocumented)
 export interface SearchAutocompleteItemProps
   extends SearchAutocompleteItemOwnProps,
-    Omit<ListBoxItemProps, keyof SearchAutocompleteItemOwnProps> {}
+    Omit<
+      ListBoxItemProps,
+      keyof SearchAutocompleteItemOwnProps | 'render' | 'routerOptions'
+    > {
+  routerOptions?: BUINavigationOptions;
+}
 
 // @public (undocumented)
 export type SearchAutocompleteOwnProps = {
@@ -3600,8 +3648,12 @@ export type SelectItemProfileProps<T extends object = object> =
 
 // @public (undocumented)
 export type SelectItemProps<T extends object = object> = SelectItemOwnProps &
-  Omit<ListBoxItemProps<T>, keyof SelectItemOwnProps | 'textValue'> & {
+  Omit<
+    ListBoxItemProps<T>,
+    keyof SelectItemOwnProps | 'render' | 'textValue' | 'routerOptions'
+  > & {
     textValue: string;
+    routerOptions?: BUINavigationOptions;
   };
 
 // @public (undocumented)
@@ -4251,7 +4303,9 @@ export interface TabPanelProps
 // @public
 export interface TabProps
   extends TabOwnProps,
-    Omit<TabProps_2, keyof TabOwnProps> {}
+    Omit<TabProps_2, keyof TabOwnProps | 'render' | 'routerOptions'> {
+  routerOptions?: BUINavigationOptions;
+}
 
 // @public
 export const Tabs: (props: TabsProps) => JSX_2.Element | null;
@@ -4334,7 +4388,9 @@ export type TagOwnProps = {
 // @public
 export interface TagProps
   extends TagOwnProps,
-    Omit<TagProps_2, keyof TagOwnProps> {}
+    Omit<TagProps_2, keyof TagOwnProps | 'routerOptions'> {
+  routerOptions?: BUINavigationOptions;
+}
 
 // @public
 const Text_2: {

@@ -14,19 +14,48 @@
  * limitations under the License.
  */
 
-import { render, screen, act } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { TestRouter } from '../../testUtils/TestRouter';
+import { render, screen, act, fireEvent } from '@testing-library/react';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import { BUIProvider } from '../../provider';
 import { PluginHeaderBreadcrumbs } from './PluginHeaderBreadcrumbs';
 import type { PluginHeaderBreadcrumbEntry } from './types';
 
 function renderBreadcrumbs(entries: PluginHeaderBreadcrumbEntry[]) {
   return render(
-    <MemoryRouter>
+    <TestRouter>
       <BUIProvider>
         <PluginHeaderBreadcrumbs entries={entries} />
       </BUIProvider>
-    </MemoryRouter>,
+    </TestRouter>,
+  );
+}
+
+function LocationStatus() {
+  return <span role="status">{useLocation().pathname}</span>;
+}
+
+function renderNestedBreadcrumbs(entries: PluginHeaderBreadcrumbEntry[]) {
+  return render(
+    <TestRouter
+      basename="/app"
+      initialEntries={['/app/catalog/entity']}
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
+      <BUIProvider>
+        <Routes>
+          <Route
+            path="catalog/entity/*"
+            element={
+              <>
+                <PluginHeaderBreadcrumbs entries={entries} />
+                <LocationStatus />
+              </>
+            }
+          />
+        </Routes>
+      </BUIProvider>
+    </TestRouter>,
   );
 }
 
@@ -77,6 +106,40 @@ describe('PluginHeaderBreadcrumbs', () => {
     expect(
       screen.queryByRole('link', { name: 'my-service' }),
     ).not.toBeInTheDocument();
+  });
+
+  it('routes a visible relative ancestor through the host router', () => {
+    renderNestedBreadcrumbs([
+      { label: 'Parent', href: 'parent' },
+      { label: 'Current', href: 'current' },
+    ]);
+
+    const link = screen.getByRole('link', { name: 'Parent' });
+    expect(link).toHaveAttribute('href', '/app/catalog/entity/parent');
+    fireEvent.click(link);
+    expect(screen.getByRole('status')).toHaveTextContent(
+      '/catalog/entity/parent',
+    );
+  });
+
+  it('routes a collapsed relative ancestor through the host router', async () => {
+    renderNestedBreadcrumbs([
+      { label: 'Root', href: '/catalog' },
+      { label: 'Docs', href: 'docs' },
+      { label: 'Guides', href: 'guides' },
+      { label: 'Setup', href: 'setup' },
+      { label: 'Current', href: 'current' },
+    ]);
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Show more breadcrumbs' }),
+    );
+    const link = await screen.findByRole('menuitem', { name: 'Docs' });
+    expect(link).toHaveAttribute('href', '/app/catalog/entity/docs');
+    fireEvent.click(link);
+    expect(screen.getByRole('status')).toHaveTextContent(
+      '/catalog/entity/docs',
+    );
   });
 
   it('renders separators between ancestor segments', () => {

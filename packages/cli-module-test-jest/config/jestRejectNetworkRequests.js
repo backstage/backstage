@@ -54,11 +54,15 @@ if (global.fetch) {
 }
 
 if (global.XMLHttpRequest) {
-  global.XMLHttpRequest = class {
+  const BlockingXMLHttpRequest = class {
     constructor() {
-      throw new Error(errorMessage);
+      if (global.XMLHttpRequest === BlockingXMLHttpRequest) {
+        throw new Error(errorMessage);
+      }
+      return new origXMLHttpRequest();
     }
   };
+  global.XMLHttpRequest = BlockingXMLHttpRequest;
 }
 
 // Reset overrides after each suite to make sure we don't pollute the test environment

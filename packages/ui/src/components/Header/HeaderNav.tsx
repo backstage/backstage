@@ -15,14 +15,7 @@
  */
 
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { useFocusVisible, useHover, useLink } from 'react-aria';
-import {
-  matchRoutes,
-  resolvePath,
-  useInRouterContext,
-  useLocation,
-  useResolvedPath,
-} from 'react-router-dom';
+import { mergeProps, useFocusVisible, useHover, useLink } from 'react-aria';
 import { Button as RAButton } from 'react-aria-components';
 import { RiArrowDownSLine } from '@remixicon/react';
 import { useDefinition } from '../../hooks/useDefinition';
@@ -38,14 +31,21 @@ import type {
   HeaderNavTabGroup,
   HeaderNavTabItem,
 } from './types';
+import {
+  getBUINavigationPathname,
+  useBUINavigation,
+  type BUINavigation,
+} from '../../provider/BUINavigation';
+import { BUIRoutingProvider } from '../../navigation/BUIRoutingProvider';
 
 function isTabGroup(tab: HeaderNavTabItem): tab is HeaderNavTabGroup {
   return 'items' in tab;
 }
 
-function HeaderNavLink(props: HeaderNavLinkProps) {
+function HeaderNavLinkView(props: HeaderNavLinkProps) {
   const { ownProps, analytics } = useDefinition(HeaderNavItemDefinition, props);
-  const { id, label, href, active, registerRef, onHighlight } = ownProps;
+  const { id, label, active, registerRef, onHighlight } = ownProps;
+  const { href } = ownProps;
 
   const linkRef = useRef<HTMLAnchorElement>(null);
   const { linkProps } = useLink({ href }, linkRef);
@@ -60,27 +60,37 @@ function HeaderNavLink(props: HeaderNavLinkProps) {
       attributes: { to: href },
     });
   };
-
+  const anchorProps = mergeProps(
+    linkProps,
+    hoverProps,
+  ) as React.AnchorHTMLAttributes<HTMLAnchorElement>;
+  const ref = (el: HTMLAnchorElement | null) => {
+    (linkRef as React.MutableRefObject<HTMLAnchorElement | null>).current = el;
+    registerRef(id, el);
+  };
+  const commonProps = {
+    ...anchorProps,
+    href: anchorProps.href ?? href,
+    ref,
+    className: ownProps.classes.root,
+    'aria-current': active ? ('page' as const) : undefined,
+    onClick: handleClick,
+    onFocus: () => onHighlight(id),
+    onBlur: () => onHighlight(null),
+    children: label,
+  };
   return (
     <li>
-      <a
-        {...linkProps}
-        {...hoverProps}
-        ref={el => {
-          (
-            linkRef as React.MutableRefObject<HTMLAnchorElement | null>
-          ).current = el;
-          registerRef(id, el);
-        }}
-        className={ownProps.classes.root}
-        aria-current={active ? 'page' : undefined}
-        onClick={handleClick}
-        onFocus={() => onHighlight(id)}
-        onBlur={() => onHighlight(null)}
-      >
-        {label}
-      </a>
+      <a {...commonProps} />
     </li>
+  );
+}
+
+function HeaderNavLink(props: HeaderNavLinkProps) {
+  return (
+    <BUIRoutingProvider>
+      <HeaderNavLinkView {...props} />
+    </BUIRoutingProvider>
   );
 }
 
@@ -136,24 +146,33 @@ interface HeaderNavProps {
   activeTabId?: string | null;
 }
 
-function useAutoActiveTabId(tabs: HeaderNavTabItem[]): string | undefined {
-  const basePath = useResolvedPath('.').pathname;
-  const { pathname } = useLocation();
-
-  return useMemo(() => {
-    const allTabs = tabs.flatMap(tab => (isTabGroup(tab) ? tab.items : [tab]));
-    const routeObjects = allTabs.map(tab => ({
-      path: `${resolvePath(tab.href, basePath).pathname}/*`,
-      id: tab.id,
-    }));
-    const matches = matchRoutes(routeObjects, pathname);
-    return matches?.[0]?.route.id;
-  }, [tabs, basePath, pathname]);
-}
-
-function HeaderNavAutoDetect(props: { tabs: HeaderNavTabItem[] }) {
-  const activeTabId = useAutoActiveTabId(props.tabs);
-  return <HeaderNavInner tabs={props.tabs} activeTabId={activeTabId} />;
+function HeaderNavHostAutoDetect({
+  tabs,
+  useNavigation,
+}: {
+  tabs: HeaderNavTabItem[];
+  useNavigation: () => BUINavigation;
+}) {
+  const router = useNavigation();
+  const currentPathname = router.pathname.toLowerCase();
+  const allTabs = tabs.flatMap(tab => (isTabGroup(tab) ? tab.items : [tab]));
+  let activeTabId: string | undefined;
+  let activeScore = -1;
+  for (const tab of allTabs) {
+    const pathname = getBUINavigationPathname(
+      router.createHref(tab.href),
+    )?.toLowerCase();
+    if (
+      pathname !== undefined &&
+      (currentPathname === pathname ||
+        currentPathname.startsWith(pathname + '/')) &&
+      pathname.length > activeScore
+    ) {
+      activeTabId = tab.id;
+      activeScore = pathname.length;
+    }
+  }
+  return <HeaderNavInner tabs={tabs} activeTabId={activeTabId} />;
 }
 
 function HeaderNavInner(props: HeaderNavProps) {
@@ -238,10 +257,15 @@ function HeaderNavInner(props: HeaderNavProps) {
 
 /** @internal */
 export function HeaderNav(props: HeaderNavProps) {
-  const inRouter = useInRouterContext();
+  const useNavigation = useBUINavigation();
 
-  if (props.activeTabId === undefined && inRouter) {
-    return <HeaderNavAutoDetect tabs={props.tabs} />;
+  if (props.activeTabId === undefined && useNavigation) {
+    return (
+      <HeaderNavHostAutoDetect
+        tabs={props.tabs}
+        useNavigation={useNavigation}
+      />
+    );
   }
 
   return <HeaderNavInner tabs={props.tabs} activeTabId={props.activeTabId} />;

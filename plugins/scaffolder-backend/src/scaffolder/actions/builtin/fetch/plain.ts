@@ -20,6 +20,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { examples } from './plain.examples';
+import { assertScmUserCredentials } from './assertScmUserCredentials';
 
 import {
   createTemplateAction,
@@ -36,8 +37,9 @@ export const ACTION_ID = 'fetch:plain';
 export function createFetchPlainAction(options: {
   reader: UrlReaderService;
   integrations: ScmIntegrations;
+  requireScmUserCredentials?: boolean;
 }) {
-  const { reader, integrations } = options;
+  const { reader, integrations, requireScmUserCredentials } = options;
 
   return createTemplateAction({
     id: ACTION_ID,
@@ -74,6 +76,14 @@ export function createFetchPlainAction(options: {
       // Finally move the template result into the task workspace
       const targetPath = ctx.input.targetPath ?? './';
       const outputPath = resolveSafeChildPath(ctx.workspacePath, targetPath);
+
+      assertScmUserCredentials({
+        integrations,
+        requireScmUserCredentials,
+        url: ctx.input.url,
+        baseUrl: ctx.templateInfo?.baseUrl,
+        token: ctx.input.token,
+      });
 
       await fetchContents({
         reader,

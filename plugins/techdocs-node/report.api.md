@@ -19,6 +19,19 @@ import * as winston from 'winston';
 import { Writable } from 'node:stream';
 
 // @public
+export type ContainerRunnerPullOptions = {
+  authconfig?: {
+    username?: string;
+    password?: string;
+    auth?: string;
+    email?: string;
+    serveraddress?: string;
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
+};
+
+// @public
 export class DirectoryPreparer implements PreparerBase {
   static fromConfig(config: Config, options: PreparerConfig): DirectoryPreparer;
   prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
@@ -72,7 +85,7 @@ export class Generators implements GeneratorBuilder {
     options: {
       logger: LoggerService;
       containerRunner?: TechDocsContainerRunner;
-      customGenerator?: TechdocsGenerator;
+      customGenerator?: GeneratorBase;
     },
   ): Promise<GeneratorBuilder>;
   get(entity: Entity): GeneratorBase;
@@ -255,6 +268,10 @@ export type RemoteProtocol = 'url' | 'dir';
 export type SupportedGeneratorKey = 'techdocs' | string;
 
 // @public
+export const TECHDOCS_ENGINE_CATALOG_ANNOTATION_KEY =
+  'backstage.io/techdocs-engine';
+
+// @public
 export interface TechdocsBuildsExtensionPoint {
   // (undocumented)
   setBuildLogTransport(transport: winston.transport): void;
@@ -277,17 +294,7 @@ export interface TechDocsContainerRunner {
     envVars?: Record<string, string>;
     pullImage?: boolean;
     defaultUser?: boolean;
-    pullOptions?: {
-      authconfig?: {
-        username?: string;
-        password?: string;
-        auth?: string;
-        email?: string;
-        serveraddress?: string;
-        [key: string]: unknown;
-      };
-      [key: string]: unknown;
-    };
+    pullOptions?: ContainerRunnerPullOptions;
   }): Promise<void>;
 }
 
@@ -320,7 +327,9 @@ export class TechdocsGenerator implements GeneratorBase {
 // @public
 export interface TechdocsGeneratorExtensionPoint {
   // (undocumented)
-  setTechdocsGenerator(generator: TechdocsGenerator): void;
+  registerGenerator(key: SupportedGeneratorKey, generator: GeneratorBase): void;
+  // (undocumented)
+  setTechdocsGenerator(generator: GeneratorBase): void;
 }
 
 // @public

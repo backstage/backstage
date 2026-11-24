@@ -340,7 +340,18 @@ export function createPublishBitbucketServerPullRequestAction(options: {
         );
       }
 
-      const token = ctx.input.token ?? integrationConfig.config.token;
+      const requireScmUserCredentials = config.getOptionalBoolean(
+        'scaffolder.requireScmUserCredentials',
+      );
+      if (requireScmUserCredentials && !ctx.input.token) {
+        throw new InputError(
+          `No user credentials provided for host ${host}, but scaffolder.requireScmUserCredentials is enabled`,
+        );
+      }
+
+      const token = requireScmUserCredentials
+        ? ctx.input.token
+        : ctx.input.token ?? integrationConfig.config.token;
 
       const authConfig = {
         ...integrationConfig.config,
@@ -439,8 +450,7 @@ export function createPublishBitbucketServerPullRequestAction(options: {
         });
 
         // copy files
-        fs.cpSync(sourceDir, tempDir, {
-          recursive: true,
+        fs.copySync(sourceDir, tempDir, {
           filter: isNotGitDirectoryOrContents,
         });
 

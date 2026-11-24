@@ -92,7 +92,7 @@ export function CatalogKindHeader(props: CatalogKindHeaderProps) {
   }, [filters.kind]);
 
   const selectedKindLabel =
-    allKinds.get(selectedKind.toLocaleLowerCase('en-US')) || selectedKind;
+    allKinds.get(selectedKind.toLowerCase()) || selectedKind;
 
   useEffect(() => {
     updateFilters({
@@ -107,7 +107,7 @@ export function CatalogKindHeader(props: CatalogKindHeaderProps) {
   return (
     <Select
       input={<InputBase />}
-      value={selectedKind.toLocaleLowerCase('en-US')}
+      value={selectedKind.toLowerCase()}
       onChange={e => setSelectedKind(e.target.value as string)}
       classes={classes}
     >

@@ -122,7 +122,7 @@ describe('AzureUrlReader', () => {
         url: 'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml&version=GBmaster',
         config: createConfig('my-pat'),
         response: expect.objectContaining({
-          url: 'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?api-version=6.0&path=my-template.yaml&version=master',
+          url: 'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?api-version=6.0&path=my-template.yaml&versionDescriptor.version=master&versionDescriptor.versionType=branch',
         }),
       },
       {
@@ -183,6 +183,125 @@ describe('AzureUrlReader', () => {
     });
   });
 
+  describe('factory', () => {
+    const originalNodeEnv = process.env.NODE_ENV;
+
+    afterEach(() => {
+      (process.env as { NODE_ENV?: string }).NODE_ENV = originalNodeEnv;
+      jest.clearAllMocks();
+    });
+
+    const createFactory = (host: string, credential: object) =>
+      AzureUrlReader.factory({
+        config: new ConfigReader({
+          integrations: { azure: [{ host, credentials: [credential] }] },
+        }),
+        logger,
+        treeResponseFactory,
+      });
+
+    it('warns about personal access tokens only for Azure DevOps Services outside of development', () => {
+      jest.clearAllMocks();
+      (process.env as { NODE_ENV?: string }).NODE_ENV = 'production';
+
+      createFactory('dev.azure.com', { personalAccessToken: 'my-pat' });
+      expect(logger.warn).toHaveBeenCalledTimes(1);
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'Personal access token credentials for Azure DevOps Services (dev.azure.com) are deprecated',
+        ),
+      );
+
+      createFactory('my-org.visualstudio.com', {
+        personalAccessToken: 'my-pat',
+      });
+      expect(logger.warn).toHaveBeenCalledTimes(2);
+      expect(logger.warn).toHaveBeenLastCalledWith(
+        expect.stringContaining(
+          'after moving this integration and its repository URLs to dev.azure.com',
+        ),
+      );
+      expect(logger.warn).not.toHaveBeenNthCalledWith(
+        1,
+        expect.stringContaining('after moving'),
+      );
+
+      // Azure DevOps Server
+      createFactory('azure.mycompany.com', { personalAccessToken: 'my-pat' });
+      // Entra ID credentials
+      createFactory('dev.azure.com', { clientId: 'system-assigned' });
+      expect(logger.warn).toHaveBeenCalledTimes(2);
+
+      (process.env as { NODE_ENV?: string }).NODE_ENV = 'development';
+      createFactory('dev.azure.com', { personalAccessToken: 'my-pat' });
+      expect(logger.warn).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('rejected credentials', () => {
+    it('reports rejected credentials when Azure DevOps responds with 203', async () => {
+      worker.use(
+        http.get(
+          '*',
+          () =>
+            new HttpResponse('<html>Sign in</html>', {
+              status: 203,
+              headers: { 'Content-Type': 'text/html' },
+            }),
+        ),
+      );
+      const reader = urlReaderFactory({
+        host: 'dev.azure.com',
+        credentials: [{ personalAccessToken: 'expired-pat' }],
+      });
+
+      await expect(
+        reader.readUrl(
+          'https://dev.azure.com/org/project/_git/repo?path=catalog-info.yaml',
+        ),
+      ).rejects.toThrow(
+        /Azure DevOps rejected the provided credentials.*not expired and is not a global token/,
+      );
+      await expect(
+        reader.readTree('https://dev.azure.com/org/project/_git/repo'),
+      ).rejects.toThrow(/Azure DevOps rejected the provided credentials/);
+
+      // Azure DevOps Server still supports global PATs, so no global-token hint
+      const serverReader = urlReaderFactory({
+        host: 'azure.mycompany.com',
+        credentials: [{ personalAccessToken: 'expired-pat' }],
+      });
+      const serverError = serverReader.readUrl(
+        'https://azure.mycompany.com/org/project/_git/repo?path=catalog-info.yaml',
+      );
+      await expect(serverError).rejects.toThrow(
+        /Azure DevOps rejected the provided credentials.*check that it has not expired\./,
+      );
+      await expect(serverError).rejects.not.toThrow(/global token/);
+
+      // The archive download also rejects the credentials, after commits succeed
+      worker.use(
+        http.get(
+          'https://dev.azure.com/org/project/_apis/git/repositories/repo/commits',
+          () => HttpResponse.json({ value: [{ commitId: '123abc' }] }),
+        ),
+        http.get(
+          'https://dev.azure.com/org/project/_apis/git/repositories/repo/items',
+          () =>
+            new HttpResponse('<html>Sign in</html>', {
+              status: 203,
+              headers: { 'Content-Type': 'text/html' },
+            }),
+        ),
+      );
+      await expect(
+        reader.readTree('https://dev.azure.com/org/project/_git/repo'),
+      ).rejects.toThrow(
+        /Failed to read tree from .*, Azure DevOps rejected the provided credentials/,
+      );
+    });
+  });
+
   describe('readTree', () => {
     const repoBuffer = fs.readFileSync(
       path.resolve(__dirname, '__fixtures__/mock-main.zip'),
@@ -229,6 +348,61 @@ describe('AzureUrlReader', () => {
             ),
         ),
       );
+    });
+
+    it('uses the tag for both the tree etag and archive when a branch shares its name', async () => {
+      const requests: URL[] = [];
+      worker.use(
+        http.get(
+          'https://dev.azure.com/organization/project/_apis/git/repositories/repository/commits',
+          ({ request }) => {
+            const url = new URL(request.url);
+            requests.push(url);
+            return HttpResponse.json({
+              value: [
+                {
+                  commitId:
+                    url.searchParams.get(
+                      'searchCriteria.itemVersion.versionType',
+                    ) === 'tag'
+                      ? 'tag-commit'
+                      : 'branch-commit',
+                },
+              ],
+            });
+          },
+        ),
+        http.get(
+          'https://dev.azure.com/organization/project/_apis/git/repositories/repository/items',
+          ({ request }) => {
+            requests.push(new URL(request.url));
+            return new HttpResponse(new Uint8Array(repoBuffer), {
+              status: 200,
+              headers: { 'Content-Type': 'application/zip' },
+            });
+          },
+        ),
+      );
+
+      const response = await processor.readTree(
+        'https://dev.azure.com/organization/project/_git/repository?version=GTrelease',
+        { etag: 'branch-commit' },
+      );
+
+      expect(response.etag).toBe('tag-commit');
+      expect(requests).toHaveLength(2);
+      expect(
+        requests[0].searchParams.get('searchCriteria.itemVersion.version'),
+      ).toBe('release');
+      expect(
+        requests[0].searchParams.get('searchCriteria.itemVersion.versionType'),
+      ).toBe('tag');
+      expect(requests[1].searchParams.get('versionDescriptor.version')).toBe(
+        'release',
+      );
+      expect(
+        requests[1].searchParams.get('versionDescriptor.versionType'),
+      ).toBe('tag');
     });
 
     it('returns the wanted files from an archive', async () => {

@@ -92,8 +92,8 @@ export const UserSettingsFeatureFlags = () => {
   };
 
   const filteredFeatureFlags = featureFlags.filter(featureFlag => {
-    const featureFlagName = featureFlag.name.toLocaleLowerCase('en-US');
-    return featureFlagName.includes(filterInput.toLocaleLowerCase('en-US'));
+    const featureFlagName = featureFlag.name.toLowerCase();
+    return featureFlagName.includes(filterInput.toLowerCase());
   });
 
   const Header = () => (

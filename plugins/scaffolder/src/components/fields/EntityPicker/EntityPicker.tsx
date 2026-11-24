@@ -102,11 +102,13 @@ export const EntityPicker = (props: EntityPickerProps) => {
       'spec.profile.displayName',
       'spec.type',
     ];
-    const { items } = await catalogApi.getEntities(
-      catalogFilter
-        ? { filter: catalogFilter, fields }
-        : { filter: undefined, fields },
-    );
+    const streamRequest = catalogFilter
+      ? { query: {}, filter: catalogFilter, fields }
+      : { fields };
+    const items: Entity[] = [];
+    for await (const batch of catalogApi.streamEntities(streamRequest)) {
+      items.push(...batch);
+    }
 
     const entityRefToPresentation = new Map<
       string,

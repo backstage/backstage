@@ -15,12 +15,13 @@
  */
 
 import { DefaultAuthConnector } from './DefaultAuthConnector';
+import { AuthConnectionError } from './errors';
 import MockOAuthApi from '../../apis/implementations/OAuthRequestApi/MockOAuthApi';
 import * as loginPopup from '../loginPopup';
 import { UrlPatternDiscovery } from '../../apis';
 import { registerMswTestHooks } from '@backstage/test-utils';
 import { setupServer } from 'msw/node';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { ConfigReader } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
 
@@ -61,16 +62,15 @@ describe('DefaultAuthConnector', () => {
 
   it('should refresh a session with scope', async () => {
     server.use(
-      rest.get('*', (req, res, ctx) =>
-        res(
-          ctx.json({
-            idToken: 'mock-id-token',
-            accessToken: 'mock-access-token',
-            scopes: req.url.searchParams.get('scope') || 'default-scope',
-            expiresInSeconds: '60',
-          }),
-        ),
-      ),
+      http.get('*', ({ request }) => {
+        const url = new URL(request.url);
+        return HttpResponse.json({
+          idToken: 'mock-id-token',
+          accessToken: 'mock-access-token',
+          scopes: url.searchParams.get('scope') || 'default-scope',
+          expiresInSeconds: '60',
+        });
+      }),
     );
 
     const connector = new DefaultAuthConnector<any>(defaultOptions);
@@ -84,10 +84,168 @@ describe('DefaultAuthConnector', () => {
     expect(session.expiresAt.getTime()).toBeGreaterThan(Date.now() + 50000);
   });
 
+  describe('with Web Locks', () => {
+    const originalLocks = Object.getOwnPropertyDescriptor(
+      window.navigator,
+      'locks',
+    );
+    const requestLock = jest.fn();
+
+    beforeEach(() => {
+      const pending = new Map<string, Promise<unknown>>();
+      requestLock.mockImplementation(
+        (name: string, callback: LockGrantedCallback<unknown>) => {
+          const result = (pending.get(name) ?? Promise.resolve())
+            .catch(() => {})
+            .then(() => callback({ name, mode: 'exclusive' }));
+          pending.set(name, result);
+          return result;
+        },
+      );
+      Object.defineProperty(window.navigator, 'locks', {
+        configurable: true,
+        value: { request: requestLock },
+      });
+    });
+
+    afterEach(() => {
+      if (originalLocks) {
+        Object.defineProperty(window.navigator, 'locks', originalLocks);
+      } else {
+        Reflect.deleteProperty(window.navigator, 'locks');
+      }
+    });
+
+    it('serializes refreshes across connectors with different scopes and environments', async () => {
+      let releaseFirst!: () => void;
+      const firstResponse = new Promise<void>(resolve => {
+        releaseFirst = resolve;
+      });
+      let onFirstRequest!: () => void;
+      const firstRequest = new Promise<void>(resolve => {
+        onFirstRequest = resolve;
+      });
+      let requests = 0;
+      server.use(
+        http.get('*', async ({ request }) => {
+          requests += 1;
+          if (requests === 1) {
+            onFirstRequest();
+            await firstResponse;
+          }
+          return HttpResponse.json({
+            scopes: new URL(request.url).searchParams.get('scope'),
+            expiresInSeconds: 60,
+          });
+        }),
+      );
+
+      const sessions = Promise.all(
+        ['a', 'b', 'c', 'd', 'e'].map(scope =>
+          new DefaultAuthConnector({
+            ...defaultOptions,
+            environment: scope,
+          }).refreshSession({ scopes: new Set([scope]) }),
+        ),
+      );
+      await firstRequest;
+      expect(requestLock).toHaveBeenCalledTimes(5);
+      expect(requestLock.mock.calls.map(([name]) => name)).toEqual(
+        Array(5).fill(
+          'backstage-auth-refresh:http://my-host/api/auth/my-provider/refresh',
+        ),
+      );
+      expect(requests).toBe(1);
+
+      releaseFirst();
+      expect((await sessions).map(session => [...session.scopes])).toEqual([
+        ['a'],
+        ['b'],
+        ['c'],
+        ['d'],
+        ['e'],
+      ]);
+      expect(requests).toBe(5);
+    });
+
+    it('releases the lock after a failed refresh without retrying the failed request', async () => {
+      let requests = 0;
+      server.use(
+        http.get('*', () => {
+          requests += 1;
+          if (requests === 1) {
+            return HttpResponse.error();
+          }
+          return HttpResponse.json({ scopes: 'a', expiresInSeconds: 60 });
+        }),
+      );
+
+      const results = await Promise.allSettled([
+        new DefaultAuthConnector(defaultOptions).refreshSession(),
+        new DefaultAuthConnector(defaultOptions).refreshSession(),
+      ]);
+
+      expect(results[0]).toEqual({
+        status: 'rejected',
+        reason: expect.objectContaining({
+          message: expect.stringContaining('Auth refresh request failed'),
+        }),
+      });
+      expect(results[1]).toEqual({
+        status: 'fulfilled',
+        value: expect.objectContaining({ scopes: new Set(['a']) }),
+      });
+      expect(requests).toBe(2);
+    });
+
+    it('allows different provider endpoints to refresh independently', async () => {
+      let releaseResponses!: () => void;
+      const responses = new Promise<void>(resolve => {
+        releaseResponses = resolve;
+      });
+      let onBothRequests!: () => void;
+      const bothRequests = new Promise<void>(resolve => {
+        onBothRequests = resolve;
+      });
+      let requests = 0;
+      server.use(
+        http.get('*', async () => {
+          requests += 1;
+          if (requests === 2) {
+            onBothRequests();
+          }
+          await responses;
+          return HttpResponse.json({ scopes: 'a', expiresInSeconds: 60 });
+        }),
+      );
+
+      const sessions = Promise.all([
+        new DefaultAuthConnector(defaultOptions).refreshSession(),
+        new DefaultAuthConnector({
+          ...defaultOptions,
+          provider: { ...defaultOptions.provider, id: 'other-provider' },
+        }).refreshSession(),
+      ]);
+
+      await bothRequests;
+      releaseResponses();
+      expect(await sessions).toHaveLength(2);
+      expect(requestLock.mock.calls.map(([name]) => name)).toEqual([
+        'backstage-auth-refresh:http://my-host/api/auth/my-provider/refresh',
+        'backstage-auth-refresh:http://my-host/api/auth/other-provider/refresh',
+      ]);
+    });
+  });
+
   it('should handle failure to refresh session', async () => {
     server.use(
-      rest.get('*', (_req, res, ctx) =>
-        res(ctx.status(500, 'Error: Network NOPE')),
+      http.get(
+        '*',
+        () =>
+          new HttpResponse('', {
+            status: 500,
+            statusText: 'Error: Network NOPE',
+          }),
       ),
     );
 
@@ -98,11 +256,24 @@ describe('DefaultAuthConnector', () => {
   });
 
   it('should handle failure response when refreshing session', async () => {
-    server.use(rest.get('*', (_req, res, ctx) => res(ctx.status(401, 'NOPE'))));
+    server.use(
+      http.get('*', () =>
+        HttpResponse.text('', { status: 401, statusText: 'NOPE' }),
+      ),
+    );
 
     const connector = new DefaultAuthConnector(defaultOptions);
     await expect(connector.refreshSession()).rejects.toThrow(
       'Auth refresh request failed, NOPE',
+    );
+  });
+
+  it('should throw an AuthConnectionError when the refresh request cannot reach the backend', async () => {
+    server.use(http.get('*', () => HttpResponse.error()));
+
+    const connector = new DefaultAuthConnector(defaultOptions);
+    await expect(connector.refreshSession()).rejects.toThrow(
+      AuthConnectionError,
     );
   });
 
@@ -267,9 +438,7 @@ describe('DefaultAuthConnector', () => {
     const logoutUrl =
       'https://test.auth0.com/v2/logout?federated&client_id=abc&returnTo=http%3A%2F%2Flocalhost';
 
-    server.use(
-      rest.post('*', (_req, res, ctx) => res(ctx.json({ logoutUrl }))),
-    );
+    server.use(http.post('*', () => HttpResponse.json({ logoutUrl })));
 
     const connector = new DefaultAuthConnector(defaultOptions);
 
@@ -285,7 +454,7 @@ describe('DefaultAuthConnector', () => {
   });
 
   it('should complete normally when provider returns empty logout response', async () => {
-    server.use(rest.post('*', (_req, res, ctx) => res(ctx.status(200))));
+    server.use(http.post('*', () => new HttpResponse(null, { status: 200 })));
 
     const connector = new DefaultAuthConnector(defaultOptions);
     await connector.removeSession();
@@ -293,9 +462,7 @@ describe('DefaultAuthConnector', () => {
   });
 
   it('should complete normally when response is not JSON', async () => {
-    server.use(
-      rest.post('*', (_req, res, ctx) => res(ctx.status(200), ctx.text('OK'))),
-    );
+    server.use(http.post('*', () => HttpResponse.text('OK', { status: 200 })));
 
     const connector = new DefaultAuthConnector(defaultOptions);
     await connector.removeSession();
@@ -304,8 +471,8 @@ describe('DefaultAuthConnector', () => {
 
   it('should ignore logoutUrl with non-HTTPS protocol', async () => {
     server.use(
-      rest.post('*', (_req, res, ctx) =>
-        res(ctx.json({ logoutUrl: 'http://evil.com/steal' })),
+      http.post('*', () =>
+        HttpResponse.json({ logoutUrl: 'http://evil.com/steal' }),
       ),
     );
 

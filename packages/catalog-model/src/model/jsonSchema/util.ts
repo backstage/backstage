@@ -31,7 +31,7 @@ export function isJsonObjectDeep(value: unknown): value is JsonObject {
   if (!isJsonObject(value)) {
     return false;
   }
-  const seen = new Set<unknown>();
+  const seen = new Set<unknown>([value]);
   return Object.values(value).every(v => isJsonValueDeep(v, seen));
 }
 
@@ -51,11 +51,9 @@ function isJsonValueDeep(value: unknown, seen: Set<unknown>): boolean {
     return false;
   }
   seen.add(value);
-  if (Array.isArray(value)) {
-    return value.every(v => isJsonValueDeep(v, seen));
-  }
-  if (isJsonObject(value)) {
-    return Object.values(value).every(v => isJsonValueDeep(v, seen));
-  }
-  return false;
+  const result = Array.isArray(value)
+    ? value.every(v => isJsonValueDeep(v, seen))
+    : Object.values(value).every(v => isJsonValueDeep(v, seen));
+  seen.delete(value);
+  return result;
 }

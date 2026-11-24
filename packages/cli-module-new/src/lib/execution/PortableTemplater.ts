@@ -63,13 +63,18 @@ export class PortableTemplater {
     const templater = new PortableTemplater(
       {
         versionQuery(name: string, versionHint: string | unknown) {
-          return versionProvider(
+          const version = versionProvider(
             name,
             typeof versionHint === 'string' ? versionHint : undefined,
           );
+          if (!version) {
+            throw new Error(`No version available for package ${name}`);
+          }
+          return version;
         },
       },
       options.values ?? {},
+      versionProvider,
     );
 
     if (options.templatedValues) {
@@ -80,13 +85,16 @@ export class PortableTemplater {
   }
 
   readonly #templater: typeof handlebars;
+  readonly #versionProvider: ReturnType<typeof createPackageVersionProvider>;
   #values: PortableTemplateParams;
 
   private constructor(
     helpers: handlebars.HelperDeclareSpec,
     values: PortableTemplateParams,
+    versionProvider: ReturnType<typeof createPackageVersionProvider>,
   ) {
     this.#templater = handlebars.create();
+    this.#versionProvider = versionProvider;
 
     this.#templater.registerHelper(builtInHelpers);
 
@@ -101,6 +109,10 @@ export class PortableTemplater {
     return this.#templater.compile(content, {
       strict: true,
     })(this.#values);
+  }
+
+  getPackageVersion(name: string): string | undefined {
+    return this.#versionProvider(name);
   }
 
   appendTemplatedValues(record: Record<string, string>): void {

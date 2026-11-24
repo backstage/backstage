@@ -69,7 +69,7 @@ export const SelectedKindsFilter = ({ value, onChange }: Props) => {
   }, [error, alertApi]);
 
   const normalizedKinds = useMemo(
-    () => (kinds ? kinds.map(k => k.toLocaleLowerCase('en-US')) : kinds),
+    () => (kinds ? kinds.map(k => k.toLowerCase()) : kinds),
     [kinds],
   );
 

@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
+import { TestRouter } from '../../testUtils/TestRouter';
 import preview from '../../../../../.storybook/preview';
 import type { StoryFn } from '@storybook/react-vite';
 import { ButtonLink } from './ButtonLink';
 import { Flex } from '../Flex';
-import { MemoryRouter } from 'react-router-dom';
+
 import { BUIProvider } from '../../provider';
 import { RiArrowRightSLine, RiCloudLine } from '@remixicon/react';
 
@@ -27,11 +28,11 @@ const meta = preview.meta({
   component: ButtonLink,
   decorators: [
     (Story: StoryFn) => (
-      <MemoryRouter>
+      <TestRouter>
         <BUIProvider>
           <Story />
         </BUIProvider>
-      </MemoryRouter>
+      </TestRouter>
     ),
   ],
   argTypes: {

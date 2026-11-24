@@ -37,6 +37,7 @@ const mockGitlabClient = {
     create: jest.fn(async (_: any) => {
       return {
         default_branch: 'main',
+        iid: 9876,
       };
     }),
     show: jest.fn(async (_: any) => {
@@ -49,6 +50,7 @@ const mockGitlabClient = {
         default_branch: 'main',
       };
     }),
+    merge: jest.fn(async () => ({})),
   },
   MergeRequestApprovals: {
     allApprovalRules: jest.fn(async (_: any) => {
@@ -99,6 +101,9 @@ const mockGitlabClient = {
         default_branch: 'main',
       };
     }),
+  },
+  Repositories: {
+    allRepositoryTrees: jest.fn(async () => []),
   },
   Users: {
     current: jest.fn(),
@@ -349,6 +354,70 @@ describe('createGitLabMergeRequest', () => {
             execute_filemode: false,
           },
         ],
+      );
+    });
+  });
+
+  describe('createGitLabMergeRequestWithAutoMerge', () => {
+    it(`Should ${examples[6].description}`, async () => {
+      const input = yaml.parse(examples[6].example).steps[0].input;
+      mockDir.setContent({
+        [workspacePath]: {
+          source: { 'foo.txt': 'Hello there!' },
+          irrelevant: { 'bar.txt': 'Nothing to see here' },
+        },
+      });
+
+      const ctx = createMockActionContext({ input, workspacePath });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+        'Create my new MR',
+        {
+          description: 'MR description',
+          removeSourceBranch: false,
+          assigneeId: undefined,
+          reviewerIds: undefined,
+          labels: undefined,
+        },
+      );
+
+      const fakeIID = 9876;
+
+      expect(mockGitlabClient.MergeRequests.merge).toHaveBeenCalledWith(
+        'owner/repo',
+        fakeIID,
+        { autoMerge: true },
+      );
+    });
+  });
+
+  describe('createGitLabMergeRequestWithSquash', () => {
+    it(`Should ${examples[7].description}`, async () => {
+      const input = yaml.parse(examples[7].example).steps[0].input;
+      mockDir.setContent({
+        [workspacePath]: {
+          source: { 'foo.txt': 'Hello there!' },
+          irrelevant: { 'bar.txt': 'Nothing to see here' },
+        },
+      });
+
+      const ctx = createMockActionContext({ input, workspacePath });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+        'Create my new MR',
+        {
+          description: 'This MR is really good',
+          removeSourceBranch: false,
+          squash: true,
+        },
       );
     });
   });

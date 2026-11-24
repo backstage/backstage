@@ -36,6 +36,7 @@ import {
 import {
   TemplateCategoryPicker,
   TemplateGroups,
+  type ScaffolderTemplateFilterHook,
 } from '@backstage/plugin-scaffolder-react/alpha';
 import { createGroupsWithOther } from '../lib/createGroupsWithOther';
 import {
@@ -67,10 +68,20 @@ import {
   TECHDOCS_EXTERNAL_ANNOTATION,
 } from '@backstage/plugin-techdocs-common';
 
+const defaultTemplateFilter = () => true;
+
+function useDefaultTemplateFilter() {
+  return defaultTemplateFilter;
+}
+
 function TemplateListContent({
   groups: configuredGroups,
+  templateFilter,
+  useTemplateFilter = useDefaultTemplateFilter,
 }: {
   groups?: TemplateGroupFilter[];
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
+  useTemplateFilter?: ScaffolderTemplateFilterHook;
 }) {
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
   const viewTechDocsLink = useRouteRef(viewTechDocRouteRef);
@@ -78,6 +89,13 @@ function TemplateListContent({
   const navigate = useNavigate();
   const app = useApp();
   const { t } = useTranslationRef(scaffolderTranslationRef);
+  const viewerTemplateFilter = useTemplateFilter();
+
+  const combinedTemplateFilter = useCallback(
+    (template: TemplateEntityV1beta3) =>
+      (templateFilter?.(template) ?? true) && viewerTemplateFilter(template),
+    [templateFilter, viewerTemplateFilter],
+  );
 
   const groups = useMemo(
     () =>
@@ -161,6 +179,7 @@ function TemplateListContent({
           <CatalogFilterLayout.Content>
             <TemplateGroups
               groups={groups}
+              templateFilter={combinedTemplateFilter}
               onTemplateSelected={onTemplateSelected}
               additionalLinksForEntity={additionalLinksForEntity}
             />
@@ -200,6 +219,8 @@ export function TemplatesSubPage(props: {
   formFields?: Array<FormField>;
   formProps?: FormProps;
   groups?: TemplateGroupFilter[];
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
+  useTemplateFilter?: ScaffolderTemplateFilterHook;
 }) {
   const customFieldExtensions = useCustomFieldExtensions(undefined);
   const customLayouts = useCustomLayouts(undefined);
@@ -218,7 +239,16 @@ export function TemplatesSubPage(props: {
 
   return (
     <Routes>
-      <Route index element={<TemplateListContent groups={props.groups} />} />
+      <Route
+        index
+        element={
+          <TemplateListContent
+            groups={props.groups}
+            templateFilter={props.templateFilter}
+            useTemplateFilter={props.useTemplateFilter}
+          />
+        }
+      />
       <Route
         path=":namespace/:templateName"
         element={

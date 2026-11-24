@@ -22,6 +22,11 @@ export interface Config {
       /** @visibility frontend */
       cfaccess?: {
         teamName: string;
+        /**
+         * The Application Audience (AUD) Tag of the Cloudflare Access
+         * application.
+         */
+        audience: string;
         /** @deepVisibility secret */
         serviceTokens?: Array<{
           token: string;

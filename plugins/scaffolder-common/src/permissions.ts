@@ -86,6 +86,17 @@ export const templateStepReadPermission = createPermission({
 });
 
 /**
+ * This permission is used to authorize dry runs of inline scaffolder
+ * templates.
+ *
+ * @alpha
+ */
+export const templateDryRunPermission = createPermission({
+  name: 'scaffolder.template.dry-run',
+  attributes: {},
+});
+
+/**
  * This permission is used to authorize actions that involve reading one or more tasks in the scaffolder,
  * and reading logs of tasks
  *
@@ -165,5 +176,6 @@ export const scaffolderPermissions = [
   ...scaffolderTemplatePermissions,
   ...scaffolderActionPermissions,
   ...scaffolderTaskPermissions,
+  templateDryRunPermission,
   templateManagementPermission,
 ];

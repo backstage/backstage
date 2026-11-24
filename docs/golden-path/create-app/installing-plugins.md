@@ -11,7 +11,7 @@ Now that you have a working Backstage app, let's walk through the most valuable 
 
 A Backstage plugin usually consists of frontend and backend functionality. Some examples of Backstage plugins are our Software Catalog, Search, and Software Templates plugins! Each plugin provides a series of well-contained focused features, for example - the Software Catalog contains an entity ingestion engine, an optimized query layer for fetching entity information and a series of UI elements that provide list and detail functionality for entities. Some plugins allow modules which supplement existing plugin-level functionality, customizing it for specific use cases - a good example here are catalog processor modules which allow for ingesting data from common sources into the catalog.
 
-:::note Backstage Plugin Naming
+:::note[Backstage Plugin Naming]
 
 The `backstage-cli new` command scaffolds plugins automatically with the expected naming conventions. We describe the naming conventions below for users who are installing external plugins.
 
@@ -43,8 +43,8 @@ In both cases, you'll want to find the plugin's installation documentation. For 
 
 Generally, installing a backend plugin is really easy - you just add a
 
-```
-backend.import(`@scope/package`)
+```ts
+backend.import(`@scope/package`);
 ```
 
 to your `packages/backend/src/index.ts` file alongside the other entries. Saving the file will trigger a hot reload and just like that your new plugin is available and usable. For advanced cases, there may be required config for the plugin that you'll have to set. That config will (or should) be documented by the plugin in their `README`.

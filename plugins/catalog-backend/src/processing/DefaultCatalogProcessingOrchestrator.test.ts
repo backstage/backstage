@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import fs from 'fs-extra';
+import os from 'node:os';
+import path from 'node:path';
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
@@ -32,6 +35,7 @@ import {
   processingResult,
 } from '@backstage/plugin-catalog-node';
 import { CatalogRulesEnforcer } from '../ingestion/CatalogRules';
+import { FileReaderProcessor } from '../processors/FileReaderProcessor';
 import { DefaultCatalogProcessingOrchestrator } from './DefaultCatalogProcessingOrchestrator';
 import { defaultEntityDataParser } from '../util/parse';
 import { ConfigReader } from '@backstage/config';
@@ -42,7 +46,7 @@ class FooBarProcessor implements CatalogProcessor {
   getProcessorName = () => 'foo-bar';
 
   async validateEntityKind(entity: Entity) {
-    return entity.kind.toLocaleLowerCase('en-US') === 'foobar';
+    return entity.kind.toLowerCase() === 'foobar';
   }
 
   async postProcessEntity(
@@ -343,6 +347,111 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
           ],
         }),
       );
+    });
+  });
+
+  describe('allowed location types', () => {
+    it('enforces allowedLocationTypes during processing', async () => {
+      const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));
+      const processor: jest.Mocked<CatalogProcessor> = {
+        getProcessorName: jest.fn(),
+        validateEntityKind: jest.fn(async () => true),
+        readLocation: jest.fn(async () => true),
+      };
+      const orchestrator = new DefaultCatalogProcessingOrchestrator({
+        processors: [processor],
+        integrations,
+        logger: mockServices.logger.mock(),
+        parser: jest.fn(),
+        policy: EntityPolicies.allOf([]),
+        rulesEnforcer: { isAllowed: jest.fn().mockReturnValue(true) },
+        allowedLocationTypes: ['url'],
+      });
+
+      const makeEntity = (
+        locationType: string,
+        specType: string,
+      ): LocationEntity => ({
+        apiVersion: 'backstage.io/v1beta1',
+        kind: 'Location',
+        metadata: {
+          name: 'test',
+          annotations: {
+            [ANNOTATION_ORIGIN_LOCATION]: `${locationType}:https://example.com/c.yaml`,
+            [ANNOTATION_LOCATION]: `${locationType}:https://example.com/c.yaml`,
+          },
+        },
+        spec: { type: specType, target: 'https://example.com/other.yaml' },
+      });
+
+      const disallowed = await orchestrator.process({
+        entity: makeEntity('url', 'file'),
+        state: {},
+      });
+      expect(disallowed.ok).toBe(false);
+      expect(processor.readLocation).not.toHaveBeenCalled();
+
+      const inherited = await orchestrator.process({
+        entity: makeEntity('file', 'file'),
+        state: {},
+      });
+      expect(inherited.ok).toBe(true);
+      expect(processor.readLocation).toHaveBeenCalled();
+    });
+
+    it('rejects url locations that declare file type specs before any file read', async () => {
+      const marker = `secret-${Math.random().toString(36).slice(2)}`;
+      const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'test-'));
+      const secretFile = path.join(tempDir, 'secrets.yaml');
+      // Invalid YAML, so that a read would surface the marker in the errors
+      await fs.writeFile(secretFile, `key: [[${marker}\n`);
+
+      const readLocationSpy = jest.spyOn(
+        FileReaderProcessor.prototype,
+        'readLocation',
+      );
+
+      const kindProcessor: jest.Mocked<CatalogProcessor> = {
+        getProcessorName: jest.fn().mockReturnValue('kind-validator'),
+        validateEntityKind: jest.fn(async entity => entity.kind === 'Location'),
+      };
+
+      const orchestrator = new DefaultCatalogProcessingOrchestrator({
+        processors: [kindProcessor, new FileReaderProcessor()],
+        integrations: ScmIntegrations.fromConfig(new ConfigReader({})),
+        logger: mockServices.logger.mock(),
+        parser: defaultEntityDataParser,
+        policy: EntityPolicies.allOf([]),
+        rulesEnforcer: { isAllowed: jest.fn().mockReturnValue(true) },
+        allowedLocationTypes: ['url'],
+      });
+
+      const entity: LocationEntity = {
+        apiVersion: 'backstage.io/v1beta1',
+        kind: 'Location',
+        metadata: {
+          name: 'test',
+          annotations: {
+            [ANNOTATION_ORIGIN_LOCATION]:
+              'url:https://example.com/catalog-info.yaml',
+            [ANNOTATION_LOCATION]: 'url:https://example.com/catalog-info.yaml',
+          },
+        },
+        spec: { type: 'file', target: secretFile },
+      };
+
+      const result = await orchestrator.process({ entity, state: {} });
+
+      expect(result.ok).toBe(false);
+      expect(result.errors?.map(e => e.message)).toEqual([
+        expect.stringContaining('allowed type'),
+      ]);
+      expect(result.errors?.map(e => e.message).join('\n')).not.toContain(
+        marker,
+      );
+      expect(readLocationSpy).not.toHaveBeenCalled();
+
+      await fs.rm(tempDir, { recursive: true, force: true });
     });
   });
 });

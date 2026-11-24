@@ -15,10 +15,7 @@
  */
 
 import { ReactNode } from 'react';
-import { FrontendPlugin } from './wiring';
-
-/** @public */
-export type ProgressProps = {};
+import type { FrontendPlugin } from './wiring/createFrontendPlugin';
 
 /** @public */
 export type NotFoundErrorPageProps = {

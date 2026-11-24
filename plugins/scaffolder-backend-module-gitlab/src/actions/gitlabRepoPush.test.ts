@@ -39,6 +39,12 @@ const mockGitlabClient = {
       id: 'bb6bce457ed069a38ef8d16ef38602972c7735c5',
     })),
   },
+  Repositories: {
+    allRepositoryTrees: jest.fn(async () => []),
+  },
+  RepositoryFiles: {
+    show: jest.fn(),
+  },
 };
 
 jest.mock('@gitbeaker/rest', () => ({
@@ -81,6 +87,40 @@ describe('createGitLabCommit', () => {
 
     const integrations = ScmIntegrations.fromConfig(config);
     instance = createGitlabRepoPushAction({ integrations });
+  });
+
+  describe('targetPath validation', () => {
+    it('rejects targetPath that escapes the repository subdirectory', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        commitMessage: 'Create my new commit',
+        branchName: 'some-branch',
+        targetPath: 'services/..',
+      };
+      mockDir.setContent({
+        [workspacePath]: { 'foo.txt': 'Hello there!' },
+      });
+      const ctx = createMockActionContext({ input, workspacePath });
+
+      await expect(instance.handler(ctx)).rejects.toThrow(
+        "Invalid targetPath 'services/..'",
+      );
+      expect(mockGitlabClient.Commits.create).not.toHaveBeenCalled();
+    });
+
+    it('rejects absolute and parent-directory targetPath', async () => {
+      for (const targetPath of ['..', '/etc', 'a/../../b']) {
+        const input = {
+          repoUrl: 'gitlab.com?repo=repo&owner=owner',
+          commitMessage: 'Create my new commit',
+          branchName: 'some-branch',
+          targetPath,
+        };
+        const ctx = createMockActionContext({ input, workspacePath });
+        await expect(instance.handler(ctx)).rejects.toThrow(/targetPath/);
+      }
+      expect(mockGitlabClient.Commits.create).not.toHaveBeenCalled();
+    });
   });
 
   describe('createGitLabCommitWithoutCommitAction', () => {
@@ -233,6 +273,79 @@ describe('createGitLabCommit', () => {
     });
   });
 
+  describe('when the repository tree listing fails', () => {
+    afterEach(() => {
+      mockGitlabClient.RepositoryFiles.show.mockReset();
+    });
+
+    it('checks files on the target branch under targetPath', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        commitMessage: 'Update files',
+        branchName: 'feature-branch',
+        targetPath: 'target',
+        commitAction: 'auto',
+      };
+      mockDir.setContent({
+        [workspacePath]: {
+          'existing.txt': 'Updated content',
+          'missing.txt': 'New content',
+        },
+      });
+
+      mockGitlabClient.Repositories.allRepositoryTrees.mockRejectedValueOnce(
+        new Error('Query timeout was reached'),
+      );
+      const showFile = async (_repoID: string | number, filePath: string) => {
+        if (filePath === 'target/existing.txt') {
+          return { content_sha256: '0'.repeat(64) };
+        }
+        if (filePath === 'target/missing.txt') {
+          throw new Error('Not Found', {
+            cause: { response: { status: 404 } },
+          });
+        }
+        throw new Error(`Unexpected file path ${filePath}`);
+      };
+      mockGitlabClient.RepositoryFiles.show.mockImplementation(showFile);
+
+      const ctx = createMockActionContext({ input, workspacePath });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.RepositoryFiles.show).toHaveBeenCalledWith(
+        'owner/repo',
+        'target/existing.txt',
+        'feature-branch',
+      );
+      expect(mockGitlabClient.RepositoryFiles.show).toHaveBeenCalledWith(
+        'owner/repo',
+        'target/missing.txt',
+        'feature-branch',
+      );
+      expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'feature-branch',
+        'Update files',
+        expect.arrayContaining([
+          {
+            action: 'update',
+            filePath: 'target/existing.txt',
+            content: 'VXBkYXRlZCBjb250ZW50',
+            encoding: 'base64',
+            execute_filemode: false,
+          },
+          {
+            action: 'create',
+            filePath: 'target/missing.txt',
+            content: 'TmV3IGNvbnRlbnQ=',
+            encoding: 'base64',
+            execute_filemode: false,
+          },
+        ]),
+      );
+    });
+  });
+
   describe('with sourcePath', () => {
     it('creates a commit with only relevant files', async () => {
       const input = {
@@ -343,6 +456,13 @@ describe('createGitLabCommit', () => {
           },
         },
       });
+      mockGitlabClient.Repositories.allRepositoryTrees.mockRejectedValueOnce({
+        cause: {
+          response: {
+            status: 404,
+          },
+        },
+      });
       const input = {
         repoUrl: 'gitlab.com?repo=repo&owner=owner',
         commitMessage: 'Create my new commit',
@@ -375,6 +495,7 @@ describe('createGitLabCommit', () => {
           },
         ],
       );
+      expect(mockGitlabClient.RepositoryFiles.show).not.toHaveBeenCalled();
       expect(ctx.output).toHaveBeenCalledWith(
         'commitHash',
         'bb6bce457ed069a38ef8d16ef38602972c7735c5',
@@ -540,6 +661,53 @@ describe('createGitLabCommit', () => {
           },
         ],
         { allowEmpty: false },
+      );
+    });
+
+    it('skips commit and omits commitHash output when there are no file changes', async () => {
+      // The default Branches.show mock from beforeEach resolves successfully
+      // (branch exists), so the no-op path is reached without needing extra setup.
+      mockGitlabClient.Branches.show.mockResolvedValueOnce(undefined);
+
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        commitMessage: 'No-op',
+        branchName: 'some-branch',
+        commitAction: 'auto',
+      };
+      // Empty workspace -> no file actions to send to GitLab
+      mockDir.setContent({ [workspacePath]: {} });
+
+      const ctx = createMockActionContext({ input, workspacePath });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Commits.create).not.toHaveBeenCalled();
+      expect(ctx.output).toHaveBeenCalledWith('projectid', 'owner/repo');
+      expect(ctx.output).toHaveBeenCalledWith('projectPath', 'owner/repo');
+      expect(ctx.output).not.toHaveBeenCalledWith(
+        'commitHash',
+        expect.anything(),
+      );
+    });
+
+    it('still commits empty changes when allowEmpty is true', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        commitMessage: 'Empty commit',
+        branchName: 'some-branch',
+        allowEmpty: true,
+      };
+      mockDir.setContent({ [workspacePath]: {} });
+
+      const ctx = createMockActionContext({ input, workspacePath });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'some-branch',
+        'Empty commit',
+        [],
+        { allowEmpty: true },
       );
     });
   });

@@ -46,14 +46,12 @@ export const toTitleCase = (kebabCase: string): string => {
     const [first, ...rest] = kebabCase.split('-');
     return (
       first +
-      rest
-        .map(word => word.charAt(0).toLocaleUpperCase('en-US') + word.slice(1))
-        .join('')
+      rest.map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('')
     );
   }
   return kebabCase
     .split('-')
-    .map(word => word.charAt(0).toLocaleUpperCase('en-US') + word.slice(1))
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join('');
 };
 

@@ -61,6 +61,12 @@ auth backend in the new system. Both the user and ownership references should
 always be full entity references, as opposed to shorthands like just `jane` or
 `user:jane`.
 
+When a sign-in resolver calls `ctx.issueToken`, the entity references in the
+`sub` and `ent` claims are converted to their canonical form, for example
+`User:default/Jane` becomes `user:default/jane`. Duplicate references in `ent`
+are removed. If you leave out the `ent` claim, it defaults to a list containing
+only the canonical `sub`.
+
 ## Sign-in Resolvers
 
 :::warning
@@ -112,17 +118,26 @@ auth:
         enterpriseInstanceUrl: ${AUTH_GITHUB_ENTERPRISE_INSTANCE_URL}
         signIn:
           resolvers:
-            - resolver: usernameMatchingUserEntityName
+            - resolver: userIdMatchingUserEntityAnnotation
 ```
 
 The list of available resolvers is different for each provider, since they often
 depend on the information model returned from the upstream provider service.
 Consult the documentation of the respective provider to find the list.
 
-In the example above, the `usernameMatchingUserEntityName` is specific to the
+In the example above, `userIdMatchingUserEntityAnnotation` is specific to the
 GitHub provider, but you could also choose to use the
 `emailMatchingUserEntityProfileEmail` or `emailLocalPartMatchingUserEntityName`
 resolvers, which are common to all auth providers.
+
+:::warning
+When using an email-based sign-in resolver, ensure that the configured auth
+provider only permits the intended users to sign in and supplies an
+authoritative email address for each identity. The address should either be
+verified by the provider or be immutable and provisioned from a trusted
+organizational source. A matching catalog user does not by itself establish
+that the user signing in controls the supplied address.
+:::
 
 :::warning
 When using the `emailLocalPartMatchingUserEntityName` resolver it is strongly
@@ -179,7 +194,7 @@ auth:
 /* highlight-remove-start */
         signIn:
           resolvers:
-            - resolver: usernameMatchingUserEntityName
+            - resolver: userIdMatchingUserEntityAnnotation
 /* highlight-remove-end */
 ```
 
@@ -498,4 +513,4 @@ The second common error is: "Failed to sign-in, unable to resolve user identity"
 
 ![Failed to sign-in, unable to resolve user identity](../assets/auth/github-unable-to-resolve-identity.png)
 
-This error is caused by the Sign-In Resolver you configured being unable to find a matching User in the Catalog. To fix this you need to import User, and Group, data from some source of truth for this data at your Organization. To do this you can use one of the existing Org Data providers like the ones for [Entra ID (Azure AD/MS Graph)](../integrations/azure/org.md), [GitHub](../integrations/github/org.md), [GitLab](../integrations/gitlab/org.md), etc. or if none of those fit your needs you can create a [Custom Entity Provider](../features/software-catalog/external-integrations.md#custom-entity-providers).
+This error is caused by the Sign-In Resolver you configured being unable to find a matching User in the Catalog. To fix this you need to import User, and Group, data from some source of truth for this data at your Organization. To do this you can use one of the existing Org Data providers like the ones for [Entra ID (Azure AD/MS Graph)](../integrations/azure/org.md), [GitHub](../integrations/github/org.md), [GitLab](../integrations/gitlab/org.md), etc. or if none of those fit your needs you can create a [Custom Entity Provider](../features/software-catalog/external-integrations/entity-providers.md).

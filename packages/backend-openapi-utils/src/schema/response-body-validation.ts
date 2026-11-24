@@ -133,15 +133,12 @@ export class ResponseBodyParser
       );
     }
 
-    if (!schema.required && !body?.length) {
+    if (!body?.length) {
       throw new OperationResponseError(
         this.operation,
         response,
         'Response body is required but missing',
       );
-    } else if (!schema.required && !body?.length) {
-      // If there is no content in the response schema and no body in the response, then the response is valid
-      return undefined;
     }
 
     const validate = this.ajv.compile(schema);

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Fragment } from 'react';
+import { Fragment, useMemo } from 'react';
 import { Content } from '@backstage/core-components';
 import type { HomePageLayoutProps } from '@backstage/plugin-home-react/alpha';
 import { CustomHomepageGrid } from '../components';
@@ -26,10 +26,24 @@ import { CustomHomepageGrid } from '../components';
  * This is used when no custom layout extension is installed.
  */
 export function DefaultHomePageLayout(props: HomePageLayoutProps) {
-  const { widgets } = props;
+  const { widgets, defaultConfig } = props;
+  const gridConfig = useMemo(
+    () =>
+      defaultConfig?.map(item => ({
+        component: item.component,
+        x: item.column,
+        y: item.row,
+        width: item.width,
+        height: item.height,
+        movable: item.movable,
+        deletable: item.deletable,
+        resizable: item.resizable,
+      })),
+    [defaultConfig],
+  );
   return (
     <Content>
-      <CustomHomepageGrid>
+      <CustomHomepageGrid config={gridConfig}>
         {widgets.map((widget, index) => (
           <Fragment key={widget.name ?? index}>{widget.component}</Fragment>
         ))}

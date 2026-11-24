@@ -1,5 +1,124 @@
 # @backstage/frontend-dev-utils
 
+## 1.0.0
+
+### Major Changes
+
+- b3befd0: Released version 1.0 of this frontend framework package. Its public APIs are now stable under the [package versioning policy](https://backstage.io/docs/overview/versioning-policy/#package-versioning-policy). Alpha and beta APIs retain their existing stability levels.
+
+### Patch Changes
+
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+- Updated dependencies
+  - @backstage/frontend-plugin-api@1.0.0
+  - @backstage/plugin-app@0.6.0
+  - @backstage/frontend-defaults@0.5.8
+  - @backstage/ui@0.20.0
+
+## 0.1.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app@0.6.0-next.2
+  - @backstage/ui@0.20.0-next.0
+  - @backstage/frontend-defaults@0.5.8-next.2
+  - @backstage/frontend-plugin-api@0.19.0-next.2
+
+## 0.1.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-defaults@0.5.8-next.1
+  - @backstage/plugin-app@0.6.0-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+
+## 0.1.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.3-next.0
+  - @backstage/frontend-defaults@0.5.8-next.0
+  - @backstage/plugin-app@0.5.5-next.0
+
+## 0.1.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app@0.5.4
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/ui@0.19.0
+  - @backstage/frontend-defaults@0.5.7
+
+## 0.1.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app@0.5.4-next.1
+  - @backstage/frontend-plugin-api@0.18.2-next.1
+  - @backstage/ui@0.19.0-next.0
+
+## 0.1.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-defaults@0.5.7-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+  - @backstage/plugin-app@0.5.4-next.0
+
+## 0.1.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.18.0
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/plugin-app@0.5.3
+  - @backstage/frontend-defaults@0.5.6
+
+## 0.1.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.1-next.0
+  - @backstage/plugin-app@0.5.3-next.1
+  - @backstage/ui@0.18.0-next.1
+  - @backstage/frontend-defaults@0.5.6-next.1
+
+## 0.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.17.2-next.0
+  - @backstage/plugin-app@0.5.3-next.0
+  - @backstage/frontend-defaults@0.5.6-next.0
+
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.17.1
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/plugin-app@0.5.2
+  - @backstage/frontend-defaults@0.5.5
+
+## 0.1.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app@0.5.2-next.2
+  - @backstage/frontend-plugin-api@0.18.0-next.0
+  - @backstage/frontend-defaults@0.5.5-next.1
+
 ## 0.1.5-next.0
 
 ### Patch Changes

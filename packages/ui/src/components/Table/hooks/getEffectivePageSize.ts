@@ -29,7 +29,7 @@ export function getEffectivePageSize(
 ): number {
   const { pageSize, pageSizeOptions } = paginationOptions;
 
-  if (!pageSizeOptions) {
+  if (!pageSizeOptions?.length) {
     return pageSize ?? DEFAULT_PAGE_SIZE;
   }
 

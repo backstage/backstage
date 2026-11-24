@@ -18,8 +18,10 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
+import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import {
   DocsBuildStrategy,
+  GeneratorBase,
   Generators,
   PreparerBase,
   Preparers,
@@ -28,8 +30,8 @@ import {
   PublisherSettings,
   PublisherType,
   RemoteProtocol,
+  SupportedGeneratorKey,
   techdocsBuildsExtensionPoint,
-  TechdocsGenerator,
   techdocsGeneratorExtensionPoint,
   techdocsPreparerExtensionPoint,
   techdocsPublisherExtensionPoint,
@@ -37,6 +39,7 @@ import {
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 import * as winston from 'winston';
 import { createRouter } from './service/router';
+import { createTechdocsActions } from './actions';
 
 /**
  * The TechDocs plugin is responsible for serving and building documentation for any entity.
@@ -62,14 +65,27 @@ export const techdocsPlugin = createBackendPlugin({
       },
     });
 
-    let customTechdocsGenerator: TechdocsGenerator | undefined;
+    let customTechdocsGenerator: GeneratorBase | undefined;
+    const customGenerators = new Map<SupportedGeneratorKey, GeneratorBase>();
     env.registerExtensionPoint(techdocsGeneratorExtensionPoint, {
-      setTechdocsGenerator(generator: TechdocsGenerator) {
+      setTechdocsGenerator(generator: GeneratorBase) {
         if (customTechdocsGenerator) {
           throw new Error('TechdocsGenerator may only be set once');
         }
-
         customTechdocsGenerator = generator;
+      },
+      registerGenerator(key: SupportedGeneratorKey, generator: GeneratorBase) {
+        if (key === 'mkdocs' || key === 'techdocs') {
+          throw new Error(
+            `Cannot register a generator for the built-in "${key}" engine; use setTechdocsGenerator to replace the default MkDocs generator`,
+          );
+        }
+        if (customGenerators.has(key)) {
+          throw new Error(
+            `Generator for engine "${key}" is already registered`,
+          );
+        }
+        customGenerators.set(key, generator);
       },
     });
 
@@ -113,6 +129,7 @@ export const techdocsPlugin = createBackendPlugin({
         httpAuth: coreServices.httpAuth,
         auth: coreServices.auth,
         catalog: catalogServiceRef,
+        actionsRegistry: actionsRegistryServiceRef,
       },
       async init({
         config,
@@ -124,6 +141,7 @@ export const techdocsPlugin = createBackendPlugin({
         httpAuth,
         auth,
         catalog,
+        actionsRegistry,
       }) {
         // Preparers are responsible for fetching source files for documentation.
         const preparers = await Preparers.fromConfig(config, {
@@ -139,6 +157,24 @@ export const techdocsPlugin = createBackendPlugin({
           logger: logger,
           customGenerator: customTechdocsGenerator,
         });
+        for (const [key, generator] of customGenerators.entries()) {
+          generators.register(key, generator);
+        }
+        const defaultEngine =
+          config.getOptionalString('techdocs.generator.defaultEngine') ??
+          'mkdocs';
+        const registeredEngines = [
+          'mkdocs',
+          'techdocs',
+          ...customGenerators.keys(),
+        ];
+        if (!registeredEngines.includes(defaultEngine)) {
+          logger.warn(
+            `techdocs.generator.defaultEngine is set to "${defaultEngine}", but no generator is registered for it. ` +
+              `Builds for entities without a backstage.io/techdocs-engine annotation will fail. ` +
+              `Install the backend module that provides this engine.`,
+          );
+        }
 
         // Publisher is used for
         // 1. Publishing generated files to storage
@@ -173,6 +209,13 @@ export const techdocsPlugin = createBackendPlugin({
         http.addAuthPolicy({
           path: '/static',
           allow: 'user-cookie',
+        });
+
+        // Register MCP actions for techdocs
+        createTechdocsActions({
+          actionsRegistry,
+          auth,
+          discovery,
         });
       },
     });

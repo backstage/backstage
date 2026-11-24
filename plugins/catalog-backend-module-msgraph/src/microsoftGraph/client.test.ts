@@ -18,6 +18,7 @@ import { TokenCredential } from '@azure/identity';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
+import { getEventListeners } from 'node:events';
 import { MicrosoftGraphClient } from './client';
 
 describe('MicrosoftGraphClient', () => {
@@ -145,6 +146,56 @@ describe('MicrosoftGraphClient', () => {
     );
 
     expect(values).toEqual(['first', 'second']);
+  });
+
+  it('should not retain abort listeners on a signal reused across a collection walk', async () => {
+    // One page per request, so the number of requests in the walk is known.
+    const pages = 20;
+    worker.use(
+      http.get('https://example.com/users', ({ request }) => {
+        const page = Number(new URL(request.url).searchParams.get('page') ?? 0);
+        return HttpResponse.json({
+          value: [`entry-${page}`],
+          ...(page + 1 < pages
+            ? {
+                '@odata.nextLink': `https://example.com/users?page=${page + 1}`,
+              }
+            : {}),
+        });
+      }),
+    );
+
+    const controller = new AbortController();
+
+    const values = await collectAsyncIterable(
+      client.requestCollection<string>(
+        'users',
+        undefined,
+        'basic',
+        controller.signal,
+      ),
+    );
+
+    expect(values).toHaveLength(pages);
+    // Without a per-request dependent signal this is one listener per request,
+    // held until the requests are garbage collected.
+    expect(getEventListeners(controller.signal, 'abort')).toHaveLength(0);
+  });
+
+  it('should still abort a request, forwarding the original reason', async () => {
+    worker.use(
+      http.get('https://example.com/users', () =>
+        HttpResponse.json({ value: [] }),
+      ),
+    );
+
+    const controller = new AbortController();
+    const reason = new Error('task cancelled');
+    controller.abort(reason);
+
+    await expect(
+      client.requestApi('users', undefined, undefined, controller.signal),
+    ).rejects.toBe(reason);
   });
 
   it('should load user profile photo with max size of 120', async () => {

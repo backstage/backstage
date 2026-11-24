@@ -14,15 +14,159 @@
  * limitations under the License.
  */
 
-import { renderHook } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 import { MemoryRouter, Router } from 'react-router-dom';
 import { createVersionedContextForTesting } from '@backstage/version-bridge';
+import { mockApis } from '@backstage/frontend-test-utils';
 import { useRouteRef } from './useRouteRef';
 import { createRouteRef } from './RouteRef';
+import { createSubRouteRef } from './SubRouteRef';
 import { createBrowserHistory } from 'history';
 import { TestApiProvider } from '@backstage/test-utils';
-import { routeResolutionApiRef } from '../apis';
+import { appLifecycleApiRef, routeResolutionApiRef } from '../apis';
+import { appHistoryApiRef } from './AppHistoryApi';
+
+describe('framework routing', () => {
+  it('should resolve routes from the app history with no React Router present', () => {
+    // A framework page is routerless: React Router's own `useLocation` throws
+    // here, so this hook must read the location from the app history instead.
+    const routeRef = createRouteRef();
+    const routeResolution = mockApis.routeResolution({
+      routes: [[routeRef, '/hello']],
+    });
+    const appHistory = mockApis.appHistory({
+      initialLocation: '/my-page',
+      basename: '/backstage',
+    });
+
+    const renderedHook = renderHook(() => useRouteRef(routeRef), {
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
+        <TestApiProvider
+          apis={[
+            [routeResolutionApiRef, routeResolution],
+            [appHistoryApiRef, appHistory],
+          ]}
+          children={children}
+        />
+      ),
+    });
+
+    expect(renderedHook.result.current?.()).toBe('/hello');
+    // App-relative, i.e. with the deploy basename already stripped — the same
+    // source path the app history hands every other consumer.
+    expect(routeResolution.resolve).toHaveBeenCalledWith(
+      routeRef,
+      expect.objectContaining({ sourcePath: '/my-page' }),
+    );
+
+    act(() => {
+      appHistory.navigate('/my-new-page');
+    });
+
+    expect(routeResolution.resolve).toHaveBeenLastCalledWith(
+      routeRef,
+      expect.objectContaining({ sourcePath: '/my-new-page' }),
+    );
+  });
+
+  it('re-resolves a route after app finalization without losing its app history scope', () => {
+    const routeRef = createRouteRef();
+    const appHistory = mockApis.appHistory({ initialLocation: '/my-page' });
+    let finalized = false;
+    let notify = () => {};
+    const lifecycle = {
+      isFinalized: () => finalized,
+      subscribe: (listener: () => void) => {
+        notify = listener;
+        return () => {
+          notify = () => {};
+        };
+      },
+    };
+    const routeResolution = mockApis.routeResolution({
+      resolve: () => (finalized ? () => '/hello' : undefined),
+    });
+
+    const { result } = renderHook(() => useRouteRef(routeRef), {
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
+        <TestApiProvider
+          apis={[
+            [routeResolutionApiRef, routeResolution],
+            [appHistoryApiRef, appHistory],
+            [appLifecycleApiRef, lifecycle],
+          ]}
+          children={children}
+        />
+      ),
+    });
+
+    expect(result.current).toBeUndefined();
+    expect(routeResolution.resolve).toHaveBeenCalledWith(routeRef, {
+      sourcePath: '/my-page',
+    });
+
+    act(() => {
+      finalized = true;
+      notify();
+    });
+    expect(result.current?.()).toBe('/hello');
+    expect(routeResolution.resolve).toHaveBeenCalledTimes(2);
+
+    act(() => appHistory.navigate('/another-page'));
+    expect(routeResolution.resolve).toHaveBeenLastCalledWith(routeRef, {
+      sourcePath: '/another-page',
+    });
+  });
+
+  it('should resolve routes with neither authority present', () => {
+    const routeRef = createRouteRef();
+    const routeResolution = mockApis.routeResolution({
+      routes: [[routeRef, '/hello']],
+    });
+
+    const renderedHook = renderHook(() => useRouteRef(routeRef), {
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
+        <TestApiProvider
+          apis={[[routeResolutionApiRef, routeResolution]]}
+          children={children}
+        />
+      ),
+    });
+
+    expect(renderedHook.result.current?.()).toBe('/hello');
+    expect(routeResolution.resolve).toHaveBeenCalledWith(
+      routeRef,
+      expect.objectContaining({ sourcePath: '/' }),
+    );
+  });
+
+  it('should prefer the app history over a React Router that disagrees', () => {
+    const routeRef = createRouteRef();
+    const routeResolution = mockApis.routeResolution({
+      routes: [[routeRef, '/hello']],
+    });
+    const appHistory = mockApis.appHistory({ initialLocation: '/my-page' });
+
+    renderHook(() => useRouteRef(routeRef), {
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
+        <TestApiProvider
+          apis={[
+            [routeResolutionApiRef, routeResolution],
+            [appHistoryApiRef, appHistory],
+          ]}
+        >
+          <MemoryRouter initialEntries={['/stale']} children={children} />
+        </TestApiProvider>
+      ),
+    });
+
+    expect(routeResolution.resolve).toHaveBeenCalledWith(
+      routeRef,
+      expect.objectContaining({ sourcePath: '/my-page' }),
+    );
+  });
+});
 
 describe('v1 consumer', () => {
   const context = createVersionedContextForTesting('routing-context');
@@ -31,14 +175,39 @@ describe('v1 consumer', () => {
     context.reset();
   });
 
-  it('should resolve routes', () => {
-    const resolve = jest.fn(() => () => '/hello');
+  it('should infer all nested sub-route parameters', () => {
+    const rootRouteRef = createRouteRef();
+    const revisionRouteRef = createSubRouteRef({
+      parent: rootRouteRef,
+      path: '/:name/:revision',
+    });
+    const attachmentRouteRef = createSubRouteRef({
+      parent: revisionRouteRef,
+      path: '/attachments/:attachmentId',
+    });
 
+    function useAttachmentRoute() {
+      const route = useRouteRef(attachmentRouteRef);
+      route?.({ name: '', revision: '', attachmentId: '' });
+      // @ts-expect-error
+      route?.({ name: '', revision: '' });
+      // @ts-expect-error
+      route?.({ attachmentId: '' });
+      return route;
+    }
+
+    expect(useAttachmentRoute).toEqual(expect.any(Function));
+  });
+
+  it('should resolve routes', () => {
     const routeRef = createRouteRef();
+    const routeResolution = mockApis.routeResolution({
+      routes: [[routeRef, '/hello']],
+    });
 
     const renderedHook = renderHook(() => useRouteRef(routeRef), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[routeResolutionApiRef, { resolve }]]}>
+        <TestApiProvider apis={[[routeResolutionApiRef, routeResolution]]}>
           <MemoryRouter initialEntries={['/my-page']} children={children} />
         </TestApiProvider>
       ),
@@ -46,7 +215,7 @@ describe('v1 consumer', () => {
 
     const routeFunc = renderedHook.result.current;
     expect(routeFunc?.()).toBe('/hello');
-    expect(resolve).toHaveBeenCalledWith(
+    expect(routeResolution.resolve).toHaveBeenCalledWith(
       routeRef,
       expect.objectContaining({
         sourcePath: '/my-page',
@@ -60,7 +229,12 @@ describe('v1 consumer', () => {
     const renderedHook = renderHook(() => useRouteRef(routeRef), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
         <TestApiProvider
-          apis={[[routeResolutionApiRef, { resolve: () => undefined }]]}
+          apis={[
+            [
+              routeResolutionApiRef,
+              mockApis.routeResolution({ resolve: () => undefined }),
+            ],
+          ]}
         >
           <MemoryRouter initialEntries={['/my-page']} children={children} />
         </TestApiProvider>
@@ -72,15 +246,16 @@ describe('v1 consumer', () => {
   });
 
   it('re-resolves the routeFunc when the search parameters change', () => {
-    const resolve = jest.fn(() => () => '/hello');
-
     const routeRef = createRouteRef();
+    const routeResolution = mockApis.routeResolution({
+      routes: [[routeRef, '/hello']],
+    });
     const history = createBrowserHistory();
     history.push('/my-page');
 
     const { rerender } = renderHook(() => useRouteRef(routeRef), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[routeResolutionApiRef, { resolve }]]}>
+        <TestApiProvider apis={[[routeResolutionApiRef, routeResolution]]}>
           <Router
             location={history.location}
             navigator={history}
@@ -90,25 +265,26 @@ describe('v1 consumer', () => {
       ),
     });
 
-    expect(resolve).toHaveBeenCalledTimes(1);
+    expect(routeResolution.resolve).toHaveBeenCalledTimes(1);
 
     history.push('/my-new-page');
     rerender();
 
-    expect(resolve).toHaveBeenCalledTimes(2);
+    expect(routeResolution.resolve).toHaveBeenCalledTimes(2);
   });
 
   it('does not re-resolve the routeFunc the location pathname does not change', () => {
-    const resolve = jest.fn(() => () => '/hello');
-    const api = { resolve };
-
     const routeRef = createRouteRef();
+    const routeResolution = mockApis.routeResolution({
+      routes: [[routeRef, '/hello']],
+    });
+
     const history = createBrowserHistory();
     history.push('/my-page');
 
     const { rerender } = renderHook(() => useRouteRef(routeRef), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[routeResolutionApiRef, api]]}>
+        <TestApiProvider apis={[[routeResolutionApiRef, routeResolution]]}>
           <Router
             location={history.location}
             navigator={history}
@@ -118,25 +294,26 @@ describe('v1 consumer', () => {
       ),
     });
 
-    expect(resolve).toHaveBeenCalledTimes(1);
+    expect(routeResolution.resolve).toHaveBeenCalledTimes(1);
 
     history.push('/my-page');
     rerender();
 
-    expect(resolve).toHaveBeenCalledTimes(1);
+    expect(routeResolution.resolve).toHaveBeenCalledTimes(1);
   });
 
   it('does not re-resolve the routeFunc when the search parameter changes', () => {
-    const resolve = jest.fn(() => () => '/hello');
-    const api = { resolve };
-
     const routeRef = createRouteRef();
+    const routeResolution = mockApis.routeResolution({
+      routes: [[routeRef, '/hello']],
+    });
+
     const history = createBrowserHistory();
     history.push('/my-page');
 
     const { rerender } = renderHook(() => useRouteRef(routeRef), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[routeResolutionApiRef, api]]}>
+        <TestApiProvider apis={[[routeResolutionApiRef, routeResolution]]}>
           <Router
             location={history.location}
             navigator={history}
@@ -146,25 +323,26 @@ describe('v1 consumer', () => {
       ),
     });
 
-    expect(resolve).toHaveBeenCalledTimes(1);
+    expect(routeResolution.resolve).toHaveBeenCalledTimes(1);
 
     history.push('/my-page?foo=bar');
     rerender();
 
-    expect(resolve).toHaveBeenCalledTimes(1);
+    expect(routeResolution.resolve).toHaveBeenCalledTimes(1);
   });
 
   it('does not re-resolve the routeFunc when the hash parameter changes', () => {
-    const resolve = jest.fn(() => () => '/hello');
-    const api = { resolve };
-
     const routeRef = createRouteRef();
+    const routeResolution = mockApis.routeResolution({
+      routes: [[routeRef, '/hello']],
+    });
+
     const history = createBrowserHistory();
     history.push('/my-page');
 
     const { rerender } = renderHook(() => useRouteRef(routeRef), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider apis={[[routeResolutionApiRef, api]]}>
+        <TestApiProvider apis={[[routeResolutionApiRef, routeResolution]]}>
           <Router
             location={history.location}
             navigator={history}
@@ -174,11 +352,11 @@ describe('v1 consumer', () => {
       ),
     });
 
-    expect(resolve).toHaveBeenCalledTimes(1);
+    expect(routeResolution.resolve).toHaveBeenCalledTimes(1);
 
     history.push('/my-page#foo');
     rerender();
 
-    expect(resolve).toHaveBeenCalledTimes(1);
+    expect(routeResolution.resolve).toHaveBeenCalledTimes(1);
   });
 });

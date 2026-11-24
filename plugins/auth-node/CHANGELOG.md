@@ -1,5 +1,110 @@
 # @backstage/plugin-auth-node
 
+## 0.7.8
+
+### Patch Changes
+
+- 918ca98: Updated dependency `jose` to `^6.1.0`. Existing ES256 token issuance and verification are unchanged. ML-DSA algorithms can be used when the runtime supports them.
+- Updated dependencies
+  - @backstage/catalog-client@1.16.4
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/catalog-model@1.10.3
+  - @backstage/config@1.3.11
+
+## 0.7.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/catalog-client@1.16.4-next.1
+  - @backstage/catalog-model@1.10.3-next.0
+  - @backstage/config@1.3.11-next.0
+
+## 0.7.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.4-next.0
+
+## 0.7.8-next.0
+
+### Patch Changes
+
+- 918ca98: Updated dependency `jose` to `^6.1.0`. Existing ES256 token issuance and verification are unchanged. ML-DSA algorithms can be used when the runtime supports them.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.1-next.0
+
+## 0.7.7
+
+### Patch Changes
+
+- 9724edd: Hardened return URL validation in the OAuth redirect flow. Failed sign-in attempts now return to the configured app URL with the error message, including when the return URL is invalid.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/catalog-client@1.16.3
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/catalog-model@1.10.2
+
+## 0.7.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+
+## 0.7.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/catalog-client@1.16.3-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+
+## 0.7.6
+
+### Patch Changes
+
+- 507e65a: OAuth profile normalization now respects matching negative email verification information supplied by the provider.
+- Updated dependencies
+  - @backstage/catalog-client@1.16.2
+  - @backstage/catalog-model@1.10.1
+  - @backstage/config@1.3.9
+  - @backstage/backend-plugin-api@1.10.1
+
+## 0.7.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/catalog-client@1.16.2-next.1
+  - @backstage/backend-plugin-api@1.10.1-next.1
+
+## 0.7.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.2-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+
+## 0.7.4
+
+### Patch Changes
+
+- 7ca2955: Fix OAuth start handler crashing with a 500 error on malformed origins, now returns a 400 error.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/backend-plugin-api@1.10.0
+
 ## 0.7.4-next.0
 
 ### Patch Changes

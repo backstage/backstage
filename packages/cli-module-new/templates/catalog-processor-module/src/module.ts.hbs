@@ -1,0 +1,22 @@
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
+import { {{processorClass}} } from './processor/{{processorClass}}';
+
+export const {{moduleVar}} = createBackendModule({
+  pluginId: '{{pluginId}}',
+  moduleId: '{{fullModuleId}}',
+  register({ registerInit }) {
+    registerInit({
+      deps: {
+        config: coreServices.rootConfig,
+        catalog: catalogProcessingExtensionPoint,
+      },
+      async init({ catalog, config }) {
+        catalog.addProcessor({{processorClass}}.fromConfig(config));
+      },
+    });
+  },
+});

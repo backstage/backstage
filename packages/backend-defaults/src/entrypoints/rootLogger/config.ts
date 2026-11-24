@@ -50,9 +50,14 @@ export const getRootLoggerConfig = (
     };
   });
 
+  const redactAllowlist = config.getOptionalStringArray(
+    'backend.logger.redactAllowlist',
+  );
+
   return {
     meta,
     level,
     overrides,
+    redactAllowlist,
   };
 };

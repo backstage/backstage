@@ -42,10 +42,28 @@ MockedManagedIdentityCredential.prototype.getToken.mockImplementation(() =>
 describe('azure core', () => {
   describe('getAzureFileFetchUrl', () => {
     it.each([
+      ['GB', 'branch'],
+      ['GT', 'tag'],
+    ])('preserves the %s reference when fetching a file', (prefix, type) => {
+      const url = new URL(
+        getAzureFileFetchUrl(
+          `https://dev.azure.com/org/project/_git/repo?path=%2Fpackage.json&version=${prefix}release%2Fone%20%26%20two`,
+        ),
+      );
+
+      expect(url.searchParams.get('versionDescriptor.version')).toBe(
+        'release/one & two',
+      );
+      expect(url.searchParams.get('versionDescriptor.versionType')).toBe(type);
+      expect(url.searchParams.has('version')).toBe(false);
+      expect(url.searchParams.get('path')).toBe('/package.json');
+    });
+
+    it.each([
       {
         url: 'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml&version=GBmaster',
         result:
-          'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?api-version=6.0&path=my-template.yaml&version=master',
+          'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items?api-version=6.0&path=my-template.yaml&versionDescriptor.version=master&versionDescriptor.versionType=branch',
       },
       {
         url: 'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml',
@@ -60,7 +78,7 @@ describe('azure core', () => {
       {
         url: 'https://api.com/org-name/project-name/_git/repo-name?path=my-template.yaml&version=GBmaster',
         result:
-          'https://api.com/org-name/project-name/_apis/git/repositories/repo-name/items?api-version=6.0&path=my-template.yaml&version=master',
+          'https://api.com/org-name/project-name/_apis/git/repositories/repo-name/items?api-version=6.0&path=my-template.yaml&versionDescriptor.version=master&versionDescriptor.versionType=branch',
       },
     ])('should handle happy path %#', async ({ url, result }) => {
       expect(getAzureFileFetchUrl(url)).toBe(result);
@@ -81,6 +99,31 @@ describe('azure core', () => {
   });
 
   describe('getAzureDownloadUrl', () => {
+    it.each([
+      ['GB', 'branch'],
+      ['GT', 'tag'],
+    ])(
+      'preserves the %s reference when downloading a subtree',
+      (prefix, type) => {
+        const url = new URL(
+          getAzureDownloadUrl(
+            `https://dev.azure.com/org/project/_git/repo?path=%2Fdocs&version=${prefix}release%2Fone%20%26%20two`,
+          ),
+        );
+
+        expect(url.searchParams.get('versionDescriptor.version')).toBe(
+          'release/one & two',
+        );
+        expect(url.searchParams.get('versionDescriptor.versionType')).toBe(
+          type,
+        );
+        expect(url.searchParams.has('version')).toBe(false);
+        expect(url.searchParams.get('scopePath')).toBe('/docs');
+        expect(url.searchParams.get('recursionLevel')).toBe('full');
+        expect(url.searchParams.get('download')).toBe('true');
+      },
+    );
+
     it('do not add scopePath if no path is specified', async () => {
       const result = getAzureDownloadUrl(
         'https://dev.azure.com/organization/project/_git/repository',

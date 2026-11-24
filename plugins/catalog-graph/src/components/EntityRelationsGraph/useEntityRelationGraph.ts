@@ -79,9 +79,7 @@ export function useEntityRelationGraph({
               includeRelation(rel.type) &&
               (!kinds ||
                 kinds.some(kind =>
-                  rel.targetRef.startsWith(
-                    `${kind.toLocaleLowerCase('en-US')}:`,
-                  ),
+                  rel.targetRef.startsWith(`${kind.toLowerCase()}:`),
                 ))
             ) {
               if (!processedEntityRefs.has(rel.targetRef)) {

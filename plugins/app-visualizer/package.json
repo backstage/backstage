@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-app-visualizer",
-  "version": "0.2.7-next.0",
+  "version": "0.2.10",
   "description": "Visualizes the Backstage app structure",
   "backstage": {
     "role": "frontend-plugin",
@@ -39,7 +39,7 @@
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/ui": "workspace:^",
     "@remixicon/react": ">=4.6.0 <4.9.0",
-    "react-aria-components": "~1.17.0"
+    "react-aria-components": "~1.22.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
@@ -50,9 +50,9 @@
     "react-router-dom": "^6.30.2"
   },
   "peerDependencies": {
-    "@types/react": "^17.0.0 || ^18.0.0",
-    "react": "^17.0.0 || ^18.0.0",
-    "react-dom": "^17.0.0 || ^18.0.0",
+    "@types/react": "^18.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
     "react-router-dom": "^6.30.2"
   },
   "peerDependenciesMeta": {

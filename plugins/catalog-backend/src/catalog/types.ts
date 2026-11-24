@@ -16,8 +16,8 @@
 
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { EntityFilter } from '@backstage/plugin-catalog-node';
-import { FilterPredicate } from '@backstage/filter-predicates';
+import type { EntityFilter } from '@backstage/plugin-catalog-node';
+import type { FilterPredicate } from '@backstage/filter-predicates';
 
 /**
  * A pagination rule for entities.
@@ -46,7 +46,7 @@ export type PageInfo =
     };
 
 export type EntitiesRequest = {
-  filter?: EntityFilter;
+  filter?: FilterPredicate;
   fields?: (entity: Entity) => Entity;
   order?: EntityOrder[];
   pagination?: EntityPagination;
@@ -81,15 +81,11 @@ export interface EntitiesBatchRequest {
    */
   entityRefs: string[];
   /**
-   * Any additional filters to apply in the selection of the entities. Entities
-   * that do not match the filter result in a null entry in the response, as if
-   * they did not exist.
+   * Filters to apply in the selection of the entities. Entities that do not
+   * match the filter result in a null entry in the response, as if they did
+   * not exist.
    */
-  filter?: EntityFilter;
-  /**
-   * Predicate-based query for filtering entities.
-   */
-  query?: FilterPredicate;
+  filter?: FilterPredicate;
   /**
    * Strips out only the parts of the entity bodies to include in the response.
    */
@@ -123,11 +119,7 @@ export interface EntityFacetsRequest {
   /**
    * A filter to apply on the full list of entities before computing the facets.
    */
-  filter?: EntityFilter;
-  /**
-   * Predicate-based query for filtering entities.
-   */
-  query?: FilterPredicate;
+  filter?: FilterPredicate;
   /**
    * The facets to compute.
    *
@@ -220,11 +212,7 @@ export interface QueryEntitiesInitialRequest {
   fields?: (entity: Entity) => Entity;
   limit?: number;
   offset?: number;
-  filter?: EntityFilter;
-  /**
-   * Predicate-based query for filtering entities.
-   */
-  query?: FilterPredicate;
+  filter?: FilterPredicate;
   orderFields?: EntityOrder[];
   fullTextFilter?: {
     term: string;
@@ -296,11 +284,15 @@ export type Cursor = {
    */
   orderFieldValues: Array<string | null>;
   /**
-   * A filter to be applied to the full list of entities.
+   * A legacy EntityFilter carried over from older cursor formats. Converted to
+   * a FilterPredicate at query time. Not used by new code paths and may be
+   * removed in a future release.
    */
   filter?: EntityFilter;
   /**
-   * A predicate-based query to be applied to the full list of entities.
+   * The primary filter applied to the full list of entities. Named "query"
+   * rather than "filter" to avoid colliding with the legacy EntityFilter field
+   * above.
    */
   query?: FilterPredicate;
   /**

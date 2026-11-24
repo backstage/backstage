@@ -23,7 +23,15 @@ import {
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { AuthenticationError } from '@backstage/errors';
-import { SignJWT, GeneralSign, importJWK, base64url } from 'jose';
+import {
+  SignJWT,
+  GeneralSign,
+  importJWK,
+  base64url,
+  exportJWK,
+  generateKeyPair,
+} from 'jose';
+import { randomUUID as uuid } from 'node:crypto';
 
 const mockPublicKey = {
   kty: 'EC',
@@ -138,6 +146,7 @@ describe('UserTokenHandler', () => {
       const expectedExpiresAt = 1712075314;
 
       jest.useFakeTimers({
+        doNotFake: ['nextTick'],
         now: expectedIssuedAt * 1000 + 600_000,
       });
 
@@ -171,6 +180,7 @@ describe('UserTokenHandler', () => {
       const expectedExpiresAt = 1712075314;
 
       jest.useFakeTimers({
+        doNotFake: ['nextTick'],
         now: expectedIssuedAt * 1000 + 600_000,
       });
 
@@ -195,11 +205,46 @@ describe('UserTokenHandler', () => {
       });
     });
 
+    it('should verify a valid user token signed with ML-DSA-65', async () => {
+      const algorithm = 'ML-DSA-65';
+      const pair = await generateKeyPair(algorithm);
+      const publicKey = await exportJWK(pair.publicKey);
+      const kid = uuid();
+      publicKey.kid = kid;
+      publicKey.alg = algorithm;
+
+      server.use(
+        http.get('http://localhost:0/api/auth/.well-known/jwks.json', () =>
+          HttpResponse.json({ keys: [publicKey] }),
+        ),
+      );
+
+      const sub = 'user:development/guest';
+      const iat = Math.floor(Date.now() / 1000);
+      const token = await new SignJWT({
+        sub,
+        aud: 'backstage',
+        iat,
+        exp: iat + 3600,
+      })
+        .setProtectedHeader({
+          typ: 'vnd.backstage.user',
+          alg: algorithm,
+          kid,
+        })
+        .sign(pair.privateKey);
+
+      await expect(userTokenHandler.verifyToken(token)).resolves.toEqual({
+        userEntityRef: sub,
+      });
+    });
+
     it('should fail to verify when the sub claim is missing', async () => {
       const expectedIssuedAt = 1712071714;
       const expectedExpiresAt = 1712075314;
 
       jest.useFakeTimers({
+        doNotFake: ['nextTick'],
         now: expectedIssuedAt * 1000 + 600_000,
       });
 
@@ -228,6 +273,7 @@ describe('UserTokenHandler', () => {
       const expectedExpiresAt = 1712075314;
 
       jest.useFakeTimers({
+        doNotFake: ['nextTick'],
         now: expectedIssuedAt * 1000 + 600_000,
       });
 
@@ -260,6 +306,7 @@ describe('UserTokenHandler', () => {
       const expectedExpiresAt = 1712075314;
 
       jest.useFakeTimers({
+        doNotFake: ['nextTick'],
         now: expectedIssuedAt * 1000 + 600_000,
       });
 
@@ -331,6 +378,27 @@ describe('UserTokenHandler', () => {
       );
     });
 
+    it('should throw if payload.uip is missing', async () => {
+      const backstageToken = await createToken({
+        header: { typ: 'vnd.backstage.user', alg: 'ES256' },
+        payload: {
+          aud: 'backstage',
+          sub: 'mock',
+          ent: ['mock'],
+          iat: 1,
+          exp: 2,
+        },
+      });
+
+      expect(() =>
+        userTokenHandler.createLimitedUserToken(backstageToken),
+      ).toThrow(
+        new AuthenticationError(
+          'Failed to create limited user token, missing user identity proof',
+        ),
+      );
+    });
+
     it('should create a limited user token from a user token', async () => {
       const backstageToken = await createToken({
         header: { typ: 'vnd.backstage.user', alg: 'ES256' },
@@ -362,6 +430,7 @@ describe('UserTokenHandler', () => {
 
     it('should create limited token that can be verified', async () => {
       jest.useFakeTimers({
+        doNotFake: ['nextTick'],
         now: 1712071714 * 1000 + 600_000,
       });
       const parts = {

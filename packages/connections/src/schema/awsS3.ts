@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { withBaseUrl } from '../system/withBaseUrl';
 import { createConnectionType } from '../system/createConnectionType';
 import { z } from 'zod/v4';
 
@@ -20,11 +21,12 @@ import { z } from 'zod/v4';
 export const AwsS3ConnectionType = createConnectionType({
   type: 'aws-s3',
   title: 'AWS S3',
-  configSchema: z.object({
-    host: z.string(),
-    endpoint: z.string().optional(),
-    s3ForcePathStyle: z.boolean().optional(),
-  }),
+  ...withBaseUrl(
+    z.object({
+      endpoint: z.string().optional(),
+      s3ForcePathStyle: z.boolean().optional(),
+    }),
+  ),
   authMethods: [
     {
       method: 'none',

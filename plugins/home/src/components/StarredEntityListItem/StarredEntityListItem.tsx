@@ -56,15 +56,13 @@ export const StarredEntityListItem = ({
 
   let secondaryText = '';
   if (showKind) {
-    secondaryText += entity.kind.toLocaleLowerCase('en-US');
+    secondaryText += entity.kind.toLowerCase();
   }
   if (entity.spec && 'type' in entity.spec) {
     if (showKind) {
       secondaryText += ' — ';
     }
-    secondaryText += (entity.spec as { type: string }).type.toLocaleLowerCase(
-      'en-US',
-    );
+    secondaryText += (entity.spec as { type: string }).type.toLowerCase();
   }
 
   return (

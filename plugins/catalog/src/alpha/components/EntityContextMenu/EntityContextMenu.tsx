@@ -17,9 +17,9 @@
 import {
   type AppNode,
   ExtensionBoundary,
-  IconComponent,
   useTranslationRef,
 } from '@backstage/frontend-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
 import type { EntityContextMenuItemData } from '@backstage/plugin-catalog-react/alpha';
 import {
   ButtonIcon,
@@ -75,7 +75,7 @@ function EntityContextMenuItem(props: {
   item: EntityContextMenuItemDataWithNode;
 }) {
   return (
-    <ExtensionBoundary node={props.item.node}>
+    <ExtensionBoundary node={props.item.node} errorPresentation="error-api">
       <EntityContextMenuItemContent data={props.item.data} />
     </ExtensionBoundary>
   );

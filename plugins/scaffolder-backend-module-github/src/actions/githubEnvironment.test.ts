@@ -77,7 +77,14 @@ describe('github:environment:create', () => {
     },
   });
 
+  async function runAction(context: Parameters<typeof action.handler>[0]) {
+    const result = action.handler(context);
+    await jest.advanceTimersByTimeAsync(2_000);
+    await result;
+  }
+
   beforeEach(() => {
+    jest.useFakeTimers();
     octokitMock.mockImplementation(() => mockOctokit);
 
     mockOctokit.rest.actions.getEnvironmentPublicKey.mockResolvedValue({
@@ -127,10 +134,13 @@ describe('github:environment:create', () => {
     });
   });
 
-  afterEach(jest.resetAllMocks);
+  afterEach(() => {
+    jest.useRealTimers();
+    jest.resetAllMocks();
+  });
 
   it('should pass context logger to Octokit client', async () => {
-    await action.handler(mockContext);
+    await runAction(mockContext);
 
     expect(octokitMock).toHaveBeenCalledWith(
       expect.objectContaining({ log: mockContext.logger }),
@@ -138,7 +148,7 @@ describe('github:environment:create', () => {
   });
 
   it('should work happy path', async () => {
-    await action.handler(mockContext);
+    await runAction(mockContext);
 
     expect(
       mockOctokit.rest.repos.createOrUpdateEnvironment,
@@ -154,7 +164,7 @@ describe('github:environment:create', () => {
   });
 
   it('should work specify deploymentBranchPolicy protected', async () => {
-    await action.handler({
+    await runAction({
       ...mockContext,
       input: {
         ...mockContext.input,
@@ -182,7 +192,7 @@ describe('github:environment:create', () => {
   });
 
   it('should work specify deploymentBranchPolicy custom', async () => {
-    await action.handler({
+    await runAction({
       ...mockContext,
       input: {
         ...mockContext.input,
@@ -230,7 +240,7 @@ describe('github:environment:create', () => {
   });
 
   it('should work specify deploymentTagPolicy custom', async () => {
-    await action.handler({
+    await runAction({
       ...mockContext,
       input: {
         ...mockContext.input,
@@ -278,7 +288,7 @@ describe('github:environment:create', () => {
   });
 
   it('should work specify environment variables', async () => {
-    await action.handler({
+    await runAction({
       ...mockContext,
       input: {
         ...mockContext.input,
@@ -327,7 +337,7 @@ describe('github:environment:create', () => {
   });
 
   it('should work specify secrets', async () => {
-    await action.handler({
+    await runAction({
       ...mockContext,
       input: {
         ...mockContext.input,
@@ -389,7 +399,7 @@ describe('github:environment:create', () => {
   });
 
   it('should work with wait_timer', async () => {
-    await action.handler({
+    await runAction({
       ...mockContext,
       input: {
         ...mockContext.input,
@@ -411,7 +421,7 @@ describe('github:environment:create', () => {
   });
 
   it('should work with wait_timer 0', async () => {
-    await action.handler({
+    await runAction({
       ...mockContext,
       input: {
         ...mockContext.input,
@@ -433,7 +443,7 @@ describe('github:environment:create', () => {
   });
 
   it('should work with preventSelfReview set to true', async () => {
-    await action.handler({
+    await runAction({
       ...mockContext,
       input: {
         ...mockContext.input,
@@ -455,7 +465,7 @@ describe('github:environment:create', () => {
   });
 
   it('should work with preventSelfReview set to false', async () => {
-    await action.handler({
+    await runAction({
       ...mockContext,
       input: {
         ...mockContext.input,
@@ -477,7 +487,7 @@ describe('github:environment:create', () => {
   });
 
   it('should work with reviewers', async () => {
-    await action.handler({
+    await runAction({
       ...mockContext,
       input: {
         ...mockContext.input,

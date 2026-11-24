@@ -1,6 +1,6 @@
 import { releases } from './releases';
 
-function tryToLoadCustomSidebar(ref) {
+function tryToLoadCustomSidebar(ref: string) {
   try {
     return require(ref);
   } catch (e) {
@@ -62,6 +62,7 @@ export default {
         'getting-started/configure-app-with-plugins',
         'getting-started/homepage',
       ]),
+      'getting-started/ci',
       sidebarElementWithIndex({ label: 'Deploying Backstage' }, [
         'deployment/index',
         'deployment/scaling',
@@ -152,7 +153,14 @@ export default {
             description:
               'Features in Backstage you can leverage with your AI tools.',
           },
-          ['ai/skills', 'ai/mcp-actions', 'ai/well-known-actions'],
+          [
+            'ai/overview',
+            'ai/ai-in-the-catalog',
+            'ai/mcp-actions',
+            'ai/well-known-actions',
+            'ai/skills',
+            'ai/well-known-skills',
+          ],
         ),
         sidebarElementWithIndex(
           {
@@ -181,6 +189,7 @@ export default {
                 'auth/google/provider',
                 'auth/google/gcp-iap-auth',
                 'auth/guest/provider',
+                'auth/keycloak/provider',
                 'auth/okta/provider',
                 'auth/oauth2-proxy/provider',
                 'auth/onelogin/provider',
@@ -192,6 +201,7 @@ export default {
             'auth/oidc',
             'auth/add-auth-provider',
             'auth/service-to-service-auth',
+            'auth/offline-access',
             'auth/autologout',
             'auth/troubleshooting',
           ],
@@ -275,7 +285,12 @@ export default {
             },
             'features/search/architecture',
             'features/search/search-engines',
-            'features/search/collators',
+            {
+              type: 'category',
+              label: 'Collators',
+              link: { type: 'doc', id: 'features/search/collators' },
+              items: ['features/search/custom-collators'],
+            },
             'features/search/how-to-guides',
           ],
         ),
@@ -294,11 +309,32 @@ export default {
             'features/software-catalog/well-known-annotations',
             'features/software-catalog/well-known-relations',
             'features/software-catalog/well-known-statuses',
-            'features/software-catalog/extending-the-model',
-            'features/software-catalog/external-integrations',
+            {
+              type: 'category',
+              label: 'Extending the model',
+              link: {
+                type: 'doc',
+                id: 'features/software-catalog/extending-the-model',
+              },
+              items: ['features/software-catalog/catalog-model-layers'],
+            },
+            {
+              type: 'category',
+              label: 'External integrations',
+              link: {
+                type: 'doc',
+                id: 'features/software-catalog/external-integrations/index',
+              },
+              items: [
+                'features/software-catalog/external-integrations/entity-providers',
+                'features/software-catalog/external-integrations/processors',
+                'features/software-catalog/external-integrations/incremental-entity-providers',
+              ],
+            },
             'features/software-catalog/catalog-customization',
             'features/software-catalog/entity-presentation',
             'features/software-catalog/audit-events',
+            'features/software-catalog/unprocessed-entities',
             {
               type: 'category',
               label: 'API',
@@ -370,6 +406,12 @@ export default {
             'features/techdocs/concepts',
             'features/techdocs/addons',
             'features/techdocs/architecture',
+            {
+              type: 'category',
+              label: 'Engines',
+              link: { type: 'doc', id: 'features/techdocs/engines' },
+              items: ['features/techdocs/engines-zensical'],
+            },
             'features/techdocs/extensions',
             'features/techdocs/creating-and-publishing',
             'features/techdocs/configuration',
@@ -440,6 +482,9 @@ export default {
         ]),
         sidebarElementWithIndex({ label: 'Google GCS' }, [
           'integrations/google-cloud-storage/locations',
+        ]),
+        sidebarElementWithIndex({ label: 'Keycloak' }, [
+          'integrations/keycloak/org',
         ]),
         sidebarElementWithIndex({ label: 'LDAP' }, ['integrations/ldap/org']),
         sidebarElementWithIndex({ label: 'Okta' }, ['integrations/okta/org']),
@@ -531,6 +576,7 @@ export default {
                 'backend-system/core-services/root-logger',
                 'backend-system/core-services/scheduler',
                 'backend-system/core-services/token-manager',
+                'backend-system/core-services/tracing',
                 'backend-system/core-services/url-reader',
                 'backend-system/core-services/user-info',
                 'backend-system/core-services/actions-registry',
@@ -577,6 +623,7 @@ export default {
                 'frontend-system/building-plugins/testing',
                 'frontend-system/building-plugins/common-extension-blueprints',
                 'frontend-system/building-plugins/built-in-data-refs',
+                'frontend-system/building-plugins/page-routers',
                 'frontend-system/building-plugins/migrating',
                 'frontend-system/building-plugins/internationalization',
                 'frontend-system/building-plugins/analytics',
@@ -596,6 +643,7 @@ export default {
                 'frontend-system/building-apps/plugin-conversion',
                 'frontend-system/building-apps/module-federation',
                 'frontend-system/building-apps/migrating',
+                'frontend-system/building-apps/app-visualizer',
               ],
             ),
             sidebarElementWithIndex(
@@ -612,6 +660,14 @@ export default {
               ],
             ),
           ],
+        ),
+        sidebarElementWithIndex(
+          {
+            label: 'Common Libraries',
+            description:
+              'Shared libraries for frontend and backend development.',
+          },
+          ['common-libraries/index', 'common-libraries/errors'],
         ),
         sidebarElementWithIndex(
           {
@@ -643,6 +699,7 @@ export default {
                 'tooling/cli/module-new',
                 'tooling/cli/module-test',
                 'tooling/cli/module-translations',
+                'tooling/cli/module-package-manager-yarn',
               ],
             ),
             'tooling/cli/building-cli-modules',
@@ -661,6 +718,7 @@ export default {
             'tooling/package-metadata',
           ],
         ),
+        'tooling/codemods',
         sidebarElementWithIndex(
           {
             label: 'User Interface',
@@ -729,7 +787,6 @@ export default {
             'tutorials/react-router-stable-migration',
             'tutorials/react18-migration',
             'tutorials/package-role-migration',
-            'tutorials/migrating-away-from-core',
             'tutorials/yarn-migration',
             'tutorials/migrate-to-mui5',
             'tutorials/auth-service-migration',

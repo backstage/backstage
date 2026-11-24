@@ -20,7 +20,11 @@
  * @packageDocumentation
  */
 
-export { loadConfigSchema, mergeConfigSchemas } from './schema';
+export {
+  ConfigSchemaError,
+  loadConfigSchema,
+  mergeConfigSchemas,
+} from './schema';
 export type {
   ConfigSchema,
   ConfigSchemaProcessingOptions,

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { z } from 'zod/v3';
-import { jsonSchemaSchema } from '../jsonSchema/zod';
+import { z } from 'zod';
+import { jsonObjectSchema } from '../jsonSchema/zod';
 
 const relationFieldSchema = z.strictObject({
   /**
@@ -104,10 +104,12 @@ export const opUpdateKindVersionV1Schema = z.strictObject({
      *
      * This schema gets deep merged with the default one for this version. It
      * can therefore be used for both amending and changing existing fields.
+     * Null-valued object fields delete inherited fields. Validation of the
+     * resulting JSON schema takes place during model compilation.
      */
     schema: z
       .strictObject({
-        jsonSchema: jsonSchemaSchema,
+        jsonSchema: jsonObjectSchema,
       })
       .optional(),
   }),

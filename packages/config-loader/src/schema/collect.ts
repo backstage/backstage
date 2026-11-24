@@ -15,6 +15,7 @@
  */
 
 import fs from 'fs-extra';
+import { toError } from '@backstage/errors';
 import type * as TsJsonSchemaGenerator from 'ts-json-schema-generator';
 import type * as TypeScript from 'typescript';
 import { createHash } from 'node:crypto';
@@ -26,11 +27,17 @@ import {
 } from 'node:path';
 import { ConfigSchemaPackageEntry } from './types';
 import type { JsonObject } from '@backstage/types';
+import { ConfigSchemaError } from './ConfigSchemaError';
 
 type Item = {
   name?: string;
   parentPath?: string;
   packagePath?: string;
+};
+
+type CollectConfigSchemasOptions = {
+  excludePackageDependencies?: boolean;
+  onSchemaError?: (error: ConfigSchemaError) => void;
 };
 
 const req =
@@ -55,7 +62,7 @@ export const internal = {
 export async function collectConfigSchemas(
   packageNames: string[],
   packagePaths: string[],
-  options?: { excludePackageDependencies?: boolean },
+  options?: CollectConfigSchemasOptions,
 ): Promise<ConfigSchemaPackageEntry[]> {
   const schemas = new Array<ConfigSchemaPackageEntry>();
   const tsSchemaPaths = new Array<{ packageName: string; path: string }>();
@@ -165,7 +172,7 @@ export async function collectConfigSchemas(
     ...packagePaths.map(path => processItem({ name: path, packagePath: path })),
   ]);
 
-  const tsSchemas = await compileTsSchemas(tsSchemaPaths);
+  const tsSchemas = await compileTsSchemas(tsSchemaPaths, options);
   const allSchemas = schemas.concat(tsSchemas);
 
   const hasBackendDefaults = allSchemas.some(
@@ -256,11 +263,22 @@ function parseNestedSchemaAnnotation(annotation: unknown) {
   return { key, value };
 }
 
+function handleSchemaError(
+  options: CollectConfigSchemasOptions | undefined,
+  error: ConfigSchemaError,
+) {
+  if (!options?.onSchemaError) {
+    throw error;
+  }
+  options.onSchemaError(error);
+}
+
 // This handles the support of TypeScript .d.ts config schema declarations.
 // We collect all TypeScript schema definitions and compile them in one shared
 // program, which avoids repeatedly resolving and parsing imported types.
 async function compileTsSchemas(
   entries: { path: string; packageName: string }[],
+  options?: CollectConfigSchemasOptions,
 ) {
   if (entries.length === 0) {
     return [];
@@ -271,6 +289,7 @@ async function compileTsSchemas(
   const ts: typeof TypeScript = require('typescript');
   const {
     AnnotatedTypeFormatter,
+    AnyType,
     createFormatter,
     createParser,
     DEFAULT_CONFIG,
@@ -294,27 +313,41 @@ async function compileTsSchemas(
   };
 
   const program = ts.createProgram(rootNames, compilerOptions);
-  const diagnostics = [
+  const sharedDiagnostics = [
     ...program.getOptionsDiagnostics(),
     ...program.getGlobalDiagnostics(),
-    ...rootNames.flatMap(rootName => {
-      const sourceFile = program.getSourceFile(rootName);
-      return sourceFile
+  ];
+  entries.forEach(({ packageName }, index) => {
+    const sourceFile = program.getSourceFile(rootNames[index]);
+    const diagnostics = [
+      ...(index === 0 ? sharedDiagnostics : []),
+      ...(sourceFile
         ? [
             ...program.getSyntacticDiagnostics(sourceFile),
             ...program.getSemanticDiagnostics(sourceFile),
           ]
-        : [];
-    }),
-  ];
-  if (diagnostics.length > 0) {
-    const message = ts.formatDiagnostics(diagnostics, {
-      getCanonicalFileName: fileName => fileName,
-      getCurrentDirectory: () => currentDir,
-      getNewLine: () => '\n',
-    });
-    throw new Error(`Invalid TypeScript configuration schema:\n${message}`);
-  }
+        : []),
+    ];
+    if (diagnostics.length === 0) {
+      return;
+    }
+
+    for (const diagnostic of diagnostics) {
+      const cause = new Error(
+        ts
+          .formatDiagnostics([diagnostic], {
+            getCanonicalFileName: fileName => fileName,
+            getCurrentDirectory: () => currentDir,
+            getNewLine: () => '\n',
+          })
+          .trimEnd(),
+      );
+      handleSchemaError(
+        options,
+        new ConfigSchemaError({ source: packageName, cause }),
+      );
+    }
+  });
 
   const generatorConfig = {
     ...DEFAULT_CONFIG,
@@ -326,7 +359,26 @@ async function compileTsSchemas(
     topRef: false,
     tsProgram: program,
   };
-  const parser = createParser(program, generatorConfig);
+  const typeChecker = program.getTypeChecker();
+  const parser = createParser(program, generatorConfig, mutableParser => {
+    if (!options?.onSchemaError) {
+      return;
+    }
+
+    // Preserve the rest of a schema by treating unresolved references as unconstrained values.
+    mutableParser.addNodeParser({
+      supportsNode(node) {
+        if (!ts.isTypeReferenceNode(node)) {
+          return false;
+        }
+        const symbol = typeChecker.getSymbolAtLocation(node.typeName);
+        return !symbol?.declarations?.length;
+      },
+      createType() {
+        return new AnyType();
+      },
+    });
+  });
   class NestedAnnotationsFormatter extends AnnotatedTypeFormatter {
     override getDefinition(type: TsJsonSchemaGenerator.AnnotatedType) {
       const annotations = type.getAnnotations();
@@ -364,10 +416,13 @@ async function compileTsSchemas(
     generatorConfig,
   );
 
-  const tsSchemas = entries.map(({ path, packageName }, index) => {
+  const tsSchemas = entries.flatMap(({ path, packageName }, index) => {
     const sourceFile = program.getSourceFile(rootNames[index]);
     if (!sourceFile) {
-      throw new Error(`Invalid schema in ${path}, missing Config export`);
+      throw new ConfigSchemaError({
+        source: packageName,
+        cause: new Error('The schema source file could not be loaded'),
+      });
     }
     const configNode = sourceFile.statements.find(
       statement =>
@@ -376,7 +431,10 @@ async function compileTsSchemas(
         statement.name.text === 'Config',
     );
     if (!configNode) {
-      throw new Error(`Invalid schema in ${path}, missing Config export`);
+      throw new ConfigSchemaError({
+        source: packageName,
+        cause: new Error('The schema does not export a Config type'),
+      });
     }
 
     const namespace = createHash('sha256')
@@ -384,14 +442,23 @@ async function compileTsSchemas(
       .update('\0')
       .update(path.split(sep).join('/'))
       .digest('hex');
-    const value = namespaceSchemaDefinitions(
-      structuredClone(
-        generator.createSchemaFromNodes([configNode]),
-      ) as JsonObject,
-      namespace,
-    );
+    try {
+      const value = namespaceSchemaDefinitions(
+        structuredClone(
+          generator.createSchemaFromNodes([configNode]),
+        ) as JsonObject,
+        namespace,
+      );
 
-    return { path, value, packageName };
+      return [{ path, value, packageName }];
+    } catch (error) {
+      const cause = toError(error);
+      handleSchemaError(
+        options,
+        new ConfigSchemaError({ source: packageName, cause }),
+      );
+      return [];
+    }
   });
 
   return tsSchemas;

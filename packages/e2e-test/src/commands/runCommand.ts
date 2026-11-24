@@ -222,11 +222,15 @@ async function pinYarnVersion(dir: string) {
   // Intentionally writes a minimal yarnrc rather than merging with the template's.
   // The create-app template enables `npmMinimalAgeGate`, which would block e2e runs
   // from validating freshly-published dependency bumps and ecosystem-fix releases.
+  // New Yarn defaults must be set explicitly so install does not rewrite this file.
   await fs.writeFile(
     resolvePath(dir, '.yarnrc.yml'),
     `yarnPath: ${yarnPath}
 nodeLinker: node-modules
 enableGlobalCache: true
+enableScripts: true
+npmMinimalAgeGate: 0
+approvedGitRepositories: []
 plugins:
   - path: ${yarnPluginPath}
     spec: '@yarnpkg/plugin-workspace-tools'
@@ -484,19 +488,6 @@ async function testBackendStart(appDir: string, ...args: string[]) {
     const lines = input.split('\n').filter(Boolean);
     return lines.filter(
       l =>
-        !l.includes(
-          'ExperimentalWarning: Custom ESM Loaders is an experimental feature', // Node 16
-        ) &&
-        !l.includes(
-          'ExperimentalWarning: `--experimental-loader` may be removed in the future;', // Node 18
-        ) &&
-        !l.includes("--import 'data:text/javascript,import") && // the new --experimental-loader replacement warning, printed after the above, Node 18
-        !l.includes(
-          'ExperimentalWarning: `globalPreload` is planned for removal in favor of `initialize`.', // Node 18
-        ) &&
-        !l.includes(
-          'DeprecationWarning: The `punycode` module is deprecated.', // Node 22
-        ) &&
         !l.includes('node --trace-warnings ...') &&
         !l.includes('node --trace-deprecation ...'),
     );

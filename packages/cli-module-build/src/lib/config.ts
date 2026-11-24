@@ -58,6 +58,7 @@ export async function loadCliConfig(options: Options) {
   const schema = await loadConfigSchema({
     dependencies: localPackageNames,
     packagePaths: [targetPaths.resolveRoot('package.json')],
+    onSchemaError: error => console.warn(error.message),
   });
 
   const source = ConfigSources.default({

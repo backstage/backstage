@@ -24,10 +24,7 @@ import {
   resolvePackagePath,
 } from '@backstage/backend-plugin-api';
 
-const migrationsDir = resolvePackagePath(
-  '@backstage/plugin-app-backend',
-  'migrations',
-);
+const migrationsDir = resolvePackagePath(import.meta.url, 'migrations');
 
 interface StaticAssetRow {
   path: string;
@@ -82,10 +79,12 @@ export class StaticAssetsStore implements StaticAssetProvider {
    * Store the provided assets.
    *
    * If an asset for a given path already exists the modification time will be
-   * updated, but the contents will not.
+   * updated, but the contents will not. Existing assets are identified by path
+   * without loading their contents.
    */
   async storeAssets(assets: StaticAssetInput[]) {
     const existingRows = await this.#db<StaticAssetRow>('static_assets_cache')
+      .select('path')
       .where('namespace', this.#namespace)
       .whereIn(
         'path',

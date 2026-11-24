@@ -4,9 +4,35 @@ title: CLI Templates
 description: Overview of the new CLI Declarative Templates
 ---
 
-The behavior of the `backstage-cli new` command is configurable through your root `package.json`, and you can also create and add custom CLI templates to suit your needs.
+The `backstage-cli new` command (typically run as `yarn new` in a Backstage workspace) scaffolds new plugins, modules, and library packages. It presents a list of available templates and walks you through a short set of prompts before generating the package, wiring up dependencies, and registering it in the workspace.
 
-## Basic Configuration
+## Built-in templates
+
+The following templates are included out of the box:
+
+| Template                            | Description                                                                                 |
+| :---------------------------------- | :------------------------------------------------------------------------------------------ |
+| `frontend-plugin`                   | A new frontend plugin                                                                       |
+| `frontend-plugin-module`            | A new frontend module that extends an existing frontend plugin                              |
+| `legacy-frontend-plugin`            | A new frontend plugin (legacy system)                                                       |
+| `backend-plugin`                    | A new backend plugin                                                                        |
+| `backend-plugin-module`             | A new backend module that extends an existing backend plugin                                |
+| `plugin-web-library`                | A new web library plugin package                                                            |
+| `plugin-node-library`               | A new Node.js library plugin package                                                        |
+| `plugin-common-library`             | A new isomorphic common plugin package                                                      |
+| `web-library`                       | A library package, exporting shared functionality for web environments                      |
+| `node-library`                      | A library package, exporting shared functionality for Node.js environments                  |
+| `cli-module`                        | A CLI module that adds commands to the Backstage CLI                                        |
+| `catalog-processor-module`          | A Processor module for the Software Catalog                                                 |
+| `catalog-provider-module`           | An Entity Provider module for the Software Catalog                                          |
+| `scaffolder-backend-module`         | A module exporting custom actions for @backstage/plugin-scaffolder-backend                  |
+| `scaffolder-field-extension-module` | A custom field extension for the Backstage Scaffolder                                       |
+| `permission-policy-module`          | A backend module that provides a custom permission policy for the permission-backend plugin |
+| `search-collator-module`            | A Search Collator module for Backstage Search                                               |
+
+## Configuration
+
+The behavior of `yarn new` is configurable through your root `package.json`:
 
 ```json
 {
@@ -93,8 +119,12 @@ When defining the `templates` array it will override the default set of template
           "@backstage/cli-module-new/templates/web-library",
           "@backstage/cli-module-new/templates/node-library",
           "@backstage/cli-module-new/templates/cli-module",
+          "@backstage/cli-module-new/templates/catalog-processor-module",
           "@backstage/cli-module-new/templates/catalog-provider-module",
-          "@backstage/cli-module-new/templates/scaffolder-backend-module"
+          "@backstage/cli-module-new/templates/scaffolder-backend-module",
+          "@backstage/cli-module-new/templates/scaffolder-field-extension-module",
+          "@backstage/cli-module-new/templates/permission-policy-module",
+          "@backstage/cli-module-new/templates/search-collator-module"
         ]
       }
     }
@@ -165,3 +195,5 @@ When the Backstage Yarn plugin is installed (detected via `.yarnrc.yml`), `yarn 
 When the plugin is not installed, `yarn new` uses the standard npm version ranges (e.g., `^1.0.0`) for all dependencies, maintaining backward compatibility.
 
 Regardless of plugin installation, `workspace:` ranges found in your `yarn.lock` file will always take precedence over both `backstage:^` and npm ranges. This ensures that packages within monorepos continue to use workspace linking when available.
+
+For other dependencies, a template can pass a version hint to `versionQuery`, for example `{{versionQuery 'msw' '2.0.0'}}`. A plain version hint is treated as a minimum within its caret range, that is the same major version, or the same minor version for `0.x` hints: if your `yarn.lock` already contains a semver range for the package that resolves to the hint or a newer compatible version, the highest such range is reused, so the new package doesn't add a duplicate. For example, a hint of `16.0.0` reuses an existing `^16.3.0`, but a hint of `14.0.0` doesn't, and gives `^14.0.0`. If no such range exists, an existing range that accepts the hint is reused, and otherwise the hint becomes a caret range such as `^14.0.0`. Hints that are ranges, such as `^16.13.1 || ^17.0.0 || ^18.0.0`, and prerelease hints skip the minimum-version rule and only use these fallbacks.

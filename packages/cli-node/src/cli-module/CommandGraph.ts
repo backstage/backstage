@@ -18,9 +18,10 @@ import {
   OpaqueCliModule,
   OpaqueCommandLeafNode,
   OpaqueCommandTreeNode,
+  unwrapCliCommand,
 } from '@internal/cli';
-import type { CommandNode } from '@internal/cli';
-import type { CliCommand, CliModule } from './types';
+import type { CommandNode, CliCommandRegistration } from '@internal/cli';
+import type { CliModule } from './types';
 
 export class CommandGraph {
   readonly #roots: CommandNode[] = [];
@@ -29,7 +30,8 @@ export class CommandGraph {
     return this.#roots;
   }
 
-  add(command: CliCommand, module: CliModule): void {
+  add(registration: CliCommandRegistration, module: CliModule): void {
+    const { command, if: condition } = unwrapCliCommand(registration);
     const { path } = command;
     let current = this.#roots;
 
@@ -45,11 +47,7 @@ export class CommandGraph {
         current.push(next);
       } else if (OpaqueCommandLeafNode.isType(next)) {
         throw new Error(
-          formatConflictError(
-            path,
-            module,
-            OpaqueCommandLeafNode.toInternal(next).module,
-          ),
+          formatConflictError(path, module, findNodeModule(next)),
         );
       }
 
@@ -59,6 +57,17 @@ export class CommandGraph {
     const name = path[path.length - 1];
     const existing = current.find(node => getNodeName(node) === name);
     if (existing) {
+      if (OpaqueCommandLeafNode.isType(existing)) {
+        // Multiple variants of the same leaf are allowed as long as at most
+        // one of them lacks an if predicate, which acts as the fallback.
+        const { variants } = OpaqueCommandLeafNode.toInternal(existing);
+        const fallback = variants.find(v => !v.if);
+        if (condition || !fallback) {
+          variants.push({ command, if: condition, module });
+          return;
+        }
+        throw new Error(formatConflictError(path, module, fallback.module));
+      }
       throw new Error(
         formatConflictError(path, module, findNodeModule(existing)),
       );
@@ -67,8 +76,7 @@ export class CommandGraph {
     current.push(
       OpaqueCommandLeafNode.createInstance('v1', {
         name,
-        command,
-        module,
+        variants: [{ command, if: condition, module }],
       }),
     );
   }
@@ -83,7 +91,7 @@ function getNodeName(node: CommandNode): string {
 
 function findNodeModule(node: CommandNode): CliModule | undefined {
   if (OpaqueCommandLeafNode.isType(node)) {
-    return OpaqueCommandLeafNode.toInternal(node).module;
+    return OpaqueCommandLeafNode.toInternal(node).variants[0].module;
   }
 
   for (const child of OpaqueCommandTreeNode.toInternal(node).children) {

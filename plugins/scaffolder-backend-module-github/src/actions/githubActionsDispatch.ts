@@ -34,8 +34,10 @@ import { examples } from './githubActionsDispatch.examples';
 export function createGithubActionsDispatchAction(options: {
   integrations: ScmIntegrations;
   githubCredentialsProvider?: GithubCredentialsProvider;
+  requireScmUserCredentials?: boolean;
 }) {
-  const { integrations, githubCredentialsProvider } = options;
+  const { integrations, githubCredentialsProvider, requireScmUserCredentials } =
+    options;
 
   return createTemplateAction({
     id: 'github:actions:dispatch',
@@ -111,6 +113,7 @@ export function createGithubActionsDispatchAction(options: {
 
       const octokitOptions = await getOctokitOptions({
         integrations,
+        requireScmUserCredentials,
         host,
         owner,
         repo,

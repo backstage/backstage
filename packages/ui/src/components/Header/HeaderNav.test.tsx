@@ -15,8 +15,10 @@
  */
 
 import { fireEvent, render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
-import { BUIProvider } from '../../provider';
+import { TestRouter } from '../../testUtils/TestRouter';
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { BUIProvider, type BUINavigation } from '../../provider';
+import { renderToString } from 'react-dom/server';
 import { HeaderNav } from './HeaderNav';
 import type { ComponentProps } from 'react';
 
@@ -25,15 +27,208 @@ function renderHeaderNav(
   initialEntry = '/app/catalog',
 ) {
   return render(
-    <MemoryRouter basename="/app" initialEntries={[initialEntry]}>
-      <BUIProvider>
-        <HeaderNav {...props} />
-      </BUIProvider>
-    </MemoryRouter>,
+    <TestRouter
+      basename="/app"
+      initialEntries={[initialEntry]}
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
+      <Routes>
+        <Route
+          path="catalog/*"
+          element={
+            <BUIProvider>
+              <HeaderNav {...props} />
+              <LocationStatus />
+            </BUIProvider>
+          }
+        />
+      </Routes>
+    </TestRouter>,
   );
 }
 
+function LocationStatus() {
+  return <span role="status">{useLocation().pathname}</span>;
+}
+
 describe('HeaderNav', () => {
+  it('requires an explicit host for routing and automatic active selection', () => {
+    render(
+      <MemoryRouter
+        basename="/app"
+        initialEntries={['/app/catalog/settings']}
+        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+      >
+        <HeaderNav
+          tabs={[{ id: 'settings', label: 'Settings', href: 'settings' }]}
+        />
+      </MemoryRouter>,
+    );
+
+    const link = screen.getByRole('link', { name: 'Settings' });
+    expect(link).toHaveAttribute('href', 'settings');
+    expect(link).not.toHaveAttribute('aria-current');
+  });
+
+  it('selects the most specific host tab during server rendering', () => {
+    const html = renderToString(
+      <BUIProvider
+        useNavigation={() => ({
+          navigate: () => {},
+          createHref: href => '/base/catalog/' + href,
+          pathname: '/BASE/CATALOG/SETTINGS/details',
+        })}
+      >
+        <HeaderNav
+          tabs={[
+            { id: 'catalog', label: 'Catalog', href: '.' },
+            { id: 'settings', label: 'Settings', href: 'settings' },
+          ]}
+        />
+      </BUIProvider>,
+    );
+    const markup = new DOMParser().parseFromString(html, 'text/html');
+    expect(markup.querySelector('a[aria-current="page"]')?.textContent).toBe(
+      'Settings',
+    );
+  });
+
+  it('detects the active tab through an injected router without React Router context', () => {
+    const router: BUINavigation = {
+      navigate: jest.fn(),
+      createHref: href => `/app${href}`,
+      pathname: '/app/catalog/settings/details',
+    };
+
+    render(
+      <BUIProvider useNavigation={() => router}>
+        <HeaderNav
+          tabs={[
+            { id: 'overview', label: 'Overview', href: '/catalog/overview' },
+            { id: 'settings', label: 'Settings', href: '/catalog/settings' },
+            {
+              id: 'external-settings',
+              label: 'External settings',
+              href: 'https://example.com/catalog/settings',
+            },
+          ]}
+        />
+      </BUIProvider>,
+    );
+
+    expect(screen.getByRole('link', { name: 'Settings' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    expect(screen.getByRole('link', { name: 'Overview' })).not.toHaveAttribute(
+      'aria-current',
+    );
+    expect(
+      screen.getByRole('link', { name: 'External settings' }),
+    ).not.toHaveAttribute('aria-current');
+  });
+
+  it.each([
+    ['/app/CATALOG', ['Catalog']],
+    ['/app/CATALOG/details', ['Details']],
+    ['/app/CATALOGING', []],
+  ])(
+    'selects tabs without case sensitivity at %s while respecting segment boundaries',
+    (pathname, expected) => {
+      render(
+        <BUIProvider
+          useNavigation={() => ({
+            navigate: jest.fn(),
+            createHref: href => `/app${href}`,
+            pathname,
+          })}
+        >
+          <HeaderNav
+            tabs={[
+              { id: 'catalog', label: 'Catalog', href: '/catalog' },
+              { id: 'details', label: 'Details', href: '/Catalog/Details' },
+            ]}
+          />
+        </BUIProvider>,
+      );
+      const active = screen
+        .queryAllByRole('link')
+        .filter(link => link.getAttribute('aria-current') === 'page');
+      expect(active.map(link => link.textContent)).toEqual(expected);
+      expect(screen.getByRole('link', { name: 'Details' })).toHaveAttribute(
+        'href',
+        '/app/Catalog/Details',
+      );
+    },
+  );
+
+  it('resolves relative flat tabs through the injected router when detecting the active tab', () => {
+    const router: BUINavigation = {
+      navigate: jest.fn(),
+      createHref: href =>
+        href.startsWith('/') ? `/app${href}` : `/app/catalog/${href}`,
+      pathname: '/app/catalog/settings/details',
+    };
+
+    render(
+      <BUIProvider useNavigation={() => router}>
+        <HeaderNav
+          tabs={[
+            { id: 'overview', label: 'Overview', href: 'overview' },
+            { id: 'settings', label: 'Settings', href: 'settings' },
+          ]}
+        />
+      </BUIProvider>,
+    );
+
+    expect(screen.getByRole('link', { name: 'Settings' })).toHaveAttribute(
+      'href',
+      '/app/catalog/settings',
+    );
+    expect(screen.getByRole('link', { name: 'Settings' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    expect(screen.getByRole('link', { name: 'Overview' })).not.toHaveAttribute(
+      'aria-current',
+    );
+  });
+
+  it('resolves relative grouped tabs through the injected router when detecting the active tab', async () => {
+    const router: BUINavigation = {
+      navigate: jest.fn(),
+      createHref: href =>
+        href.startsWith('/') ? `/app${href}` : `/app/catalog/${href}`,
+      pathname: '/app/CATALOG/DOCS/details',
+    };
+
+    render(
+      <BUIProvider useNavigation={() => router}>
+        <HeaderNav
+          tabs={[
+            {
+              id: 'resources',
+              label: 'Resources',
+              items: [
+                { id: 'overview', label: 'Overview', href: 'overview' },
+                { id: 'docs', label: 'Docs', href: 'docs' },
+              ],
+            },
+          ]}
+        />
+      </BUIProvider>,
+    );
+
+    expect(screen.getByRole('button', { name: 'Resources' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Resources' }));
+    expect(
+      await screen.findByRole('menuitemradio', { name: 'Docs' }),
+    ).toHaveAttribute('href', '/app/catalog/docs');
+  });
+
   it('includes the router basename in flat tab hrefs', () => {
     renderHeaderNav({
       tabs: [
@@ -80,6 +275,54 @@ describe('HeaderNav', () => {
     );
   });
 
+  it('ignores query and hash values when automatically detecting the active tab', () => {
+    renderHeaderNav(
+      {
+        tabs: [
+          {
+            id: 'overview',
+            label: 'Overview',
+            href: '/catalog/overview?tab=docs#api',
+          },
+          {
+            id: 'settings',
+            label: 'Settings',
+            href: '/catalog/settings',
+          },
+        ],
+      },
+      '/app/catalog/overview?view=grid#details',
+    );
+
+    expect(screen.getByRole('link', { name: 'Overview' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    expect(screen.getByRole('link', { name: 'Settings' })).not.toHaveAttribute(
+      'aria-current',
+    );
+  });
+
+  it('automatically selects the most-specific tab for a nested path', () => {
+    renderHeaderNav(
+      {
+        tabs: [
+          { id: 'catalog', label: 'Catalog', href: '/catalog' },
+          { id: 'users', label: 'Users', href: '/catalog/users' },
+        ],
+      },
+      '/app/catalog/users/ada/details',
+    );
+
+    expect(screen.getByRole('link', { name: 'Users' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    expect(screen.getByRole('link', { name: 'Catalog' })).not.toHaveAttribute(
+      'aria-current',
+    );
+  });
+
   it('includes the router basename in grouped tab hrefs', async () => {
     renderHeaderNav({
       tabs: [
@@ -103,5 +346,96 @@ describe('HeaderNav', () => {
     expect(
       await screen.findByRole('menuitemradio', { name: 'TechDocs' }),
     ).toHaveAttribute('href', '/app/catalog/docs');
+  });
+
+  it('resolves a nested relative flat tab and navigates client-side', () => {
+    renderHeaderNav({
+      tabs: [
+        {
+          id: 'overview',
+          label: 'Overview',
+          href: 'overview',
+        },
+      ],
+      activeTabId: null,
+    });
+
+    expect(screen.getByRole('link', { name: 'Overview' })).toHaveAttribute(
+      'href',
+      '/app/catalog/overview',
+    );
+    fireEvent.click(screen.getByRole('link', { name: 'Overview' }));
+    expect(screen.getByRole('status')).toHaveTextContent('/catalog/overview');
+  });
+
+  it('navigates grouped items client-side', async () => {
+    renderHeaderNav({
+      tabs: [
+        {
+          id: 'resources',
+          label: 'Resources',
+          items: [
+            {
+              id: 'docs',
+              label: 'TechDocs',
+              href: '/catalog/docs',
+            },
+          ],
+        },
+      ],
+      activeTabId: null,
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Resources' }));
+    fireEvent.click(
+      await screen.findByRole('menuitemradio', { name: 'TechDocs' }),
+    );
+    expect(screen.getByRole('status')).toHaveTextContent('/catalog/docs');
+  });
+
+  it('retains external grouped item target defaults', async () => {
+    renderHeaderNav({
+      tabs: [
+        {
+          id: 'resources',
+          label: 'Resources',
+          items: [
+            {
+              id: 'docs',
+              label: 'External docs',
+              href: 'https://example.test/docs',
+            },
+          ],
+        },
+      ],
+      activeTabId: null,
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Resources' }));
+    const item = await screen.findByRole('menuitemradio', {
+      name: 'External docs',
+    });
+    expect(item).toHaveAttribute('target', '_blank');
+    expect(item).toHaveAttribute('rel', 'noopener noreferrer');
+  });
+
+  it('preserves aria-current and the registered anchor ref', () => {
+    renderHeaderNav({
+      tabs: [
+        {
+          id: 'overview',
+          label: 'Overview',
+          href: '/catalog/overview',
+        },
+      ],
+      activeTabId: 'overview',
+    });
+
+    const link = screen.getByRole('link', { name: 'Overview' });
+    const navigation = screen.getByRole('navigation', {
+      name: 'Content navigation',
+    });
+    expect(link).toHaveAttribute('aria-current', 'page');
+    expect(navigation.style.getPropertyValue('--active-tab-opacity')).toBe('1');
   });
 });

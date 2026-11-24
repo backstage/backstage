@@ -48,14 +48,26 @@ export const rootLoggerServiceFactory = createServiceFactory({
       level: process.env.LOG_LEVEL || rootLoggerConfig.level || 'info',
       format:
         process.env.NODE_ENV === 'production'
-          ? format.json()
+          ? format.combine(format.timestamp(), format.json())
           : WinstonLogger.colorFormat(),
       transports: [new transports.Console()],
     });
 
     const secretEnumerator = await createConfigSecretEnumerator({ logger });
-    logger.addRedactions(secretEnumerator(config));
-    config.subscribe?.(() => logger.addRedactions(secretEnumerator(config)));
+    const allowlist = new Set(
+      rootLoggerConfig.redactAllowlist?.map(a => a.trim()),
+    );
+    logger.addRedactions(
+      [...secretEnumerator(config)].filter(s => !allowlist.has(s.trim())),
+    );
+    config.subscribe?.(() => {
+      const newAllowlist = new Set(
+        getRootLoggerConfig(config).redactAllowlist?.map(a => a.trim()),
+      );
+      logger.addRedactions(
+        [...secretEnumerator(config)].filter(s => !newAllowlist.has(s.trim())),
+      );
+    });
 
     logger.setLevelOverrides(rootLoggerConfig.overrides ?? []);
     config.subscribe?.(() =>

@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { CoreApis } from './coreApis';
 import { createApiRef } from '../system';
+
+// Retain documentation link targets in declarations.
+export type { CoreApis };
 
 /**
  * The discovery API is used to provide a mechanism for plugins to
@@ -49,6 +53,7 @@ export type DiscoveryApi = {
  * The {@link ApiRef} of {@link DiscoveryApi}.
  *
  * @public
+ * @deprecated Use {@link CoreApis.discovery | coreApis.discovery} instead.
  */
 export const discoveryApiRef = createApiRef<DiscoveryApi>().with({
   id: 'core.discovery',

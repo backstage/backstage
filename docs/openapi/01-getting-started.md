@@ -28,12 +28,13 @@ This tutorial assumes that you're already familiar with the following,
 2. `Express.js` and `Typescript`
 3. OpenAPI 3.1 schemas
 
-:::note OpenAPI Version Support
+:::note[OpenAPI Version Support]
 Backstage supports both OpenAPI 3.0 and 3.1 specifications. If you have existing OpenAPI 3.0 specs, we recommend that you migrate them to 3.1. You can use `oasdiff upgrade spec.yaml` to automate this conversion. The main changes are:
 
 - Replace `nullable: true` with `type: ['string', 'null']` or use `anyOf`/`oneOf`
 - Remove `allowReserved` from path parameters (only valid on query/cookie parameters in 3.1)
-  :::
+
+:::
 
 ### Setting up
 
@@ -49,11 +50,29 @@ You should create a new folder, `src/schema` in your backend plugin to store you
 
 > Currently, only the `.yaml` extension is supported, not `.yml`.
 
+## Validating your spec
+
+After writing your `openapi.yaml`, you can validate that it is a structurally valid OpenAPI 3.x document by running the following command from your plugin directory:
+
+```bash
+yarn backstage-repo-tools package schema openapi validate
+```
+
+This checks that the spec parses correctly and conforms to the OpenAPI specification. It is a good idea to run this before generating any code from the spec.
+
+For style and best-practice linting, you can additionally run:
+
+```bash
+yarn backstage-repo-tools repo schema openapi lint
+```
+
 ## Generating a typed express router from a spec
 
 Run `yarn backstage-repo-tools package schema openapi generate --server` from the directory with your plugin. This will create a `router.ts` file in the `src/schema/openapi/generated` directory that contains the OpenAPI schema as well as a factory function for a generated express router with types that match your schema.
 
 You should add this command to your `package.json` for future use and you can combine both the server generation and the client generation below like so, `yarn backstage-repo-tools package schema openapi generate --server --client-package <clientPackageDirectory>`
+
+Generated code is not formatted with Prettier, only ESLint automatic fixes are applied. Add `**/src/schema/openapi/generated/**` to your root `.prettierignore` so that Prettier doesn't rewrite the generated files.
 
 Use it like so, update your `router.ts` or `createRouter.ts` file with the following content,
 

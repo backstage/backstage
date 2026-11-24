@@ -64,6 +64,15 @@ export interface Backend {
 export interface CreateSpecializedBackendOptions {
   defaultServiceFactories: ServiceFactory[];
   extensionPointFactoryMiddleware?: ExtensionPointFactoryMiddleware[];
+
+  /**
+   * The globally unique identifier of this specific Backstage backend
+   * instance.
+   *
+   * If omitted, a UUID is generated. Any provided value must not be used by
+   * any other backend instance, including after this instance has stopped.
+   */
+  instanceId?: string;
 }
 
 /**
@@ -82,6 +91,13 @@ export interface ModuleStartupResult {
    * The time the module startup was completed.
    */
   resultAt: Date;
+
+  /**
+   * The time that the module's init function was invoked, i.e. after its
+   * dependencies had been resolved. This is not defined if the module failed
+   * before reaching initialization.
+   */
+  beginAt?: Date;
 
   /**
    * The ID of the module.
@@ -112,6 +128,14 @@ export interface PluginStartupResult {
    * The time the plugin startup was completed.
    */
   resultAt: Date;
+
+  /**
+   * The time that the plugin's init function was invoked, i.e. after its
+   * dependencies had been resolved. This is not defined if the plugin failed
+   * before reaching initialization, or if no init function was registered.
+   */
+  beginAt?: Date;
+
   /**
    * If the startup failed, this contains information about the failure.
    */

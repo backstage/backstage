@@ -20,6 +20,7 @@ import {
   mockServices,
 } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import { Knex } from 'knex';
 import { randomUUID as uuid } from 'node:crypto';
 import {
@@ -34,9 +35,12 @@ import {
   DbSearchRow,
 } from '../database/tables';
 import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
+import { AuthorizedEntitiesCatalog } from './AuthorizedEntitiesCatalog';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { EntitiesRequest } from '../catalog/types';
 import { buildEntitySearch } from '../database/operations/stitcher/buildEntitySearch';
 import { entitiesResponseToObjects } from './response';
+import { INDIRECT_IN_MIN_VALUES } from './request/longInLists';
 
 jest.setTimeout(60_000);
 
@@ -285,11 +289,8 @@ describe.each(databases.eachSupportedId())(
           logger: mockServices.logger.mock(),
         });
 
-        const testFilter = {
-          key: 'spec.test',
-        };
         const res = await catalog.entities({
-          filter: testFilter,
+          filter: { 'spec.test': { $exists: true } },
           credentials: mockCredentials.none(),
         });
         const entities = entitiesResponseToObjects(res.entities);
@@ -322,8 +323,8 @@ describe.each(databases.eachSupportedId())(
         });
 
         const testFilter = {
-          not: {
-            key: 'spec.test',
+          $not: {
+            'spec.test': { $exists: true },
           },
         };
         const res = await catalog.entities({
@@ -371,29 +372,16 @@ describe.each(databases.eachSupportedId())(
           logger: mockServices.logger.mock(),
         });
 
-        const testFilter1 = {
-          key: 'metadata.org',
-          values: ['b'],
-        };
-        const testFilter2 = {
-          key: 'metadata.desc',
-        };
-        const testFilter3 = {
-          key: 'metadata.color',
-          values: ['blue'],
-        };
-        const testFilter4 = {
-          not: {
-            key: 'metadata.color',
-            values: ['red'],
-          },
-        };
         const res = await catalog.entities({
           filter: {
-            allOf: [
-              testFilter1,
+            $all: [
+              { 'metadata.org': 'b' },
               {
-                anyOf: [testFilter2, testFilter3, testFilter4],
+                $any: [
+                  { 'metadata.desc': { $exists: true } },
+                  { 'metadata.color': 'blue' },
+                  { $not: { 'metadata.color': 'red' } },
+                ],
               },
             ],
           },
@@ -427,17 +415,13 @@ describe.each(databases.eachSupportedId())(
           logger: mockServices.logger.mock(),
         });
 
-        const testFilter1 = {
-          key: 'metadata.org',
-          values: ['b'],
-        };
-        const testFilter2 = {
-          key: 'metadata.desc',
-        };
         const res = await catalog.entities({
           filter: {
-            not: {
-              allOf: [testFilter1, testFilter2],
+            $not: {
+              $all: [
+                { 'metadata.org': 'b' },
+                { 'metadata.desc': { $exists: true } },
+              ],
             },
           },
 
@@ -471,74 +455,13 @@ describe.each(databases.eachSupportedId())(
           logger: mockServices.logger.mock(),
         });
 
-        const testFilter = {
-          key: 'kind',
-          values: [],
-        };
         const res = await catalog.entities({
-          filter: testFilter,
+          filter: { kind: { $in: [] } },
           credentials: mockCredentials.none(),
         });
         const entities = entitiesResponseToObjects(res.entities);
 
         expect(entities.length).toBe(0);
-      });
-
-      it('should return both target and targetRef for entities in compat mode', async () => {
-        await createDatabase();
-        await addEntity(
-          {
-            apiVersion: 'a',
-            kind: 'k',
-            metadata: { name: 'one' },
-            spec: {},
-            relations: [{ type: 'r', targetRef: 'x:y/z' } as any],
-          },
-          [],
-        );
-        await addEntity(
-          {
-            apiVersion: 'a',
-            kind: 'k',
-            metadata: { name: 'two' },
-            spec: {},
-            relations: [
-              {
-                type: 'r',
-                target: { kind: 'x', namespace: 'y', name: 'z' },
-              } as any,
-            ],
-          },
-          [],
-        );
-        const catalog = new DefaultEntitiesCatalog({
-          database: knex,
-          logger: mockServices.logger.mock(),
-
-          enableRelationsCompatibility: true,
-        });
-
-        const res = await catalog.entities();
-        const entities = entitiesResponseToObjects(res.entities);
-
-        expect(
-          entities.find(e => e?.metadata.name === 'one')!.relations,
-        ).toEqual([
-          {
-            type: 'r',
-            targetRef: 'x:y/z',
-            target: { kind: 'x', namespace: 'y', name: 'z' },
-          },
-        ]);
-        expect(
-          entities.find(e => e?.metadata.name === 'two')!.relations,
-        ).toEqual([
-          {
-            type: 'r',
-            targetRef: 'x:y/z',
-            target: { kind: 'x', namespace: 'y', name: 'z' },
-          },
-        ]);
       });
 
       it('handles inversion both for existing and missing keys', async () => {
@@ -585,13 +508,13 @@ describe.each(databases.eachSupportedId())(
 
         await expect(
           f({
-            filter: { key: 'spec.b', values: ['lonely'] },
+            filter: { 'spec.b': 'lonely' },
           }),
         ).resolves.toEqual(['n2']);
 
         await expect(
           f({
-            filter: { not: { key: 'spec.b', values: ['lonely'] } },
+            filter: { $not: { 'spec.b': 'lonely' } },
           }),
         ).resolves.toEqual(['n1', 'n3']);
       });
@@ -664,7 +587,7 @@ describe.each(databases.eachSupportedId())(
 
         await expect(
           f({
-            filter: { not: { key: 'spec.b', values: ['lonely'] } },
+            filter: { $not: { 'spec.b': 'lonely' } },
             order: [
               { field: 'spec.a', order: 'asc' },
               { field: 'metadata.name', order: 'desc' },
@@ -914,6 +837,65 @@ describe.each(databases.eachSupportedId())(
         ]);
       });
 
+      it('matches entity refs case insensitively, preserving order and returning null for missing or malformed refs', async () => {
+        await createDatabase();
+
+        await addEntity(
+          {
+            apiVersion: 'a',
+            kind: 'Component',
+            metadata: { name: 'My-Service' },
+            spec: {},
+            relations: [],
+          },
+          [],
+        );
+        await addEntity(
+          {
+            apiVersion: 'a',
+            kind: 'Component',
+            metadata: { name: 'other' },
+            spec: {},
+            relations: [],
+          },
+          [],
+        );
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+        });
+
+        const res = await catalog.entitiesBatch({
+          entityRefs: [
+            'component:default/My-Service',
+            'not a ref',
+            'component:default/my-service',
+            'component:default/does-not-exist',
+            'COMPONENT:DEFAULT/MY-SERVICE',
+            'Component:Default/Other',
+            'component:default/My-Service',
+            'component:My-Service',
+          ],
+          credentials: mockCredentials.none(),
+        });
+        const items = entitiesResponseToObjects(res.items);
+
+        expect(items).toHaveLength(8);
+        expect(items.map(e => e && stringifyEntityRef(e))).toEqual([
+          'component:default/my-service',
+          null,
+          'component:default/my-service',
+          null,
+          'component:default/my-service',
+          'component:default/other',
+          'component:default/my-service',
+          null,
+        ]);
+        expect(items[0]?.metadata.name).toBe('My-Service');
+        expect(items[4]).toEqual(items[0]);
+      });
+
       it('handles more than 200 refs without chunking on PostgreSQL', async () => {
         await createDatabase();
 
@@ -978,7 +960,7 @@ describe.each(databases.eachSupportedId())(
 
         const res = await catalog.entitiesBatch({
           entityRefs: ['k:default/two', 'k:default/one'],
-          filter: { key: 'spec.owner', values: ['me'] },
+          filter: { 'spec.owner': 'me' },
           credentials: mockCredentials.none(),
         });
         const items = entitiesResponseToObjects(res.items);
@@ -1022,7 +1004,7 @@ describe.each(databases.eachSupportedId())(
         });
 
         const filter = {
-          key: 'spec.should_include_this',
+          'spec.should_include_this': { $exists: true },
         };
 
         const limit = 2;
@@ -1195,7 +1177,7 @@ describe.each(databases.eachSupportedId())(
         });
 
         const filter = {
-          key: 'spec.should_include_this',
+          'spec.should_include_this': { $exists: true },
         };
 
         const limit = 2;
@@ -1369,7 +1351,7 @@ describe.each(databases.eachSupportedId())(
         });
 
         const filter = {
-          key: 'spec.should_include_this',
+          'spec.should_include_this': { $exists: true },
         };
 
         const request: QueryEntitiesInitialRequest = {
@@ -1475,7 +1457,7 @@ describe.each(databases.eachSupportedId())(
         });
 
         const filter = {
-          key: 'spec.should_include_this',
+          'spec.should_include_this': { $exists: true },
         };
 
         const request: QueryEntitiesInitialRequest = {
@@ -1570,7 +1552,7 @@ describe.each(databases.eachSupportedId())(
         });
 
         const filter = {
-          key: 'spec.should_include_this',
+          'spec.should_include_this': { $exists: true },
         };
 
         const request: QueryEntitiesInitialRequest = {
@@ -1849,10 +1831,7 @@ describe.each(databases.eachSupportedId())(
         // initial request
         const request1: QueryEntitiesInitialRequest = {
           limit,
-          filter: {
-            key: 'kind',
-            values: ['included'],
-          },
+          filter: { kind: 'included' },
           orderFields: [{ field: 'metadata.name', order: 'asc' }],
           credentials: mockCredentials.none(),
         };
@@ -2161,8 +2140,7 @@ describe.each(databases.eachSupportedId())(
 
         // Use filter to restrict to kind=component, and query to restrict to name=A
         const response = await catalog.queryEntities({
-          filter: { key: 'kind', values: ['component'] },
-          query: { 'metadata.name': 'a' },
+          filter: { $all: [{ kind: 'component' }, { 'metadata.name': 'a' }] },
           orderFields: [{ field: 'metadata.name', order: 'asc' }],
           credentials: mockCredentials.none(),
         });
@@ -2221,7 +2199,7 @@ describe.each(databases.eachSupportedId())(
           logger: mockServices.logger.mock(),
         });
 
-        const filter = { key: 'spec.should_include_this' };
+        const filter = { 'spec.should_include_this': { $exists: true } };
 
         // Page through all entities with limit=2, sorting by spec.b ASC.
         // We expect to see n1(alpha), n2(beta), n3(gamma) — and NOT n4 or n5.
@@ -2429,7 +2407,7 @@ describe.each(databases.eachSupportedId())(
         await expect(
           catalog.facets({
             facets: ['kind'],
-            filter: { key: 'metadata.name', values: ['two'] },
+            filter: { 'metadata.name': 'two' },
             credentials: mockCredentials.none(),
           }),
         ).resolves.toEqual({
@@ -2444,7 +2422,7 @@ describe.each(databases.eachSupportedId())(
         await expect(
           catalog.facets({
             facets: ['kind'],
-            filter: { not: { key: 'metadata.name', values: ['two'] } },
+            filter: { $not: { 'metadata.name': 'two' } },
             credentials: mockCredentials.none(),
           }),
         ).resolves.toEqual({
@@ -2689,7 +2667,7 @@ describe.each(databases.eachSupportedId())(
         await expect(
           catalog.facets({
             facets: ['metadata.name'],
-            filter: { key: 'kind', values: ['component'] },
+            filter: { kind: 'component' },
             credentials: mockCredentials.none(),
           }),
         ).resolves.toEqual({
@@ -2723,7 +2701,7 @@ describe.each(databases.eachSupportedId())(
 
         const result = await catalog.facets({
           facets: ['spec.type'],
-          query: { kind: 'component' },
+          filter: { kind: 'component' },
           credentials: mockCredentials.none(),
         });
         expect(result.facets['spec.type']).toHaveLength(2);
@@ -2761,7 +2739,7 @@ describe.each(databases.eachSupportedId())(
 
         const result = await catalog.facets({
           facets: ['kind'],
-          query: { kind: { $in: ['component', 'api'] } },
+          filter: { kind: { $in: ['component', 'api'] } },
           credentials: mockCredentials.none(),
         });
         expect(result.facets.kind).toHaveLength(2);
@@ -2801,10 +2779,7 @@ describe.each(databases.eachSupportedId())(
           catalog.facets({
             facets: ['metadata.name'],
             filter: {
-              allOf: [
-                { key: 'kind', values: ['component'] },
-                { key: 'spec.type', values: ['service'] },
-              ],
+              $all: [{ kind: 'component' }, { 'spec.type': 'service' }],
             },
             credentials: mockCredentials.none(),
           }),
@@ -2841,10 +2816,7 @@ describe.each(databases.eachSupportedId())(
           catalog.facets({
             facets: ['metadata.name'],
             filter: {
-              anyOf: [
-                { key: 'kind', values: ['component'] },
-                { key: 'kind', values: ['api'] },
-              ],
+              $any: [{ kind: 'component' }, { kind: 'api' }],
             },
             credentials: mockCredentials.none(),
           }),
@@ -2856,6 +2828,379 @@ describe.each(databases.eachSupportedId())(
             ]),
           },
         });
+      });
+
+      it('filters facets and counts with a permission style filter', async () => {
+        const catalog = await setupFacetsCatalog([
+          {
+            apiVersion: 'a',
+            kind: 'Component',
+            metadata: { name: 'owned' },
+            spec: {},
+            relations: [{ type: 'ownedBy', targetRef: 'group:default/a' }],
+          },
+          {
+            apiVersion: 'a',
+            kind: 'Component',
+            metadata: { name: 'unrestricted' },
+            spec: {},
+            relations: [{ type: 'ownedBy', targetRef: 'group:default/b' }],
+          },
+          {
+            apiVersion: 'a',
+            kind: 'API',
+            metadata: {
+              name: 'readable',
+              annotations: { 'example.com/readers': 'group:default/a' },
+            },
+            spec: {},
+          },
+          {
+            apiVersion: 'a',
+            kind: 'API',
+            metadata: {
+              name: 'restricted',
+              annotations: { 'example.com/readers': 'group:default/b' },
+            },
+            spec: {},
+          },
+          {
+            apiVersion: 'a',
+            kind: 'Template',
+            metadata: { name: 'template' },
+            spec: {},
+          },
+        ]);
+
+        const claims = ['user:default/me', 'group:default/a'];
+        const filter: FilterPredicate = {
+          $all: [
+            {
+              $any: [
+                { 'relations.ownedBy': { $in: claims } },
+                { 'metadata.annotations.example.com/readers': { $in: claims } },
+                {
+                  $not: {
+                    'metadata.annotations.example.com/readers': {
+                      $exists: true,
+                    },
+                  },
+                },
+              ],
+            },
+            { $not: { kind: 'template' } },
+          ],
+        };
+
+        await expect(
+          catalog.facets({
+            facets: ['metadata.name'],
+            filter,
+            credentials: mockCredentials.none(),
+          }),
+        ).resolves.toEqual({
+          facets: {
+            'metadata.name': [
+              { value: 'owned', count: 1 },
+              { value: 'readable', count: 1 },
+              { value: 'unrestricted', count: 1 },
+            ],
+          },
+        });
+
+        const response = await catalog.queryEntities({
+          filter,
+          orderFields: [{ field: 'metadata.name', order: 'asc' }],
+          limit: 2,
+          credentials: mockCredentials.none(),
+        });
+        expect(response.totalItems).toBe(3);
+        expect(
+          entitiesResponseToObjects(response.items).map(e => e!.metadata.name),
+        ).toEqual(['owned', 'readable']);
+      });
+
+      it('gives the same results for long $in lists as for short ones', async () => {
+        const catalog = await setupFacetsCatalog([
+          {
+            apiVersion: 'a',
+            kind: 'Component',
+            metadata: { name: 'owned' },
+            spec: {},
+            relations: [
+              { type: 'ownedBy', targetRef: 'group:default/a' },
+              { type: 'ownedBy', targetRef: 'user:default/me' },
+            ],
+          },
+          {
+            apiVersion: 'a',
+            kind: 'Component',
+            metadata: { name: 'unrestricted' },
+            spec: {},
+            relations: [{ type: 'ownedBy', targetRef: 'group:default/b' }],
+          },
+          {
+            apiVersion: 'a',
+            kind: 'API',
+            metadata: {
+              name: 'readable',
+              annotations: { 'example.com/readers': 'group:default/a' },
+            },
+            spec: {},
+          },
+          {
+            apiVersion: 'a',
+            kind: 'API',
+            metadata: {
+              name: 'restricted',
+              annotations: { 'example.com/readers': 'group:default/b' },
+            },
+            spec: {},
+          },
+          {
+            apiVersion: 'a',
+            kind: 'Template',
+            metadata: { name: 'template' },
+            spec: {},
+          },
+        ]);
+
+        const permissionFilter = (claims: string[]): FilterPredicate => ({
+          $all: [
+            {
+              $any: [
+                { 'relations.ownedBy': { $in: claims } },
+                { 'metadata.annotations.example.com/readers': { $in: claims } },
+                {
+                  $not: {
+                    'metadata.annotations.example.com/readers': {
+                      $exists: true,
+                    },
+                  },
+                },
+              ],
+            },
+            { $not: { 'relations.ownedBy': { $in: claims } } },
+          ],
+        });
+        const shortClaims = ['user:default/me', 'group:default/a'];
+        // Long enough to be matched as sets inside the $any and the $not
+        const longClaims = [
+          ...shortClaims,
+          ...Array.from(
+            { length: INDIRECT_IN_MIN_VALUES },
+            (_, i) => `group:default/other-${i}`,
+          ),
+        ];
+
+        const collect = async (filter: FilterPredicate) => {
+          const names = (
+            items: Parameters<typeof entitiesResponseToObjects>[0],
+          ) => entitiesResponseToObjects(items).map(e => e!.metadata.name);
+          const pages: string[][] = [];
+          let response = await catalog.queryEntities({
+            filter,
+            orderFields: [{ field: 'metadata.name', order: 'asc' }],
+            limit: 1,
+            credentials: mockCredentials.none(),
+          });
+          const totalItems = response.totalItems;
+          pages.push(names(response.items));
+          while (response.pageInfo.nextCursor) {
+            response = await catalog.queryEntities({
+              cursor: response.pageInfo.nextCursor,
+              limit: 1,
+              credentials: mockCredentials.none(),
+            });
+            pages.push(names(response.items));
+          }
+          // More than a small first page, which would probe the lists per row
+          const unordered = await catalog.queryEntities({
+            filter,
+            limit: 1000,
+            credentials: mockCredentials.none(),
+          });
+          const { entities } = await catalog.entities({
+            filter,
+            credentials: mockCredentials.none(),
+          });
+          const batch = await catalog.entitiesBatch({
+            entityRefs: [
+              'component:default/owned',
+              'component:default/unrestricted',
+              'api:default/readable',
+              'api:default/restricted',
+            ],
+            filter,
+            credentials: mockCredentials.none(),
+          });
+          const facets = await catalog.facets({
+            facets: ['kind'],
+            filter,
+            credentials: mockCredentials.none(),
+          });
+          return {
+            pages,
+            totalItems,
+            unordered: names(unordered.items).toSorted(),
+            entities: names(entities).toSorted(),
+            batch: entitiesResponseToObjects(batch.items).map(
+              e => e?.metadata.name ?? null,
+            ),
+            facets,
+          };
+        };
+
+        const expected = await collect(permissionFilter(shortClaims));
+        expect(expected.pages).toEqual([
+          ['readable'],
+          ['template'],
+          ['unrestricted'],
+        ]);
+        await expect(collect(permissionFilter(longClaims))).resolves.toEqual(
+          expected,
+        );
+      });
+
+      it('matches long $in lists the same way on every page of a permissioned query', async () => {
+        const inner = await setupFacetsCatalog(
+          ['a', 'b', 'c', 'd', 'e'].map(name => ({
+            apiVersion: 'a',
+            kind: 'Component',
+            metadata: { name },
+            spec: {},
+            relations: [
+              {
+                type: 'ownedBy',
+                targetRef: name === 'b' ? 'group:default/x' : 'group:default/a',
+              },
+              {
+                type: 'partOf',
+                targetRef:
+                  name === 'e' ? 'system:default/t' : 'system:default/s',
+              },
+            ],
+          })),
+        );
+        const claims = [
+          'group:default/a',
+          ...Array.from({ length: 20 }, (_, i) => `group:default/other-${i}`),
+        ];
+        const catalog = new AuthorizedEntitiesCatalog(
+          inner,
+          mockServices.permissions.mock({
+            authorizeConditional: async () => [
+              {
+                result: AuthorizeResult.CONDITIONAL,
+                pluginId: 'catalog',
+                resourceType: 'catalog-entity',
+                conditions: {
+                  rule: 'IS_ENTITY_OWNER',
+                  resourceType: 'catalog-entity',
+                  params: { claims },
+                },
+              },
+            ],
+          }),
+          () => ({ key: 'relations.ownedBy', values: claims }),
+        );
+
+        // Collects the form of the long list in each page's main query
+        const sqls: string[] = [];
+        const onQuery = (q: { sql: string }) => sqls.push(q.sql);
+        // Whether each page's list query sorts its matches after matching,
+        // by ordering on an expression rather than the sort field itself
+        const sortsAfter: boolean[] = [];
+        const forms = () => {
+          for (const sql of sqls.filter(q => q.includes('order by'))) {
+            sortsAfter.push(
+              sql.includes(`order by ("filtered"."value" || '')`),
+            );
+          }
+          const result = sqls
+            .filter(sql => sql.includes('final_entities'))
+            .map(sql => {
+              if (sql.includes('in_set_')) {
+                return 'join';
+              }
+              return sql.includes('"entity_id" in (select') ? 'in' : 'row';
+            });
+          sqls.length = 0;
+          return result;
+        };
+
+        knex.on('query', onQuery);
+        try {
+          const names: string[][] = [];
+          const pageForms: string[][] = [];
+          let response = await catalog.queryEntities({
+            filter: { 'relations.partOf': 'system:default/s' },
+            orderFields: [{ field: 'metadata.name', order: 'asc' }],
+            limit: 2,
+            credentials: mockCredentials.none(),
+          });
+          for (;;) {
+            names.push(
+              entitiesResponseToObjects(response.items).map(
+                e => e!.metadata.name,
+              ),
+            );
+            pageForms.push(forms());
+            if (!response.pageInfo.nextCursor) {
+              break;
+            }
+            response = await catalog.queryEntities({
+              cursor: response.pageInfo.nextCursor,
+              limit: 2,
+              credentials: mockCredentials.none(),
+            });
+          }
+
+          expect(names).toEqual([['a', 'c'], ['d']]);
+          // The partOf condition is narrower than the list on every page
+          expect(pageForms.flat()).not.toContain('join');
+          expect(pageForms.flat().includes('in')).toBe(
+            databaseId.startsWith('POSTGRES'),
+          );
+          // The list is a direct condition, so on PostgreSQL every page sorts
+          // its matches instead of walking the index of the sort field
+          expect(sortsAfter).toHaveLength(2);
+          expect(sortsAfter).toEqual(
+            Array(2).fill(databaseId.startsWith('POSTGRES')),
+          );
+
+          // The same holds in descending order and when fetching backwards,
+          // where the order is inverted in the query and the rows reversed
+          sortsAfter.length = 0;
+          const first = await catalog.queryEntities({
+            filter: { 'relations.partOf': 'system:default/s' },
+            orderFields: [{ field: 'metadata.name', order: 'desc' }],
+            limit: 2,
+            credentials: mockCredentials.none(),
+          });
+          const second = await catalog.queryEntities({
+            cursor: first.pageInfo.nextCursor!,
+            limit: 2,
+            credentials: mockCredentials.none(),
+          });
+          const back = await catalog.queryEntities({
+            cursor: second.pageInfo.prevCursor!,
+            limit: 2,
+            credentials: mockCredentials.none(),
+          });
+          forms();
+          expect(
+            [first, second, back].map(r =>
+              entitiesResponseToObjects(r.items).map(e => e!.metadata.name),
+            ),
+          ).toEqual([['d', 'c'], ['a'], ['d', 'c']]);
+          expect(second.pageInfo.nextCursor).toBeUndefined();
+          expect(sortsAfter).toEqual(
+            Array(3).fill(databaseId.startsWith('POSTGRES')),
+          );
+        } finally {
+          knex.removeListener('query', onQuery);
+        }
       });
 
       it('filters with both filter and query combined', async () => {
@@ -2883,8 +3228,9 @@ describe.each(databases.eachSupportedId())(
         await expect(
           catalog.facets({
             facets: ['spec.type'],
-            filter: { key: 'kind', values: ['component'] },
-            query: { 'metadata.name': 'one' },
+            filter: {
+              $all: [{ kind: 'component' }, { 'metadata.name': 'one' }],
+            },
             credentials: mockCredentials.none(),
           }),
         ).resolves.toEqual({

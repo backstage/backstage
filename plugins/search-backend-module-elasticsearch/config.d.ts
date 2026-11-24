@@ -36,7 +36,7 @@ export interface Config {
       batchKeyField?: string;
       /**
        * Options for configuring highlight settings
-       * See https://www.elastic.co/guide/en/elasticsearch/reference/7.17/highlighting.html
+       * See https://www.elastic.co/guide/en/elasticsearch/reference/8.19/highlighting.html
        */
       highlightOptions?: {
         /**
@@ -91,7 +91,7 @@ export interface Config {
 
           /**
            * See available properties of template
-           * https://www.elastic.co/guide/en/elasticsearch/reference/7.15/indices-put-template.html#put-index-template-api-request-body
+           * https://www.elastic.co/guide/en/elasticsearch/reference/8.19/indices-put-template.html#put-index-template-api-request-body
            */
           template?: {
             [key: string]: unknown;

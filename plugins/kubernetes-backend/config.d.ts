@@ -58,6 +58,16 @@ export interface Config {
             serviceAccountToken?: string;
             /** @visibility frontend */
             authProvider?: string;
+            /**
+             * IAM role ARN to assume when using AWS authentication.
+             */
+            assumeRole?: string;
+            /**
+             * External ID to supply when assuming the IAM role, if required by
+             * its trust policy.
+             * @visibility secret
+             */
+            externalId?: string;
             /** @visibility secret  */
             authMetadata?: object;
             /** @visibility frontend */
@@ -80,6 +90,19 @@ export interface Config {
       | {
           /** @visibility frontend */
           type: 'catalog';
+          /**
+           * Hostname patterns (for example `127.0.0.1` or `*.example.com`) for
+           * which catalog cluster API server URLs may use HTTP or non-public
+           * addresses. Omitted hostnames must use HTTPS and pass SSRF checks.
+           * @visibility frontend
+           */
+          dangerouslyAllowClusterUrls?: string[];
+          /**
+           * When true, catalog cluster entities may set skip TLS verify via
+           * annotation. Defaults to false.
+           * @visibility frontend
+           */
+          dangerouslyAllowSkipTLSVerify?: boolean;
         }
       | {
           /** @visibility frontend */
@@ -142,5 +165,19 @@ export interface Config {
       statefulsets?: string;
       daemonsets?: string;
     } & { [pluralKind: string]: string };
+
+    /**
+     * Options for the Kubernetes API proxy middleware cache.
+     */
+    proxy?: {
+      middlewareCache?: {
+        /** Maximum number of cached middleware instances. Defaults to 100. */
+        maxSize?: number;
+        ttl?: {
+          /** Time-to-live for cached middleware in milliseconds. Defaults to 60000. */
+          milliseconds?: number;
+        };
+      };
+    };
   };
 }

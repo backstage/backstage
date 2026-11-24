@@ -1,5 +1,118 @@
 # @backstage/plugin-app-react
 
+## 0.3.0
+
+### Minor Changes
+
+- f9f794b: **BREAKING**: Icon bundles created with `IconBundleBlueprint` now accept only icon elements. Replace component values such as `icons: { user: MyIcon }` with `icons: { user: <MyIcon /> }`. For Material UI icons, use `<MyIcon fontSize="inherit" />`. Icons supplied through `convertLegacyAppOptions` continue to accept components and are converted automatically.
+- 5c29a89: **BREAKING**: Removed the deprecated flat `items` prop from custom navigation components. Use the `navItems` collection instead.
+
+  Use `navItems.rest()` instead of iterating over `items`. Replace `item.to` with `item.href` and `item.text` with `item.title`. The `item.icon` value is a React element, so render it directly instead of using it as a component type.
+
+- df2bcee: **BREAKING**: Removed `RouterBlueprint`; remove overrides that only install `BrowserRouter`, move global providers to `AppRootWrapperBlueprint`, and render routing adapters inside lazily loaded page components. For custom navigation, provide `AppHistoryApi` through an `ApiBlueprint` factory for `coreApis.appHistory` that is available during initialization without an `if` predicate. See the [1.57 migration notes](https://backstage.io/docs/frontend-system/architecture/migrations#157) for detailed migration steps.
+
+### Patch Changes
+
+- 77c1622: Added the `AnalyticsImplementation` type, moved from `@backstage/frontend-plugin-api`, alongside `AnalyticsImplementationBlueprint` and `AnalyticsImplementationFactory`.
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+- Updated dependencies
+  - @backstage/frontend-plugin-api@1.0.0
+  - @backstage/core-plugin-api@1.13.0
+
+## 0.3.0-next.2
+
+### Minor Changes
+
+- df2bcee: **BREAKING**: Removed `RouterBlueprint`; remove overrides that only install `BrowserRouter`, move global providers to `AppRootWrapperBlueprint`, and render routing adapters inside lazily loaded page components. For custom navigation, provide `AppHistoryApi` through an `ApiBlueprint` factory for `appHistoryApiRef` that is available during initialization without an `if` predicate. See the [1.57 migration notes](https://backstage.io/docs/frontend-system/architecture/migrations#157) for detailed migration steps.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.19.0-next.2
+  - @backstage/core-plugin-api@1.12.12-next.2
+
+## 0.3.0-next.1
+
+### Minor Changes
+
+- 5c29a89: **BREAKING**: Removed the deprecated flat `items` prop from custom navigation components. Use the `navItems` collection instead.
+
+  Use `navItems.rest()` instead of iterating over `items`. Replace `item.to` with `item.href` and `item.text` with `item.title`. The `item.icon` value is a React element, so render it directly instead of using it as a component type.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.12-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+
+## 0.2.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.3-next.0
+  - @backstage/core-plugin-api@1.12.12-next.0
+
+## 0.2.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/core-plugin-api@1.12.11
+
+## 0.2.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+
+## 0.2.7
+
+### Patch Changes
+
+- 40838dc: Added an extension boundary around custom navigation content.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/core-plugin-api@1.12.10
+
+## 0.2.7-next.1
+
+### Patch Changes
+
+- 40838dc: Added an extension boundary around custom navigation content.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.10-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.1
+
+## 0.2.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.1-next.0
+  - @backstage/core-plugin-api@1.12.10-next.0
+
+## 0.2.6
+
+### Patch Changes
+
+- a8b5ba6: Updated dependencies.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/frontend-plugin-api@0.18.0
+
+## 0.2.6-next.0
+
+### Patch Changes
+
+- a8b5ba6: Updated dependencies.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.0-next.0
+  - @backstage/core-plugin-api@1.12.9-next.0
+
 ## 0.2.5
 
 ### Patch Changes

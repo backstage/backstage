@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@layer tokens, base, components, utilities;
+@layer tokens, base, components, theme, utilities;
 
 @layer components {
   .bui-FieldLabelWrapper {
@@ -22,6 +22,7 @@
     flex-direction: column;
     margin-bottom: var(--bui-space-3);
     gap: var(--bui-space-1);
+    line-height: 1.15;
   }
 
   .bui-FieldLabel {

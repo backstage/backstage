@@ -36,6 +36,7 @@ import {
 import { Box } from '../Box';
 import { BgReset } from '../../hooks/useBg';
 import { VisuallyHidden } from '../VisuallyHidden';
+import { BUIRoutingProvider } from '../../navigation/BUIRoutingProvider';
 
 import type {
   SearchAutocompleteProps,
@@ -102,88 +103,90 @@ export function SearchAutocomplete(props: SearchAutocompleteProps) {
 
   return (
     <OverlayTriggerStateContext.Provider value={overlayState}>
-      <Autocomplete
-        inputValue={inputValue}
-        onInputChange={value => {
-          onInputChange?.(value);
-          if (value) {
-            overlayState.open();
-          } else {
-            overlayState.close();
-          }
-        }}
-      >
-        <RASearchField
-          className={classes.searchField}
-          aria-label={ariaLabel ?? (ariaLabelledBy ? undefined : placeholder)}
-          aria-labelledby={ariaLabelledBy}
-          data-size={dataAttributes['data-size']}
-          onKeyDown={e => {
-            if (e.key === 'Enter' && !overlayState.isOpen && hasValue) {
-              e.preventDefault();
+      <BUIRoutingProvider>
+        <Autocomplete
+          inputValue={inputValue}
+          onInputChange={value => {
+            onInputChange?.(value);
+            if (value) {
               overlayState.open();
+            } else {
+              overlayState.close();
             }
           }}
         >
-          <div
-            ref={triggerRef}
-            className={classes.root}
-            {...dataAttributes}
-            style={style}
+          <RASearchField
+            className={classes.searchField}
+            aria-label={ariaLabel ?? (ariaLabelledBy ? undefined : placeholder)}
+            aria-labelledby={ariaLabelledBy}
+            data-size={dataAttributes['data-size']}
+            onKeyDown={e => {
+              if (e.key === 'Enter' && !overlayState.isOpen && hasValue) {
+                e.preventDefault();
+                overlayState.open();
+              }
+            }}
           >
-            <div aria-hidden="true">
-              <RiSearch2Line />
-            </div>
-            <Input
-              className={classes.searchFieldInput}
-              placeholder={placeholder}
-            />
-            <RAButton
-              className={classes.searchFieldClear}
-              style={{ visibility: hasValue ? 'visible' : 'hidden' }}
+            <div
+              ref={triggerRef}
+              className={classes.root}
+              {...dataAttributes}
+              style={style}
             >
-              <RiCloseCircleLine />
-            </RAButton>
-          </div>
-        </RASearchField>
-        {/* isNonModal keeps the page interactive while the popover is open,
-            required for virtual focus (aria-activedescendant) to work correctly */}
-        <RAPopover
-          ref={popoverRef}
-          className={classes.popover}
-          triggerRef={triggerRef}
-          isNonModal
-          placement={popoverPlacement}
-          {...(popoverWidth ? { style: { width: popoverWidth } } : {})}
-        >
-          <BgReset>
-            <Box bg="neutral" className={classes.inner}>
-              <ListBox
-                className={classes.listBox}
-                autoFocus="first"
-                shouldFocusOnHover
-                aria-busy={isLoading || undefined}
-                data-stale={isLoading || undefined}
-                renderEmptyState={() =>
-                  isLoading ? (
-                    <div className={classes.loadingState}>Searching...</div>
-                  ) : (
-                    <SearchAutocompleteEmptyState />
-                  )
-                }
-                onAction={() => {
-                  overlayState.close();
-                }}
+              <div aria-hidden="true">
+                <RiSearch2Line />
+              </div>
+              <Input
+                className={classes.searchFieldInput}
+                placeholder={placeholder}
+              />
+              <RAButton
+                className={classes.searchFieldClear}
+                style={{ visibility: hasValue ? 'visible' : 'hidden' }}
               >
-                {children}
-              </ListBox>
-            </Box>
-          </BgReset>
-        </RAPopover>
-        <VisuallyHidden aria-live="polite" aria-atomic="true">
-          {liveMessage}
-        </VisuallyHidden>
-      </Autocomplete>
+                <RiCloseCircleLine />
+              </RAButton>
+            </div>
+          </RASearchField>
+          {/* isNonModal keeps the page interactive while the popover is open,
+            required for virtual focus (aria-activedescendant) to work correctly */}
+          <RAPopover
+            ref={popoverRef}
+            className={classes.popover}
+            triggerRef={triggerRef}
+            isNonModal
+            placement={popoverPlacement}
+            {...(popoverWidth ? { style: { width: popoverWidth } } : {})}
+          >
+            <BgReset>
+              <Box bg="neutral" className={classes.inner}>
+                <ListBox
+                  className={classes.listBox}
+                  autoFocus="first"
+                  shouldFocusOnHover
+                  aria-busy={isLoading || undefined}
+                  data-stale={isLoading || undefined}
+                  renderEmptyState={() =>
+                    isLoading ? (
+                      <div className={classes.loadingState}>Searching...</div>
+                    ) : (
+                      <SearchAutocompleteEmptyState />
+                    )
+                  }
+                  onAction={() => {
+                    overlayState.close();
+                  }}
+                >
+                  {children}
+                </ListBox>
+              </Box>
+            </BgReset>
+          </RAPopover>
+          <VisuallyHidden aria-live="polite" aria-atomic="true">
+            {liveMessage}
+          </VisuallyHidden>
+        </Autocomplete>
+      </BUIRoutingProvider>
     </OverlayTriggerStateContext.Provider>
   );
 }
@@ -194,17 +197,18 @@ export function SearchAutocomplete(props: SearchAutocompleteProps) {
  * @public
  */
 export function SearchAutocompleteItem(props: SearchAutocompleteItemProps) {
-  const { ownProps, restProps } = useDefinition(
+  const definitionResult = useDefinition(
     SearchAutocompleteItemDefinition,
     props,
   );
+  const { ownProps, restProps } = definitionResult;
   const { classes, children } = ownProps;
 
   return (
     <ListBoxItem
       textValue={typeof children === 'string' ? children : undefined}
       className={classes.root}
-      {...restProps}
+      {...(restProps as React.ComponentProps<typeof ListBoxItem>)}
     >
       <div className={classes.itemContent}>{children}</div>
     </ListBoxItem>

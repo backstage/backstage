@@ -1,5 +1,165 @@
 # @backstage/plugin-notifications-backend
 
+## 0.6.11
+
+### Patch Changes
+
+- c0ea056: Fixed broadcast notifications losing their saved status when marked as read or unread, and losing their read status when saved or unsaved.
+- 6a0de59: Backend plugins now locate their database migrations relative to their own package directory, without requiring the package to be resolvable by name.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/backend-openapi-utils@0.7.4
+  - @backstage/catalog-model@1.10.3
+  - @backstage/config@1.3.11
+  - @backstage/plugin-catalog-node@3.0.0
+  - @backstage/plugin-notifications-common@0.2.6
+  - @backstage/plugin-notifications-node@0.2.32
+  - @backstage/plugin-signals-node@0.2.7
+
+## 0.6.11-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/backend-openapi-utils@0.7.4-next.1
+  - @backstage/plugin-catalog-node@3.0.0-next.2
+  - @backstage/plugin-notifications-node@0.2.32-next.1
+  - @backstage/plugin-signals-node@0.2.7-next.2
+  - @backstage/catalog-model@1.10.3-next.0
+  - @backstage/config@1.3.11-next.0
+  - @backstage/plugin-notifications-common@0.2.6-next.0
+
+## 0.6.11-next.1
+
+### Patch Changes
+
+- c0ea056: Fixed broadcast notifications losing their saved status when marked as read or unread, and losing their read status when saved or unsaved.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.2.7-next.1
+  - @backstage/plugin-signals-node@0.2.7-next.1
+
+## 0.6.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-catalog-node@2.2.7-next.0
+  - @backstage/plugin-notifications-node@0.2.32-next.0
+  - @backstage/backend-openapi-utils@0.7.4-next.0
+  - @backstage/plugin-signals-node@0.2.7-next.0
+
+## 0.6.10
+
+### Patch Changes
+
+- 8ba34e8: Persist notification payload metadata for user notifications and broadcasts, and return it when reading notifications. Re-sending a scoped notification replaces its metadata, or clears it when the new payload omits metadata.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/backend-openapi-utils@0.7.3
+  - @backstage/catalog-model@1.10.2
+  - @backstage/plugin-catalog-node@2.2.6
+  - @backstage/plugin-notifications-common@0.2.5
+  - @backstage/plugin-notifications-node@0.2.31
+  - @backstage/plugin-signals-node@0.2.6
+
+## 0.6.10-next.2
+
+### Patch Changes
+
+- 8ba34e8: Persist notification payload metadata for user notifications and broadcasts, and return it when reading notifications. Re-sending a scoped notification replaces its metadata, or clears it when the new payload omits metadata.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.2
+
+## 0.6.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+  - @backstage/backend-openapi-utils@0.7.3-next.1
+  - @backstage/plugin-catalog-node@2.2.6-next.1
+  - @backstage/plugin-notifications-node@0.2.31-next.1
+  - @backstage/plugin-signals-node@0.2.6-next.1
+
+## 0.6.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/plugin-notifications-common@0.2.5-next.0
+  - @backstage/backend-openapi-utils@0.7.3-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-catalog-node@2.2.6-next.0
+  - @backstage/plugin-notifications-node@0.2.31-next.0
+  - @backstage/plugin-signals-node@0.2.6-next.0
+
+## 0.6.9
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.7.2
+  - @backstage/catalog-model@1.10.1
+  - @backstage/config@1.3.9
+  - @backstage/plugin-notifications-node@0.2.30
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-catalog-node@2.2.5
+  - @backstage/plugin-notifications-common@0.2.4
+  - @backstage/plugin-signals-node@0.2.5
+
+## 0.6.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/plugin-notifications-node@0.2.30-next.1
+  - @backstage/plugin-catalog-node@2.2.5-next.1
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/plugin-notifications-common@0.2.4-next.0
+
+## 0.6.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.7.2-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+  - @backstage/plugin-catalog-node@2.2.5-next.0
+  - @backstage/plugin-notifications-node@0.2.30-next.0
+  - @backstage/plugin-signals-node@0.2.5-next.0
+
+## 0.6.8
+
+### Patch Changes
+
+- 3222945: Fixed notification recipient resolution to safely handle cyclic group relationships during group traversal, preventing endless recursion.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/backend-openapi-utils@0.7.1
+  - @backstage/plugin-catalog-node@2.2.4
+  - @backstage/plugin-notifications-node@0.2.29
+  - @backstage/plugin-signals-node@0.2.4
+
+## 0.6.8-next.1
+
+### Patch Changes
+
+- 3222945: Fixed notification recipient resolution to safely handle cyclic group relationships during group traversal, preventing endless recursion.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.1
+
 ## 0.6.8-next.0
 
 ### Patch Changes

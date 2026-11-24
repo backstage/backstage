@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import {
@@ -34,12 +35,14 @@ import { OctokitProviderService } from '../util/octokitProviderService';
  * for more details.
  *
  * @param config - root config
+ * @param logger - logger used to report the module's authentication setup at startup
  * @public
  */
 export function createGithubSignatureValidator(
   config: Config,
   octokitProvider: OctokitProviderService,
-): RequestValidator | undefined {
+  logger: LoggerService,
+): RequestValidator {
   const integrations = ScmIntegrations.fromConfig(config);
 
   // GitHub App installation ID to secret
@@ -57,8 +60,31 @@ export function createGithubSignatureValidator(
     'events.modules.github.webhookSecret',
   );
 
+  const dangerouslyAllowUnauthenticatedEvents =
+    config.getOptionalBoolean(
+      'events.modules.github.dangerouslyAllowUnauthenticatedEvents',
+    ) ?? false;
+
   if (!genericSecret && githubAppSecrets.size === 0) {
-    return undefined;
+    if (dangerouslyAllowUnauthenticatedEvents) {
+      logger.warn(
+        'dangerouslyAllowUnauthenticatedEvents is enabled for the GitHub events module; incoming webhook events will be accepted without authentication',
+      );
+      return async () => {};
+    }
+
+    logger.warn(
+      "No webhook secret is configured for the GitHub events module; incoming webhook events will be rejected with 403. Set 'events.modules.github.webhookSecret' to enable authentication, or set 'events.modules.github.dangerouslyAllowUnauthenticatedEvents' to true to accept unauthenticated events",
+    );
+    return async (
+      _request: RequestDetails,
+      context: RequestValidationContext,
+    ): Promise<void> => {
+      context.reject({
+        status: 403,
+        payload: { message: 'webhook secret not configured' },
+      });
+    };
   }
 
   const appIdResolver = createAppIdResolver(octokitProvider);

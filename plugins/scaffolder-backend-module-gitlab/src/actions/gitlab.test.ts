@@ -29,6 +29,7 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
 import { createPublishGitlabAction } from './gitlab';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
+import { ConflictError } from '@backstage/errors';
 import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
@@ -228,6 +229,36 @@ describe('publish:gitlab', () => {
     expect(mockGitlabClient.ProtectedBranches.protect).not.toHaveBeenCalled();
   });
 
+  it('requires an explicit token and does not allow privileged integration credentials when configured', async () => {
+    const requiredConfig = new ConfigReader({
+      integrations: {
+        gitlab: [{ host: 'gitlab.com', token: 'integration-token' }],
+      },
+      scaffolder: { requireScmUserCredentials: true },
+    });
+    const requiredAction = createPublishGitlabAction({
+      integrations: ScmIntegrations.fromConfig(requiredConfig),
+      config: requiredConfig,
+    });
+
+    await expect(requiredAction.handler(mockContext)).rejects.toThrow(
+      'No user credentials provided for host gitlab.com, but scaffolder.requireScmUserCredentials is enabled',
+    );
+    await expect(
+      requiredAction.handler({
+        ...mockContext,
+        input: {
+          ...mockContext.input,
+          token: 'user-token',
+          setUserAsOwner: true,
+        },
+      }),
+    ).rejects.toThrow(
+      'The setUserAsOwner and ownerUsername inputs cannot be used when scaffolder.requireScmUserCredentials is enabled because they require credentials from the GitLab integration',
+    );
+    expect(mockGitlabClient.Namespaces.show).not.toHaveBeenCalled();
+  });
+
   it('should call the correct Gitlab APIs when the owner is a group', async () => {
     mockGitlabClient.Users.showCurrentUser.mockResolvedValue({ id: 12345 });
     mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });
@@ -329,6 +360,69 @@ describe('publish:gitlab', () => {
     expect(mockGitlabClient.Projects.create).not.toHaveBeenCalled();
     expect(mockGitlabClient.Branches.create).not.toHaveBeenCalled();
     expect(mockGitlabClient.ProtectedBranches.protect).not.toHaveBeenCalled();
+  });
+
+  it('should throw ConflictError when the repository already exists in a group namespace', async () => {
+    mockGitlabClient.Users.showCurrentUser.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Namespaces.show.mockResolvedValue({
+      id: 1234,
+      kind: 'group',
+    });
+    mockGitlabClient.Groups.allProjects.mockResolvedValue([
+      {
+        path: 'repo',
+        http_url_to_repo: 'http://mockurl.git',
+      },
+    ]);
+
+    const result = action.handler(mockContext);
+    await expect(result).rejects.toThrow(ConflictError);
+    await expect(result).rejects.toThrow(
+      /Repository 'repo' already exists in namespace 'owner'/,
+    );
+    expect(mockGitlabClient.Projects.create).not.toHaveBeenCalled();
+  });
+
+  it('should throw ConflictError when the repository already exists in a user namespace', async () => {
+    mockGitlabClient.Users.showCurrentUser.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Namespaces.show.mockResolvedValue({
+      id: 12345,
+      kind: 'user',
+    });
+    mockGitlabClient.Users.allProjects.mockResolvedValue([
+      {
+        path: 'repo',
+        http_url_to_repo: 'http://mockurl.git',
+      },
+    ]);
+
+    const result = action.handler(mockContext);
+    await expect(result).rejects.toThrow(ConflictError);
+    await expect(result).rejects.toThrow(
+      /Repository 'repo' already exists in namespace 'owner'/,
+    );
+    expect(mockGitlabClient.Projects.create).not.toHaveBeenCalled();
+  });
+
+  it('should create the repository when a same-name project is shared from another namespace', async () => {
+    mockGitlabClient.Users.showCurrentUser.mockResolvedValue({ id: 12345 });
+    mockGitlabClient.Namespaces.show.mockResolvedValue({
+      id: 1234,
+      kind: 'group',
+    });
+
+    mockGitlabClient.Groups.allProjects.mockResolvedValue([]);
+    mockGitlabClient.Projects.create.mockResolvedValue({
+      http_url_to_repo: 'http://mockurl.git',
+    });
+
+    await action.handler(mockContext);
+
+    expect(mockGitlabClient.Groups.allProjects).toHaveBeenCalledWith('owner', {
+      search: 'repo',
+      withShared: false,
+    });
+    expect(mockGitlabClient.Projects.create).toHaveBeenCalled();
   });
 
   it('should call the creation Gitlab APIs when the repository does not yet exists', async () => {

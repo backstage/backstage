@@ -1,5 +1,116 @@
 # @backstage/plugin-events-backend-module-github
 
+## 0.5.0
+
+### Minor Changes
+
+- 70fd46d: **BREAKING** Webhook events modules now require a webhook secret by default. Requests to the `/api/events/http/github`, `/api/events/http/gitlab`, and `/api/events/http/azureDevOps` endpoints are rejected with HTTP 403 when no webhook secret is configured, instead of being accepted without validation. To continue accepting unauthenticated events, for example in development environments, set the module's new `dangerouslyAllowUnauthenticatedEvents` option to `true`. In addition, the `createGitlabTokenValidator` function from `@backstage/plugin-events-backend-module-gitlab` now requires a `logger` argument.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.2.0
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/plugin-events-node@0.5.0
+  - @backstage/config@1.3.11
+
+## 0.4.18-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/integration@2.1.4-next.0
+  - @backstage/plugin-events-node@0.5.0-next.2
+  - @backstage/config@1.3.11-next.0
+
+## 0.4.18-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.5.0-next.1
+
+## 0.4.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-events-node@0.4.28-next.0
+
+## 0.4.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.3
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/config@1.3.10
+  - @backstage/plugin-events-node@0.4.27
+
+## 0.4.17-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+  - @backstage/plugin-events-node@0.4.27-next.1
+
+## 0.4.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.3-next.0
+  - @backstage/config@1.3.10-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/plugin-events-node@0.4.27-next.0
+
+## 0.4.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.2
+  - @backstage/config@1.3.9
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-events-node@0.4.26
+
+## 0.4.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/integration@2.1.2-next.1
+
+## 0.4.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.2-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+  - @backstage/plugin-events-node@0.4.26-next.0
+
+## 0.4.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/integration@2.1.0
+  - @backstage/plugin-events-node@0.4.25
+
+## 0.4.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.0-next.0
+
 ## 0.4.15-next.0
 
 ### Patch Changes

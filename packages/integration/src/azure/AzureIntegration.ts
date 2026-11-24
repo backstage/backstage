@@ -20,7 +20,8 @@ import { AzureUrl } from './AzureUrl';
 import { AzureIntegrationConfig, readAzureIntegrationConfigs } from './config';
 
 /**
- * Microsoft Azure based integration.
+ * Microsoft Azure based integration. Repository file URLs resolve directly to
+ * the Azure DevOps edit view.
  *
  * @public
  */
@@ -91,8 +92,17 @@ export class AzureIntegration implements ScmIntegration {
   }
 
   resolveEditUrl(url: string): string {
-    // TODO: Implement edit URL for Azure, fallback to view url as I don't know
-    // how azure works.
-    return url;
+    try {
+      const path = AzureUrl.fromRepoUrl(url).getPath();
+      if (!path || path === '/') {
+        return url;
+      }
+
+      const editUrl = new URL(url);
+      editUrl.searchParams.set('_a', 'edit');
+      return editUrl.toString();
+    } catch {
+      return url;
+    }
   }
 }
