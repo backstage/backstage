@@ -361,7 +361,7 @@ describe('type-deps', () => {
         "import type { Sub } from '@fake/esm-only/helpers/util.js';\n" +
         'export type { Ctx, Sub };\n',
     );
-    fs.mkdirSync(joinPath(tmpDir, 'node_modules/@fake/esm-only'), {
+    fs.mkdirSync(joinPath(tmpDir, 'node_modules/@fake/esm-only/dist/helpers'), {
       recursive: true,
     });
     fs.writeFileSync(
@@ -382,10 +382,95 @@ describe('type-deps', () => {
         },
       }),
     );
+    fs.writeFileSync(
+      joinPath(tmpDir, 'node_modules/@fake/esm-only/dist/index.d.ts'),
+      'export type Ctx = { a: number };\n',
+    );
+    fs.writeFileSync(
+      joinPath(tmpDir, 'node_modules/@fake/esm-only/dist/helpers/util.d.ts'),
+      'export type Sub = { b: number };\n',
+    );
 
     await typeDeps();
 
     expect(error).not.toHaveBeenCalled();
     expect(exit).not.toHaveBeenCalled();
+  });
+
+  it('applies typesVersions and null export targets like TypeScript', async () => {
+    const exit = jest
+      .spyOn(process, 'exit')
+      .mockImplementation((() => {}) as () => never);
+    const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    fs.writeFileSync(
+      joinPath(tmpDir, 'package.json'),
+      JSON.stringify({ name: 'root', private: true, workspaces: ['pkg'] }),
+    );
+    fs.writeFileSync(joinPath(tmpDir, 'yarn.lock'), '');
+    fs.mkdirSync(joinPath(tmpDir, 'pkg/dist'), { recursive: true });
+    fs.writeFileSync(
+      joinPath(tmpDir, 'pkg/package.json'),
+      JSON.stringify({
+        name: 'pkg',
+        version: '1.0.0',
+        main: 'dist/index.js',
+        types: 'dist/index.d.ts',
+        dependencies: {
+          '@fake/typed': '1.0.0',
+        },
+      }),
+    );
+    fs.writeFileSync(
+      joinPath(tmpDir, 'pkg/dist/index.d.ts'),
+      "import type { H } from '@fake/typed/helpers/util';\nexport type { H };\n",
+    );
+    // Subpath types are only reachable through typesVersions, and the
+    // package hides its internal subpath with a null export target
+    fs.mkdirSync(joinPath(tmpDir, 'node_modules/@fake/typed/dist/helpers'), {
+      recursive: true,
+    });
+    fs.writeFileSync(
+      joinPath(tmpDir, 'node_modules/@fake/typed/package.json'),
+      JSON.stringify({
+        name: '@fake/typed',
+        version: '1.0.0',
+        type: 'module',
+        types: './dist/index.d.ts',
+        typesVersions: { '*': { 'helpers/*': ['./dist/helpers/*'] } },
+        exports: {
+          '.': { types: './dist/index.d.ts', import: './dist/index.js' },
+          './helpers/*': { import: './dist/helpers/*.js' },
+          './internal/*': null,
+        },
+      }),
+    );
+    fs.writeFileSync(
+      joinPath(tmpDir, 'node_modules/@fake/typed/dist/helpers/util.d.ts'),
+      'export type H = { a: number };\n',
+    );
+
+    await typeDeps();
+
+    expect(error).not.toHaveBeenCalled();
+    expect(exit).not.toHaveBeenCalled();
+
+    // A subpath excluded with a null export target is still an error
+    fs.writeFileSync(
+      joinPath(tmpDir, 'pkg/dist/index.d.ts'),
+      "import type { H } from '@fake/typed/internal/secret';\nexport type { H };\n",
+    );
+
+    exit.mockClear();
+    error.mockClear();
+
+    await typeDeps();
+
+    expect(error).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'Missing a type dependency: @fake/typed/internal/secret',
+      ),
+    );
+    expect(exit).toHaveBeenCalledWith(2);
   });
 });
