@@ -206,10 +206,24 @@ must have been signed using one of the listed algorithms.
 `audience` specifies the intended audience(s) of the JWT. The passed JWTs must have an "aud"
 claim that matches one of the audiences specified, or have no audience specified.
 
-`subjectPattern` specifies one or more regular expressions that the `sub` claim of the JWT
-must match. Each pattern must match the entire subject, as if it was wrapped in `^` and `$`,
-and the subject must match at least one of the patterns. Unlike the other options, patterns
-are not split on commas or spaces.
+`subjectPattern` specifies the regular expression(s) that the `sub` claim of the JWT must
+match. It can be either a single pattern or a list of patterns:
+
+```yaml
+# A single pattern
+subjectPattern: 'project_path:my-group/my-project:ref_type:branch:ref:main'
+
+# A list of patterns, where the subject must match at least one of them
+subjectPattern:
+  - 'project_path:my-group/my-project:ref_type:branch:ref:main'
+  - 'project_path:my-other-group/[^:]+:ref_type:branch:ref:main'
+```
+
+Each pattern must match the entire subject, as if it was wrapped in `^` and `$`. Unlike
+`issuer`, `algorithm` and `audience`, a single string is never split on commas or spaces,
+since those characters are meaningful in regular expressions. To allow several subjects, use a
+list or an alternation such as `(a|b)` inside one pattern. Quoting patterns with single quotes
+is recommended, so that YAML does not interpret characters like `:` or `[`.
 
 This matters when the issuer signs tokens for callers you do not control, which is the case
 for shared CI/CD OIDC providers such as GitLab.com or GitHub Actions: any project on these
