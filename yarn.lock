@@ -9917,18 +9917,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@inquirer/type@npm:4.0.7":
-  version: 4.0.7
-  resolution: "@inquirer/type@npm:4.0.7"
-  peerDependencies:
-    "@types/node": ">=18"
-  peerDependenciesMeta:
-    "@types/node":
-      optional: true
-  checksum: 10/97769b74264a2575c12c231e3d4acf98b4ae237fc987cec6b459f88b907b1729623403b8d9fe0cf2ca21743114777c64e3031fbeff72e9da37fbf4c8985f587f
-  languageName: node
-  linkType: hard
-
 "@inquirer/type@npm:4.1.1":
   version: 4.1.1
   resolution: "@inquirer/type@npm:4.1.1"
@@ -9938,6 +9926,18 @@ __metadata:
     "@types/node":
       optional: true
   checksum: 10/789b1fcc1d27bb75c4baa17666fb3427d30c41143a24eb77a121e4b64a41ca1753b9203e71a10bc26eefdf3c7d3d3ff619b82641e302afb38f9b23c5d9db38e7
+  languageName: node
+  linkType: hard
+
+"@inquirer/type@npm:4.3.1":
+  version: 4.3.1
+  resolution: "@inquirer/type@npm:4.3.1"
+  peerDependencies:
+    "@types/node": ">=18"
+  peerDependenciesMeta:
+    "@types/node":
+      optional: true
+  checksum: 10/719d270b3d8d90f83788f534b754f42ea10f566682947607b94cef278b567a79c5cc96d194326c67bb5095f9bea497197e414cfc0f0ca6654cdc428279ec25e0
   languageName: node
   linkType: hard
 
