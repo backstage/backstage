@@ -12992,8 +12992,8 @@ __metadata:
   linkType: hard
 
 "@openapitools/openapi-generator-cli@npm:^2.41.0":
-  version: 2.42.2
-  resolution: "@openapitools/openapi-generator-cli@npm:2.42.2"
+  version: 2.43.0
+  resolution: "@openapitools/openapi-generator-cli@npm:2.43.0"
   dependencies:
     "@inquirer/select": "npm:1.3.3"
     "@nestjs/axios": "npm:4.0.1"
@@ -13008,13 +13008,13 @@ __metadata:
     console.table: "npm:0.10.0"
     fs-extra: "npm:11.4.0"
     glob: "npm:14.0.4"
-    proxy-agent: "npm:8.0.2"
+    proxy-agent: "npm:8.0.3"
     reflect-metadata: "npm:0.2.2"
     rxjs: "npm:7.8.2"
     tslib: "npm:2.8.1"
   bin:
     openapi-generator-cli: main.js
-  checksum: 10/cbaf6df975feefce2ec8bd3e9538296261350c0ce6c71ce0ab447e1fcba9fafba4ebf79e5a978f9dc18242a7746e6a4fdd0743c9076ce669763974bfa36c425f
+  checksum: 10/04a97e5627fc3a70a82d4ab79df4600c6966446034075696e72654542bff8cf486dfd36b3acedfd6c2cd5f2b8b09cea45c3407a9a4762e567839732815add033
   languageName: node
   linkType: hard
 
@@ -23099,10 +23099,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"basic-ftp@npm:^5.0.2, basic-ftp@npm:^5.3.1":
+"basic-ftp@npm:^5.0.2":
   version: 5.3.1
   resolution: "basic-ftp@npm:5.3.1"
   checksum: 10/9232ee155114efafadf5adee86a6750208653a9071e53e9803dceac61a66b3ba3974771ff2490ff28f1a118fdfb806ffcc488f64609e61a9cedb52480b312843
+  languageName: node
+  linkType: hard
+
+"basic-ftp@npm:^6.2.4":
+  version: 6.2.6
+  resolution: "basic-ftp@npm:6.2.6"
+  checksum: 10/6c2be0f2787374d243375f3b38aa5399fadb4d1f440b4b0e5ee3689eb935c9bdc9244961d5f49b40cfe24d88a3a19bcaef1cb8fe06114cd688b6f265f0421bf5
   languageName: node
   linkType: hard
 
@@ -25915,16 +25922,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"degenerator@npm:7.0.1":
-  version: 7.0.1
-  resolution: "degenerator@npm:7.0.1"
+"degenerator@npm:7.0.2":
+  version: 7.0.2
+  resolution: "degenerator@npm:7.0.2"
   dependencies:
     ast-types: "npm:^0.13.4"
     escodegen: "npm:^2.1.0"
     esprima: "npm:^4.0.1"
   peerDependencies:
-    quickjs-wasi: ^2.2.0
-  checksum: 10/dd6abd1a168b84093dd9d636f90222020c6025715bbd40400b9cab558901d62e3dab2c540926538678c2f00f82b910b7ebdb6293ab47a0d3ecaecfd62b0766ca
+    quickjs-wasi: ^3.0.0
+  checksum: 10/13c011de4fdb6716adb2d6161e1dc2fc0a24417db9a665b5849ff934e619b485c7e8a9f423849b487057abdcbb3bfe1ffbceca0adbc6c2b612ea19736bdddf61
   languageName: node
   linkType: hard
 
@@ -29445,14 +29452,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"get-uri@npm:8.0.1":
-  version: 8.0.1
-  resolution: "get-uri@npm:8.0.1"
+"get-uri@npm:8.0.2":
+  version: 8.0.2
+  resolution: "get-uri@npm:8.0.2"
   dependencies:
-    basic-ftp: "npm:^5.3.1"
+    basic-ftp: "npm:^6.2.4"
     data-uri-to-buffer: "npm:8.0.0"
     debug: "npm:^4.3.4"
-  checksum: 10/d2bc9e9b48d5d3fdbd5eab5cec90a9e30d4b903ed255ccc035969aa1ce6d23498931b410d7e87a2f736a312b0c6e0a8057de09f3ff5218f4f78482c6c827f1b6
+  checksum: 10/44ad62c3c50838823e62848572eb1768320986487f3eacedcabe51d604f1d880d36817f4c6a246a0876ab5b59adcb57237dc9157310df49fb5678cd01ea8ecfb
   languageName: node
   linkType: hard
 
@@ -37409,19 +37416,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pac-proxy-agent@npm:9.1.0":
-  version: 9.1.0
-  resolution: "pac-proxy-agent@npm:9.1.0"
+"pac-proxy-agent@npm:9.1.1":
+  version: 9.1.1
+  resolution: "pac-proxy-agent@npm:9.1.1"
   dependencies:
     agent-base: "npm:9.0.0"
     debug: "npm:^4.3.4"
-    get-uri: "npm:8.0.1"
+    get-uri: "npm:8.0.2"
     http-proxy-agent: "npm:9.1.0"
     https-proxy-agent: "npm:9.1.0"
-    pac-resolver: "npm:9.0.1"
-    quickjs-wasi: "npm:^2.2.0"
+    pac-resolver: "npm:9.0.2"
+    quickjs-wasi: "npm:^3.0.0"
     socks-proxy-agent: "npm:10.1.0"
-  checksum: 10/02a06c697796eb35a01a1e9949651a5151b1e6a0d06146e0ab54adf0aec3fd446e58c539cd391d50f205c3db58a16ef3c1d3818d3a17940259a21cd0b9d82003
+  checksum: 10/e312f75e5438e46a085abbb49a6f7e4a613a88ac90008269aefe84df26823c637677b7ad51ec6ce32ccbba938dac74c7147073b665cebc6556d0c2b7e1919bc2
   languageName: node
   linkType: hard
 
@@ -37441,15 +37448,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pac-resolver@npm:9.0.1":
-  version: 9.0.1
-  resolution: "pac-resolver@npm:9.0.1"
+"pac-resolver@npm:9.0.2":
+  version: 9.0.2
+  resolution: "pac-resolver@npm:9.0.2"
   dependencies:
-    degenerator: "npm:7.0.1"
+    degenerator: "npm:7.0.2"
     netmask: "npm:^2.0.2"
   peerDependencies:
-    quickjs-wasi: ^2.2.0
-  checksum: 10/d3f3cea34df195adf02c7155f8f1501d5830c10360d5a26371af237b122dc1cae32dad34dcf8d5c2a473293ef7b37f3e551f45edc651db148de013fc421ff8b4
+    quickjs-wasi: ^3.0.0
+  checksum: 10/5dacc36eb78726eec49d773b0dce0f68eacbfcb4f29aeac7e75d08a0c86754b7fe57b2ae622b61c481873f212f694ed4356f4f94ee2c56413101130973d5c615
   languageName: node
   linkType: hard
 
@@ -39284,19 +39291,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"proxy-agent@npm:8.0.2":
-  version: 8.0.2
-  resolution: "proxy-agent@npm:8.0.2"
+"proxy-agent@npm:8.0.3":
+  version: 8.0.3
+  resolution: "proxy-agent@npm:8.0.3"
   dependencies:
     agent-base: "npm:9.0.0"
     debug: "npm:^4.3.4"
     http-proxy-agent: "npm:9.1.0"
     https-proxy-agent: "npm:9.1.0"
     lru-cache: "npm:^7.14.1"
-    pac-proxy-agent: "npm:9.1.0"
+    pac-proxy-agent: "npm:9.1.1"
     proxy-from-env: "npm:^2.0.0"
     socks-proxy-agent: "npm:10.1.0"
-  checksum: 10/3d0368780b243fbe56c95d1ce491d053e689eb2722a42f211b62e6897e4cf16d20bee2408e0bb01ee85199e73ee717fc1e220ce3f77ad55e4673f0587f1f9786
+  checksum: 10/065cf71e189b85f75286143dd550c5b1749d6f4c2cc001c15632a9798bdde84a67378f142287efc51ab2347b09a99fb70bd03c17aeebd04b51b73335cca5224a
   languageName: node
   linkType: hard
 
@@ -39444,10 +39451,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"quickjs-wasi@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "quickjs-wasi@npm:2.2.0"
-  checksum: 10/3b54d97cb1182dbda44e3c5483bb867bd2261c3644ff658aa55f23fe8590b29a59360fd7425a534578c222b4398b69867978baf8265bf8489ed0d51b32fc66b3
+"quickjs-wasi@npm:^3.0.0":
+  version: 3.7.0
+  resolution: "quickjs-wasi@npm:3.7.0"
+  checksum: 10/9d69c0693c3266c72253075dd2b19700a163034b258fe0c4eca86f5e66560471367ecbe6917a83f8d8a313eb815f1cb5fb193495104197da78e2d9d6735cf8bf
   languageName: node
   linkType: hard
 
