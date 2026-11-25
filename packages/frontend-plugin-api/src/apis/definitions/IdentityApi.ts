@@ -48,8 +48,8 @@ export type IdentityApi = {
    * Sign out the current user.
    *
    * @param options - Optional sign-out options. If `preserveLocation` is true,
-   *   navigates back to the current window location after sign out, preserving
-   *   path, search query, and hash. Defaults to false.
+   *   requests that the app navigates back to the current window location after
+   *   sign out, preserving path, search query, and hash. Defaults to false.
    */
   signOut(options?: { preserveLocation?: boolean }): Promise<void>;
 };

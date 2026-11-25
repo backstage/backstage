@@ -52,6 +52,6 @@ describe('IdentityApiSignOutProxy', () => {
 
     await proxy.signOut();
 
-    expect(signOut).toHaveBeenCalled();
+    expect(signOut).toHaveBeenCalledWith(undefined);
   });
 });
