@@ -29591,7 +29591,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^14.0.0":
+"glob@npm:^14.0.0, glob@npm:^14.0.2":
   version: 14.0.6
   resolution: "glob@npm:14.0.6"
   dependencies:
@@ -44641,20 +44641,20 @@ __metadata:
   linkType: hard
 
 "ts-json-schema-generator@npm:^2.9.0":
-  version: 2.9.0
-  resolution: "ts-json-schema-generator@npm:2.9.0"
+  version: 2.10.0
+  resolution: "ts-json-schema-generator@npm:2.10.0"
   dependencies:
     "@types/json-schema": "npm:^7.0.15"
     commander: "npm:^14.0.3"
-    glob: "npm:^13.0.6"
+    glob: "npm:^14.0.2"
     json5: "npm:^2.2.3"
     normalize-path: "npm:^3.0.0"
     safe-stable-stringify: "npm:^2.5.0"
     tslib: "npm:^2.8.1"
-    typescript: "npm:^5.9.3"
+    typescript: "npm:>=5.9 <7"
   bin:
     ts-json-schema-generator: bin/ts-json-schema-generator.js
-  checksum: 10/50a18cb6a1171e495af16a4fe8165000d0155ef693cec9345bacb8a5b6cc559dcc730443ebdc025590cd29ffd2019564267a8222c7f6389bdf5558856fbe479b
+  checksum: 10/33ba3e34da464574649c840e14e51495f42a2800d3af2a480d801383592e914acbbf6e569668dc5c25cd695b5a02b3e5190f76d19958d0b22a0a6329b35e71ee
   languageName: node
   linkType: hard
 
@@ -44987,6 +44987,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typescript@npm:>=5.9 <7":
+  version: 6.0.3
+  resolution: "typescript@npm:6.0.3"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 10/0ef2357a4cffd916b52b683a021cdab0f81eea4e9aa35f2d254581c9a5106da02224e3392e1b0ed42b7a48f80c966e5f52b8e1a27941fa0523c1705a9c2e0330
+  languageName: node
+  linkType: hard
+
 "typescript@npm:^5.7.3, typescript@npm:^5.8.3, typescript@npm:^5.9.3, typescript@npm:~5.9.0":
   version: 5.9.3
   resolution: "typescript@npm:5.9.3"
@@ -45004,6 +45014,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 10/97920a082ffc57583b1cb6bc4faa502acc156358e03f54c7fc7fdf0b61c439a717f4c9070c449ee9ee683d4cfc3bb203127c2b9794b2950f66d9d307a4ff262c
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@npm%3A>=5.9 <7#optional!builtin<compat/typescript>":
+  version: 6.0.3
+  resolution: "typescript@patch:typescript@npm%3A6.0.3#optional!builtin<compat/typescript>::version=6.0.3&hash=5786d5"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 10/22b67a18dafedf9b1468b64ca20d9aa02ea61d449b65413d8aa6552aeb63f52ef369e86beb25b6b4c91a803d9726ee5c196f391a9b64201263263410a4223ee6
   languageName: node
   linkType: hard
 
