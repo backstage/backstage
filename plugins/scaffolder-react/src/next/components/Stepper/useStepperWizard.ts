@@ -37,7 +37,7 @@ import {
   createAsyncValidators,
   type FormValidation,
 } from './createAsyncValidators';
-import { getValidationData, hasErrors } from './utils';
+import { hasErrors } from './utils';
 
 /** The custom field validators registered for the template's extensions. */
 export type StepperWizardValidators = Record<
@@ -52,7 +52,6 @@ export type StepperWizardValidators = Record<
  */
 export type CompletedStep = {
   step: ParsedTemplateSchema;
-  inputs: JsonObject;
   formData: JsonObject;
   validators: StepperWizardValidators;
 };
@@ -87,6 +86,7 @@ export type StepperWizard = {
   currentVisits: Map<number, ParsedTemplateSchema>;
   isValidating: boolean;
   validationInterrupted: boolean;
+  reviewRevalidated: boolean;
   isCreating: boolean;
   errors: FormValidation | undefined;
   isStepLabelAllowed: (step: number) => boolean;
@@ -121,10 +121,6 @@ export const useStepperWizard = (
     transformErrors,
   } = options;
 
-  const customValidatorNames = useMemo(
-    () => new Set(Object.keys(validators).filter(name => validators[name])),
-    [validators],
-  );
   // Index into `steps` rather than `visibleSteps`, so that the active step
   // stays the same when other steps are shown or hidden.
   const [navigation, setNavigation] = useState<Navigation>({
@@ -138,6 +134,7 @@ export const useStepperWizard = (
   }, []);
   const [isValidating, setIsValidating] = useState(false);
   const [validationInterrupted, setValidationInterrupted] = useState(false);
+  const [checkedReview, setCheckedReview] = useState<JsonObject>();
   const returnToPending = useRef(false);
   const validationAttempt = useRef(0);
   const [stepsState, setStepsState] =
@@ -346,15 +343,7 @@ export const useStepperWizard = (
         if (!currentVisits.has(index)) {
           return { completed, index, errors: undefined };
         }
-        const inputs = getValidationData(
-          step.mergedSchema,
-          data,
-          validator,
-          customValidatorNames,
-        );
-        // A field projection can cache custom validation, but cannot capture
-        // every JSON Schema constraint on the full context. Check the schema
-        // whenever that context changes, without requiring another page visit.
+        // Schema constraints can depend on values from other pages.
         let errorsForStep = validator.validateFormData(
           data,
           step.schema,
@@ -366,7 +355,7 @@ export const useStepperWizard = (
           !hasErrors(errorsForStep) &&
           (!previous ||
             previous.validators !== validators ||
-            !isEqual(previous.inputs, inputs))
+            !isEqual(previous.formData, data))
         ) {
           errorsForStep = await createAsyncValidators(
             step.mergedSchema,
@@ -381,7 +370,6 @@ export const useStepperWizard = (
         }
         completed.set(index, {
           step: cloneDeep(step),
-          inputs,
           formData: data,
           validators,
         });
@@ -391,7 +379,6 @@ export const useStepperWizard = (
     [
       steps,
       currentVisits,
-      customValidatorNames,
       validators,
       validator,
       apiHolder,
@@ -434,12 +421,6 @@ export const useStepperWizard = (
           displayedStepIndex,
           {
             step: cloneDeep(steps[displayedStepIndex]),
-            inputs: getValidationData(
-              steps[displayedStepIndex].mergedSchema,
-              data,
-              validator,
-              customValidatorNames,
-            ),
             formData: data,
             validators,
           },
@@ -491,9 +472,7 @@ export const useStepperWizard = (
       steps,
       stepsState,
       applicableValidations,
-      customValidatorNames,
       validators,
-      validator,
       continueToReview,
     ],
   );
@@ -526,6 +505,7 @@ export const useStepperWizard = (
           return;
         }
         if (result) {
+          if (result.index === steps.length) setCheckedReview(stepsState);
           returnToPending.current = result.index < steps.length;
           setErrors(result.errors);
           setNavigation(current => ({
@@ -597,6 +577,7 @@ export const useStepperWizard = (
     currentVisits,
     isValidating,
     validationInterrupted,
+    reviewRevalidated: checkedReview === stepsState && pendingStepIndex === -1,
     isCreating,
     errors,
     isStepLabelAllowed,

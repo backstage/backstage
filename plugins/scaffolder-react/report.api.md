@@ -259,6 +259,7 @@ export const scaffolderReactTranslationRef: TranslationRef<
     readonly 'stepper.nextButtonText': 'Next';
     readonly 'stepper.createButtonText': 'Create';
     readonly 'stepper.reviewButtonText': 'Review';
+    readonly 'stepper.reviewRevalidated': 'Validation passed. Review the parameters and confirm again to continue.';
     readonly 'stepper.stepIndexLabel': 'Step {{index, number}}';
     readonly 'stepper.stepLabel': '{{title}}, Step {{index, number}}';
     readonly 'stepper.validationInterrupted': 'The form changed during validation. Check your changes and continue again.';

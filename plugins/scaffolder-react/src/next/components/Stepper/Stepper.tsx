@@ -162,6 +162,7 @@ export const Stepper = (stepperProps: StepperProps) => {
     activeStep,
     isValidating,
     validationInterrupted,
+    reviewRevalidated,
     isCreating,
     errors,
     isStepLabelAllowed,
@@ -223,6 +224,9 @@ export const Stepper = (stepperProps: StepperProps) => {
       {validationInterrupted && (
         <Alert severity="info">{t('stepper.validationInterrupted')}</Alert>
       )}
+      {reviewRevalidated && activeStep === visibleSteps.length && (
+        <Alert severity="info">{t('stepper.reviewRevalidated')}</Alert>
+      )}
       <MuiStepper
         activeStep={activeStep}
         alternativeLabel
@@ -233,10 +237,15 @@ export const Stepper = (stepperProps: StepperProps) => {
           return (
             <MuiStep key={steps.indexOf(step)}>
               <MuiStepButton
-                aria-label={t('stepper.stepLabel', {
-                  title: step.title,
-                  index: index + 1,
-                })}
+                aria-label={
+                  !step.title ||
+                  step.title === `Step ${steps.indexOf(step) + 1}`
+                    ? t('stepper.stepIndexLabel', { index: index + 1 })
+                    : t('stepper.stepLabel', {
+                        title: step.title,
+                        index: index + 1,
+                      })
+                }
                 disabled={!isStepLabelAllowed(index)}
                 onClick={() => {
                   if (isStepLabelAllowed(index)) {

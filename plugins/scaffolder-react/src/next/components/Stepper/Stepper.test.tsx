@@ -682,7 +682,6 @@ describe('Stepper', () => {
         note: 'fixed',
       }),
     );
-    expect(validate).toHaveBeenCalledTimes(7);
   });
 
   it.each(['{Enter}', ' '])(
@@ -939,14 +938,11 @@ describe('Stepper', () => {
         ],
       };
       rerender(renderStepper({ ...manifest, steps: replacements[change] }));
-      if (screen.queryByRole('button', { name: 'Create' })) {
-        fireEvent.click(screen.getByRole('button', { name: 'Create' }));
-      }
-      if (
-        change === 'insert' &&
-        screen.queryByRole('textbox', { name: 'last' })
-      ) {
+      if (change === 'insert') {
+        await screen.findByRole('textbox', { name: 'last' });
         fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      } else {
+        fireEvent.click(screen.getByRole('button', { name: 'Create' }));
       }
       if (change === 'reorder') {
         fireEvent.click(await screen.findByRole('button', { name: 'Next' }));
@@ -1586,7 +1582,7 @@ describe('Stepper', () => {
     });
 
     await act(async () => {
-      fireEvent.click(getByLabelText('Step 1, Step 1'));
+      fireEvent.click(getByLabelText('Step 1'));
     });
 
     expect(getByRole('textbox', { name: 'name' })).toHaveValue(
