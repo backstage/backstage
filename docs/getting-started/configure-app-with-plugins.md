@@ -89,6 +89,26 @@ export default app.createRoot();
 
 For more details and alternative installation methods, see [Installing Plugins](../frontend-system/building-apps/05-installing-plugins.md).
 
+## Removing existing plugins from your app
+
+Frontend and backend plugins are removed separately. Many plugins provide both packages, so remove both sides if you no longer use the plugin.
+
+To remove a frontend plugin, first remove any manual registration or other references in your app code. If the plugin was only installed through [feature discovery](../frontend-system/building-apps/05-installing-plugins.md#feature-discovery), removing the package is enough:
+
+```bash title="From your Backstage root directory"
+yarn --cwd packages/app remove @backstage-community/plugin-tech-radar
+```
+
+Remove any configuration for the plugin, such as entries under `app.extensions` in `app-config.yaml`. See [Removing a plugin](../frontend-system/building-apps/05-installing-plugins.md#removing-a-plugin) for more details.
+
+To remove a backend plugin, remove its `backend.add(...)` registration and any modules that target it from `packages/backend/src/index.ts`, then remove the package:
+
+```bash title="From your Backstage root directory"
+yarn --cwd packages/backend remove <backend-plugin-package>
+```
+
+Replace `<backend-plugin-package>` with the name of the backend package, for example `@backstage/plugin-kubernetes-backend`. Remove any configuration that only the removed plugin or module used. Removing a backend plugin does not remove data that it already stored, such as database tables or entities in the Software Catalog. See [Removing plugins and modules](../backend-system/building-backends/01-index.md#removing-plugins-and-modules) for more details.
+
 ## How the sidebar works
 
 In the new frontend system, plugins that provide a page automatically register a navigation item in the sidebar. You don't need to manually add `SidebarItem` elements for most plugins.

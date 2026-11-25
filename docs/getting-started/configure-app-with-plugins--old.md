@@ -67,7 +67,23 @@ Adding plugins to your Backstage app is generally a simple process, and ideally 
    others may be intended to annotate or support specific software catalog entities
    and would be added elsewhere in the app.
 
-### Adding a plugin page to the Sidebar
+## Removing existing plugins from your app
+
+To remove a frontend plugin, first remove the plugin's routes, entity page content, sidebar entries, imports, and other references in your app code. Then remove the package from your app package:
+
+```bash title="From your Backstage root directory"
+yarn --cwd packages/app remove @backstage-community/plugin-tech-radar
+```
+
+To remove a backend plugin, remove its `backend.add(...)` registration and any modules that target it from `packages/backend/src/index.ts`, then remove the package from your backend package:
+
+```bash title="From your Backstage root directory"
+yarn --cwd packages/backend remove <backend-plugin-package>
+```
+
+Replace `<backend-plugin-package>` with the name of the backend package. Remove any configuration that only the removed plugin or module used. Removing a backend plugin does not remove data that it already stored, such as database tables or entities in the Software Catalog. See [Removing plugins and modules](../backend-system/building-backends/01-index.md#removing-plugins-and-modules) for more details.
+
+## Adding a plugin page to the Sidebar
 
 In a standard Backstage app created with
 [@backstage/create-app](./index.md), the sidebar is managed inside

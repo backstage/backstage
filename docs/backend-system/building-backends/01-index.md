@@ -39,6 +39,25 @@ There will be a couple more plugins and modules in the initial setup, but the ov
 
 What we're doing in this file is creating a new backend using `createBackend`, and then installing a collection of different plugins, modules, and services that we want to be part of that backend. Plugins are standalone features, modules augment existing plugins or modules, while services can be used to override behavior for deeper customizations. Each module can only target a single plugin, and that plugin must also be present in the same backend. Finally, we start up the backend by calling the `start` method.
 
+## Removing plugins and modules
+
+1. Remove the plugin registration from your backend package, typically in `packages/backend/src/index.ts`. Remove any modules that target the plugin as well, since a module cannot be installed without its target plugin:
+
+   ```diff
+   -backend.add(import('@backstage/plugin-scaffolder-backend'));
+   -backend.add(import('@backstage/plugin-scaffolder-backend-module-github'));
+   ```
+
+1. Remove the plugin and module packages from your backend package:
+
+   ```bash title="From your Backstage root directory"
+   yarn --cwd packages/backend remove @backstage/plugin-scaffolder-backend @backstage/plugin-scaffolder-backend-module-github
+   ```
+
+1. Remove any configuration that only the removed plugin or module used. If your installation is split into multiple backend packages, repeat these steps for each backend package where the plugin is installed.
+
+Removing a plugin does not remove data that it already stored, such as database tables or entities that were ingested into the Software Catalog. Clean up that data separately if it is no longer needed.
+
 ## Customization
 
 Apart from installing existing plugins and modules in the backend, there are a couple of different ways in which you can customize your backend installation.
