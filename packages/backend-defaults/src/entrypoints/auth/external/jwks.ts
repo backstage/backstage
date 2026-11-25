@@ -44,7 +44,11 @@ function readSubjectPatternsFromConfig(options: Config): RegExp[] | undefined {
 
   return rawPatterns.map(pattern => {
     try {
-      return new RegExp(`^(?:${pattern})$`);
+      // Compile the pattern on its own before wrapping it. Otherwise an
+      // unbalanced pattern such as `a)|(?:b` would close the wrapping group
+      // early and produce a valid but only partially anchored expression.
+      const compiled = new RegExp(pattern);
+      return new RegExp(`^(?:${compiled.source})$`);
     } catch (error) {
       throw new Error(
         `Illegal subjectPattern '${pattern}', must be a valid regular expression: ${error}`,

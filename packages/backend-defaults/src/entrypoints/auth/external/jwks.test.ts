@@ -255,6 +255,16 @@ describe('JWKSHandler', () => {
           }),
         }),
       ).toThrow(/Illegal subjectPattern 'project_path:\(unclosed'/);
+      // Would be a valid but only partially anchored expression if wrapped
+      // without validating it first: ^(?:trusted)|(?:other)$
+      expect(() =>
+        jwksTokenHandler.initialize({
+          options: new ConfigReader({
+            url: `${mockBaseUrl}/.well-known/jwks.json`,
+            subjectPattern: 'trusted)|(?:other',
+          }),
+        }),
+      ).toThrow(/Illegal subjectPattern 'trusted\)\|\(\?:other'/);
       expect(() =>
         jwksTokenHandler.initialize({
           options: new ConfigReader({
