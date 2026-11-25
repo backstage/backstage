@@ -170,6 +170,55 @@ describe('EntityLayout', () => {
     );
   });
 
+  it('does not repeat the namespace when the presentation title is the short ref', async () => {
+    const mockPresentationApi: EntityPresentationApi = {
+      forEntity: () => {
+        const snapshot: EntityRefPresentationSnapshot = {
+          entityRef: 'mykind:team-a/my-service',
+          primaryTitle: 'team-a/my-service',
+        };
+        return { snapshot, promise: Promise.resolve(snapshot) };
+      },
+    };
+    const namespacedEntity = {
+      kind: 'MyKind',
+      metadata: {
+        name: 'my-service',
+        namespace: 'team-a',
+      },
+    } as Entity;
+    const apisWithPresentation = TestApiRegistry.from(
+      [catalogApiRef, catalogApiMock()],
+      [alertApiRef, mockApis.alert()],
+      [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+      [permissionApiRef, mockApis.permission()],
+      [entityPresentationApiRef, mockPresentationApi],
+    );
+
+    await renderInTestApp(
+      <ApiProvider apis={apisWithPresentation}>
+        <EntityProvider entity={namespacedEntity}>
+          <EntityLayout>
+            <EntityLayout.Route path="/" title="tabbed-test-title">
+              <div>tabbed-test-content</div>
+            </EntityLayout.Route>
+          </EntityLayout>
+        </EntityProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
+        },
+      },
+    );
+
+    await waitFor(() =>
+      expect(document.title).toContain('team-a/my-service'),
+    );
+    expect(document.title).not.toContain('team-a/my-service in team-a');
+  });
+
   it('renders default error message when entity is not found', async () => {
     await renderInTestApp(
       <ApiProvider apis={apis}>

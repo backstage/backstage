@@ -122,10 +122,16 @@ function headerProps(
         .primaryTitle
     : paramName ?? '';
 
+  // The presentation API's primaryTitle falls back to the short ref (e.g.
+  // 'team-a/my-service') when the entity has no title or display name, which
+  // already includes the namespace, so only append it when missing.
+  const showNamespace =
+    namespace &&
+    namespace !== DEFAULT_NAMESPACE &&
+    !name.startsWith(`${namespace}/`);
+
   return {
-    headerTitle: `${name}${
-      namespace && namespace !== DEFAULT_NAMESPACE ? ` in ${namespace}` : ''
-    }`,
+    headerTitle: `${name}${showNamespace ? ` in ${namespace}` : ''}`,
     headerType: (() => {
       let t = kind.toLowerCase();
       if (entity && entity.spec && 'type' in entity.spec) {
