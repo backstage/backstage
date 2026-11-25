@@ -1,5 +1,15 @@
 # @backstage/plugin-devtools
 
+## 0.1.46-next.0
+
+### Patch Changes
+
+- 4f96aa9: Migrated the scheduled tasks page in DevTools from Material UI to Backstage UI. You can still type a plugin ID that isn't in the configured list. Permission-denied indicators are keyboard accessible, and empty plugin results are exposed as status updates.
+- 578799a: Migrate ExternalDependenciesContent to use the Backstage UI (BUI) Table component
+- Updated dependencies
+  - @backstage/core-components@0.18.17-next.0
+  - @backstage/core-compat-api@0.6.1-next.0
+
 ## 0.1.45
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @backstage/cli-module-maintenance
 
+## 0.1.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.7-next.0
+
 ## 0.1.7
 
 ### Patch Changes

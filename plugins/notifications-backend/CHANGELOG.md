@@ -1,5 +1,16 @@
 # @backstage/plugin-notifications-backend
 
+## 0.6.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.7.5-next.0
+  - @backstage/backend-plugin-api@1.12.1-next.0
+  - @backstage/plugin-catalog-node@3.0.1-next.0
+  - @backstage/plugin-notifications-node@0.2.33-next.0
+  - @backstage/plugin-signals-node@0.2.8-next.0
+
 ## 0.6.11
 
 ### Patch Changes

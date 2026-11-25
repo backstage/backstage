@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-react
 
+## 3.0.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-test-utils@1.0.1-next.0
+  - @backstage/core-components@0.18.17-next.0
+  - @backstage/plugin-catalog-react@4.0.1-next.0
+  - @backstage/plugin-scaffolder-common@2.4.1-next.0
+
 ## 3.0.0
 
 ### Minor Changes

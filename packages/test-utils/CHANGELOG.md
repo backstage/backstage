@@ -1,5 +1,13 @@
 # @backstage/test-utils
 
+## 1.8.1-next.0
+
+### Patch Changes
+
+- e2378df: Updated dependency `i18next` to `^26.0.0`.
+- Updated dependencies
+  - @backstage/core-app-api@1.20.8-next.0
+
 ## 1.8.0
 
 ### Minor Changes

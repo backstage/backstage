@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-backend-module-unprocessed
 
+## 0.6.19-next.0
+
+### Patch Changes
+
+- a8a15b3: Moved setup, configuration, and usage documentation to backstage.io and trimmed package README.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.1-next.0
+  - @backstage/plugin-auth-node@0.7.9-next.0
+  - @backstage/plugin-catalog-node@3.0.1-next.0
+
 ## 0.6.18
 
 ### Patch Changes

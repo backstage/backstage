@@ -1,5 +1,24 @@
 # @backstage/cli-module-build
 
+## 0.2.0-next.0
+
+### Minor Changes
+
+- a6a72ab: **BREAKING**: Updated the frontend bundler to Rspack 2. The `LEGACY_WEBPACK_BUILD` fallback is unchanged. Production bundles are smaller, as Rspack 2 removes more unused code by default.
+
+  Production CSS is now minified for the browsers in the app's `browserslist` configuration, rather than for all browsers that fully support ES6, which usually means fewer vendor prefixes and fallbacks. Production builds now always use the `production` environment of that configuration, or the one that `BROWSERSLIST_ENV` names, instead of picking it by `NODE_ENV`. Apps without a `browserslist` configuration are unaffected.
+
+  The new Rspack dev server dropped the `path` and `logLevel` options of the `proxy` configuration in `package.json`. Rename `path` to `context`, and remove `logLevel`, which no longer has an effect. Both are still accepted for now and log a warning.
+
+  The `EXPERIMENTAL_LAZY_COMPILATION` environment variable now enables lazy compilation in the frontend dev server. With Rspack it had no effect before. It still has no effect on module federation remotes.
+
+  The error overlay of the frontend dev server is now rendered in an element with the ID `rspack-dev-server-client-overlay` instead of `webpack-dev-server-client-overlay`. Update any end-to-end tests that look for the overlay by its ID.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.7-next.0
+
 ## 0.1.10
 
 ### Patch Changes

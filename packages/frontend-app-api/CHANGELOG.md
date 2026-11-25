@@ -1,5 +1,14 @@
 # @backstage/frontend-app-api
 
+## 1.0.1-next.0
+
+### Patch Changes
+
+- fcca1d0: Fixed sub-pages with an empty path not rendering for paths below them, such as a detail route inside an index tab. The catch-all route that every page gets is now ranked after the page's own sub-pages.
+- Updated dependencies
+  - @backstage/core-app-api@1.20.8-next.0
+  - @backstage/frontend-defaults@0.5.9-next.0
+
 ## 1.0.0
 
 ### Major Changes

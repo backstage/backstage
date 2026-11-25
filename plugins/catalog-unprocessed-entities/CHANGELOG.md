@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-unprocessed-entities
 
+## 0.2.38-next.0
+
+### Patch Changes
+
+- a8a15b3: Moved setup, configuration, and usage documentation to backstage.io and trimmed package README.
+- Updated dependencies
+  - @backstage/core-components@0.18.17-next.0
+  - @backstage/core-compat-api@0.6.1-next.0
+
 ## 0.2.37
 
 ### Patch Changes

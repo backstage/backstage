@@ -1,5 +1,22 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.21.16-next.0
+
+### Patch Changes
+
+- c60748e: Resource types that return a 404 from the Kubernetes API (for example, custom resource definitions not installed on a cluster) are now silently skipped instead of surfacing as errors in the UI. Other error codes (401, 403, 5xx) continue to be reported normally.
+- Updated dependencies
+  - @backstage/plugin-kubernetes-node@0.4.11-next.0
+  - @backstage/backend-plugin-api@1.12.1-next.0
+  - @backstage/integration-aws-node@0.2.5-next.0
+  - @backstage/plugin-catalog-node@3.0.1-next.0
+
+## 0.21.15
+
+### Patch Changes
+
+- Bumped version to account for a patch release.
+
 ## 0.21.13
 
 ### Patch Changes

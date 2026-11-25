@@ -1,5 +1,19 @@
 # @backstage/plugin-techdocs-backend-module-zensical
 
+## 0.1.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.1-next.0
+  - @backstage/plugin-techdocs-node@2.3.1-next.0
+
+## 0.1.2
+
+### Patch Changes
+
+- Bumped version to account for a patch release.
+
 ## 0.1.0
 
 ### Minor Changes

@@ -242,5 +242,28 @@
     "@backstage/plugin-user-settings-backend": "0.4.9",
     "@backstage/plugin-user-settings-common": "0.1.0"
   },
-  "changesets": []
+  "changesets": [
+    "aws-alb-signer-required",
+    "backend-shutdown-signals",
+    "cli-node-toggled-commands",
+    "cli-toggled-commands",
+    "connection-base-url-schema",
+    "connections-expansion",
+    "create-app-1795605546",
+    "devtools-scheduled-tasks-content-bui",
+    "empty-path-subpage-routes",
+    "gitlab-mr-squash-option",
+    "grafana-connection",
+    "kubernetes-skip-not-found-resources",
+    "plugin-app-default-icons-warning",
+    "quiet-pens-verify",
+    "renovate-85e6ae6",
+    "renovate-da25f78",
+    "repo-tools-openapi-skip-prettier",
+    "rspack-2-upgrade",
+    "scaffolder-eventstream-disconnect-leak",
+    "tired-buses-tan",
+    "unprocessed-entities-docs",
+    "yarn-module-regular-yarnpkg-deps"
+  ]
 }
