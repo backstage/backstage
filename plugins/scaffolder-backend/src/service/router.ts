@@ -915,6 +915,16 @@ export async function createRouter(
     async (req, res) => {
       const { taskId } = req.params;
 
+      // The client may disconnect while we are still authorizing the request.
+      // Track it from the start, since a 'close' listener registered after the
+      // awaits below would never fire and the subscription would leak.
+      let clientClosed = false;
+      req.on('close', () => {
+        clientClosed = true;
+      });
+      const isClientGone = () =>
+        clientClosed || req.destroyed || res.destroyed || res.writableEnded;
+
       const auditorEvent = await auditor?.createEvent({
         eventId: 'task',
         request: req,
@@ -939,6 +949,14 @@ export async function createRouter(
         const after =
           req.query.after !== undefined ? Number(req.query.after) : undefined;
 
+        if (isClientGone()) {
+          logger.debug(
+            `Event stream observing taskId '${taskId}' closed before opening`,
+          );
+          await auditorEvent?.success();
+          return;
+        }
+
         logger.debug(`Event stream observing taskId '${taskId}' opened`);
 
         // Mandatory headers and http status to keep connection open
@@ -958,6 +976,10 @@ export async function createRouter(
             res.end();
           },
           next: ({ events }) => {
+            if (isClientGone()) {
+              subscription.unsubscribe();
+              return;
+            }
             let shouldUnsubscribe = false;
             for (const event of events) {
               res.write(
