@@ -93,7 +93,10 @@ describe('<WelcomeTitle>', () => {
     };
     const apis = TestApiRegistry.from(
       [entityPresentationApiRef, mockPresentationApi],
-      [identityApiRef, mockApis.identity({ userEntityRef: 'user:default/ada' })],
+      [
+        identityApiRef,
+        mockApis.identity({ userEntityRef: 'user:default/ada' }),
+      ],
     );
 
     const { getByText } = await renderInTestApp(

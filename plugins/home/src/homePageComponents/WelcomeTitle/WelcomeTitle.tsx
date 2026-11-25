@@ -64,10 +64,7 @@ export const WelcomeTitle = ({
             {profile?.displayName ? (
               profile.displayName
             ) : (
-              <EntityDisplayName
-                entityRef={identity.userEntityRef}
-                hideIcon
-              />
+              <EntityDisplayName entityRef={identity.userEntityRef} hideIcon />
             )}
           </>
         ) : null}
