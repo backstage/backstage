@@ -164,7 +164,7 @@ export const catalogTranslationRef = createTranslationRef({
     },
     entityProcessingErrorsDescription: 'The error below originates from',
     entityRelationWarningDescription:
-      "This entity has relations to other entities, which can't be found in the catalog.\n Entities not found are: ",
+      "This entity has relations to other entities, which can't be found in the catalog or which you don't have access to: {{summary}}",
     hasComponentsCard: {
       title: 'Has components',
       emptyMessage: 'No component is part of this system.',

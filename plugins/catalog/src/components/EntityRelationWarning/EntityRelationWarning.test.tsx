@@ -53,11 +53,19 @@ describe('<EntityRelationWarning />', () => {
           type: 'dependsOn',
           targetRef: 'component:default/existing',
         },
+        {
+          type: 'dependsOn',
+          targetRef: 'component:default/hidden',
+        },
+        {
+          type: 'providesApi',
+          targetRef: 'api:default/secret-api',
+        },
       ],
     };
 
     catalogApi.getEntitiesByRefs.mockResolvedValue({
-      items: [undefined, entityExisting],
+      items: [undefined, entityExisting, undefined, undefined],
     });
     await renderInTestApp(
       <ApiProvider apis={apis}>
@@ -68,17 +76,11 @@ describe('<EntityRelationWarning />', () => {
     );
 
     expect(
-      screen.getByText(content =>
-        content.includes(
-          "This entity has relations to other entities, which can't be found in the catalog.",
-        ),
+      await screen.findByText(
+        "This entity has relations to other entities, which can't be found in the catalog or which you don't have access to: component: 2, api: 1",
       ),
     ).toBeInTheDocument();
-    expect(
-      screen.getByText(content =>
-        content.includes('Entities not found are: component:default/missing'),
-      ),
-    ).toBeInTheDocument();
+    expect(screen.queryByText(/missing|hidden|secret-api/)).toBeNull();
   });
 
   it("doesn't render EntityRelationWarning if the entity has no missing relations", async () => {
@@ -109,9 +111,7 @@ describe('<EntityRelationWarning />', () => {
 
     expect(
       screen.queryByText(content =>
-        content.includes(
-          "This entity has relations to other entities, which can't be found in the catalog.",
-        ),
+        content.includes('This entity has relations to other entities'),
       ),
     ).not.toBeInTheDocument();
   });
