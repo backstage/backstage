@@ -367,6 +367,7 @@ export default {
             'features/software-templates/input-examples',
             'features/software-templates/ui-options-examples',
             'features/software-templates/builtin-actions',
+            'features/software-templates/sentry',
             'features/software-templates/writing-custom-actions',
             'features/software-templates/writing-tests-for-actions',
             'features/software-templates/writing-custom-field-extensions',
