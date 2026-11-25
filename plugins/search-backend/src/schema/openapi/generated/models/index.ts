@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-export * from '../models/ErrorError.model';
-export * from '../models/ErrorRequest.model';
-export * from '../models/ErrorResponse.model';
-export * from '../models/ModelError.model';
-export * from '../models/Query200Response.model';
-export * from '../models/Query200ResponseResultsInner.model';
-export * from '../models/Query200ResponseResultsInnerDocument.model';
+
+export * from '../models/ErrorError.model'
+export * from '../models/ErrorRequest.model'
+export * from '../models/ErrorResponse.model'
+export * from '../models/ModelError.model'
+export * from '../models/Query200Response.model'
+export * from '../models/Query200ResponseResultsInner.model'
+export * from '../models/Query200ResponseResultsInnerDocument.model'

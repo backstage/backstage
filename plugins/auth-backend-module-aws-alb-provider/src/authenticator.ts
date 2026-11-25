@@ -36,7 +36,7 @@ export const awsAlbAuthenticator = createProxyAuthenticator({
   },
   initialize({ config }) {
     const issuer = config.getString('issuer');
-    const signer = config.getOptionalString('signer');
+    const signer = config.getString('signer');
     const region = config.getString('region');
     const keyCache = new NodeCache({ stdTTL: 3600 });
     const getKey = provisionKeyCache(region, keyCache);
@@ -65,7 +65,7 @@ export const awsAlbAuthenticator = createProxyAuthenticator({
 
       if (claims?.iss !== issuer) {
         throw new AuthenticationError('Issuer mismatch on JWT token');
-      } else if (signer && header?.signer !== signer) {
+      } else if (header?.signer !== signer) {
         throw new AuthenticationError('Signer mismatch on JWT token');
       }
 

@@ -54,14 +54,13 @@ Team: @backstage/community-plugins-maintainers
 
 Scope: Tooling and Community Repo Maintainers for the Backstage [Community Plugins repository](https://github.com/backstage/community-plugins)
 
-| Name                 | Organization  | GitHub                                          | Discord      |
-| -------------------- | ------------- | ----------------------------------------------- | ------------ |
-| André Wanlin         | Spotify       | [awanlin](https://github.com/awanlin)           | `ahhhndre`   |
-| Bethany Griggs       | Red Hat       | [BethGriggs](https://github.com/BethGriggs)     | `bethgriggs` |
-| Hope Hadfield        | Red Hat       | [hopehadfield](https://github.com/hopehadfield) | `hh0p3`      |
-| Kashish Mittal       | Red Hat       | [04kash](https://github.com/04kash)             | `kashh._.`   |
-| Peter Macdonald      | VodafoneZiggo | [Parsifal-M](https://github.com/Parsifal-M)     | `parsifal`   |
-| Vincenzo Scamporlino | Spotify       | [vinzscam](https://github.com/vinzscam)         | `vinzscam`   |
+| Name                 | Organization  | GitHub                                          | Discord    |
+| -------------------- | ------------- | ----------------------------------------------- | ---------- |
+| André Wanlin         | Spotify       | [awanlin](https://github.com/awanlin)           | `ahhhndre` |
+| Hope Hadfield        | Red Hat       | [hopehadfield](https://github.com/hopehadfield) | `hh0p3`    |
+| Kashish Mittal       | Red Hat       | [04kash](https://github.com/04kash)             | `kashh._.` |
+| Peter Macdonald      | VodafoneZiggo | [Parsifal-M](https://github.com/Parsifal-M)     | `parsifal` |
+| Vincenzo Scamporlino | Spotify       | [vinzscam](https://github.com/vinzscam)         | `vinzscam` |
 
 ### Design System
 
@@ -294,7 +293,7 @@ Scope: The Scaffolder frontend and backend plugins, and related tooling.
 | ------------------------------ | ------------------------- | ----------------------------------------------------- | ------------------------------ |
 | Adam Harvey                    | Okta                      | [adamdmharvey](https://github.com/adamdmharvey)       | `adamharvey_`                  |
 | Alex Crome                     |                           | [afscrome](https://github.com/afscrome)               | `afscrome`                     |
-| Andrew Thauer                  | Wealthsimple              | [andrewthauer](https://github.com/andrewthauer)       | `andrewthauer#3060`            |
+| Andrew Thauer                  |                           | [andrewthauer](https://github.com/andrewthauer)       | `andrewthauer#3060`            |
 | Brian Fletcher                 | Roadie.io                 | [punkle](https://github.com/punkle)                   | `Brian Fletcher#7051`          |
 | Carlos Esteban Lopez Jaramillo | VMWare                    | [luchillo17](https://github.com/luchillo17)           | `luchillo17#8777`              |
 | David Tuite                    | Roadie.io                 | [dtuite](https://github.com/dtuite)                   | `David Tuite (roadie.io)#1010` |
@@ -332,7 +331,8 @@ Scope: The Scaffolder frontend and backend plugins, and related tooling.
 
 ## Emeritus Project Area Maintainers
 
-| Maintainer    | Organization   | GitHub                                          | Discord             |
-| ------------- | -------------- | ----------------------------------------------- | ------------------- |
-| Paul Cowan    | frontendrescue | [dagda1](https://github.com/dagda1)             | `dagda1`            |
-| Jamie Klassen | VMware         | [jamieklassen](https://github.com/jamieklassen) | `jamieklassen#3047` |
+| Maintainer     | Organization   | GitHub                                          | Discord             |
+| -------------- | -------------- | ----------------------------------------------- | ------------------- |
+| Bethany Griggs | Red Hat        | [BethGriggs](https://github.com/BethGriggs)     | `bethgriggs`        |
+| Jamie Klassen  | VMware         | [jamieklassen](https://github.com/jamieklassen) | `jamieklassen#3047` |
+| Paul Cowan     | frontendrescue | [dagda1](https://github.com/dagda1)             | `dagda1`            |

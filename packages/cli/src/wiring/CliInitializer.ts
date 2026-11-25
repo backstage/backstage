@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { OpaqueCliModule } from '@internal/cli';
+import { OpaqueCliModule, unwrapCliCommand } from '@internal/cli';
 import { runCli } from '@backstage/cli-node';
 import type { CliModule } from '@backstage/cli-node';
 import { version } from './version';
@@ -29,9 +29,13 @@ interface TaggedFeature {
   feature: CliModule;
   /**
    * Whether this module was sourced from an array (e.g. cli-defaults).
-   * Array-sourced modules are silently skipped when any of their commands
-   * overlap with an individually-added module, allowing explicit module
+   * Array-sourced modules silently lose the non-toggled commands that overlap
+   * with an individually-added module, allowing explicit module
    * additions to take precedence without causing conflicts.
+   *
+   * Toggleable commands, i.e. those with `if`, do not count as
+   * overlapping, since they are only active for some packages and rely on
+   * the array-sourced command as the fallback.
    */
   fromArray: boolean;
 }
@@ -65,13 +69,21 @@ export class CliInitializer {
     const resolvedGroups = await Promise.all(this.#uninitiazedFeatures);
     const allFeatures = resolvedGroups.flat();
 
-    // Collect command paths from individually-added modules
+    // Collect command paths from individually-added modules. Toggleable
+    // commands are excluded so that array-sourced modules remain available
+    // as the fallback for packages where the toggled command is not enabled.
     const individualPaths = new Set<string>();
+    const individualPackages = new Set<string>();
     for (const { feature, fromArray } of allFeatures) {
       if (!fromArray && OpaqueCliModule.isType(feature)) {
-        const cmds = await OpaqueCliModule.toInternal(feature).commands;
-        for (const cmd of cmds) {
-          individualPaths.add(cmd.path.join(' '));
+        const internal = OpaqueCliModule.toInternal(feature);
+        individualPackages.add(internal.packageName);
+        const cmds = await internal.commands;
+        for (const registration of cmds) {
+          const { command, if: condition } = unwrapCliCommand(registration);
+          if (!condition) {
+            individualPaths.add(command.path.join(' '));
+          }
         }
       }
     }
@@ -83,8 +95,30 @@ export class CliInitializer {
       }
 
       if (fromArray) {
-        const cmds = await OpaqueCliModule.toInternal(feature).commands;
-        if (cmds.some(cmd => individualPaths.has(cmd.path.join(' ')))) {
+        const { packageName, commands } = OpaqueCliModule.toInternal(feature);
+        // A module that is also added individually would otherwise register
+        // its commands twice.
+        if (individualPackages.has(packageName)) {
+          continue;
+        }
+        // Toggled commands are always kept, since they are only active for
+        // some packages and can coexist with an individual fallback.
+        const kept = (await commands).filter(registration => {
+          const { command, if: condition } = unwrapCliCommand(registration);
+          return condition || !individualPaths.has(command.path.join(' '));
+        });
+        if (kept.length === 0) {
+          continue;
+        }
+        if (kept.length < (await commands).length) {
+          // Only drop the overlapping commands, so that other commands of the
+          // module, such as fallbacks for toggled commands, stay available.
+          modules.push(
+            OpaqueCliModule.createInstance('v1', {
+              packageName,
+              commands: Promise.resolve(kept),
+            }),
+          );
           continue;
         }
       }

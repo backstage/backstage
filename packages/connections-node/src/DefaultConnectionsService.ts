@@ -19,16 +19,15 @@ import {
 } from '@backstage/backend-plugin-api';
 import type {
   Connection,
-  ConnectionLookupStrategy,
   ConnectionsService,
   ConnectionTypeDefinition,
+  ConnectionLookupIdentity,
   ConnectionType,
   LookupConnectionType,
 } from '@backstage/connections';
 import type { ConfiguredConnection } from '@backstage/connections/config';
 import { buildConnectionsFromConfig } from '@backstage/connections/config';
-import { getConnectionType } from './lookup';
-import { lookupStrategies } from './lookupStrategies';
+import { getConnectionType, lookupIdentityFromQuery } from './lookup';
 import { NotAllowedError, NotFoundError } from '@backstage/errors';
 
 type ConnectionQuery<TType extends ConnectionType> =
@@ -37,25 +36,6 @@ type ConnectionQuery<TType extends ConnectionType> =
   >
     ? TDefinition['query']
     : never;
-
-function getLookupStrategy<K extends ConnectionLookupStrategy>(
-  name: K,
-): (typeof lookupStrategies)[K] {
-  return lookupStrategies[name];
-}
-
-// The identity field name is only known at runtime, so the typed connection
-// object cannot be indexed directly; this helper contains the erased read.
-function connectionIdentityOf(
-  strategy: { identityField?: string },
-  connection: object,
-): string | undefined {
-  if (!strategy.identityField) {
-    return undefined;
-  }
-  const value = (connection as Record<string, unknown>)[strategy.identityField];
-  return typeof value === 'string' ? value : undefined;
-}
 
 class PluginConnectionsService implements ConnectionsService {
   private readonly logger: LoggerService;
@@ -99,24 +79,28 @@ class PluginConnectionsService implements ConnectionsService {
   }): Promise<
     Connection<TType, TAuthMethod> | Omit<Connection<TType>, 'auth'> | undefined
   > {
-    const connectionType = getConnectionType(type);
-    const strategy = getLookupStrategy(connectionType.lookupStrategy);
-    const identity = strategy.identityFromQuery(query);
-
-    this.logger.debug(
-      `Finding connection of type "${type}"${
-        identity ? ` matching ${strategy.identityField} "${identity}"` : ''
-      }`,
-    );
-
-    let connection: ConfiguredConnection | undefined;
-    if (identity !== undefined) {
-      connection = this.connections.find(
-        c => c.type === type && connectionIdentityOf(strategy, c) === identity,
-      );
-    } else {
-      connection = this.connections.find(c => c.type === type);
-    }
+    // The registry is selected at runtime; find's public signature retains the
+    // individual definition's query and returned-data types.
+    const connectionType: ConnectionTypeDefinition = getConnectionType(type);
+    let identity: ConnectionLookupIdentity | undefined;
+    this.logger.debug(`Finding connection of type "${type}"`);
+    const connection = this.connections.find(candidate => {
+      if (candidate.type !== type) {
+        return false;
+      }
+      const candidateIdentity = connectionType.getLookupIdentity(candidate);
+      if (candidateIdentity === undefined) {
+        return true;
+      }
+      if (
+        candidateIdentity.value !==
+        lookupIdentityFromQuery(candidateIdentity.key, query)
+      ) {
+        return false;
+      }
+      identity = candidateIdentity;
+      return true;
+    });
 
     if (!connection) {
       return undefined;
@@ -130,7 +114,7 @@ class PluginConnectionsService implements ConnectionsService {
     if (connection.auth.length === 0) {
       throw new NotAllowedError(
         `Connection of type "${type}"${
-          identity ? ` for ${strategy.identityField} "${identity}"` : ''
+          identity ? ` for ${identity.key} "${identity.value}"` : ''
         } has no auth method available to this plugin`,
       );
     }
@@ -155,7 +139,7 @@ class PluginConnectionsService implements ConnectionsService {
 
     this.logger.debug(
       `Selected connection of type "${type}"${
-        identity ? ` for ${strategy.identityField} "${identity}"` : ''
+        identity ? ` for ${identity.key} "${identity.value}"` : ''
       } using auth method "${selected.method}"`,
     );
 

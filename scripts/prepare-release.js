@@ -78,105 +78,150 @@ async function findCurrentReleaseVersion(repo) {
 }
 
 /**
- * Finds the tip of the patch branch of a given release version.
- * Returns undefined if no patch branch exists.
+ * Fetches all patch branches and returns the release version that each of them
+ * patches, along with the ref that points to the tip of the branch.
  */
-async function findTipOfPatchBranch(repo, release) {
-  try {
-    await execFile('git', ['fetch', 'origin', PATCH_BRANCH_PREFIX + release], {
-      shell: true,
-      cwd: repo.root.dir,
-    });
-  } catch (error) {
-    if (error.stderr?.match(/fatal: couldn't find remote ref/i)) {
-      return undefined;
+async function findPatchBranches(repo) {
+  const remotePrefix = `refs/remotes/origin/${PATCH_BRANCH_PREFIX}`;
+  await execFile(
+    'git',
+    [
+      'fetch',
+      '--prune',
+      'origin',
+      `+refs/heads/${PATCH_BRANCH_PREFIX}*:${remotePrefix}*`,
+    ],
+    { cwd: repo.root.dir },
+  );
+  const { stdout } = await execFile(
+    'git',
+    ['for-each-ref', '--format=%(refname)', `${remotePrefix}*`],
+    { cwd: repo.root.dir },
+  );
+
+  const branches = [];
+  for (const ref of stdout.split(/\r?\n/).filter(Boolean)) {
+    const release = ref.slice(remotePrefix.length);
+    if (semver.valid(release)) {
+      branches.push({ release, ref });
+    } else {
+      console.log(`Ignoring patch branch with an invalid version: ${ref}`);
     }
-    throw error;
   }
-  const { stdout: refStr } = await execFile('git', ['rev-parse', 'FETCH_HEAD']);
-  return refStr.trim();
+  return branches;
 }
 
 /**
- * Returns a map of packages to their versions for any package version
- * in <ref> that does not match the current version in the working directory.
+ * Returns a map of package names to versions, for every package in the current
+ * workspace whose version on a patch branch differs from the one in the release
+ * that the branch patches. This includes packages that were added on the patch
+ * branch, since they were then first published from it.
  */
-async function detectPatchVersionsBetweenRefs(repo, baseRef, ref) {
+async function detectPatchVersions(repo, release, ref) {
+  const packagesByPath = new Map(
+    repo.packages.map(pkg => [
+      path.posix.join(
+        path.relative(repo.root.dir, pkg.dir).split(path.sep).join('/'),
+        'package.json',
+      ),
+      pkg,
+    ]),
+  );
+
+  // Only the package.json files that changed on the branch are read, which
+  // keeps this fast even with many patch branches and a partial clone.
+  const diffArgs = [
+    '--no-renames',
+    '--diff-filter=AM',
+    `v${release}`,
+    ref,
+    '--',
+    ':(glob)**/package.json',
+  ];
+  const { stdout: diffStr } = await execFile(
+    'git',
+    ['diff', '--name-status', ...diffArgs],
+    { cwd: repo.root.dir },
+  );
+
+  // In a partial clone, each read below would otherwise fetch its blob from
+  // the remote one by one. Diffing the contents fetches them all in one batch.
+  await execFile('git', ['diff', '--numstat', ...diffArgs], {
+    cwd: repo.root.dir,
+  });
+
+  const readPackageJson = async (rev, pkgJsonPath) => {
+    const args = ['show', `${rev}:${pkgJsonPath}`];
+    const { stdout } = await execFile('git', args, { cwd: repo.root.dir });
+    return JSON.parse(stdout);
+  };
+
   const patchVersions = new Map();
+  for (const line of diffStr.split(/\r?\n/).filter(Boolean)) {
+    const [status, pkgJsonPath] = line.split('\t');
+    const pkg = packagesByPath.get(pkgJsonPath);
+    if (!pkg) {
+      continue;
+    }
 
-  for (const pkg of repo.packages) {
-    const pkgJsonPath = path.join(
-      path.relative(repo.root.dir, pkg.dir),
-      'package.json',
-    );
-    try {
-      const { stdout: basePkgJsonStr } = await execFile('git', [
-        'show',
-        `${baseRef}:${pkgJsonPath}`,
-      ]);
-
-      const { stdout: pkgJsonStr } = await execFile('git', [
-        'show',
-        `${ref}:${pkgJsonPath}`,
-      ]);
-      if (basePkgJsonStr && pkgJsonStr) {
-        const basePkgJson = JSON.parse(basePkgJsonStr);
-        const releasePkgJson = JSON.parse(pkgJsonStr);
-
-        if (releasePkgJson.private) {
-          continue;
-        }
-        if (releasePkgJson.name !== basePkgJson.name) {
-          throw new Error(
-            `Mismatched package name at ${pkg.dir}, ${releasePkgJson.name} !== ${basePkgJson.name}`,
-          );
-        }
-        if (releasePkgJson.version !== basePkgJson.version) {
-          patchVersions.set(basePkgJson.name, releasePkgJson.version);
-        }
-      }
-    } catch (error) {
-      if (
-        error.stderr?.match(/^fatal: Path .* exists on disk, but not in .*$/im)
-      ) {
-        console.log(`Skipping new package ${pkg.packageJson.name}`);
+    const patchPkgJson = await readPackageJson(ref, pkgJsonPath);
+    if (patchPkgJson.private) {
+      continue;
+    }
+    if (patchPkgJson.name !== pkg.packageJson.name) {
+      console.log(
+        `Ignoring ${patchPkgJson.name} on ${ref}, a different package now lives at ${pkgJsonPath}`,
+      );
+      continue;
+    }
+    if (status === 'M') {
+      const basePkgJson = await readPackageJson(`v${release}`, pkgJsonPath);
+      if (basePkgJson.version === patchPkgJson.version) {
         continue;
       }
-      throw error;
     }
+    patchVersions.set(patchPkgJson.name, patchPkgJson.version);
   }
 
   return patchVersions;
 }
 
 /**
- * Bumps up the versions of packages to account for
- * the base versions that are set in .changeset/patched.json.
- * This may be needed when we have made emergency releases.
+ * Bumps up the versions of packages to account for versions that have been
+ * published from patch branches.
+ *
+ * A patch from the current release line is built from the same release that
+ * the main branch is based on, so we catch up to it. A patch from an older release line is a
+ * different build, with that line's dependencies, so we move past it even if
+ * we are at the same version. Otherwise `^` ranges in apps on the current
+ * release would resolve to the older line's build.
  */
 async function applyPatchVersions(repo, patchVersions) {
   const pendingVersionBumps = new Map();
 
-  for (const [name, patchVersion] of patchVersions) {
+  for (const [name, patch] of patchVersions) {
     const pkg = repo.packages.find(p => p.packageJson.name === name);
     if (!pkg) {
       throw new Error(`Package ${name} not found`);
     }
 
-    if (!semver.valid(patchVersion)) {
+    if (!semver.valid(patch.version)) {
       throw new Error(
-        `Invalid base version ${patchVersion} for package ${name}`,
+        `Invalid base version ${patch.version} for package ${name}`,
       );
     }
 
-    if (semver.gte(pkg.packageJson.version, patchVersion)) {
+    const isAhead = patch.fromOlderRelease
+      ? semver.gt(pkg.packageJson.version, patch.version)
+      : semver.gte(pkg.packageJson.version, patch.version);
+    if (isAhead) {
       console.log(
-        `No need to bump ${name} ${pkg.packageJson.version} is already ahead of ${patchVersion}`,
+        `No need to bump ${name} ${pkg.packageJson.version} is already ahead of ${patch.version}`,
       );
       continue;
     }
 
-    let targetVersion = patchVersion;
+    let targetVersion = patch.version;
 
     // If we're currently in a pre-release we need to manually execute the
     // patch bump up to the next version. And we also need to make sure we
@@ -187,11 +232,16 @@ async function applyPatchVersions(repo, patchVersions) {
       parsed.inc('patch');
       parsed.prerelease = currentPrerelease;
       targetVersion = parsed.format();
+    } else if (patch.fromOlderRelease) {
+      targetVersion = semver.inc(targetVersion, 'patch');
     }
 
     pendingVersionBumps.set(name, {
       targetVersion,
       targetRange: `^${targetVersion}`,
+      changelogMessage: patch.fromOlderRelease
+        ? 'Bumped version to move past a patch release from an older release line.'
+        : 'Bumped version to account for a patch release.',
     });
   }
 
@@ -199,7 +249,9 @@ async function applyPatchVersions(repo, patchVersions) {
     let hasChanges = false;
 
     if (pendingVersionBumps.has(packageJson.name)) {
-      const { targetVersion } = pendingVersionBumps.get(packageJson.name);
+      const { targetVersion, changelogMessage } = pendingVersionBumps.get(
+        packageJson.name,
+      );
       packageJson.version = targetVersion;
       const changelogPath = path.resolve(dir, 'CHANGELOG.md');
       const changelog = await fs.readFile(changelogPath, 'utf8');
@@ -207,7 +259,7 @@ async function applyPatchVersions(repo, patchVersions) {
       if (titleEnd === -1) {
         throw new Error(`Invalid changelog for ${packageJson.name}`);
       }
-      const entry = `\n## ${targetVersion}\n\n### Patch Changes\n\n- Bumped version to account for a patch release.\n`;
+      const entry = `\n## ${targetVersion}\n\n### Patch Changes\n\n- ${changelogMessage}\n`;
       await fs.writeFile(
         changelogPath,
         `${changelog.slice(0, titleEnd + 1)}${entry}${changelog.slice(
@@ -250,36 +302,35 @@ async function applyPatchVersions(repo, patchVersions) {
 }
 
 /**
- * Detects any patched packages version since the most recent release on
- * the main branch, and then bumps all packages in the repo accordingly.
+ * Detects any package versions that have been published from patch branches,
+ * and then bumps all packages in the repo accordingly. This includes the patch
+ * branches of older release lines, since a fix that is backported to an older
+ * line can be published with a version that is ahead of the current one.
  */
 async function updatePackageVersions(repo) {
   const currentRelease = await findCurrentReleaseVersion(repo);
   console.log(`Current release version: ${currentRelease}`);
 
-  const patchRef = await findTipOfPatchBranch(repo, currentRelease);
-  if (patchRef) {
-    console.log(`Tip of the patch branch: ${patchRef}`);
-
-    const patchVersions = await detectPatchVersionsBetweenRefs(
-      repo,
-      `v${currentRelease}`,
-      patchRef,
-    );
-    if (patchVersions.size > 0) {
-      console.log(
-        `Found ${patchVersions.size} packages that were patched since the last release`,
-      );
-      for (const [name, version] of patchVersions) {
-        console.log(`  ${name}: ${version}`);
+  const patchVersions = new Map();
+  for (const { release, ref } of await findPatchBranches(repo)) {
+    const fromOlderRelease = semver.lt(release, currentRelease);
+    const branchVersions = await detectPatchVersions(repo, release, ref);
+    for (const [name, version] of branchVersions) {
+      console.log(`Found ${name}@${version} on ${ref}`);
+      const known = patchVersions.get(name);
+      if (!known || semver.gt(version, known.version)) {
+        patchVersions.set(name, { version, fromOlderRelease });
+      } else if (semver.eq(version, known.version) && fromOlderRelease) {
+        // Moving past the version is always safe, catching up to it is not
+        known.fromOlderRelease = true;
       }
-
-      await applyPatchVersions(repo, patchVersions);
-    } else {
-      console.log('No packages were patched since the last release');
     }
+  }
+
+  if (patchVersions.size > 0) {
+    await applyPatchVersions(repo, patchVersions);
   } else {
-    console.log('No patch branch found');
+    console.log('No patched packages found on any patch branch');
   }
 }
 

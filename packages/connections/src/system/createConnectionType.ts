@@ -18,8 +18,7 @@ import { InputError } from '@backstage/errors';
 import type { Expand, JsonObject } from '@backstage/types';
 import type {
   ConnectionTypeDefinition,
-  ConnectionLookupStrategy,
-  LookupStrategyQuery,
+  ConnectionLookupIdentity,
   PortableSchema,
   WithoutReservedAuthMethods,
   WithoutReservedFields,
@@ -34,7 +33,11 @@ type ConnectionAuthMethodSchema<
   configSchema: TConfigSchema;
 };
 
-type ConfigFromSchema<TConfigSchema extends z.ZodObject> =
+type ConnectionConfigSchema =
+  | z.ZodObject
+  | z.ZodPipe<z.ZodObject, z.ZodType<Record<string, unknown>>>;
+
+type ConfigFromSchema<TConfigSchema extends z.ZodType> =
   z.infer<TConfigSchema> extends Record<string, never>
     ? Record<never, never>
     : z.infer<TConfigSchema>;
@@ -81,16 +84,16 @@ function createPortableSchema<TSchema extends z.ZodType>(
 
 export function createConnectionType<
   TType extends string,
-  TConfigSchema extends z.ZodObject,
+  TConfigSchema extends ConnectionConfigSchema,
   const TAuthMethods extends readonly ConnectionAuthMethodSchema[],
-  TLookupStrategy extends ConnectionLookupStrategy = 'host',
+  TQuery extends object = { url: string },
   TCardinality extends 'singleton' | 'multiton' = 'multiton',
 >({
   configSchema,
   type,
   title,
   cardinality,
-  lookupStrategy,
+  getLookupIdentity,
   authMethods,
   matchAuth,
   validate,
@@ -98,7 +101,9 @@ export function createConnectionType<
   type: TType;
   title: string;
   cardinality?: TCardinality;
-  lookupStrategy?: TLookupStrategy;
+  getLookupIdentity: (
+    config: ConfigFromSchema<TConfigSchema>,
+  ) => ConnectionLookupIdentity | undefined;
   configSchema: WithoutReservedFields<TConfigSchema>;
   authMethods: WithoutReservedAuthMethods<TAuthMethods>;
   matchAuth?: (
@@ -107,7 +112,7 @@ export function createConnectionType<
         title: string;
       }
     >[],
-    query: LookupStrategyQuery[TLookupStrategy],
+    query: TQuery,
   ) =>
     | Expand<
         ConfiguredConnectionAuthFromSchema<TAuthMethods[number]> & {
@@ -130,8 +135,7 @@ export function createConnectionType<
 }): ConnectionTypeDefinition<{
   type: TType;
   cardinality: TCardinality;
-  lookupStrategy: TLookupStrategy;
-  query: LookupStrategyQuery[TLookupStrategy];
+  query: TQuery;
   configSchema: ConfigFromSchema<TConfigSchema>;
   auth: readonly ConfiguredConnectionAuthFromSchema<TAuthMethods[number]>[];
 }> {
@@ -141,8 +145,15 @@ export function createConnectionType<
       `Connection type "${type}" must declare at least one auth method`,
     );
   }
+  const schema = configSchema as unknown as TConfigSchema;
+  // Make the input object strict while retaining the pipe's output transform
+  // and any refinements attached to the pipe itself.
+  const strictSchema =
+    schema instanceof z.ZodPipe
+      ? schema.clone({ ...schema.def, in: schema.in.strict() })
+      : schema.strict();
   const portableConfigSchema = createPortableSchema(
-    (configSchema as unknown as TConfigSchema).strict(),
+    strictSchema,
     `Invalid configuration for connection type "${type}"`,
   );
 
@@ -150,7 +161,7 @@ export function createConnectionType<
     type,
     title,
     cardinality: cardinality ?? 'multiton',
-    lookupStrategy: lookupStrategy ?? 'host',
+    getLookupIdentity,
     authMethods: validatedAuthMethods.map(
       ({ method, title: authTitle, configSchema: authConfigSchema }) => ({
         method,
@@ -167,8 +178,7 @@ export function createConnectionType<
   } as unknown as ConnectionTypeDefinition<{
     type: TType;
     cardinality: TCardinality;
-    lookupStrategy: TLookupStrategy;
-    query: LookupStrategyQuery[TLookupStrategy];
+    query: TQuery;
     configSchema: ConfigFromSchema<TConfigSchema>;
     auth: readonly ConfiguredConnectionAuthFromSchema<TAuthMethods[number]>[];
   }>;

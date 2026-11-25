@@ -18,7 +18,7 @@ host can use different GitHub Apps for different organizations.
 connections:
   - type: github
     title: Public GitHub
-    host: github.com
+    baseUrl: https://github.com/
     apiBaseUrl: https://api.github.com
     rawBaseUrl: https://raw.githubusercontent.com
     auth:
@@ -42,7 +42,7 @@ lookup URL is normalized to lowercase before matching.
 
 | Field        | Type     | Required | Description                                                                 |
 | ------------ | -------- | -------- | --------------------------------------------------------------------------- |
-| `host`       | `string` | Yes      | GitHub host matched against the consumer's resource URL.                    |
+| `baseUrl`    | `string` | Yes      | HTTP(S) base URL of the instance. Its host is used for lookup.              |
 | `apiBaseUrl` | `string` | No       | Base URL for the GitHub API. Configure it explicitly for GitHub Enterprise. |
 | `rawBaseUrl` | `string` | No       | Base URL used to retrieve raw repository content.                           |
 
@@ -70,7 +70,7 @@ authentication.
 ## Lookup and selection
 
 The consumer supplies a [lookup query](../01-concepts.md#lookup-queries) containing
-a GitHub URL. The service selects the connection whose `host` matches the
+a GitHub URL. The service selects the connection whose `baseUrl` host matches the
 parsed URL host exactly.
 
 After [plugin scoping](../01-concepts.md#plugin-scoping), GitHub selects an
@@ -94,7 +94,7 @@ const connection = await connections.find({
   authMethods: ['app', 'token', 'none'],
 });
 
-connection.host; // string
+connection.baseUrl; // string
 connection.apiBaseUrl; // string | undefined
 
 if (connection.auth.method === 'app') {
@@ -119,7 +119,7 @@ installations, followed by the fallback methods:
 ```yaml title="app-config.yaml"
 connections:
   - type: github
-    host: github.com
+    baseUrl: https://github.com/
     auth:
       - method: app
         title: Backstage organization app
@@ -189,7 +189,7 @@ selected for any organization that does not have a more specific app:
 ```yaml title="app-config.yaml"
 connections:
   - type: github
-    host: github.com
+    baseUrl: https://github.com/
     auth:
       - method: app
         title: Backstage organization app
@@ -232,7 +232,7 @@ When exactly one app remains visible, that app is selected even when its
 ```yaml title="app-config.yaml"
 connections:
   - type: github
-    host: github.com
+    baseUrl: https://github.com/
     auth:
       - method: app
         title: Backstage organization app
@@ -299,7 +299,7 @@ selection:
 ```yaml title="app-config.yaml"
 connections:
   - type: github
-    host: github.com
+    baseUrl: https://github.com/
     auth:
       - method: app
         title: Shared app

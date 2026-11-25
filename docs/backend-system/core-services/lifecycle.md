@@ -7,6 +7,8 @@ description: Documentation for the Lifecycle service
 
 This service allows your plugins to register hooks for cleaning up resources as the service is shutting down (e.g. when a pod is being torn down, or when pressing `Ctrl+C` during local development). Other core services also leverage this same mechanism internally to stop themselves cleanly.
 
+The backend shuts down on `SIGTERM`, `SIGINT`, or when the Node.js process emits `beforeExit`.
+
 ## Using the service
 
 The following example shows how to get the lifecycle service in your `example` backend plugin to clean up a long running interval when the service is shutting down.

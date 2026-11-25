@@ -14,7 +14,7 @@ entry must have a unique host.
 ```yaml title="app-config.yaml"
 connections:
   - type: aws-codecommit
-    host: git-codecommit.eu-west-1.amazonaws.com
+    baseUrl: https://git-codecommit.eu-west-1.amazonaws.com/
     region: eu-west-1
     auth:
       - method: assumeRole
@@ -24,10 +24,10 @@ connections:
 
 ## Connection fields
 
-| Field    | Type     | Required | Description                                                     |
-| -------- | -------- | -------- | --------------------------------------------------------------- |
-| `host`   | `string` | Yes      | Host matched against the resource URL supplied by the consumer. |
-| `region` | `string` | Yes      | AWS region containing the CodeCommit repositories.              |
+| Field     | Type     | Required | Description                                                    |
+| --------- | -------- | -------- | -------------------------------------------------------------- |
+| `baseUrl` | `string` | Yes      | HTTP(S) base URL of the instance. Its host is used for lookup. |
+| `region`  | `string` | Yes      | AWS region containing the CodeCommit repositories.             |
 
 ## Authentication methods
 
@@ -47,7 +47,7 @@ temporary credentials.
 ## Lookup and selection
 
 The consumer supplies a [lookup query](../01-concepts.md#lookup-queries) containing
-a URL. The service parses `query.url` and selects the connection whose `host`
+a URL. The service parses `query.url` and selects the connection whose `baseUrl` host
 matches exactly.
 
 When more than one authentication entry is visible to the calling plugin, the

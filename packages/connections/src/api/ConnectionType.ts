@@ -16,13 +16,12 @@
 import type { z } from 'zod/v4';
 import type { Expand, JsonObject } from '@backstage/types';
 
-/** @public */
-export type ConnectionLookupStrategy = 'host' | 'aws';
-
-export type LookupStrategyQuery = {
-  host: { url: string };
-  aws: { accountId?: string; arn?: string };
-};
+/**
+ * A connection identity and the matching behavior to apply to lookup queries.
+ *
+ * @public
+ */
+export type ConnectionLookupIdentity = { key: 'host'; value: string };
 
 // Field names the framework owns at the connection level. Connection-type
 // authors must not declare these in their `configSchema`.
@@ -38,10 +37,10 @@ type ReservedFieldError<K extends string> = {
   readonly __error: `configSchema must not declare reserved field '${K}'`;
 };
 
-// Constrain a ZodObject so its inferred shape can't collide with framework
+// Constrain a schema so its input and output can't collide with framework
 // keys. Resolves to a self-describing error type if a reserved key is present.
-export type WithoutReservedFields<TSchema extends z.ZodObject> = Extract<
-  keyof z.infer<TSchema>,
+export type WithoutReservedFields<TSchema extends z.ZodType> = Extract<
+  keyof z.input<TSchema> | keyof z.output<TSchema>,
   ReservedConnectionFields
 > extends infer K
   ? [K] extends [never]
@@ -114,7 +113,6 @@ export type ConnectionTypeDefinition<
   T extends {
     type: string;
     cardinality: 'singleton' | 'multiton';
-    lookupStrategy: ConnectionLookupStrategy;
     query: unknown;
     configSchema: unknown;
     auth: readonly {
@@ -123,7 +121,6 @@ export type ConnectionTypeDefinition<
   } = {
     type: string;
     cardinality: 'singleton' | 'multiton';
-    lookupStrategy: ConnectionLookupStrategy;
     query: unknown;
     configSchema: unknown;
     auth: readonly {
@@ -134,8 +131,14 @@ export type ConnectionTypeDefinition<
   type: T['type'];
   title: string;
   cardinality: T['cardinality'];
-  /** Determines the query accepted by `ConnectionsService.find`. */
-  lookupStrategy: T['lookupStrategy'];
+  /**
+   * Calculates lookup and duplicate-validation identity from parsed data.
+   * The key selects query matching behavior; undefined selects by type only.
+   * Identity is not added to returned connection data.
+   */
+  getLookupIdentity(
+    config: T['configSchema'],
+  ): ConnectionLookupIdentity | undefined;
   /** Schema for a complete connection configuration. */
   configSchema: PortableSchema<T['configSchema'], unknown>;
   /**

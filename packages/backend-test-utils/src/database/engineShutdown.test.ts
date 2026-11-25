@@ -81,10 +81,10 @@ describe.each([
         }
       }),
       destroy: jest.fn().mockResolvedValue(undefined),
-    } as unknown as Knex;
+    } as unknown as ReturnType<typeof knexFactory>;
     const databaseConnection = {
       destroy: jest.fn().mockResolvedValue(undefined),
-    } as unknown as Knex;
+    } as unknown as ReturnType<typeof knexFactory>;
 
     mockKnexFactory.mockImplementation(config => {
       const connection = (config as Knex.Config).connection as

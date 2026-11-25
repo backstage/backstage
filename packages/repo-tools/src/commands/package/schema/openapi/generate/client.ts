@@ -31,6 +31,7 @@ import {
   getPathToCurrentOpenApiSpec,
   toGeneratorAdditionalProperties,
 } from '../../../../../lib/openapi/helpers';
+import { writeManifest } from '../../../../../lib/openapi/manifest';
 
 async function generate(
   outputDirectory: string,
@@ -90,20 +91,12 @@ async function generate(
 
   await fs.writeFile(
     resolve(parentDirectory, 'index.ts'),
-    `//
-    export * from './generated';`,
+    `//\nexport * from './generated';\n`,
   );
 
   await exec(`yarn backstage-cli package lint --fix ${parentDirectory}`, [], {
     signal: abortSignal?.signal,
   });
-
-  const prettier = targetPaths.resolveRoot('node_modules/.bin/prettier');
-  if (await fs.pathExists(prettier)) {
-    await exec(`${prettier} --write ${parentDirectory}`, [], {
-      signal: abortSignal?.signal,
-    });
-  }
 
   // Deduplicate imports in generated files
   const generatedFiles = await fs.readdir(resolvedOutputDirectory);
@@ -123,6 +116,13 @@ async function generate(
   fs.rmSync(resolve(resolvedOutputDirectory, '.openapi-generator'), {
     recursive: true,
     force: true,
+  });
+
+  await writeManifest({
+    kind: 'client',
+    generatedDir: resolvedOutputDirectory,
+    specPath: resolvedOpenapiPath,
+    additionalProperties,
   });
 }
 

@@ -35,6 +35,7 @@ import {
   getRelativePathToFile,
   toGeneratorAdditionalProperties,
 } from '../../../../../lib/openapi/helpers';
+import { writeManifest } from '../../../../../lib/openapi/manifest';
 
 async function generateSpecFile() {
   const openapiPath = await getPathToCurrentOpenApiSpec();
@@ -72,20 +73,9 @@ export const createOpenApiRouter = async (
   );
 
   const indexFile = join(schemaDir, '..', 'index.ts');
-  await fs.writeFile(
-    indexFile,
-    `//
-    export * from './generated';`,
-  );
+  await fs.writeFile(indexFile, `//\nexport * from './generated';\n`);
 
   await exec(`yarn backstage-cli package lint`, ['--fix', tsPath, indexFile]);
-  if (
-    await fs.pathExists(targetPaths.resolveRoot('node_modules/.bin/prettier'))
-  ) {
-    await exec(`yarn prettier`, ['--write', tsPath, indexFile], {
-      cwd: targetPaths.rootDir,
-    });
-  }
 }
 
 async function generate(
@@ -155,13 +145,6 @@ async function generate(
     },
   );
 
-  const prettier = targetPaths.resolveRoot('node_modules/.bin/prettier');
-  if (prettier) {
-    await exec(`${prettier} --write ${resolvedOutputDirectory}`, [], {
-      signal: abortSignal?.signal,
-    });
-  }
-
   fs.removeSync(resolve(resolvedOutputDirectory, '.openapi-generator-ignore'));
   fs.removeSync(resolve(resolvedOutputDirectory, '.gitattributes'));
 
@@ -175,6 +158,13 @@ async function generate(
   });
 
   await generateSpecFile();
+
+  await writeManifest({
+    kind: 'server',
+    generatedDir: resolvedOutputDirectory,
+    specPath: resolvedOpenapiPath,
+    additionalProperties,
+  });
 }
 
 export async function command(

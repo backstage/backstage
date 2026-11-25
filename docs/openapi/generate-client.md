@@ -18,6 +18,14 @@ info:
 
 2. Find or create a new plugin to house your new generated client. Currently, we do not support generating an entirely new plugin and instead just generate client files.
 
+3. Add the generated directories to your root `.prettierignore` file:
+
+```text
+**/src/schema/openapi/generated/**
+```
+
+Generated code is not formatted with Prettier, so it stays exactly as the generator emits it. Generation still applies ESLint automatic fixes to it. Without this entry, running Prettier across your repository rewrites the generated files, and they no longer match what the generator produces.
+
 ### Generating your client
 
 1. Run `yarn backstage-repo-tools package schema openapi generate --client-package <directory>`. This will create a new folder in `<directory>/src/schema/openapi/generated` to house the generated content.

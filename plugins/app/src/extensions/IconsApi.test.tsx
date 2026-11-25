@@ -18,9 +18,12 @@ import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
   AppRootElementBlueprint,
   createApiRef,
+  createFrontendModule,
+  ExtensionDefinition,
   iconsApiRef,
   useApi,
 } from '@backstage/frontend-plugin-api';
+import { IconBundleBlueprint } from '@backstage/plugin-app-react';
 import { type LegacyIconsApi } from '../apis/legacyApiRefs';
 import { screen } from '@testing-library/react';
 
@@ -79,4 +82,58 @@ it('provides the same default implementation for both icons API versions', async
   expect(
     await screen.findByText('Both versions available'),
   ).toBeInTheDocument();
+});
+
+describe('IconComponent deprecation warning', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  function renderWithIcons(iconBundles: ExtensionDefinition[] = []) {
+    function Consumer() {
+      const icon = useApi(iconsApiRef).icon('catalog');
+      return <span>{icon ? 'catalog icon' : 'no catalog icon'}</span>;
+    }
+    renderTestApp({
+      extensions: [
+        AppRootElementBlueprint.make({
+          name: 'icons-warning-test',
+          params: { element: <Consumer /> },
+        }),
+      ],
+      // Icon bundles attach to an internal input, so they come from the app
+      features: [
+        createFrontendModule({ pluginId: 'app', extensions: iconBundles }),
+      ],
+    });
+  }
+
+  it('is not logged for the default icons', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    renderWithIcons();
+
+    expect(await screen.findByText('catalog icon')).toBeInTheDocument();
+    expect(warnSpy).not.toHaveBeenCalledWith(
+      expect.stringContaining('registered as IconComponent'),
+    );
+  });
+
+  it('lists only the IconComponent icons from bundles', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const CustomIcon = () => <svg />;
+
+    renderWithIcons([
+      IconBundleBlueprint.make({
+        name: 'legacy-icons',
+        // @ts-expect-error bundles built for older versions can pass components
+        params: { icons: { custom: CustomIcon } },
+      }),
+    ]);
+
+    expect(await screen.findByText('catalog icon')).toBeInTheDocument();
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringMatching(/registered as IconComponent.*: custom$/),
+    );
+  });
 });

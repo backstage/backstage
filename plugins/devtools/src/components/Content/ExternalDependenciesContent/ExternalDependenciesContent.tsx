@@ -78,7 +78,7 @@ export const ExternalDependenciesContent = () => {
   return (
     <DevToolsTable
       title="External dependencies"
-      data={externalDependencies.map((item, id) => ({ ...item, id }))}
+      data={externalDependencies.map(item => ({ ...item, id: item.name }))}
       pageSize={20}
       pageSizeOptions={[20, 50, 100]}
       columns={[

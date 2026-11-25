@@ -334,6 +334,7 @@ export default {
             'features/software-catalog/catalog-customization',
             'features/software-catalog/entity-presentation',
             'features/software-catalog/audit-events',
+            'features/software-catalog/unprocessed-entities',
             {
               type: 'category',
               label: 'API',
@@ -431,6 +432,9 @@ export default {
       },
       [
         'integrations/index',
+        sidebarElementWithIndex({ label: 'AWS CodeCommit' }, [
+          'integrations/aws-codecommit/locations',
+        ]),
         sidebarElementWithIndex({ label: 'AWS S3' }, [
           'integrations/aws-s3/locations',
           'integrations/aws-s3/discovery',
@@ -517,6 +521,7 @@ export default {
               },
               [
                 'backend-system/architecture/index',
+                'backend-system/architecture/backends',
                 'backend-system/architecture/services',
                 'backend-system/architecture/plugins',
                 'backend-system/architecture/extension-points',
@@ -623,6 +628,7 @@ export default {
                 'frontend-system/building-plugins/common-extension-blueprints',
                 'frontend-system/building-plugins/built-in-data-refs',
                 'frontend-system/building-plugins/page-routers',
+                'frontend-system/building-plugins/swappable-components',
                 'frontend-system/building-plugins/migrating',
                 'frontend-system/building-plugins/internationalization',
                 'frontend-system/building-plugins/analytics',
@@ -689,6 +695,7 @@ export default {
                 'tooling/cli/module-auth',
                 'tooling/cli/module-actions',
                 'tooling/cli/module-build',
+                'tooling/cli/module-catalog',
                 'tooling/cli/module-config',
                 'tooling/cli/module-github',
                 'tooling/cli/module-info',
@@ -696,6 +703,8 @@ export default {
                 'tooling/cli/module-maintenance',
                 'tooling/cli/module-migrate',
                 'tooling/cli/module-new',
+                'tooling/cli/module-scaffolder',
+                'tooling/cli/module-search',
                 'tooling/cli/module-test',
                 'tooling/cli/module-translations',
                 'tooling/cli/module-package-manager-yarn',
