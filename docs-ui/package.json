@@ -32,8 +32,8 @@
     "next": "16.4.1",
     "next-mdx-remote-client": "^2.1.2",
     "prop-types": "^15.8.1",
-    "react": "19.3.0",
-    "react-dom": "19.3.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "shiki": "^3.13.0"
   },
   "devDependencies": {
