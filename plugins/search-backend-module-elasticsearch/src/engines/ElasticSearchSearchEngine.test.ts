@@ -186,6 +186,7 @@ describe('ElasticSearchSearchEngine', () => {
       expect(queryBody).toEqual({
         query: {
           bool: {
+            minimum_should_match: 1,
             should: {
               multi_match: {
                 query: 'testTerm',
@@ -203,6 +204,28 @@ describe('ElasticSearchSearchEngine', () => {
         },
         from: 0,
         size: 25,
+      });
+    });
+
+    it('should require one should clause to match when a filter is present', async () => {
+      const translatorUnderTest = inspectableSearchEngine.getTranslator();
+
+      const actualTranslatedQuery = translatorUnderTest({
+        types: ['indexName'],
+        term: 'testTerm',
+        filters: { kind: 'testKind' },
+      }) as ElasticSearchConcreteQuery;
+
+      // Elasticsearch defaults minimum_should_match to 0 when a filter
+      // clause is present, which would make the term optional and return
+      // every document matching the filter.
+      const queryBody = actualTranslatedQuery.elasticSearchQuery;
+      expect(queryBody).toMatchObject({
+        query: {
+          bool: {
+            minimum_should_match: 1,
+          },
+        },
       });
     });
 
@@ -225,6 +248,7 @@ describe('ElasticSearchSearchEngine', () => {
       expect(queryBody).toEqual({
         query: {
           bool: {
+            minimum_should_match: 1,
             should: [
               {
                 multi_match: {
@@ -276,6 +300,7 @@ describe('ElasticSearchSearchEngine', () => {
       expect(queryBody).toEqual({
         query: {
           bool: {
+            minimum_should_match: 1,
             filter: [],
             should: {
               multi_match: {
@@ -316,6 +341,7 @@ describe('ElasticSearchSearchEngine', () => {
       expect(queryBody).toEqual({
         query: {
           bool: {
+            minimum_should_match: 1,
             should: {
               multi_match: {
                 query: 'testTerm',
@@ -372,6 +398,7 @@ describe('ElasticSearchSearchEngine', () => {
       expect(queryBody).toEqual({
         query: {
           bool: {
+            minimum_should_match: 1,
             should: {
               multi_match: {
                 query: 'testTerm',
@@ -433,6 +460,7 @@ describe('ElasticSearchSearchEngine', () => {
       expect(queryBody).toEqual({
         query: {
           bool: {
+            minimum_should_match: 1,
             filter: [],
             should: {
               multi_match: {

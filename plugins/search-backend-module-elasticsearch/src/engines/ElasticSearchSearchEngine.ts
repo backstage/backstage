@@ -337,7 +337,13 @@ export class ElasticSearchSearchEngine implements SearchEngine {
 
     let esbRequestBodySearch = esb
       .requestBodySearch()
-      .query(esb.boolQuery().filter(filter).should(esbQueries))
+      // With a filter (or must) clause present, Elasticsearch defaults
+      // minimum_should_match to 0, which would make the term optional and
+      // return every document matching the filter. Require one should match
+      // so filters narrow the term results instead of replacing them.
+      .query(
+        esb.boolQuery().filter(filter).should(esbQueries).minimumShouldMatch(1),
+      )
       .from(page * pageSize)
       .size(pageSize);
 
