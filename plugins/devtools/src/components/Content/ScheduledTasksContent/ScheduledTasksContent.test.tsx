@@ -114,7 +114,13 @@ describe('ScheduledTasksContent', () => {
     mockDevToolsApi.getScheduledTasksByPlugin.mockResolvedValue({
       scheduledTasks: [mockTaskA],
     });
-    mockDevToolsApi.triggerScheduledTask.mockResolvedValue({});
+    let finishTrigger: (result: {}) => void = () => {};
+    mockDevToolsApi.triggerScheduledTask.mockImplementationOnce(
+      () =>
+        new Promise(resolve => {
+          finishTrigger = resolve;
+        }),
+    );
 
     await renderComponent();
 
@@ -129,8 +135,23 @@ describe('ScheduledTasksContent', () => {
       () => refreshPromise,
     );
 
-    const triggerButton = screen.getByRole('button', { name: 'Trigger' });
+    const triggerButton = screen.getByRole('button', {
+      name: 'Run task task-a',
+    });
     fireEvent.click(triggerButton);
+    expect(
+      await within(triggerButton).findByRole('progressbar', {
+        name: 'Loading',
+      }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole('button', { name: 'Cancel task task-a' }),
+    ).toBeDisabled();
+    expect(mockDevToolsApi.getScheduledTasksByPlugin).toHaveBeenCalledTimes(1);
+    await act(async () => finishTrigger({}));
+    expect(
+      within(triggerButton).queryByRole('progressbar'),
+    ).not.toBeInTheDocument();
 
     await waitFor(() => {
       expect(mockDevToolsApi.triggerScheduledTask).toHaveBeenCalledWith(
@@ -164,8 +185,12 @@ describe('ScheduledTasksContent', () => {
     await renderComponent();
 
     expect(await screen.findByText('task-a')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Trigger' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Run task task-a' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Cancel task task-a' }),
+    ).toBeInTheDocument();
 
     let resolvePluginB: (value: ScheduledTasks) => void = () => {};
     const pluginBPromise = new Promise<ScheduledTasks>(resolve => {
@@ -286,7 +311,7 @@ describe('ScheduledTasksContent', () => {
     });
     expect(indicator).toHaveAttribute('tabindex', '0');
     expect(
-      screen.queryByRole('button', { name: 'Trigger' }),
+      screen.queryByRole('button', { name: 'Run task task-a' }),
     ).not.toBeInTheDocument();
     act(() => screen.getByRole('row', { name: /task-a/ }).focus());
     act(() => indicator.focus());
@@ -355,9 +380,7 @@ describe('ScheduledTasksContent', () => {
     fireEvent.change(screen.getByRole('searchbox', { name: /search/i }), {
       target: { value: 'no-matching-task' },
     });
-    expect(
-      await screen.findByText('No records to display'),
-    ).toBeInTheDocument();
+    expect(await screen.findByText('No results found')).toBeInTheDocument();
     expect(screen.getByRole('status')).toBeEmptyDOMElement();
     expect(
       screen.queryByText('No scheduled tasks found for plugin-a.'),
@@ -436,6 +459,10 @@ describe('ScheduledTasksContent', () => {
     );
     await renderComponent();
     const details = await screen.findByRole('button', { name: 'task-a' });
+    expect(within(details).getByText('task-a')).toHaveAttribute(
+      'title',
+      'task-a',
+    );
     act(() => details.focus());
     fireEvent.click(details);
     const dialog = await screen.findByRole('dialog', { name: 'task-a' });
@@ -451,13 +478,13 @@ describe('ScheduledTasksContent', () => {
     ).toBeVisible();
     fireEvent.click(within(dialog).getByRole('button', { name: 'Close' }));
     expect(
-      await screen.findByRole('button', { name: 'Trigger' }),
+      await screen.findByRole('button', { name: 'Run task task-a' }),
     ).toBeVisible();
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     await waitFor(() =>
       expect(screen.getByRole('row', { name: /task-a/ })).toHaveFocus(),
     );
-    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel task task-a' }));
     await waitFor(() =>
       expect(mockToastApi.post).toHaveBeenCalledWith({
         title: 'Error cancelling task task-a: Cancellation failed',
@@ -499,6 +526,6 @@ describe('ScheduledTasksContent', () => {
     fireEvent.change(screen.getByRole('searchbox'), {
       target: { value: 'missing' },
     });
-    expect(await screen.findByText('No records to display')).toBeVisible();
+    expect(await screen.findByText('No results found')).toBeVisible();
   });
 });

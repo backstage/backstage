@@ -31,7 +31,6 @@ import {
   ColumnConfig,
   Combobox,
   VisuallyHidden,
-  useBgConsumer,
   Flex,
   Text,
   Tooltip,
@@ -39,7 +38,7 @@ import {
 } from '@backstage/ui';
 import {
   RiArrowRightSLine,
-  RiRefreshLine,
+  RiPlayLine,
   RiStopLine,
   RiMoonLine,
   RiLoader4Line,
@@ -59,25 +58,22 @@ import { ScheduledTaskDetailPanel } from './ScheduledTaskDetailedPanel';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { Progress, toastApiRef } from '@backstage/frontend-plugin-api';
 
-const CreateNotAllowed = () => {
-  const { bg } = useBgConsumer();
-
-  return (
-    <TooltipTrigger>
-      <Focusable>
-        <span
-          className={styles.permissionIndicator}
-          data-on-bg={bg}
-          role="img"
-          aria-label="You are not allowed to perform this action"
-        >
-          <RiForbidLine aria-hidden="true" />
-        </span>
-      </Focusable>
-      <Tooltip>You are not allowed to perform this action</Tooltip>
-    </TooltipTrigger>
-  );
-};
+const CreateNotAllowed = () => (
+  <TooltipTrigger>
+    <Focusable>
+      <Text
+        as="span"
+        color="secondary"
+        className={styles.permissionIndicator}
+        role="img"
+        aria-label="You are not allowed to perform this action"
+      >
+        <RiForbidLine size={16} aria-hidden="true" />
+      </Text>
+    </Focusable>
+    <Tooltip>You are not allowed to perform this action</Tooltip>
+  </TooltipTrigger>
+);
 
 /** @public */
 export const ScheduledTasksContent = () => {
@@ -89,6 +85,11 @@ export const ScheduledTasksContent = () => {
   const { scheduledTasks, loading, error, refresh, loadedPlugin } =
     useScheduledTasks(selectedPlugin);
   const { triggerTask, cancelTask, isLoading } = useScheduledTasksOperations();
+  const [pendingAction, setPendingAction] = useState<{
+    plugin: string;
+    taskId: string;
+    action: 'trigger' | 'cancel';
+  }>();
 
   const [inputValue, setInputValue] = useState(selectedPlugin);
   // Skip the Enter that picked an option, so it doesn't also commit the typed text
@@ -155,13 +156,15 @@ export const ScheduledTasksContent = () => {
               className={styles.taskButton}
               iconEnd={<RiArrowRightSLine size={16} />}
             >
-              {rowData.taskId}
+              <Text truncate weight="bold" title={rowData.taskId}>
+                {rowData.taskId}
+              </Text>
             </Button>
             <Dialog width={640}>
               <DialogHeader className={styles.dialogHeader}>
                 {rowData.taskId}
               </DialogHeader>
-              <DialogBody className={styles.dialogBody}>
+              <DialogBody>
                 <ScheduledTaskDetailPanel rowData={rowData} />
               </DialogBody>
             </Dialog>
@@ -236,12 +239,22 @@ export const ScheduledTasksContent = () => {
             permission={devToolsTaskSchedulerCreatePermission}
             errorPage={<CreateNotAllowed />}
           >
-            <Flex justify="center" gap="2">
+            <Flex gap="1">
               <TooltipTrigger>
                 <ButtonIcon
-                  aria-label="Trigger"
+                  aria-label={`Run task ${rowData.taskId}`}
+                  isPending={
+                    pendingAction?.plugin === selectedPlugin &&
+                    pendingAction.taskId === rowData.taskId &&
+                    pendingAction.action === 'trigger'
+                  }
                   isDisabled={isLoading}
                   onPress={async () => {
+                    setPendingAction({
+                      plugin: selectedPlugin,
+                      taskId: rowData.taskId,
+                      action: 'trigger',
+                    });
                     try {
                       await triggerTask(selectedPlugin, rowData.taskId);
                       toastApi.post({
@@ -254,19 +267,30 @@ export const ScheduledTasksContent = () => {
                         status: 'danger',
                       });
                     } finally {
+                      setPendingAction(undefined);
                       refresh();
                     }
                   }}
-                  icon={<RiRefreshLine />}
+                  icon={<RiPlayLine />}
                   variant="tertiary"
                 />
-                <Tooltip>Run Task</Tooltip>
+                <Tooltip>Run task</Tooltip>
               </TooltipTrigger>
               <TooltipTrigger>
                 <ButtonIcon
-                  aria-label="Cancel"
+                  aria-label={`Cancel task ${rowData.taskId}`}
+                  isPending={
+                    pendingAction?.plugin === selectedPlugin &&
+                    pendingAction.taskId === rowData.taskId &&
+                    pendingAction.action === 'cancel'
+                  }
                   isDisabled={isLoading}
                   onPress={async () => {
+                    setPendingAction({
+                      plugin: selectedPlugin,
+                      taskId: rowData.taskId,
+                      action: 'cancel',
+                    });
                     try {
                       await cancelTask(selectedPlugin, rowData.taskId);
                       toastApi.post({
@@ -279,13 +303,14 @@ export const ScheduledTasksContent = () => {
                         status: 'danger',
                       });
                     } finally {
+                      setPendingAction(undefined);
                       refresh();
                     }
                   }}
                   icon={<RiStopLine />}
                   variant="tertiary"
                 />
-                <Tooltip>Cancel Task</Tooltip>
+                <Tooltip>Cancel task</Tooltip>
               </TooltipTrigger>
             </Flex>
           </RequirePermission>
@@ -364,10 +389,7 @@ export const ScheduledTasksContent = () => {
           data={scheduledTasks.map(task => ({ ...task, id: task.taskId }))}
           emptyState={
             scheduledTasks.length === 0 ? (
-              <Alert
-                status="info"
-                title={`No scheduled tasks found for ${selectedPlugin}.`}
-              />
+              <Text color="secondary">{`No scheduled tasks found for ${selectedPlugin}.`}</Text>
             ) : undefined
           }
         />

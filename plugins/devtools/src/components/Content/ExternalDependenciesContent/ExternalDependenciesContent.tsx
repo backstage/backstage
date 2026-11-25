@@ -72,13 +72,14 @@ export const ExternalDependenciesContent = () => {
   if (loading) return <Progress />;
   if (error)
     return <Alert status="danger" icon title={error.message} role="alert" />;
-  if (!externalDependencies?.length) {
-    return <Alert status="info" title="No external dependencies found" />;
-  }
   return (
     <DevToolsTable
       title="External dependencies"
-      data={externalDependencies.map(item => ({ ...item, id: item.name }))}
+      data={(externalDependencies ?? []).map(item => ({
+        ...item,
+        id: item.name,
+      }))}
+      emptyState={<Text color="secondary">No external dependencies found</Text>}
       pageSize={20}
       pageSizeOptions={[20, 50, 100]}
       columns={[

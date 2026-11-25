@@ -16,7 +16,7 @@
 
 import { Progress } from '@backstage/frontend-plugin-api';
 import { appThemeApiRef, useApi } from '@backstage/core-plugin-api';
-import { Alert, Box, Card, CardHeader, Text } from '@backstage/ui';
+import { Alert, Box, Card, CardHeader, CardBody, Text } from '@backstage/ui';
 import useObservable from 'react-use/esm/useObservable';
 import ReactJson from 'react-json-view';
 import { useConfig } from '../../../hooks';
@@ -57,11 +57,26 @@ export const ConfigContent = () => {
   if (loading) {
     return <Progress />;
   } else if (error) {
-    return <Alert status="danger" description={error.message} />;
+    return (
+      <Alert
+        status="danger"
+        icon
+        role="alert"
+        title="Could not load configuration"
+        description={error.message}
+      />
+    );
   }
 
   if (!configInfo) {
-    return <Alert status="danger" description="Unable to load config data" />;
+    return (
+      <Alert
+        status="danger"
+        icon
+        role="alert"
+        title="Unable to load config data"
+      />
+    );
   }
 
   return (
@@ -75,12 +90,17 @@ export const ConfigContent = () => {
         />
       )}
       <Card className={styles.panel}>
-        <CardHeader className={styles.header}>
+        <CardHeader>
           <Text as="h2" variant="title-small">
             Configuration
           </Text>
         </CardHeader>
-        <div className={styles.jsonViewer}>
+        <CardBody
+          className={styles.jsonViewer}
+          role="region"
+          aria-label="Configuration JSON"
+          tabIndex={0}
+        >
           <ReactJson
             src={configInfo.config as object}
             name="config"
@@ -93,7 +113,7 @@ export const ConfigContent = () => {
             }}
             theme={isDark ? 'chalk' : 'rjv-default'}
           />
-        </div>
+        </CardBody>
       </Card>
     </Box>
   );

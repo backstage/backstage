@@ -18,6 +18,8 @@ import { ReactNode } from 'react';
 import { get, orderBy } from 'lodash';
 import {
   ColumnConfig,
+  Button,
+  Flex,
   Card,
   CardHeader,
   CardBody,
@@ -72,23 +74,46 @@ export function DevToolsTable<T extends TableItem>({
 
   return (
     <Card className={styles.panel}>
-      <CardHeader className={styles.header}>
-        <Text as="h2" variant="title-small">
-          {title}
-        </Text>
-        <SearchField
-          className={styles.search}
-          placeholder="Search"
-          aria-label={`Search ${title}`}
-          value={search.value}
-          onChange={search.onChange}
-        />
+      <CardHeader>
+        <Flex
+          align="center"
+          justify="between"
+          gap="3"
+          className={styles.toolbar}
+        >
+          <Text as="h2" variant="title-small">
+            {title}
+          </Text>
+          <SearchField
+            className={styles.search}
+            placeholder="Search"
+            aria-label={`Search ${title}`}
+            value={search.value}
+            onChange={search.onChange}
+          />
+        </Flex>
       </CardHeader>
-      <CardBody className={styles.tableBody}>
+      <CardBody>
         <Table
           {...tableProps}
           columnConfig={columns}
-          emptyState={<div className={styles.emptyState}>{emptyState}</div>}
+          emptyState={
+            <div className={styles.emptyState}>
+              {search.value ? (
+                <Flex direction="column" align="center" gap="3">
+                  <Text color="secondary">No results found</Text>
+                  <Button
+                    variant="secondary"
+                    onPress={() => search.onChange('')}
+                  >
+                    Reset search
+                  </Button>
+                </Flex>
+              ) : (
+                emptyState
+              )}
+            </div>
+          }
         />
       </CardBody>
     </Card>

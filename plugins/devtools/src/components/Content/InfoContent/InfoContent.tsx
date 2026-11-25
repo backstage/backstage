@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import type { ReactElement } from 'react';
-import { Progress } from '@backstage/frontend-plugin-api';
+import { useState, type ReactElement } from 'react';
+import { useApi } from '@backstage/core-plugin-api';
+import { Progress, toastApiRef } from '@backstage/frontend-plugin-api';
 import {
   Alert,
   Box,
@@ -36,20 +37,6 @@ import {
 } from '@remixicon/react';
 import { BackstageLogoIcon } from './BackstageLogoIcon';
 import styles from '../Content.module.css';
-import { DevToolsInfo } from '@backstage/plugin-devtools-common';
-
-const copyToClipboard = ({ about }: { about: DevToolsInfo | undefined }) => {
-  if (about) {
-    let formatted = `OS: ${about.operatingSystem}\nResources: ${about.resourceUtilization}\nnode: ${about.nodeJsVersion}\nbackstage: ${about.backstageVersion}\nDependencies:\n`;
-    const deps = about.dependencies;
-    for (const key in deps) {
-      if (Object.prototype.hasOwnProperty.call(deps, key)) {
-        formatted = `${formatted}    ${deps[key].name}: ${deps[key].versions}\n`;
-      }
-    }
-    window.navigator.clipboard.writeText(formatted);
-  }
-};
 
 const InfoCell = ({
   icon,
@@ -61,9 +48,9 @@ const InfoCell = ({
   value: string | undefined;
 }) => (
   <div className={styles.summaryItem}>
-    <span className={styles.summaryIcon} aria-hidden="true">
+    <Box className={styles.summaryIcon} aria-hidden="true">
       {icon}
-    </span>
+    </Box>
     <Flex direction="column" gap="1">
       <Text variant="body-small" color="secondary">
         {label}
@@ -75,9 +62,16 @@ const InfoCell = ({
   </div>
 );
 
-/** @public */
+/**
+ * Displays runtime information and package dependencies. The copy action reports
+ * its result through the app's notifications.
+ *
+ * @public
+ */
 export const InfoContent = () => {
   const { about, loading, error } = useInfo();
+  const toastApi = useApi(toastApiRef);
+  const [copying, setCopying] = useState(false);
 
   if (loading) {
     return <Progress />;
@@ -87,39 +81,79 @@ export const InfoContent = () => {
   return (
     <Box className={styles.stack}>
       <Card className={styles.panel}>
-        <CardHeader className={styles.header}>
-          <Text as="h2" variant="title-small">
-            System information
-          </Text>
-          <Button
-            variant="secondary"
-            onPress={() => copyToClipboard({ about })}
-            iconStart={<RiFileCopyLine size={16} />}
+        <CardHeader>
+          <Flex
+            align="center"
+            justify="between"
+            gap="3"
+            className={styles.toolbar}
           >
-            Copy info
-          </Button>
+            <Text as="h2" variant="title-small">
+              System information
+            </Text>
+            <Button
+              variant="secondary"
+              isDisabled={!about}
+              isPending={copying}
+              onPress={async () => {
+                if (!about) return;
+                setCopying(true);
+                try {
+                  await window.navigator.clipboard.writeText(
+                    [
+                      `OS: ${about.operatingSystem}`,
+                      `Resources: ${about.resourceUtilization}`,
+                      `node: ${about.nodeJsVersion}`,
+                      `backstage: ${about.backstageVersion}`,
+                      'Dependencies:',
+                      ...about.dependencies.map(
+                        dep => `    ${dep.name}: ${dep.versions}`,
+                      ),
+                      '',
+                    ].join('\n'),
+                  );
+                  toastApi.post({
+                    title: 'System information copied',
+                    status: 'success',
+                  });
+                } catch {
+                  toastApi.post({
+                    title: 'Could not copy system information',
+                    status: 'danger',
+                  });
+                } finally {
+                  setCopying(false);
+                }
+              }}
+              iconStart={<RiFileCopyLine size={16} />}
+            >
+              Copy info
+            </Button>
+          </Flex>
         </CardHeader>
-        <CardBody className={styles.summaryGrid}>
-          <InfoCell
-            icon={<RiComputerLine size={20} />}
-            label="Operating system"
-            value={about?.operatingSystem}
-          />
-          <InfoCell
-            icon={<RiCpuLine size={20} />}
-            label="Resources"
-            value={about?.resourceUtilization}
-          />
-          <InfoCell
-            icon={<RiNodejsLine size={20} />}
-            label="Node.js"
-            value={about?.nodeJsVersion}
-          />
-          <InfoCell
-            icon={<BackstageLogoIcon width={20} height={20} />}
-            label="Backstage"
-            value={about?.backstageVersion}
-          />
+        <CardBody>
+          <div className={styles.summaryGrid}>
+            <InfoCell
+              icon={<RiComputerLine size={20} />}
+              label="Operating system"
+              value={about?.operatingSystem}
+            />
+            <InfoCell
+              icon={<RiCpuLine size={20} />}
+              label="Resources"
+              value={about?.resourceUtilization}
+            />
+            <InfoCell
+              icon={<RiNodejsLine size={20} />}
+              label="Node.js"
+              value={about?.nodeJsVersion}
+            />
+            <InfoCell
+              icon={<BackstageLogoIcon width={20} height={20} />}
+              label="Backstage"
+              value={about?.backstageVersion}
+            />
+          </div>
         </CardBody>
       </Card>
       <InfoDependenciesTable infoDependencies={about?.dependencies} />
