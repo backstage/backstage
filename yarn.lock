@@ -26807,6 +26807,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"entities@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "entities@npm:9.0.0"
+  checksum: 10/bbb55a5c7e701f484fd0fbf6d9ffc9748b6eac9d27cdf73d18a1917e18efc0d8cf747bbd363018921fd0c3fa7f8fc6d2940bfa751363a2194c90840acc9dc716
+  languageName: node
+  linkType: hard
+
 "env-paths@npm:^2.2.0, env-paths@npm:^2.2.1":
   version: 2.2.1
   resolution: "env-paths@npm:2.2.1"
@@ -37682,11 +37689,11 @@ __metadata:
   linkType: hard
 
 "parse5@npm:^8.0.0":
-  version: 8.0.0
-  resolution: "parse5@npm:8.0.0"
+  version: 8.1.1
+  resolution: "parse5@npm:8.1.1"
   dependencies:
-    entities: "npm:^6.0.0"
-  checksum: 10/1973850932bb1cbd52ab64502761489fbe1bb43a52dee7ce41aac0b6c33a51a92aaee04661590b0912b739ae9ee316bce4c78c8ea34af42a7e522c983c3c6cf5
+    entities: "npm:^9.0.0"
+  checksum: 10/715d98bbd618d25f28316642060b26fde79a619dc342f07f5ad7243327e378ee949a4029d0aae025ffe4b5eed801f5c8badb852ce29c96fe62c8e48b410113ba
   languageName: node
   linkType: hard
 
