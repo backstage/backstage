@@ -26427,14 +26427,14 @@ __metadata:
   linkType: hard
 
 "dompurify@npm:^3.1.7, dompurify@npm:^3.4.12, dompurify@npm:^3.4.17":
-  version: 3.4.18
-  resolution: "dompurify@npm:3.4.18"
+  version: 3.5.0
+  resolution: "dompurify@npm:3.5.0"
   dependencies:
     "@types/trusted-types": "npm:^2.0.7"
   dependenciesMeta:
     "@types/trusted-types":
       optional: true
-  checksum: 10/31e14c5c1dd1156196b71ed648f5f95f78c576f6673120f025c4d4007a05d31ac951e2e9c78a2de578a28eb00e6bbec7cfa7b3617cb6eb231df0d628df94af82
+  checksum: 10/958811c76d518c10683b78c06701552f3dd5fbc3b2de0070de5ebaa14bfd7587e1e6953e8c60852b87e02ae8e84174666f165849f6940b48efc913379e856423
   languageName: node
   linkType: hard
 
