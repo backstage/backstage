@@ -213,9 +213,7 @@ describe('EntityLayout', () => {
       },
     );
 
-    await waitFor(() =>
-      expect(document.title).toContain('team-a/my-service'),
-    );
+    await waitFor(() => expect(document.title).toContain('team-a/my-service'));
     expect(document.title).not.toContain('team-a/my-service in team-a');
   });
 
