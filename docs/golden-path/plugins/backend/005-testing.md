@@ -22,7 +22,7 @@ yarn test plugins/todo-backend
 Your scaffolded plugin already includes a `src/router.test.ts`. It spins up the router on top of a real Express app, then uses `supertest` to drive HTTP traffic through it:
 
 ```ts title="src/router.test.ts"
-import { mockServices } from '@backstage/backend-test-utils';
+import { mockErrorHandler, mockServices } from '@backstage/backend-test-utils';
 import express from 'express';
 import request from 'supertest';
 import { createRouter } from './router';
@@ -38,9 +38,14 @@ describe('createRouter', () => {
         getTodo: jest.fn(),
         createTodo: jest.fn(),
         syncTodosFromSource: jest.fn(),
+        // Not called by these routes, but required by the service's type.
+        listOwnedSources: jest.fn(),
+        createTodos: jest.fn(),
       },
     });
-    app = express().use(router);
+    // The error middleware maps `InputError` to 400 and `NotFoundError` to 404.
+    // Without it, Express turns those errors into 500 responses.
+    app = express().use(router).use(mockErrorHandler());
   });
 
   it('returns the list of todos', async () => {
@@ -123,8 +128,10 @@ The trick is to wrap the express app with `wrapServer` from `@backstage/backend-
 
     beforeAll(async () => {
       const router = await createRouter({ /* ... */ });
--     app = express().use(router);
-+     app = await wrapServer(express().use(router));
+-     app = express().use(router).use(mockErrorHandler());
++     app = await wrapServer(
++       express().use(router).use(mockErrorHandler()),
++     );
     });
 ```
 

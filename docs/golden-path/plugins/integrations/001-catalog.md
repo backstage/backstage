@@ -112,9 +112,12 @@ Add the field to the `TodoItem` interface introduced in [Persistence](../backend
 ```
 
 Add a matching column to the database. Earlier chapters may already have
-created TODOs, so use your test Component as the default when the migration
-fills those existing rows. Replace `component:default/petstore` with the entity
-reference you are using:
+created TODOs. TODOs found by the source sync in
+[Git-tracked TODOs](../backend/004-reading-from-source.md) already store the
+Component they were found in as `entity_ref`, so the migration copies that value
+into the new column. Any other existing TODO was created by hand and has no
+Component yet, so it gets your test Component as a default. Replace
+`component:default/petstore` with the entity reference you are using:
 
 ```js title="plugins/todo-backend/migrations/<timestamp>_add_for_entity_ref.js"
 const existingTodoEntityRef = 'component:default/petstore';
@@ -127,6 +130,11 @@ exports.up = async knex => {
       .defaultTo(existingTodoEntityRef)
       .index();
   });
+
+  // Scanned TODOs already record the Component they came from.
+  await knex('todo')
+    .whereNotNull('entity_ref')
+    .update({ for_entity_ref: knex.ref('entity_ref') });
 };
 
 exports.down = async knex => {
@@ -136,9 +144,25 @@ exports.down = async knex => {
 };
 ```
 
-The default gives older rows a valid reference on both SQLite and PostgreSQL.
-The create route below always supplies `for_entity_ref` explicitly for new
+The default gives older manually created rows a valid reference on both SQLite
+and PostgreSQL. The create route below always supplies `for_entity_ref` explicitly for new
 TODOs.
+
+The source sync from the previous chapter builds its TODOs without this field,
+so make it set `forEntityRef` to the Component it scanned:
+
+```diff title="plugins/todo-backend/src/services/TodoListService.ts"
+         discovered.push({
+           todo: {
+             id: crypto.randomUUID(),
+             title: title.trim() || lines[i].trim(),
+             createdBy: author?.trim()
+               ? `user:default/${author.trim()}`
+               : entityRef,
++            forEntityRef: entityRef,
+             createdAt: new Date().toISOString(),
+           },
+```
 
 Update the row type and the mappers in `TodoListService` to carry the new field:
 
@@ -325,6 +349,10 @@ export async function createRouter({
     res.json(result);
   });
   /* highlight-add-end */
+
+  // ... the existing routes ...
+
+  return router;
 }
 ```
 

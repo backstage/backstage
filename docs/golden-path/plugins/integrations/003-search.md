@@ -56,8 +56,8 @@ You will:
 5. Choose how TODO matches appear in the search results.
 6. Test Search as an owner and a non-owner.
 
-Create a shared package if the todo plugin does not already have one, then
-create a Search backend module:
+The `@internal/backstage-plugin-todo-common` package comes from
+[Permissions](002-permissions.md). Create a Search backend module:
 
 ```shell
 yarn new --select backend-plugin-module --option pluginId=search
@@ -251,7 +251,9 @@ export const searchModuleTodo = createBackendModule({
 });
 ```
 
-Install the module in `packages/backend/src/index.ts`:
+`yarn new` already added the module to `packages/backend/src/index.ts`. Confirm
+that this line is present, and add it only if it is missing. Registering the
+same module twice prevents the backend from starting:
 
 ```ts
 backend.add(import('@internal/backstage-plugin-search-backend-module-todo'));

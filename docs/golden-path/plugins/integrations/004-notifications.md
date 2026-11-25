@@ -99,8 +99,8 @@ Carry the fields through the service and database row types:
    title: string;
    created_by: string;
    for_entity_ref: string;
-+  due_at: string | null;
-+  reminder_sent_at: string | null;
++  due_at: string | Date | null;
++  reminder_sent_at: string | Date | null;
    created_at: string;
  }
 ```
@@ -126,11 +126,20 @@ Update the row mappers in the same file so writes and reads carry both fields:
      title: row.title,
      createdBy: row.created_by,
      forEntityRef: row.for_entity_ref,
-+    dueAt: row.due_at ?? undefined,
-+    reminderSentAt: row.reminder_sent_at ?? undefined,
++    dueAt: toIsoString(row.due_at),
++    reminderSentAt: toIsoString(row.reminder_sent_at),
      createdAt: row.created_at,
    };
  }
+```
+
+PostgreSQL returns timestamp columns as `Date` objects, while SQLite returns
+strings. Add a helper next to the mappers that always produces an ISO string:
+
+```ts title="plugins/todo-backend/src/services/TodoListService.ts"
+function toIsoString(value: string | Date | null): string | undefined {
+  return value === null ? undefined : new Date(value).toISOString();
+}
 ```
 
 `reminderSentAt` prevents duplicate reminders. It stays empty until

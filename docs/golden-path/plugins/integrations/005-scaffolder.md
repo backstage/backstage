@@ -180,7 +180,9 @@ export const scaffolderModuleTodo = createBackendModule({
 });
 ```
 
-Install the module in `packages/backend/src/index.ts`:
+`yarn new` already added the module to `packages/backend/src/index.ts`. Confirm
+that this line is present, and add it only if it is missing. Registering the
+same module twice prevents the backend from starting:
 
 ```ts
 backend.add(

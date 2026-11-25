@@ -57,11 +57,19 @@ You will:
 6. Apply the same ownership check when users create TODOs.
 7. Test the result with an owner and a non-owner.
 
-Install the permission packages:
+Create a common package for the todo plugin. It holds the permission definition
+that the backend, the app, and later chapters all import:
+
+```shell
+yarn new --select plugin-common-library --option pluginId=todo --option owner=
+```
+
+`yarn new` does not add a library to the packages that use it, so add the
+permission packages and install the common package where it is imported:
 
 ```shell
 yarn workspace @internal/backstage-plugin-todo-common add @backstage/plugin-permission-common
-yarn workspace @internal/backstage-plugin-todo-backend add @backstage/plugin-permission-common @backstage/plugin-permission-node
+yarn workspace @internal/backstage-plugin-todo-backend add @backstage/plugin-permission-common @backstage/plugin-permission-node @internal/backstage-plugin-todo-common
 yarn workspace backend add @backstage/catalog-model @backstage/plugin-catalog-node @internal/backstage-plugin-todo-common
 ```
 
@@ -384,7 +392,7 @@ class CatalogOwnerTodoPolicy implements PermissionPolicy {
   }
 }
 
-export const permissionsPolicyExtension = createBackendModule({
+export default createBackendModule({
   pluginId: 'permission',
   moduleId: 'catalog-owner-todos',
   register(reg) {

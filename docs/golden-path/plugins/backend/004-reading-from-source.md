@@ -92,6 +92,13 @@ async listOwnedSources(options: {
     options.credentials,
   );
 
+  // The catalog client drops an empty filter value instead of matching
+  // nothing, so without this guard the query below would return every
+  // Component. A user with no ownership references owns no sources.
+  if (ownershipEntityRefs.length === 0) {
+    return [];
+  }
+
   const { items } = await this.#catalog.getEntities(
     {
       filter: {
