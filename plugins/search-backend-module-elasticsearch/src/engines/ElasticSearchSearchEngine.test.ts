@@ -788,6 +788,7 @@ describe('ElasticSearchSearchEngine', () => {
         body: {
           query: {
             bool: {
+              minimum_should_match: 1,
               should: {
                 multi_match: {
                   query: 'testTerm',
@@ -827,6 +828,7 @@ describe('ElasticSearchSearchEngine', () => {
         body: {
           query: {
             bool: {
+              minimum_should_match: 1,
               should: {
                 match_all: {},
               },
@@ -862,6 +864,7 @@ describe('ElasticSearchSearchEngine', () => {
         body: {
           query: {
             bool: {
+              minimum_should_match: 1,
               should: {
                 match_all: {},
               },
