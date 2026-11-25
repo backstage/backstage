@@ -167,4 +167,102 @@ describe('JWKSHandler', () => {
       subject: `external:${validEntry.options.subjectPrefix}:${mockSubject}`,
     });
   });
+
+  describe('subjectPattern', () => {
+    const gitlabSubject =
+      'project_path:my-group/my-project:ref_type:branch:ref:main';
+
+    async function verify(subjectPattern: string | string[], sub: string) {
+      const context = jwksTokenHandler.initialize({
+        options: new ConfigReader({
+          url: `${mockBaseUrl}/.well-known/jwks.json`,
+          algorithm: 'RS256',
+          issuer: mockBaseUrl,
+          audience: 'backstage',
+          subjectPattern,
+        }),
+      });
+      const token = await factory.issueToken({ claims: { sub } });
+      return jwksTokenHandler.verifyToken(token, context);
+    }
+
+    it('accepts a subject matching the pattern', async () => {
+      await expect(
+        verify(
+          'project_path:my-group/[^:]+:ref_type:branch:ref:main',
+          gitlabSubject,
+        ),
+      ).resolves.toEqual({ subject: `external:${gitlabSubject}` });
+    });
+
+    it('rejects a subject not matching the pattern', async () => {
+      await expect(
+        verify(
+          'project_path:other-group/[^:]+:ref_type:branch:ref:main',
+          gitlabSubject,
+        ),
+      ).resolves.toBeUndefined();
+    });
+
+    it('requires the pattern to match the whole subject', async () => {
+      await expect(
+        verify('my-group/my-project', gitlabSubject),
+      ).resolves.toBeUndefined();
+      await expect(
+        verify(
+          'project_path:my-group/my-project:ref_type:branch:ref:main',
+          `${gitlabSubject}-evil`,
+        ),
+      ).resolves.toBeUndefined();
+      await expect(
+        verify(
+          'project_path:my-group/my-project:ref_type:branch:ref:main',
+          `evil-${gitlabSubject}`,
+        ),
+      ).resolves.toBeUndefined();
+    });
+
+    it('anchors every alternative in the pattern', async () => {
+      await expect(
+        verify('other|project_path:my-group/.*', `evil:${gitlabSubject}`),
+      ).resolves.toBeUndefined();
+      await expect(
+        verify('other|project_path:my-group/.*', gitlabSubject),
+      ).resolves.toEqual({ subject: `external:${gitlabSubject}` });
+    });
+
+    it('accepts a subject matching any of several patterns', async () => {
+      await expect(
+        verify(
+          ['project_path:other-group/.*', 'project_path:my-group/.*'],
+          gitlabSubject,
+        ),
+      ).resolves.toEqual({ subject: `external:${gitlabSubject}` });
+    });
+
+    it('does not split patterns on commas or spaces', async () => {
+      await expect(verify('test_[a-z]{1,10}', mockSubject)).resolves.toEqual({
+        subject: `external:${mockSubject}`,
+      });
+    });
+
+    it('rejects invalid patterns at startup', () => {
+      expect(() =>
+        jwksTokenHandler.initialize({
+          options: new ConfigReader({
+            url: `${mockBaseUrl}/.well-known/jwks.json`,
+            subjectPattern: 'project_path:(unclosed',
+          }),
+        }),
+      ).toThrow(/Illegal subjectPattern 'project_path:\(unclosed'/);
+      expect(() =>
+        jwksTokenHandler.initialize({
+          options: new ConfigReader({
+            url: `${mockBaseUrl}/.well-known/jwks.json`,
+            subjectPattern: [],
+          }),
+        }),
+      ).toThrow('Illegal subjectPattern, must be a non-empty string');
+    });
+  });
 });

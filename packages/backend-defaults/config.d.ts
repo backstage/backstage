@@ -535,6 +535,17 @@ export interface Config {
                */
               audience?: string | string[];
               /**
+               * Sets the regular expression(s) that the `sub` claim of the JWT tokens
+               * must match. Each pattern must match the entire subject, so it is
+               * implicitly anchored with `^` and `$`. If several patterns are given,
+               * the subject must match at least one of them.
+               *
+               * This is useful when the JWKS endpoint is shared by many token issuers,
+               * for example CI/CD OIDC providers, where the issuer and audience alone
+               * do not identify the caller.
+               */
+              subjectPattern?: string | string[];
+              /**
                * Sets an optional subject prefix. Passes the subject to called plugins.
                * Useful for debugging and tracking purposes.
                */
