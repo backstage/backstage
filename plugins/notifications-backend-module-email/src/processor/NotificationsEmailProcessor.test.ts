@@ -443,6 +443,46 @@ describe('NotificationsEmailProcessor', () => {
     });
   });
 
+  it('should escape description and link in the default email HTML', async () => {
+    (createTransport as jest.Mock).mockReturnValue(mockTransport);
+    const processor = new NotificationsEmailProcessor(
+      logger,
+      mockServices.rootConfig({ data: DEFAULT_SENDMAIL_CONFIG }),
+      catalogServiceMock({ entities: DEFAULT_ENTITIES_RESPONSE.items }),
+      auth,
+    );
+    const description =
+      'Hello <b>team</b> & "friends"\n<img src="https://evil.example/pixel.png">\r\nBye';
+    const link = 'https://backstage.io/search?a=1&b=2';
+
+    await processor.postProcess(
+      {
+        origin: 'plugin',
+        id: '1234',
+        user: 'user:default/mock',
+        created: new Date(),
+        payload: { title: 'notification', description, link },
+      },
+      {
+        recipients: { type: 'entity', entityRef: 'user:default/mock' },
+        payload: { title: 'notification' },
+      },
+    );
+
+    expect(sendmailMock).toHaveBeenCalledWith({
+      from: 'backstage@backstage.io',
+      html:
+        '<p>Hello &lt;b&gt;team&lt;/b&gt; &amp; &quot;friends&quot;' +
+        '<br/>&lt;img src=&quot;https://evil.example/pixel.png&quot;&gt;' +
+        '<br/>Bye' +
+        '<br/><a href="https://backstage.io/search?a=1&amp;b=2">https://backstage.io/search?a=1&amp;b=2</a></p>',
+      replyTo: undefined,
+      subject: 'notification',
+      text: `${description}\n\n${link}`,
+      to: 'mock@backstage.io',
+    });
+  });
+
   it('should send email with ses config', async () => {
     const SES_SENDMAIL_CONFIG = {
       app: {
