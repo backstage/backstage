@@ -68,10 +68,13 @@ function headerProps(
         .primaryTitle
     : paramName ?? '';
 
+  const showNamespace =
+    Boolean(namespace) &&
+    namespace !== DEFAULT_NAMESPACE &&
+    !name.startsWith(`${namespace}/`);
+
   return {
-    headerTitle: `${name}${
-      namespace && namespace !== DEFAULT_NAMESPACE ? ` in ${namespace}` : ''
-    }`,
+    headerTitle: `${name}${showNamespace ? ` in ${namespace}` : ''}`,
     headerType: (() => {
       let t = kind.toLowerCase();
       if (entity && entity.spec && 'type' in entity.spec) {

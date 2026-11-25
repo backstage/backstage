@@ -143,4 +143,82 @@ describe('EntityHeader', () => {
 
     expect(screen.getByRole('banner')).toBeInTheDocument();
   });
+
+  it('does not duplicate namespace in title when namespaced entity has no title', async () => {
+    const namespacedEntity: Entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        name: 'my-service',
+        namespace: 'team-a',
+      },
+      spec: {
+        type: 'service',
+      },
+    };
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          catalogApiMock({ entities: [namespacedEntity] }),
+          mockApis.alert(),
+          [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+          mockApis.permission(),
+        ]}
+      >
+        <EntityProvider entity={namespacedEntity}>
+          <EntityHeader />
+        </EntityProvider>
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    // Entity has no title, so primaryTitle is 'team-a/my-service'.
+    // Document title should be 'team-a/my-service' without repeating 'in team-a'.
+    await waitFor(() => expect(document.title).toContain('team-a/my-service'));
+    expect(document.title).not.toContain('team-a/my-service in team-a');
+  });
+
+  it('includes namespace suffix when namespaced entity has an explicit title', async () => {
+    const namespacedEntityWithTitle: Entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        name: 'my-service',
+        namespace: 'team-a',
+        title: 'My Service',
+      },
+      spec: {
+        type: 'service',
+      },
+    };
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          catalogApiMock({ entities: [namespacedEntityWithTitle] }),
+          mockApis.alert(),
+          [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+          mockApis.permission(),
+        ]}
+      >
+        <EntityProvider entity={namespacedEntityWithTitle}>
+          <EntityHeader />
+        </EntityProvider>
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    await waitFor(() =>
+      expect(document.title).toContain('My Service in team-a'),
+    );
+  });
 });
