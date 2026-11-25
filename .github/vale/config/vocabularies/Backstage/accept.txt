@@ -51,6 +51,8 @@ breakpoint
 Brex
 broadcasted
 bugfixes
+Buildkite
+buildkite
 BUIProvider
 builtins
 bundler
@@ -67,6 +69,7 @@ changesets
 chanwit
 Chanwit
 CI/CD
+circleci
 classname
 cleye
 cli
@@ -259,6 +262,7 @@ Kuang
 kubectl
 kubernetes
 Lainfiesta
+launchdarkly
 ldap
 learnings
 Leasot

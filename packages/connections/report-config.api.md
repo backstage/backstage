@@ -321,6 +321,36 @@ export const connectionTypes: {
         }
     )[];
   }>;
+  readonly buildkite: ConnectionTypeDefinition<{
+    type: 'buildkite';
+    cardinality: 'multiton';
+    query: {
+      url: string;
+    };
+    configSchema: {
+      baseUrl: string;
+      apiBaseUrl?: string | undefined;
+    };
+    auth: readonly {
+      method: 'token';
+      token: string;
+    }[];
+  }>;
+  readonly circleci: ConnectionTypeDefinition<{
+    type: 'circleci';
+    cardinality: 'multiton';
+    query: {
+      url: string;
+    };
+    configSchema: {
+      baseUrl: string;
+      apiBaseUrl?: string | undefined;
+    };
+    auth: readonly {
+      method: 'token';
+      token: string;
+    }[];
+  }>;
   readonly datadog: ConnectionTypeDefinition<{
     type: 'datadog';
     cardinality: 'multiton';
@@ -335,6 +365,36 @@ export const connectionTypes: {
       method: 'apiKey';
       apiKey: string;
       applicationKey: string;
+    }[];
+  }>;
+  readonly dynatrace: ConnectionTypeDefinition<{
+    type: 'dynatrace';
+    cardinality: 'multiton';
+    query: {
+      url: string;
+    };
+    configSchema: {
+      baseUrl: string;
+      apiBaseUrl?: string | undefined;
+    };
+    auth: readonly {
+      method: 'token';
+      token: string;
+    }[];
+  }>;
+  readonly fossa: ConnectionTypeDefinition<{
+    type: 'fossa';
+    cardinality: 'multiton';
+    query: {
+      url: string;
+    };
+    configSchema: {
+      baseUrl: string;
+      apiBaseUrl?: string | undefined;
+    };
+    auth: readonly {
+      method: 'token';
+      token: string;
     }[];
   }>;
   readonly gerrit: ConnectionTypeDefinition<{
@@ -535,6 +595,36 @@ export const connectionTypes: {
         }
     )[];
   }>;
+  readonly launchdarkly: ConnectionTypeDefinition<{
+    type: 'launchdarkly';
+    cardinality: 'multiton';
+    query: {
+      url: string;
+    };
+    configSchema: {
+      baseUrl: string;
+      apiBaseUrl?: string | undefined;
+    };
+    auth: readonly {
+      method: 'token';
+      token: string;
+    }[];
+  }>;
+  readonly 'octopus-deploy': ConnectionTypeDefinition<{
+    type: 'octopus-deploy';
+    cardinality: 'multiton';
+    query: {
+      url: string;
+    };
+    configSchema: {
+      baseUrl: string;
+      apiBaseUrl?: string | undefined;
+    };
+    auth: readonly {
+      method: 'apiKey';
+      apiKey: string;
+    }[];
+  }>;
   readonly pagerduty: ConnectionTypeDefinition<{
     type: 'pagerduty';
     cardinality: 'multiton';
@@ -544,6 +634,36 @@ export const connectionTypes: {
     configSchema: {
       apiBaseUrl: string;
       baseUrl: string;
+    };
+    auth: readonly {
+      method: 'token';
+      token: string;
+    }[];
+  }>;
+  readonly rollbar: ConnectionTypeDefinition<{
+    type: 'rollbar';
+    cardinality: 'multiton';
+    query: {
+      url: string;
+    };
+    configSchema: {
+      baseUrl: string;
+      apiBaseUrl?: string | undefined;
+    };
+    auth: readonly {
+      method: 'token';
+      token: string;
+    }[];
+  }>;
+  readonly sentry: ConnectionTypeDefinition<{
+    type: 'sentry';
+    cardinality: 'multiton';
+    query: {
+      url: string;
+    };
+    configSchema: {
+      baseUrl: string;
+      apiBaseUrl?: string | undefined;
     };
     auth: readonly {
       method: 'token';

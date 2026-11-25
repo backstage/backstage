@@ -21,7 +21,11 @@ import { AzureBlobStorageConnectionType } from '../schema/azureBlobStorage';
 import { AzureConnectionType } from '../schema/azure';
 import { BitbucketCloudConnectionType } from '../schema/bitbucketCloud';
 import { BitbucketServerConnectionType } from '../schema/bitbucketServer';
+import { BuildkiteConnectionType } from '../schema/buildkite';
+import { CircleCiConnectionType } from '../schema/circleci';
 import { DatadogConnectionType } from '../schema/datadog';
+import { DynatraceConnectionType } from '../schema/dynatrace';
+import { FossaConnectionType } from '../schema/fossa';
 import { GerritConnectionType } from '../schema/gerrit';
 import { GiteaConnectionType } from '../schema/gitea';
 import { GithubConnectionType } from '../schema/github';
@@ -31,7 +35,11 @@ import { GrafanaConnectionType } from '../schema/grafana';
 import { HarnessConnectionType } from '../schema/harness';
 import { JenkinsConnectionType } from '../schema/jenkins';
 import { JiraConnectionType } from '../schema/jira';
+import { LaunchDarklyConnectionType } from '../schema/launchdarkly';
+import { OctopusDeployConnectionType } from '../schema/octopusDeploy';
 import { PagerDutyConnectionType } from '../schema/pagerduty';
+import { RollbarConnectionType } from '../schema/rollbar';
+import { SentryConnectionType } from '../schema/sentry';
 import { SnykConnectionType } from '../schema/snyk';
 import { SonarqubeConnectionType } from '../schema/sonarqube';
 import type { ConnectionTypeDefinition } from '../api/ConnectionType';
@@ -54,7 +62,11 @@ export const connectionTypes = createConnectionTypes({
   'azure-blob-storage': AzureBlobStorageConnectionType,
   'bitbucket-cloud': BitbucketCloudConnectionType,
   'bitbucket-server': BitbucketServerConnectionType,
+  buildkite: BuildkiteConnectionType,
+  circleci: CircleCiConnectionType,
   datadog: DatadogConnectionType,
+  dynatrace: DynatraceConnectionType,
+  fossa: FossaConnectionType,
   gerrit: GerritConnectionType,
   gitea: GiteaConnectionType,
   github: GithubConnectionType,
@@ -64,7 +76,11 @@ export const connectionTypes = createConnectionTypes({
   harness: HarnessConnectionType,
   jenkins: JenkinsConnectionType,
   jira: JiraConnectionType,
+  launchdarkly: LaunchDarklyConnectionType,
+  'octopus-deploy': OctopusDeployConnectionType,
   pagerduty: PagerDutyConnectionType,
+  rollbar: RollbarConnectionType,
+  sentry: SentryConnectionType,
   snyk: SnykConnectionType,
   sonarqube: SonarqubeConnectionType,
 });

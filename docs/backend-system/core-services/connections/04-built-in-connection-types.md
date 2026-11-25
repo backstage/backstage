@@ -43,7 +43,11 @@ selection rules, and a typed consumption example.
 ## Developer platforms
 
 - [Argo CD](./types/argocd.md) supports API token authentication.
+- [Buildkite](./types/buildkite.md) supports API access token authentication.
+- [CircleCI](./types/circleci.md) supports personal API token authentication.
 - [Datadog](./types/datadog.md) supports paired API and application keys.
+- [Dynatrace](./types/dynatrace.md) supports environment API token authentication.
+- [FOSSA](./types/fossa.md) supports API token authentication.
 - [Grafana](./types/grafana.md) supports service-account tokens for Grafana Cloud
   and self-hosted instances, and basic authentication for self-hosted instances.
 - [Harness](./types/harness.md) supports token authentication with an optional
@@ -51,8 +55,12 @@ selection rules, and a typed consumption example.
 - [Jenkins](./types/jenkins.md) supports API tokens and unauthenticated access.
 - [Jira](./types/jira.md) supports Cloud API tokens, Data Center personal access
   tokens and unauthenticated access.
+- [LaunchDarkly](./types/launchdarkly.md) supports REST access token authentication.
+- [Octopus Deploy](./types/octopus-deploy.md) supports API key authentication.
 - [PagerDuty](./types/pagerduty.md) supports account-specific REST API tokens
   with an explicit regional API destination.
+- [Rollbar](./types/rollbar.md) supports account access token authentication.
+- [Sentry](./types/sentry.md) supports API token authentication.
 - [Snyk](./types/snyk.md) supports API tokens for regional API endpoints.
 - [SonarQube](./types/sonarqube.md) supports Bearer tokens, explicit Basic token
   compatibility and unauthenticated access.
