@@ -1,5 +1,15 @@
 # @backstage/plugin-app
 
+## 0.6.1-next.0
+
+### Patch Changes
+
+- 3ab90f0: The built-in default icons no longer trigger the warning about icons registered as `IconComponent`. The warning now only lists icons from icon bundles.
+- e2378df: Updated dependency `i18next` to `^26.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.18.17-next.0
+  - @backstage/integration-react@1.3.1-next.0
+
 ## 0.6.0
 
 ### Minor Changes

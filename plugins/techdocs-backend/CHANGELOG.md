@@ -1,5 +1,15 @@
 # @backstage/plugin-techdocs-backend
 
+## 2.4.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.1-next.0
+  - @backstage/integration@2.2.1-next.0
+  - @backstage/plugin-catalog-node@3.0.1-next.0
+  - @backstage/plugin-techdocs-node@2.3.1-next.0
+
 ## 2.4.3
 
 ### Patch Changes

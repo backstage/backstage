@@ -1,5 +1,23 @@
 # @backstage/plugin-catalog-backend
 
+## 4.0.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.7.5-next.0
+  - @backstage/backend-plugin-api@1.12.1-next.0
+  - @backstage/integration@2.2.1-next.0
+  - @backstage/plugin-catalog-node@3.0.1-next.0
+  - @backstage/plugin-events-node@0.5.1-next.0
+  - @backstage/plugin-permission-node@0.11.7-next.0
+
+## 4.0.5
+
+### Patch Changes
+
+- Bumped version to account for a patch release.
+
 ## 4.0.3
 
 ### Patch Changes

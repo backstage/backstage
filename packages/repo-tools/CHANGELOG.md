@@ -1,5 +1,15 @@
 # @backstage/repo-tools
 
+## 0.19.4-next.0
+
+### Patch Changes
+
+- cc9871a: `package schema openapi generate` now writes an `.openapi-manifest.json` file into each generated directory, and `repo schema openapi validate` uses it to report generated server and client code that is out of date with its `openapi.yaml` or has been edited by hand, along with the command that fixes it. Directories without a manifest, or generated with a different generator version, only produce a warning.
+- 33532db: The OpenAPI `generate` commands no longer run Prettier on generated code, so the output stays as emitted by the generator. Add `**/src/schema/openapi/generated/**` to your `.prettierignore` to keep your formatter from rewriting it.
+- Updated dependencies
+  - @backstage/cli-node@0.3.7-next.0
+  - @backstage/backend-plugin-api@1.12.1-next.0
+
 ## 0.19.3
 
 ### Patch Changes

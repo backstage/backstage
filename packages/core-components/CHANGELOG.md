@@ -1,5 +1,12 @@
 # @backstage/core-components
 
+## 0.18.17-next.0
+
+### Patch Changes
+
+- 831ae9c: Updated dependency `linkify-react` to `4.4.0`.
+  Updated dependency `linkifyjs` to `4.4.0`.
+
 ## 0.18.16
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @backstage/plugin-search
 
+## 1.8.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.17-next.0
+  - @backstage/plugin-catalog-react@4.0.1-next.0
+  - @backstage/plugin-home-react@0.1.45-next.0
+  - @backstage/plugin-search-react@1.12.1-next.0
+
 ## 1.8.0
 
 ### Minor Changes
