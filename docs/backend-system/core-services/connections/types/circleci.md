@@ -45,8 +45,7 @@ See the shared [lookup and credential selection rules](../01-concepts.md#what-ha
 
 ### List a project's pipelines
 
-[Declare a connection
-dependency](../03-consuming-connections.md#declare-and-resolve-the-connection)
+[Declare a connection dependency](../03-consuming-connections.md#declare-and-resolve-the-connection)
 and request `token` authentication. Pass `https://circleci.com/gh/acme/service`,
 `acme` and `service` to this function. The example reads one response page;
 follow the provider's pagination contract when you need the complete result.

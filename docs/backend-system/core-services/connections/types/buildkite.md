@@ -40,8 +40,7 @@ See the shared [lookup and credential selection rules](../01-concepts.md#what-ha
 
 ### List a pipeline's builds
 
-[Declare a connection
-dependency](../03-consuming-connections.md#declare-and-resolve-the-connection)
+[Declare a connection dependency](../03-consuming-connections.md#declare-and-resolve-the-connection)
 and request `token` authentication. Pass the full API resource URL
 `https://api.buildkite.com/v2/organizations/acme/pipelines/service/builds`,
 `acme` and `service` to this function. The example reads one response page;

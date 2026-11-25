@@ -45,8 +45,7 @@ See the shared [lookup and credential selection rules](../01-concepts.md#what-ha
 
 ### List a space's projects
 
-[Declare a connection
-dependency](../03-consuming-connections.md#declare-and-resolve-the-connection)
+[Declare a connection dependency](../03-consuming-connections.md#declare-and-resolve-the-connection)
 and request `apiKey` authentication. Pass
 `https://deploy.example.com/octopus/app#/Spaces-1` and `Spaces-1` to this
 function. The example reads one response page; follow the provider's pagination
