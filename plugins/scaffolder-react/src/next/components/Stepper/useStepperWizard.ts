@@ -87,6 +87,7 @@ export type StepperWizard = {
   isValidating: boolean;
   validationInterrupted: boolean;
   reviewRevalidated: boolean;
+  checkingBeforeReview: boolean;
   isCreating: boolean;
   errors: FormValidation | undefined;
   isStepLabelAllowed: (step: number) => boolean;
@@ -192,25 +193,6 @@ export const useStepperWizard = (
   const pendingStepIndex = steps.findIndex(
     (_, index) => visibleIndices.has(index) && !currentValidations.has(index),
   );
-  // Reconcile the stored cursor with the displayed step before visibility can
-  // change again. Otherwise a previously hidden step can steal the cursor.
-  const nextVisibleStep = visibleSteps.findIndex(
-    step => steps.indexOf(step) >= activeStepIndex,
-  );
-  let activeStep =
-    nextVisibleStep === -1 ? visibleSteps.length : nextVisibleStep;
-  if (
-    activeStepIndex < steps.length &&
-    activeStep === visibleSteps.length &&
-    pendingStepIndex !== -1
-  ) {
-    activeStep = visibleSteps.indexOf(steps[pendingStepIndex]);
-  }
-  const displayedStepIndex =
-    activeStep < visibleSteps.length
-      ? steps.indexOf(visibleSteps[activeStep])
-      : steps.length;
-
   // Revalidation can return to an earlier page whose validator depends on a
   // later page. Keep those visited pages reachable so users can fix the input.
   const definedVisits = useMemo(
@@ -222,6 +204,34 @@ export const useStepperWizard = (
       ),
     [visitedSteps, steps],
   );
+  // Reconcile the stored cursor with the displayed step before visibility can
+  // change again. Otherwise a previously hidden step can steal the cursor.
+  const nextVisibleStep = visibleSteps.findIndex(
+    step => steps.indexOf(step) >= activeStepIndex,
+  );
+  const lastStepDisappeared =
+    activeStepIndex < steps.length && nextVisibleStep === -1;
+  const unvalidatedStepIndex = lastStepDisappeared
+    ? steps.findIndex(
+        (_, index) =>
+          visibleIndices.has(index) && !applicableValidations.has(index),
+      )
+    : -1;
+  const checkingBeforeReview =
+    lastStepDisappeared &&
+    unvalidatedStepIndex === -1 &&
+    pendingStepIndex !== -1;
+  const nextStep =
+    nextVisibleStep === -1 ? visibleSteps.length : nextVisibleStep;
+  const activeStep =
+    unvalidatedStepIndex === -1
+      ? nextStep
+      : visibleSteps.indexOf(steps[unvalidatedStepIndex]);
+  const displayedStepIndex =
+    activeStep < visibleSteps.length
+      ? steps.indexOf(visibleSteps[activeStep])
+      : steps.length;
+
   const currentVisits = useMemo(() => {
     const visits = new Map(
       [...definedVisits].filter(([index]) => visibleIndices.has(index)),
@@ -237,12 +247,14 @@ export const useStepperWizard = (
   // Reconcile visibility, completion and the cursor together before children
   // can dispatch events. Moving this to an effect would expose stale completion.
   if (
-    activeStepIndex !== displayedStepIndex ||
+    (!checkingBeforeReview && activeStepIndex !== displayedStepIndex) ||
     applicableValidations.size !== validatedSteps.size ||
     currentVisits !== visitedSteps
   ) {
     setNavigation({
-      activeStepIndex: displayedStepIndex,
+      activeStepIndex: checkingBeforeReview
+        ? activeStepIndex
+        : displayedStepIndex,
       visitedSteps: currentVisits,
       validatedSteps: applicableValidations,
     });
@@ -482,8 +494,8 @@ export const useStepperWizard = (
 
   const [isCreating, setIsCreating] = useState(false);
 
-  const handleCreate = useCallback(async () => {
-    if (pendingStepIndex !== -1) {
+  const recheckReview = useCallback(
+    async (confirmAgain: boolean) => {
       const attempt = ++validationAttempt.current;
       validationInFlight.current = validationState;
       const isCurrent = () =>
@@ -505,7 +517,9 @@ export const useStepperWizard = (
           return;
         }
         if (result) {
-          if (result.index === steps.length) setCheckedReview(stepsState);
+          if (confirmAgain && result.index === steps.length) {
+            setCheckedReview(stepsState);
+          }
           returnToPending.current = result.index < steps.length;
           setErrors(result.errors);
           setNavigation(current => ({
@@ -514,14 +528,34 @@ export const useStepperWizard = (
             validatedSteps: result.completed,
           }));
         }
+      } catch (error) {
+        if (confirmAgain) throw error;
+        if (isCurrent()) setActiveStepIndex(pendingStepIndex);
       } finally {
         if (validationAttempt.current === attempt) {
           validationInFlight.current = undefined;
           setIsValidating(false);
         }
       }
-      // Reaching review again is deliberate: users see the checked parameters
-      // before a subsequent Create submits them.
+    },
+    [
+      validationState,
+      stepsState,
+      applicableValidations,
+      continueToReview,
+      steps.length,
+      pendingStepIndex,
+      setActiveStepIndex,
+    ],
+  );
+
+  useEffect(() => {
+    if (checkingBeforeReview) void recheckReview(false);
+  }, [checkingBeforeReview, recheckReview]);
+
+  const handleCreate = useCallback(async () => {
+    if (pendingStepIndex !== -1) {
+      await recheckReview(true);
       return;
     }
     setIsCreating(true);
@@ -537,11 +571,7 @@ export const useStepperWizard = (
     filteredFormState,
     onCreate,
     pendingStepIndex,
-    validationState,
-    stepsState,
-    applicableValidations,
-    continueToReview,
-    steps.length,
+    recheckReview,
   ]);
 
   // A label can be activated to revisit a previously visited visible step, or
@@ -577,6 +607,7 @@ export const useStepperWizard = (
     currentVisits,
     isValidating,
     validationInterrupted,
+    checkingBeforeReview,
     reviewRevalidated: checkedReview === stepsState && pendingStepIndex === -1,
     isCreating,
     errors,

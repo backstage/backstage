@@ -163,6 +163,7 @@ export const Stepper = (stepperProps: StepperProps) => {
     isValidating,
     validationInterrupted,
     reviewRevalidated,
+    checkingBeforeReview,
     isCreating,
     errors,
     isStepLabelAllowed,
@@ -220,7 +221,9 @@ export const Stepper = (stepperProps: StepperProps) => {
 
   return (
     <>
-      {isValidating && <LinearProgress variant="indeterminate" />}
+      {(isValidating || checkingBeforeReview) && (
+        <LinearProgress variant="indeterminate" />
+      )}
       {validationInterrupted && (
         <Alert severity="info">{t('stepper.validationInterrupted')}</Alert>
       )}
@@ -246,7 +249,7 @@ export const Stepper = (stepperProps: StepperProps) => {
                         index: index + 1,
                       })
                 }
-                disabled={!isStepLabelAllowed(index)}
+                disabled={checkingBeforeReview || !isStepLabelAllowed(index)}
                 onClick={() => {
                   if (isStepLabelAllowed(index)) {
                     wizard.goToStep(index);
@@ -264,7 +267,7 @@ export const Stepper = (stepperProps: StepperProps) => {
       </MuiStepper>
       <div className={styles.formWrapper} ref={formWrapperRef}>
         {/* eslint-disable-next-line no-nested-ternary */}
-        {activeStep < visibleSteps.length ? (
+        {checkingBeforeReview ? null : activeStep < visibleSteps.length ? (
           <Form
             key={steps.indexOf(visibleSteps[activeStep])}
             validator={validator}

@@ -1389,6 +1389,41 @@ describe('Stepper', () => {
     );
   });
 
+  it('rechecks a visited page before review when the final page hides itself', async () => {
+    const onCreate = jest.fn();
+    await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper
+          manifest={{
+            title: 'Conditional final page',
+            steps: [
+              {
+                title: 'Details',
+                schema: {
+                  properties: { name: { type: 'string' } },
+                },
+              },
+              {
+                title: 'Optional',
+                when: '${{ parameters.enabled }}',
+                schema: {
+                  properties: { enabled: { type: 'boolean' } },
+                },
+              },
+            ],
+          }}
+          initialState={{ enabled: true, name: 'example' }}
+          extensions={[]}
+          onCreate={onCreate}
+        />
+      </SecretsContextProvider>,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    fireEvent.click(await screen.findByRole('checkbox', { name: 'enabled' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
+    expect(onCreate).toHaveBeenCalledWith({ name: 'example' });
+  });
+
   it('stays on review after the last step hides itself', async () => {
     const onCreate = jest.fn();
     const manifest: TemplateParameterSchema = {
