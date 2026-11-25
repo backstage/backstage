@@ -43,6 +43,7 @@ export const WelcomeTitle = ({
   const { value: identity, error } = useAsync(() =>
     identityApi.getBackstageIdentity(),
   );
+  const { value: profile } = useAsync(() => identityApi.getProfileInfo());
 
   useEffect(() => {
     if (error) {
@@ -59,7 +60,15 @@ export const WelcomeTitle = ({
         {greeting.greeting}
         {identity?.userEntityRef ? (
           <>
-            , <EntityDisplayName entityRef={identity.userEntityRef} hideIcon />
+            ,{' '}
+            {profile?.displayName ? (
+              profile.displayName
+            ) : (
+              <EntityDisplayName
+                entityRef={identity.userEntityRef}
+                hideIcon
+              />
+            )}
           </>
         ) : null}
         !
