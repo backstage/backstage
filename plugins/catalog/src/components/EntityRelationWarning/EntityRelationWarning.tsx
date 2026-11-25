@@ -111,9 +111,12 @@ export function EntityRelationWarning() {
     <Alert
       status="warning"
       icon
-      description={t('entityRelationWarningDescription', {
-        summary: summarizeByKind(value),
-      })}
+      description={
+        <>
+          {t('entityRelationWarningDescription')}
+          {summarizeByKind(value)}
+        </>
+      }
     />
   );
 }

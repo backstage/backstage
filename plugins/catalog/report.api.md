@@ -342,7 +342,7 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'catalogExportButton.exportingButtonTitle': 'Exporting…';
     readonly 'catalogExportButton.successMessage': 'Catalog exported successfully';
     readonly entityProcessingErrorsDescription: 'The error below originates from';
-    readonly entityRelationWarningDescription: "This entity has relations to other entities, which can't be found in the catalog or which you don't have access to: {{summary}}";
+    readonly entityRelationWarningDescription: "This entity has relations to other entities, which can't be found in the catalog or which you don't have access to: ";
     readonly 'hasComponentsCard.title': 'Has components';
     readonly 'hasComponentsCard.emptyMessage': 'No component is part of this system.';
     readonly 'hasResourcesCard.title': 'Has resources';
