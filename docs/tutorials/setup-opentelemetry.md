@@ -196,7 +196,7 @@ The following metrics are available:
 - `scaffolder.task.duration`: Duration of a task run
 - `scaffolder.step.count`: Count of step runs
 - `scaffolder.step.duration`: Duration of a step runs
-- `backend_tasks.task.runs.count`: Total number of times a task has been run
+- `backend_tasks.task.runs.count`: Total number of times a task has been run. The `result` label is `started` when a run begins, and `completed`, `failed` or `aborted` when it ends. `aborted` means that the run was stopped by a cancellation or a shutdown
 - `backend_tasks.task.runs.duration`: Histogram of task run durations
 - `backend_tasks.task.runs.started`: Gauge recording the Unix epoch time (seconds) when each task (`taskId` label) was last started
 - `backend_tasks.task.runs.completed`: Gauge recording the Unix epoch time (seconds) when each task (`taskId` label) was last completed

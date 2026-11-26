@@ -265,7 +265,13 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
             span.setAttributes(labels);
             await task.fn(abort);
           } catch (error) {
-            if (error instanceof Error) {
+            // Errors after a shutdown or cancellation aren't task failures
+            const abortCause = getTaskAbortCause(abort);
+            if (
+              error instanceof Error &&
+              abortCause !== 'shutdown' &&
+              abortCause !== 'ticket-lost'
+            ) {
               span.recordException(error);
             }
             throw error;

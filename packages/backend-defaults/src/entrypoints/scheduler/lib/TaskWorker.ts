@@ -28,6 +28,7 @@ import {
 } from './types';
 import {
   abortTask,
+  createTaskTimeoutError,
   getTaskAbortCause,
   nowPlus,
   sleep,
@@ -291,9 +292,11 @@ export class TaskWorker {
     const timeoutHandle = setTimeout(() => {
       abortTask(taskAbortController, 'timeout');
     }, Duration.fromISO(taskSettings.timeoutAfterDuration).as('milliseconds'));
-    const timeoutError = () =>
-      new Error(
-        `Task "${this.taskId}" timed out after ${taskSettings.timeoutAfterDuration}`,
+    const timeoutError = (cause?: unknown) =>
+      createTaskTimeoutError(
+        this.taskId,
+        taskSettings.timeoutAfterDuration,
+        cause,
       );
     let livenessHandle: ReturnType<typeof setTimeout> | undefined;
     const scheduleLivenessCheck = () => {
@@ -315,12 +318,15 @@ export class TaskWorker {
       // Errors thrown after the scheduler itself aborted the run are expected
       // consequences of that abort, and are reported based on its cause.
       const abortCause = getTaskAbortCause(taskAbortController.signal);
+      // Stop the liveness check from acting on this run while it's released
+      taskAbortController.abort();
       if (abortCause === 'shutdown') {
         this.logger.debug(`Task "${this.taskId}" stopped on shutdown, ${e}`);
         await this.tryReleaseTask(ticket, taskSettings);
         return { result: 'run-aborted' };
       } else if (abortCause === 'timeout') {
-        const error = timeoutError();
+        // Keep what the task threw, in case it wasn't caused by the timeout
+        const error = timeoutError(e);
         this.logger.warn(error.message);
         await this.tryReleaseTask(ticket, taskSettings, error);
         return { result: 'failed' };

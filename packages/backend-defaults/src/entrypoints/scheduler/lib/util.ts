@@ -178,3 +178,23 @@ export function getTaskAbortCause(
 ): TaskAbortCause | undefined {
   return taskAbortCauses.get(signal);
 }
+
+/**
+ * Creates the error that is recorded for a task run that timed out, keeping
+ * what the task threw, if anything, as its cause.
+ */
+export function createTaskTimeoutError(
+  taskId: string,
+  timeoutAfterDuration: string,
+  cause?: unknown,
+): Error {
+  const error = new Error(
+    `Task "${taskId}" timed out after ${timeoutAfterDuration}`,
+  );
+  if (cause !== undefined) {
+    // Assigned rather than passed to the constructor, so that it's enumerable
+    // and included when the error is serialized
+    Object.assign(error, { cause });
+  }
+  return error;
+}

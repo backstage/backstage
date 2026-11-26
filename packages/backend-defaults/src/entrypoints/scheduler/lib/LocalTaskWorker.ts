@@ -22,6 +22,7 @@ import { DateTime, Duration } from 'luxon';
 import { TaskSettingsV2, TaskApiTasksResponse } from './types';
 import {
   abortTask,
+  createTaskTimeoutError,
   delegateAbortController,
   getTaskAbortCause,
   serializeError,
@@ -189,8 +190,11 @@ export class LocalTaskWorker {
     this.#taskState.lastRunEndedAt = DateTime.utc().toISO()!;
     const abortCause = getTaskAbortCause(taskAbortController.signal);
     if (abortCause === 'timeout') {
-      const error = new Error(
-        `Task "${this.taskId}" timed out after ${settings.timeoutAfterDuration}`,
+      // Keep what the task threw, in case it wasn't caused by the timeout
+      const error = createTaskTimeoutError(
+        this.taskId,
+        settings.timeoutAfterDuration,
+        thrown?.error,
       );
       this.logger.warn(error.message);
       this.#taskState.lastRunError = serializeError(error);
@@ -199,7 +203,9 @@ export class LocalTaskWorker {
     } else {
       if (thrown) {
         this.logger.debug(
-          `Task "${this.taskId}" stopped after being aborted (${abortCause}), ${thrown.error}`,
+          `Task "${this.taskId}" stopped after being ${
+            abortCause === 'shutdown' ? 'shut down' : 'cancelled'
+          }, ${thrown.error}`,
         );
       }
       this.#taskState.lastRunError = undefined;

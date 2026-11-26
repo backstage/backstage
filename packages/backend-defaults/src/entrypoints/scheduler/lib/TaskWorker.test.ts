@@ -206,9 +206,10 @@ describe.each(databases.eachSupportedId())('TaskWorker, %s', databaseId => {
         'Task "timeout-task" timed out after PT0.1S',
       );
       const states = await TaskWorker.taskStates(knex);
-      expect(states.get('timeout-task')?.lastRunError).toEqual(
-        expect.stringContaining('timed out'),
-      );
+      const lastRunError = states.get('timeout-task')?.lastRunError;
+      expect(lastRunError).toEqual(expect.stringContaining('timed out'));
+      // What the task threw is kept as the cause
+      expect(lastRunError).toEqual(expect.stringContaining('AbortError'));
     });
 
     // A shutdown is neither logged as an error nor recorded as one

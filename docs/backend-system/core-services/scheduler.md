@@ -181,6 +181,18 @@ that the task is cancelled. This can take up to a few seconds. Note also that it
 is up to the task implementation to properly react to the abort signal that was
 passed into it.
 
+The scheduler aborts the signal passed to a task when the task is cancelled, when
+it exceeds its timeout, or when the backend shuts down. Tasks should stop their
+work when that happens, for example by calling `signal.throwIfAborted()` between
+steps. Errors that a task throws after the signal is aborted are reported based
+on why it was aborted:
+
+- After a cancellation or a shutdown, the run isn't treated as a failure. The
+  error is only logged at debug level.
+- After a timeout, the run is always treated as a failure, even if the task
+  returns normally. A warning is logged, and the timeout is recorded as the
+  run's error.
+
 The request has no body.
 
 Responds with
