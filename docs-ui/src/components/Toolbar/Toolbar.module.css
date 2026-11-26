@@ -84,6 +84,19 @@
   }
 }
 
+.tooltip {
+  z-index: 1;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background-color: var(--bg);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 12%);
+  color: var(--primary);
+  font-size: 0.75rem;
+  white-space: nowrap;
+  margin-top: 2px;
+}
+
 .searchButton {
   display: none;
   align-items: center;

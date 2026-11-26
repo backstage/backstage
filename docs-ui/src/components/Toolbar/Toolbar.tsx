@@ -11,11 +11,14 @@ import {
 } from '@remixicon/react';
 import {
   Button,
+  Link,
   ListBox,
   ListBoxItem,
   Popover,
   Select,
   SelectValue,
+  Tooltip,
+  TooltipTrigger,
   ToggleButton,
   ToggleButtonGroup,
 } from 'react-aria-components';
@@ -103,26 +106,36 @@ export const Toolbar = ({ version }: ToolbarProps) => {
         >
           Version {version}
         </a>
-        <a
-          href="https://github.com/backstage/backstage/tree/master/packages/ui"
-          target="_blank"
-          rel="noopener noreferrer"
-          className={styles.bubble}
-          data-hide-tablet
-          aria-label="View source on GitHub"
-        >
-          <RiGithubLine size={16} />
-        </a>
-        <a
-          href="https://discord.gg/backstage-687207715902193673"
-          target="_blank"
-          rel="noopener noreferrer"
-          className={styles.bubble}
-          data-hide-tablet
-          aria-label="Join Backstage on Discord"
-        >
-          <RiDiscordLine size={16} />
-        </a>
+        <TooltipTrigger delay={0}>
+          <Link
+            href="https://github.com/backstage/backstage/tree/master/packages/ui"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.bubble}
+            data-hide-tablet
+            aria-label="View source on GitHub"
+          >
+            <RiGithubLine size={16} />
+          </Link>
+          <Tooltip className={styles.tooltip} placement="bottom">
+            View source on GitHub
+          </Tooltip>
+        </TooltipTrigger>
+        <TooltipTrigger delay={0}>
+          <Link
+            href="https://discord.gg/backstage-687207715902193673"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.bubble}
+            data-hide-tablet
+            aria-label="Join Backstage on Discord"
+          >
+            <RiDiscordLine size={16} />
+          </Link>
+          <Tooltip className={styles.tooltip} placement="bottom">
+            Join Backstage on Discord
+          </Tooltip>
+        </TooltipTrigger>
         <ToggleButtonGroup
           defaultSelectedKeys={['light']}
           selectedKeys={selectedTheme}
@@ -131,12 +144,22 @@ export const Toolbar = ({ version }: ToolbarProps) => {
           className={styles.buttonGroup}
           aria-label="Color scheme"
         >
-          <ToggleButton id="light" aria-label="Light theme">
-            <RiSunLine aria-hidden="true" size={16} />
-          </ToggleButton>
-          <ToggleButton id="dark" aria-label="Dark theme">
-            <RiMoonLine aria-hidden="true" size={16} />
-          </ToggleButton>
+          <TooltipTrigger delay={0}>
+            <ToggleButton id="light" aria-label="Light theme">
+              <RiSunLine aria-hidden="true" size={16} />
+            </ToggleButton>
+            <Tooltip className={styles.tooltip} placement="bottom">
+              Light mode
+            </Tooltip>
+          </TooltipTrigger>
+          <TooltipTrigger delay={0}>
+            <ToggleButton id="dark" aria-label="Dark theme">
+              <RiMoonLine aria-hidden="true" size={16} />
+            </ToggleButton>
+            <Tooltip className={styles.tooltip} placement="bottom">
+              Dark mode
+            </Tooltip>
+          </TooltipTrigger>
         </ToggleButtonGroup>
       </div>
       <CommandPalette
