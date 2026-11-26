@@ -115,7 +115,10 @@ describe('LocalTaskWorker', () => {
     let receivedSignal: AbortSignal | undefined;
     const fn = jest.fn(async (signal: AbortSignal) => {
       receivedSignal = signal;
-      await new Promise(r => setTimeout(r, 5000));
+      await new Promise(r =>
+        signal.addEventListener('abort', r, { once: true }),
+      );
+      signal.throwIfAborted();
     });
     const controller = new AbortController();
 
@@ -136,6 +139,16 @@ describe('LocalTaskWorker', () => {
     expect(receivedSignal?.aborted).toBe(false);
     worker.cancel();
     expect(receivedSignal?.aborted).toBe(true);
+
+    // A cancelled run that throws is not recorded as failed
+    await waitFor(() => {
+      expect(worker.taskState()).toEqual(
+        expect.objectContaining({ lastRunEndedAt: expect.any(String) }),
+      );
+    });
+    expect(
+      (worker.taskState() as { lastRunError?: string }).lastRunError,
+    ).toBeUndefined();
 
     controller.abort();
   });

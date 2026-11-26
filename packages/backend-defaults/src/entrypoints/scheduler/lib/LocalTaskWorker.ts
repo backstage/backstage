@@ -107,7 +107,9 @@ export class LocalTaskWorker {
     if (!this.taskAbortController) {
       throw new ConflictError(`Task ${this.taskId} is not running`);
     }
-    this.taskAbortController.abort();
+    // Matches the distributed worker, where cancelling a run invalidates its
+    // ticket
+    abortTask(this.taskAbortController, 'ticket-lost');
   }
 
   taskState(): TaskApiTasksResponse['taskState'] {
@@ -192,7 +194,7 @@ export class LocalTaskWorker {
       );
       this.logger.warn(error.message);
       this.#taskState.lastRunError = serializeError(error);
-    } else if (thrown && abortCause !== 'shutdown') {
+    } else if (thrown && !abortCause) {
       this.#taskState.lastRunError = serializeError(thrown.error);
     } else {
       this.#taskState.lastRunError = undefined;

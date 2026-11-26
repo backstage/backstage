@@ -349,9 +349,16 @@ export class TaskWorker {
       return { result: 'failed' };
     }
 
+    const abortCause = getTaskAbortCause(taskAbortController.signal);
     taskAbortController.abort(); // releases resources
+    if (abortCause === 'ticket-lost') {
+      // The run belongs to another host now, so there is nothing to release
+      return { result: 'aborted' };
+    }
     await this.tryReleaseTask(ticket, taskSettings);
-    return { result: 'completed' };
+    return abortCause === 'shutdown'
+      ? { result: 'aborted' }
+      : { result: 'completed' };
   }
 
   /**
