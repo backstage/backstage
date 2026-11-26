@@ -22,9 +22,15 @@ import {
   Page,
   Progress,
   Table,
+  type TableColumn,
 } from '@backstage/core-components';
-import { useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
+import { useApi, useApiHolder, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  CatalogFilterLayout,
+  type EntityPresentationApi,
+  entityPresentationApiRef,
+  entityPresentationSnapshot,
+} from '@backstage/plugin-catalog-react';
 import useAsync from 'react-use/esm/useAsync';
 import { useState } from 'react';
 import {
@@ -49,6 +55,69 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../translation';
 
+function getTemplateTitle(
+  task: ScaffolderTask,
+  entityPresentationApi?: EntityPresentationApi,
+): string {
+  const templateInfo = task.spec?.templateInfo;
+  if (templateInfo?.entity) {
+    return entityPresentationSnapshot(
+      {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        kind: 'Template',
+        metadata: templateInfo.entity.metadata,
+      },
+      { defaultKind: 'template' },
+      entityPresentationApi,
+    ).primaryTitle;
+  }
+  if (templateInfo?.entityRef) {
+    return entityPresentationSnapshot(
+      templateInfo.entityRef,
+      { defaultKind: 'template' },
+      entityPresentationApi,
+    ).primaryTitle;
+  }
+  return '';
+}
+
+function getOwnerTitle(
+  task: ScaffolderTask,
+  entityPresentationApi?: EntityPresentationApi,
+): string {
+  const user = task.spec?.user;
+  if (user?.entity) {
+    return entityPresentationSnapshot(
+      user.entity,
+      { defaultKind: 'user' },
+      entityPresentationApi,
+    ).primaryTitle;
+  }
+  if (user?.ref) {
+    return entityPresentationSnapshot(
+      user.ref,
+      { defaultKind: 'user' },
+      entityPresentationApi,
+    ).primaryTitle;
+  }
+  return '';
+}
+
+function createPresentationColumnHelpers(
+  getTitle: (task: ScaffolderTask) => string,
+): Pick<TableColumn<ScaffolderTask>, 'customSort' | 'customFilterAndSearch'> {
+  return {
+    customSort: (row1, row2) =>
+      getTitle(row1)
+        .toLocaleLowerCase()
+        .localeCompare(getTitle(row2).toLocaleLowerCase()),
+    customFilterAndSearch: (filter, row) =>
+      getTitle(row)
+        .toLocaleLowerCase()
+        .includes(String(filter).toLocaleLowerCase()),
+  };
+}
+
 export interface MyTaskPageProps {
   initiallySelectedFilter?: 'owned' | 'all';
   contextMenu?: {
@@ -66,6 +135,8 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
   const [page, setPage] = useState(0);
 
   const scaffolderApi = useApi(scaffolderApiRef);
+  const apiHolder = useApiHolder();
+  const entityPresentationApi = apiHolder.get(entityPresentationApiRef);
   const rootLink = useRouteRef(rootRouteRef);
 
   const [ownerFilter, setOwnerFilter] = useState(initiallySelectedFilter);
@@ -142,6 +213,9 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
             {
               title: t('listTaskPage.content.tableCell.template'),
               field: 'spec.templateInfo.entity.metadata.title',
+              ...createPresentationColumnHelpers(row =>
+                getTemplateTitle(row, entityPresentationApi),
+              ),
               render: row => (
                 <TemplateTitleColumn
                   entityRef={row.spec.templateInfo?.entityRef}
@@ -156,6 +230,9 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
             {
               title: t('listTaskPage.content.tableCell.owner'),
               field: 'createdBy',
+              ...createPresentationColumnHelpers(row =>
+                getOwnerTitle(row, entityPresentationApi),
+              ),
               render: row => (
                 <OwnerEntityColumn entityRef={row.spec?.user?.ref} />
               ),
