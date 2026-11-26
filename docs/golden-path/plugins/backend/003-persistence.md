@@ -92,13 +92,13 @@ Unfortunately, without tables in our database, our `knex` client is not doing mu
 Let's get started. First, we need to install `knex` as a dependency so both its CLI and imported `Knex` types are available,
 
 ```bash
-yarn workspace @internal/plugin-todo-backend add knex
+yarn workspace @internal/backstage-plugin-todo-backend add knex
 ```
 
 Now, running this command will scaffold a file in that `migrations/` directory for us.
 
 ```bash
-yarn workspace @internal/plugin-todo-backend knex migrate:make init --migrations-directory ./migrations
+yarn workspace @internal/backstage-plugin-todo-backend knex migrate:make init --migrations-directory ./migrations
 ```
 
 This should spit out a message like
@@ -183,7 +183,7 @@ import {
 +          logger.info('Running database migrations...');
 +
 +          const migrationsDir = resolvePackagePath(
-+            '@internal/plugin-todo-backend',
++            '@internal/backstage-plugin-todo-backend',
 +            'migrations',
 +          );
 +
