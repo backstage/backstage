@@ -27,7 +27,6 @@ import {
   entityFilterFunctionDataRef,
   entityFilterExpressionDataRef,
   entityContentGroupDataRef,
-  defaultEntityContentGroups,
   entityContentIconDataRef,
 } from './extensionData';
 import {
@@ -40,7 +39,7 @@ import { ReactElement } from 'react';
 import { z } from 'zod/v4';
 
 /**
- * @alpha
+ * @public
  * Creates an EntityContent extension.
  */
 export const EntityContentBlueprint = createExtensionBlueprint({
@@ -88,10 +87,10 @@ export const EntityContentBlueprint = createExtensionBlueprint({
       /** A plain title or a message reference resolved using the translation API. */
       title: string | TranslationRefTuple<undefined>;
       /**
-       * @deprecated Use the `path` param instead.
+       * @deprecated Use the `group` param instead.
        */
       defaultGroup?: [Error: `Use the 'group' param instead`];
-      group?: keyof typeof defaultEntityContentGroups | (string & {});
+      group?: string;
       icon?: string | ReactElement;
       loader: () => Promise<JSX.Element>;
       routeRef?: RouteRef;

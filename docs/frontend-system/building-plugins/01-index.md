@@ -197,7 +197,7 @@ export const examplePlugin = createFrontendPlugin({
 There are many different plugins that you can extend with additional functionality through extensions. One such plugin is [the catalog plugin](../../features/software-catalog/index.md), one of the core features of Backstage. It lets you catalog the software in your organization, where each item in the catalog has its own page that can be populated with tools and information relating to that catalog entity. In this example we will explore how our plugin can provide such a tool to display on an entity page.
 
 ```tsx title="in src/plugin.ts - An example entity content extension"
-import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
+import { EntityContentBlueprint } from '@backstage/plugin-catalog-react';
 
 // Entity content extensions are similar to page extensions in that they are rendered at a route,
 // although they also have a title to support in-line navigation between the different content.

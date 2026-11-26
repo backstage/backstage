@@ -278,7 +278,7 @@ export const entityColumnPresets: {
   };
 };
 
-// @alpha
+// @public
 export const EntityContentBlueprint: ExtensionBlueprint<{
   kind: 'entity-content';
   params: {
@@ -287,7 +287,7 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
     defaultTitle?: [Error: `Use the 'title' param instead`];
     title: string | TranslationRefTuple<undefined>;
     defaultGroup?: [Error: `Use the 'group' param instead`];
-    group?: keyof typeof defaultEntityContentGroups | (string & {});
+    group?: string;
     icon?: string | ReactElement;
     loader: () => Promise<JSX.Element>;
     routeRef?: RouteRef;
