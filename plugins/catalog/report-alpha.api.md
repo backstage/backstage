@@ -10,7 +10,7 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { defaultEntityContentGroups } from '@backstage/plugin-catalog-react/alpha';
 import { Entity } from '@backstage/catalog-model';
-import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
+import { EntityCardType } from '@backstage/plugin-catalog-react';
 import { EntityContentLayoutProps } from '@backstage/plugin-catalog-react/alpha';
 import { EntityContextMenuItemData } from '@backstage/plugin-catalog-react/alpha';
 import { EntityContextMenuItemParams } from '@backstage/plugin-catalog-react/alpha';

@@ -133,7 +133,10 @@ export const entityCardTypes = [
   'content',
 ] as const satisfies readonly EntityCardType[];
 
-/** @alpha */
+/**
+ * The layout category of an entity card.
+ * @public
+ */
 export type EntityCardType = 'info' | 'content';
 
 /** @internal */

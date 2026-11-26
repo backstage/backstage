@@ -35,7 +35,7 @@ import { Entity } from '@backstage/catalog-model';
 import { z } from 'zod/v4';
 
 /**
- * @alpha
+ * @public
  * A blueprint for creating cards for the entity pages in the catalog.
  */
 export const EntityCardBlueprint = createExtensionBlueprint({

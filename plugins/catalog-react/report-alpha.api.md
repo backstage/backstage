@@ -190,7 +190,7 @@ export const defaultEntityContentGroups: Record<
   string
 >;
 
-// @alpha
+// @public
 export const EntityCardBlueprint: ExtensionBlueprint<{
   kind: 'entity-card';
   params: {
@@ -249,7 +249,7 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-// @alpha (undocumented)
+// @public
 export type EntityCardType = 'info' | 'content';
 
 // @public (undocumented)

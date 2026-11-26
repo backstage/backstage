@@ -4,7 +4,7 @@
 
 ```ts
 import { Entity } from '@backstage/catalog-model';
-import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
+import { EntityCardType } from '@backstage/plugin-catalog-react';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { FilterPredicate } from '@backstage/filter-predicates';

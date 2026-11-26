@@ -69,13 +69,13 @@ Your custom component receives a `navItems` prop—a collection with `take(id)` 
 
 App root wrapper extensions install React components that wrap the entire app root. Use them for global providers, such as a query client, that every plugin in the app needs. They are the replacement for providers that used to be bundled into a custom root router component.
 
-## Extension blueprints in `@backstage/plugin-catalog-react/alpha`
+## Catalog extension blueprints
 
 These are the [extension blueprints](../architecture/23-extension-blueprints.md) provided by the Catalog plugin.
 
 ### EntityCard - [Example](https://github.com/backstage/backstage/blob/75e79518eafc6e6eb55585f166667418419662de/plugins/org/src/alpha.tsx#L27-L36)
 
-Creates entity cards to be displayed on the entity pages of the catalog plugin. Exported as `EntityCardBlueprint`.
+Creates cards for the Catalog entity page. Import `EntityCardBlueprint` from `@backstage/plugin-catalog-react`. The blueprint attaches to the overview by default.
 
 Avoid using `convertLegacyEntityCardExtension` from `@backstage/core-compat-api` to convert legacy entity card extensions to the new system. Instead, use the `EntityCardBlueprint` directly. The legacy converter is only intended to help adapt 3rd party plugins that you don't control, and doesn't produce as good results as using the blueprint directly.
 
