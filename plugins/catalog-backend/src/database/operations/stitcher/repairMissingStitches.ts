@@ -27,74 +27,49 @@ const insertChunkSize = 500;
 // How many refs a warning lists by name.
 const loggedRefLimit = 20;
 
-type SweepRow = {
-  entity_id: string;
-  entity_ref: string;
-  is_live: number | string;
-  candidate_id: string | null;
-};
-
 /**
  * A permanent, normally dormant integrity sweep. It finds live final rows
  * whose winner candidate no longer exists and has no pending stitch, and
  * only enqueues their refs for ordinary stitching. It never tombstones or
  * picks a winner itself.
  *
- * Candidate deletion and its stitch request commit together, so a full pass
- * is expected to find nothing. A finding means that something consumed the
+ * Candidate deletion and its stitch request commit together, so a run is
+ * expected to find nothing. A finding means that something consumed the
  * request without reconciling the row: an older stitcher during a rolling
  * upgrade, a missing trigger, or manual changes to the database.
  *
- * Each batch is a primary key range of final rows followed by at most one
- * primary key probe per row into the candidates, never an unbounded
- * anti-join. The cursor lives in memory and wraps around after the last row.
- * Each process starts at a random position, since slot IDs are random UUIDs,
- * so that every row is eventually visited however often processes restart.
+ * Each run is one anti-join over all final rows, which databases execute as
+ * a single hash join or as one primary key probe per row. Do not add a limit
+ * to it: the planner expects many matches, so a limit makes it choose a
+ * nested loop that is much slower than reading the whole result. A
+ * materialized CTE would avoid that, but only PostgreSQL supports it, so the
+ * findings are instead enqueued in chunks.
  */
 export function createMissingStitchRepair(options: {
   knex: Knex;
   logger: LoggerService;
-  batchSize?: number;
-  maxBatchesPerRun?: number;
-  /** Where the first batch starts; null for the beginning. Defaults to random. */
-  startAfter?: string | null;
 }): (signal: AbortSignal) => Promise<void> {
-  const { knex, logger, batchSize = 1000, maxBatchesPerRun = 20 } = options;
-  let cursor: string | undefined =
-    options.startAfter === undefined
-      ? randomUUID()
-      : options.startAfter ?? undefined;
+  const { knex, logger } = options;
 
   return async signal => {
-    for (let i = 0; i < maxBatchesPerRun && !signal.aborted; i++) {
-      const rows = await readBatch(knex, cursor, batchSize);
-      const flagged = rows.filter(isMissingStitch).map(row => row.entity_ref);
-      if (flagged.length) {
-        const enqueued = await enqueueMissing(knex, flagged, signal);
-        if (enqueued.count) {
-          logger.warn(
-            'Found published catalog entities whose candidate is gone without a pending stitch; ' +
-              'enqueued them for reconciliation. Outside of a rolling upgrade this indicates ' +
-              'a bug or manual database changes.',
-            {
-              count: enqueued.count,
-              entityRefs: summarizeRefs(enqueued.refs),
-            },
-          );
-        }
-      }
-
-      if (signal.aborted) {
-        // The batch may be partly handled. Leave the cursor so that the next
-        // run handles it again; already queued refs are skipped.
-        return;
-      }
-      // Only advance once the batch has been handled.
-      if (rows.length < batchSize) {
-        cursor = undefined;
-        return;
-      }
-      cursor = rows[rows.length - 1].entity_id;
+    if (signal.aborted) {
+      return;
+    }
+    const flagged = await findMissing(knex);
+    if (!flagged.length) {
+      return;
+    }
+    const enqueued = await enqueueMissing(knex, flagged, signal);
+    if (enqueued.count) {
+      logger.warn(
+        'Found published catalog entities whose candidate is gone without a pending stitch; ' +
+          'enqueued them for reconciliation. Outside of a rolling upgrade this indicates ' +
+          'a bug or manual database changes.',
+        {
+          count: enqueued.count,
+          entityRefs: summarizeRefs(enqueued.refs),
+        },
+      );
     }
   };
 }
@@ -106,47 +81,34 @@ function summarizeRefs(refs: string[]): string {
     : listed;
 }
 
-function isMissingStitch(row: SweepRow): boolean {
-  return Boolean(Number(row.is_live)) && !row.candidate_id;
-}
-
-function sweepQuery(knex: Knex, inner: Knex.QueryBuilder) {
-  return knex
-    .from(inner.as('b'))
-    .leftJoin('refresh_state as r', 'r.entity_id', 'b.winner_id')
-    .select(
-      'b.entity_id',
-      'b.entity_ref',
-      'b.is_live',
-      'r.entity_id as candidate_id',
+/**
+ * Returns the refs of live final rows whose winner candidate is gone and
+ * that have no pending stitch, optionally only among the given refs.
+ */
+async function findMissing(knex: Knex, among?: string[]): Promise<string[]> {
+  return knex<DbFinalEntitiesRow>('final_entities as f')
+    .whereNotNull('f.final_entity')
+    .whereNotExists(
+      knex('refresh_state as r')
+        .select(knex.raw('1'))
+        .where(
+          'r.entity_id',
+          knex.raw('COALESCE(??, ??)', [
+            'f.winner_candidate_id',
+            'f.entity_id',
+          ]),
+        ),
     )
-    .orderBy('b.entity_id')
-    .timeout(30_000);
-}
-
-function finalRows(knex: Knex) {
-  return knex<DbFinalEntitiesRow>('final_entities').select({
-    entity_id: 'entity_id',
-    entity_ref: 'entity_ref',
-    winner_id: knex.raw('COALESCE(winner_candidate_id, entity_id)'),
-    is_live: knex.raw('CASE WHEN final_entity IS NULL THEN 0 ELSE 1 END'),
-  });
-}
-
-async function readBatch(
-  knex: Knex,
-  after: string | undefined,
-  batchSize: number,
-): Promise<SweepRow[]> {
-  return sweepQuery(
-    knex,
-    finalRows(knex)
-      .modify(qb => {
-        if (after !== undefined) qb.where('entity_id', '>', after);
-      })
-      .orderBy('entity_id')
-      .limit(batchSize),
-  );
+    .whereNotExists(
+      knex('stitch_queue as q')
+        .select(knex.raw('1'))
+        .where('q.entity_ref', knex.ref('f.entity_ref')),
+    )
+    .modify(qb => {
+      if (among) qb.whereIn('f.entity_ref', among);
+    })
+    .timeout(30_000)
+    .pluck('f.entity_ref');
 }
 
 /**
@@ -183,20 +145,8 @@ async function enqueueChunk(
     return { count: 0, refs: [] };
   }
   // Check again just before inserting: a normal stitch may have reconciled a
-  // row or been requested since the batch was read.
-  const stillMissing = new Set(
-    (await sweepQuery(knex, finalRows(knex).whereIn('entity_ref', chunk)))
-      .filter(isMissingStitch)
-      .map(row => row.entity_ref),
-  );
-  if (!stillMissing.size || signal.aborted) {
-    return { count: 0, refs: [] };
-  }
-  for (const queued of await knex<DbStitchQueueRow>('stitch_queue')
-    .whereIn('entity_ref', [...stillMissing])
-    .pluck('entity_ref')) {
-    stillMissing.delete(queued);
-  }
+  // row or been requested since the sweep read it.
+  const stillMissing = new Set(await findMissing(knex, chunk));
   const refs = chunk.filter(ref => stillMissing.has(ref));
   if (!refs.length || signal.aborted) {
     return { count: 0, refs: [] };

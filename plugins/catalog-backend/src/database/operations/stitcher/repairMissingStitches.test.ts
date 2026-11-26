@@ -111,8 +111,6 @@ describe.each(databases.eachSupportedId())(
       const repair = createMissingStitchRepair({
         knex,
         logger,
-        batchSize: 2,
-        startAfter: null,
       });
 
       await repair(new AbortController().signal);
@@ -141,76 +139,10 @@ describe.each(databases.eachSupportedId())(
         ref('stale'),
       ]);
 
-      // Nothing new to find on the next pass.
+      // Nothing new to find on the next run.
       logger.warn.mockClear();
       await repair(new AbortController().signal);
       expect(logger.warn).not.toHaveBeenCalled();
-    });
-
-    it('bounds each run, resumes from its cursor and wraps around after a full pass', async () => {
-      const names = ['a', 'b', 'c', 'd', 'e'];
-      for (const name of names) {
-        await insertFinal(knex, name, name);
-      }
-      const repair = createMissingStitchRepair({
-        knex,
-        logger: mockServices.logger.mock(),
-        batchSize: 2,
-        maxBatchesPerRun: 1,
-        startAfter: null,
-      });
-      const queued = async () =>
-        (await readQueue(knex)).map(row => row.entity_ref);
-
-      await repair(new AbortController().signal);
-      expect(await queued()).toEqual([ref('a'), ref('b')]);
-      await repair(new AbortController().signal);
-      expect(await queued()).toEqual(['a', 'b', 'c', 'd'].map(ref));
-      await repair(new AbortController().signal);
-      expect(await queued()).toEqual(names.map(ref));
-
-      // The last batch was short, so the next run starts over.
-      await knex('stitch_queue').delete();
-      await repair(new AbortController().signal);
-      expect(await queued()).toEqual([ref('a'), ref('b')]);
-    });
-
-    it('starts at a random position by default, and still visits every row', async () => {
-      const names = ['a', 'b', 'c', 'd', 'e'];
-      for (const name of names) {
-        await insertFinal(knex, name, name);
-      }
-      const queued = async () =>
-        (await readQueue(knex)).map(row => row.entity_ref);
-
-      // An explicit start position, to show the wrap-around order.
-      const fromC = createMissingStitchRepair({
-        knex,
-        logger: mockServices.logger.mock(),
-        batchSize: 2,
-        maxBatchesPerRun: 1,
-        startAfter: 'c',
-      });
-      await fromC(new AbortController().signal);
-      expect(await queued()).toEqual([ref('d'), ref('e')]);
-      await fromC(new AbortController().signal);
-      await fromC(new AbortController().signal);
-      expect(await queued()).toEqual(['a', 'b', 'd', 'e'].map(ref));
-      await fromC(new AbortController().signal);
-      expect(await queued()).toEqual(names.map(ref));
-
-      // The default start is random; enough runs still cover everything.
-      await knex('stitch_queue').delete();
-      const random = createMissingStitchRepair({
-        knex,
-        logger: mockServices.logger.mock(),
-        batchSize: 2,
-        maxBatchesPerRun: 1,
-      });
-      for (let i = 0; i < 5; i++) {
-        await random(new AbortController().signal);
-      }
-      expect(await queued()).toEqual(names.map(ref));
     });
 
     it('enqueues more findings than fit in one insert statement', async () => {
@@ -232,7 +164,6 @@ describe.each(databases.eachSupportedId())(
       const repair = createMissingStitchRepair({
         knex,
         logger,
-        startAfter: null,
       });
 
       await repair(new AbortController().signal);
@@ -246,7 +177,7 @@ describe.each(databases.eachSupportedId())(
       });
     });
 
-    it('stops between insert chunks when aborted and resumes the same batch', async () => {
+    it('stops between insert chunks when aborted and finishes on the next run', async () => {
       const names = Array.from(
         { length: 501 },
         (_, i) => `a${String(i).padStart(3, '0')}`,
@@ -264,7 +195,6 @@ describe.each(databases.eachSupportedId())(
       const repair = createMissingStitchRepair({
         knex,
         logger: mockServices.logger.mock(),
-        startAfter: null,
       });
       const controller = new AbortController();
       const onQuery = (q: { sql: string }) => {

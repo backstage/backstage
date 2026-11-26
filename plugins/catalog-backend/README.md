@@ -129,8 +129,8 @@ retry once the setting is in place.
 During a rolling upgrade, older instances can delay some catalog changes:
 
 - An older instance can handle an entity's deletion without removing it from
-  the catalog. A slow background check finds such entities and removes them
-  later, logging a warning for each one. Outside of an upgrade, that warning
+  the catalog. A background check finds such entities and removes them,
+  logging a warning for each one. Outside of an upgrade, that warning
   points to a bug or to manual changes to the database.
 - An older instance cannot publish updates to an entity that was deleted and
   created again after the upgrade. Its attempts fail and are retried, so the
@@ -139,8 +139,11 @@ During a rolling upgrade, older instances can delay some catalog changes:
 Instances running an older version refuse to start once the upgrade's
 database migrations have run, unless `database.migrations.skip` is set. Once
 the last older instance stops, no new delays arise. Delays that already
-happened clear over time, at the pace of the background check and the retries.
-On large catalogs a full pass of the background check can take hours. To avoid
+happened clear over time. A deletion is repaired within one scheduling
+interval of the background check, currently 10 minutes, plus the time it takes
+to stitch the entity. Updates clear at the pace of the retries. Each background
+check reads every entity's database row once, which takes under a second on a
+catalog of about 800,000 entities with a warm database cache. To avoid
 these delays entirely, stop all older catalog instances before the upgraded
 version runs its migrations. If you skip migrations, you must do this yourself.
 
