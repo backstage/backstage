@@ -470,6 +470,37 @@ describe('<EntityAutocompletePicker/>', () => {
     expect(analyticsApi.captureEvent).toHaveBeenCalledTimes(1);
   });
 
+  it('does not capture a filter event for a selection from the URL', async () => {
+    const catalogApi = catalogApiMock({
+      entities: entitiesWithOptions(defaultOptions),
+    });
+    const analyticsApi = mockApis.analytics();
+    render(
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, catalogApi],
+          [analyticsApiRef, analyticsApi],
+        ]}
+      >
+        <MockEntityListContextProvider<EntityFilters>
+          value={{ queryParameters: { options: ['option3'] } }}
+        >
+          <EntityAutocompletePicker<EntityFilters>
+            label="Options"
+            path="spec.options"
+            name="options"
+            Filter={EntityOptionFilter}
+          />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
+    );
+    await waitFor(() =>
+      expect(screen.getByText('option3')).toBeInTheDocument(),
+    );
+
+    expect(analyticsApi.captureEvent).not.toHaveBeenCalled();
+  });
+
   it("doesn't render when hidden", async () => {
     const catalogApi = catalogApiMock({
       entities: entitiesWithOptions(defaultOptions),
