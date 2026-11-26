@@ -8,7 +8,6 @@ import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { defaultEntityContentGroups } from '@backstage/plugin-catalog-react/alpha';
 import { Entity } from '@backstage/catalog-model';
 import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
 import { EntityContentLayoutProps } from '@backstage/plugin-catalog-react/alpha';
@@ -906,6 +905,7 @@ const _default: OverridableFrontendPlugin<
               optional: true;
             }
           >
+        | ExtensionDataRef<string, 'catalog.entity-content-title', {}>
         | ExtensionDataRef<
             (entity: Entity) => boolean,
             'catalog.entity-filter-function',
@@ -920,7 +920,6 @@ const _default: OverridableFrontendPlugin<
               optional: true;
             }
           >
-        | ExtensionDataRef<string, 'catalog.entity-content-title', {}>
         | ExtensionDataRef<
             string,
             'catalog.entity-content-group',
@@ -1000,7 +999,7 @@ const _default: OverridableFrontendPlugin<
         defaultTitle?: [Error: `Use the 'title' param instead`];
         title: string | TranslationRefTuple<undefined>;
         defaultGroup?: [Error: `Use the 'group' param instead`];
-        group?: keyof defaultEntityContentGroups | (string & {});
+        group?: string;
         icon?: string | ReactElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;

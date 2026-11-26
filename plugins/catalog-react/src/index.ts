@@ -26,6 +26,7 @@ export { catalogApiRef } from './api';
 export * from './apis';
 export * from './components';
 export * from './hooks';
+export { EntityContentBlueprint } from './alpha/blueprints/EntityContentBlueprint';
 export * from './filters';
 export type { EntityRouteParamsOptions } from './routes';
 export { entityRouteParams, entityRouteRef } from './routes';
