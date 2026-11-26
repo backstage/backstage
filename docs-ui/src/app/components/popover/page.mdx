@@ -5,6 +5,7 @@ import { ReactAriaLink } from '@/components/ReactAriaLink';
 import { dialogTriggerPropDefs, popoverPropDefs } from './props-definition';
 import {
   popoverUsageSnippet,
+  previewTriggerSnippet,
   defaultSnippet,
   placementSnippet,
   hideArrowSnippet,
@@ -38,16 +39,7 @@ hover, keyboard focus, or long press. Set `delay` and `closeDelay` to control it
 opening and closing delays. Keyboard users can press Tab to enter the preview
 and Escape to dismiss it.
 
-```tsx
-import { Button, Popover, PreviewTrigger, Text } from '@backstage/ui';
-
-<PreviewTrigger delay={500}>
-  <Button>Preview</Button>
-  <Popover placement="bottom" aria-label="Preview details">
-    <Text>Preview content</Text>
-  </Popover>
-</PreviewTrigger>;
-```
+<CodeBlock code={previewTriggerSnippet} />
 
 ## API reference
 
