@@ -19,7 +19,7 @@ import { Content } from '@backstage/core-components';
 import { BreadcrumbEntry } from '@backstage/frontend-plugin-api';
 import { OngoingTaskBody } from '../../components/OngoingTask';
 import { ListTaskPageContent } from '../../components/ListTasksPage';
-import { ScaffolderTemplateOutputsComponent } from '@backstage/plugin-scaffolder-react/alpha';
+import { ScaffolderTemplateOutputsComponent } from '@backstage/plugin-scaffolder-react';
 import { useTaskEventStream } from '@backstage/plugin-scaffolder-react';
 
 type TemplateOutputsRegistration = {

@@ -7,12 +7,15 @@ import { Action as Action_2 } from '@backstage/plugin-scaffolder-common';
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { ApiRef } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
+import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { CustomValidator } from '@rjsf/utils';
 import { ElementType } from 'react';
 import { ErrorSchema } from '@rjsf/utils';
 import { ErrorTransformer } from '@rjsf/utils';
 import { Experimental_DefaultFormStateBehavior } from '@rjsf/utils';
 import { Extension } from '@backstage/core-plugin-api';
+import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { FieldValidation } from '@rjsf/utils';
 import Form from '@rjsf/core';
 import { FormContextType } from '@rjsf/utils';
@@ -400,6 +403,85 @@ export type ScaffolderTaskOutput = ScaffolderTaskOutput_2;
 
 // @public @deprecated
 export type ScaffolderTaskStatus = ScaffolderTaskStatus_2;
+
+// @public
+export type ScaffolderTemplateFilter = (
+  template: TemplateEntityV1beta3,
+) => boolean;
+
+// @public
+export const ScaffolderTemplateFilterBlueprint: ExtensionBlueprint<{
+  kind: 'scaffolder-template-filter';
+  params: ScaffolderTemplateFilterBlueprintParams;
+  output: ExtensionDataRef<
+    ScaffolderTemplateFilterHook,
+    'scaffolder.template-filter-hook',
+    {}
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    useTemplateFilter: ConfigurableExtensionDataRef<
+      ScaffolderTemplateFilterHook,
+      'scaffolder.template-filter-hook',
+      {}
+    >;
+  };
+}>;
+
+// @public
+export interface ScaffolderTemplateFilterBlueprintParams {
+  useTemplateFilter: ScaffolderTemplateFilterHook;
+}
+
+// @public
+export type ScaffolderTemplateFilterHook = () => ScaffolderTemplateFilter;
+
+// @public
+export const ScaffolderTemplateOutputsBlueprint: ExtensionBlueprint<{
+  kind: 'scaffolder-template-outputs';
+  params: ScaffolderTemplateOutputsBlueprintParams;
+  output:
+    | ExtensionDataRef<
+        ScaffolderTemplateOutputsComponent,
+        'scaffolder.template-outputs-component',
+        {}
+      >
+    | ExtensionDataRef<
+        string[],
+        'scaffolder.template-output-template-refs',
+        {}
+      >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    component: ConfigurableExtensionDataRef<
+      ScaffolderTemplateOutputsComponent,
+      'scaffolder.template-outputs-component',
+      {}
+    >;
+    templateRefs: ConfigurableExtensionDataRef<
+      string[],
+      'scaffolder.template-output-template-refs',
+      {}
+    >;
+  };
+}>;
+
+// @public (undocumented)
+export interface ScaffolderTemplateOutputsBlueprintParams {
+  // (undocumented)
+  component: ScaffolderTemplateOutputsComponent;
+  // (undocumented)
+  templateRefs: string[];
+}
+
+// @public (undocumented)
+export type ScaffolderTemplateOutputsComponent = ComponentType<{
+  output?: ScaffolderTaskOutput_2;
+}>;
 
 // @public @deprecated
 export type ScaffolderUsageExample = ScaffolderUsageExample_2;

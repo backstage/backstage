@@ -15,7 +15,7 @@
  */
 
 import { createExtensionTester } from '@backstage/frontend-test-utils';
-import { ScaffolderTemplateFilterBlueprint } from './ScaffolderTemplateFilterBlueprint';
+import { ScaffolderTemplateFilterBlueprint } from '../..';
 
 describe('ScaffolderTemplateFilterBlueprint', () => {
   it('outputs the template filter hook', () => {

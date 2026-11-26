@@ -24,7 +24,7 @@ import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
  * A predicate that selects templates for display on the Scaffolder templates
  * page.
  *
- * @alpha
+ * @public
  */
 export type ScaffolderTemplateFilter = (
   template: TemplateEntityV1beta3,
@@ -33,7 +33,7 @@ export type ScaffolderTemplateFilter = (
 /**
  * A React hook that creates a template filter for the current viewer.
  *
- * @alpha
+ * @public
  */
 export type ScaffolderTemplateFilterHook = () => ScaffolderTemplateFilter;
 
@@ -45,7 +45,7 @@ const scaffolderTemplateFilterHookRef =
 /**
  * Parameters for {@link ScaffolderTemplateFilterBlueprint}.
  *
- * @alpha
+ * @public
  */
 export interface ScaffolderTemplateFilterBlueprintParams {
   /**
@@ -60,7 +60,7 @@ export interface ScaffolderTemplateFilterBlueprintParams {
 /**
  * Creates a viewer-aware filter for the Scaffolder templates page.
  *
- * @alpha
+ * @public
  */
 export const ScaffolderTemplateFilterBlueprint = createExtensionBlueprint({
   kind: 'scaffolder-template-filter',
