@@ -17,7 +17,7 @@ import { RouteRef } from '@backstage/core-plugin-api';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { TranslationRefTuple } from '@backstage/frontend-plugin-api';
 
-// @alpha (undocumented)
+// @public
 const _default: OverridableFrontendPlugin<
   {
     root: RouteRef<undefined>;

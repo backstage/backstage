@@ -59,6 +59,19 @@ Install the frontend plugin:
 yarn --cwd packages/app add @backstage/plugin-catalog-unprocessed-entities
 ```
 
+Feature discovery installs the plugin automatically. If you register features
+manually, import the default plugin from `@backstage/plugin-catalog-unprocessed-entities`
+and add it to your app's `features`:
+
+```tsx
+import { createApp } from '@backstage/frontend-defaults';
+import catalogUnprocessedEntities from '@backstage/plugin-catalog-unprocessed-entities';
+
+const app = createApp({
+  features: [catalogUnprocessedEntities],
+});
+```
+
 The standalone page is disabled by default. To enable the route, add the extension to your `app-config.yaml`:
 
 ```yaml
