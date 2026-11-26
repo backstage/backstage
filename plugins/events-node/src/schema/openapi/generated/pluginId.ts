@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export const pluginId = 'events';
+export const pluginId = "events";

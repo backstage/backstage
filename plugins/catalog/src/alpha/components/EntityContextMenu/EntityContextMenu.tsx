@@ -17,9 +17,9 @@
 import {
   type AppNode,
   ExtensionBoundary,
-  IconComponent,
   useTranslationRef,
 } from '@backstage/frontend-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
 import type { EntityContextMenuItemData } from '@backstage/plugin-catalog-react/alpha';
 import {
   ButtonIcon,

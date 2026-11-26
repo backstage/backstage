@@ -13,17 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { AwsConnectionType } from '../schema/aws';
+export { ArgoCdConnectionType } from '../schema/argocd';
 export { AwsCodeCommitConnectionType } from '../schema/awsCodeCommit';
+export { AwsConnectionType } from '../schema/aws';
 export { AwsS3ConnectionType } from '../schema/awsS3';
 export { AzureBlobStorageConnectionType } from '../schema/azureBlobStorage';
 export { AzureConnectionType } from '../schema/azure';
 export { BitbucketCloudConnectionType } from '../schema/bitbucketCloud';
 export { BitbucketServerConnectionType } from '../schema/bitbucketServer';
+export { DatadogConnectionType } from '../schema/datadog';
 export { GerritConnectionType } from '../schema/gerrit';
 export { GiteaConnectionType } from '../schema/gitea';
 export { GithubConnectionType } from '../schema/github';
 export { GitlabConnectionType } from '../schema/gitlab';
 export { GoogleGcsConnectionType } from '../schema/googleGcs';
+export { GrafanaConnectionType } from '../schema/grafana';
 export { HarnessConnectionType } from '../schema/harness';
+export { JenkinsConnectionType } from '../schema/jenkins';
+export { JiraConnectionType } from '../schema/jira';
+export { PagerDutyConnectionType } from '../schema/pagerduty';
+export { SnykConnectionType } from '../schema/snyk';
+export { SonarqubeConnectionType } from '../schema/sonarqube';
 export * from './types';

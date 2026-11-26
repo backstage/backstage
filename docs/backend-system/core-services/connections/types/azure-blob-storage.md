@@ -13,7 +13,7 @@ and uses the `host` [lookup strategy](../01-concepts.md#lookup-strategies).
 ```yaml title="app-config.yaml"
 connections:
   - type: azure-blob-storage
-    host: backstage.blob.core.windows.net
+    baseUrl: https://backstage.blob.core.windows.net/
     accountName: backstage
     auth:
       - method: accountKey
@@ -22,12 +22,12 @@ connections:
 
 ## Connection fields
 
-| Field            | Type     | Required | Description                                             |
-| ---------------- | -------- | -------- | ------------------------------------------------------- |
-| `host`           | `string` | Yes      | Storage host matched against the resource URL.          |
-| `accountName`    | `string` | No       | Azure Storage account name.                             |
-| `endpoint`       | `string` | No       | Custom Blob Storage endpoint.                           |
-| `endpointSuffix` | `string` | No       | Custom endpoint suffix used by the storage environment. |
+| Field            | Type     | Required | Description                                                    |
+| ---------------- | -------- | -------- | -------------------------------------------------------------- |
+| `baseUrl`        | `string` | Yes      | HTTP(S) base URL of the instance. Its host is used for lookup. |
+| `accountName`    | `string` | No       | Azure Storage account name.                                    |
+| `endpoint`       | `string` | No       | Custom Blob Storage endpoint.                                  |
+| `endpointSuffix` | `string` | No       | Custom endpoint suffix used by the storage environment.        |
 
 ## Authentication methods
 
@@ -51,7 +51,7 @@ not require authentication.
 ## Lookup and selection
 
 The consumer supplies a [lookup query](../01-concepts.md#lookup-queries) containing
-a blob URL. The service selects the connection whose `host` matches the parsed
+a blob URL. The service selects the connection whose `baseUrl` host matches the parsed
 URL host exactly.
 
 When more than one authentication entry is visible to the calling plugin, the
@@ -77,6 +77,7 @@ const connection = await connections.find({
   ],
 });
 
+connection.baseUrl; // string
 connection.accountName; // string | undefined
 connection.auth.method; // selected authentication method
 ```

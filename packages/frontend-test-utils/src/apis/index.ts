@@ -27,19 +27,3 @@ export {
   type TestApiPair,
   type TestApiPairs,
 } from './TestApiProvider';
-export {
-  createMockAppHistory,
-  type MockAppHistory,
-  type MockAppHistoryOptions,
-} from './createMockAppHistory';
-export {
-  createMockRouteResolutionApi,
-  type MockRouteResolutionApi,
-  type MockRouteResolutionApiOptions,
-  type MockRouteResolutionRouteRef,
-} from './createMockRouteResolutionApi';
-
-/**
- * @public
- */
-export type { MockFetchApiOptions } from './FetchApi/MockFetchApi';

@@ -17,14 +17,15 @@ Backstage comes with a set of [default icons](https://github.com/backstage/backs
 
 To override a default icon, create an icon bundle extension using
 `IconBundleBlueprint` from `@backstage/plugin-app-react`. Each entry in the
-`icons` object maps an icon key to a React component or JSX element that
+`icons` object maps an icon key to a JSX element that
 replaces the built-in icon with the same key.
 
 ### Requirements
 
 - Files in `.svg` format or any image format that can be rendered as a React
   component.
-- React components created for the icons, or `IconElement` JSX elements.
+- `IconElement` JSX elements, for example `<MyIcon />`. Set
+  `fontSize="inherit"` when using Material UI icons.
 
 ### Create a React component
 
@@ -76,7 +77,7 @@ const app = createApp({
 export default app.createRoot();
 ```
 
-The `icons` object maps icon keys to React components or JSX elements. In this
+The `icons` object maps icon keys to JSX elements. In this
 example, the built-in `github` icon is replaced with `ExampleIcon`. You can
 override multiple icons at once by adding more entries to the object.
 

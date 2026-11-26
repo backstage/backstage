@@ -146,6 +146,7 @@ describe('UserTokenHandler', () => {
       const expectedExpiresAt = 1712075314;
 
       jest.useFakeTimers({
+        doNotFake: ['nextTick'],
         now: expectedIssuedAt * 1000 + 600_000,
       });
 
@@ -179,6 +180,7 @@ describe('UserTokenHandler', () => {
       const expectedExpiresAt = 1712075314;
 
       jest.useFakeTimers({
+        doNotFake: ['nextTick'],
         now: expectedIssuedAt * 1000 + 600_000,
       });
 
@@ -242,6 +244,7 @@ describe('UserTokenHandler', () => {
       const expectedExpiresAt = 1712075314;
 
       jest.useFakeTimers({
+        doNotFake: ['nextTick'],
         now: expectedIssuedAt * 1000 + 600_000,
       });
 
@@ -270,6 +273,7 @@ describe('UserTokenHandler', () => {
       const expectedExpiresAt = 1712075314;
 
       jest.useFakeTimers({
+        doNotFake: ['nextTick'],
         now: expectedIssuedAt * 1000 + 600_000,
       });
 
@@ -302,6 +306,7 @@ describe('UserTokenHandler', () => {
       const expectedExpiresAt = 1712075314;
 
       jest.useFakeTimers({
+        doNotFake: ['nextTick'],
         now: expectedIssuedAt * 1000 + 600_000,
       });
 
@@ -425,6 +430,7 @@ describe('UserTokenHandler', () => {
 
     it('should create limited token that can be verified', async () => {
       jest.useFakeTimers({
+        doNotFake: ['nextTick'],
         now: 1712071714 * 1000 + 600_000,
       });
       const parts = {

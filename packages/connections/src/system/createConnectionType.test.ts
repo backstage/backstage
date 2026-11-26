@@ -15,6 +15,7 @@
  */
 import { z } from 'zod/v4';
 import { InputError } from '@backstage/errors';
+import { getHostLookupIdentity } from './getHostLookupIdentity';
 import { createConnectionType } from './createConnectionType';
 
 describe('createConnectionType', () => {
@@ -26,6 +27,7 @@ describe('createConnectionType', () => {
     } as const;
 
     const SingleAuthType = createConnectionType({
+      getLookupIdentity: getHostLookupIdentity,
       type: 'single',
       title: 'Single',
       configSchema: z.object({ host: z.string() }),
@@ -80,6 +82,32 @@ describe('createConnectionType', () => {
     ).toThrow();
   });
 
+  it('calculates key/value identity from parsed configuration without exposing it in data', () => {
+    const definition = createConnectionType({
+      type: 'derived-identity',
+      title: 'Derived',
+      configSchema: z.object({
+        endpoint: z.string().transform(value => value.toLowerCase()),
+      }),
+      getLookupIdentity: config => ({ key: 'host', value: config.endpoint }),
+      authMethods: [
+        { method: 'none', title: 'None', configSchema: z.object({}) },
+      ],
+    });
+    const parsed = definition.configSchema.parse({ endpoint: 'EXAMPLE.COM' });
+    expect(definition.getLookupIdentity(parsed)).toEqual({
+      key: 'host',
+      value: 'example.com',
+    });
+    expect(parsed).toEqual({ endpoint: 'example.com' });
+    expect(JSON.parse(JSON.stringify(parsed))).not.toHaveProperty(
+      'getLookupIdentity',
+    );
+    expect(definition).not.toHaveProperty('lookupStrategy');
+    // @ts-expect-error - the callback receives inferred parsed configuration
+    definition.getLookupIdentity({ url: 'https://example.com' });
+  });
+
   it('rejects framework-owned auth method config fields at compile time', () => {
     const reservedAuth = {
       method: 'token',
@@ -92,6 +120,7 @@ describe('createConnectionType', () => {
     } as const;
 
     createConnectionType({
+      getLookupIdentity: getHostLookupIdentity,
       type: 'reserved-auth',
       title: 'Reserved Auth',
       configSchema: z.object({ host: z.string() }),
@@ -100,8 +129,75 @@ describe('createConnectionType', () => {
     });
   });
 
+  it('supports object transforms while keeping strict input and reserved-field checks', () => {
+    const schema = z
+      .object({ baseUrl: z.string() })
+      .transform(config => ({ ...config, apiBaseUrl: config.baseUrl }));
+    const connectionType = createConnectionType({
+      getLookupIdentity: getHostLookupIdentity,
+      type: 'transformed',
+      title: 'Transformed',
+      configSchema: schema,
+      authMethods: [
+        { method: 'none', title: 'None', configSchema: z.object({}) },
+      ],
+    });
+    const parsed = connectionType.configSchema.parse({
+      baseUrl: 'https://example.com/context/',
+    });
+    expect(parsed.apiBaseUrl).toBe('https://example.com/context/');
+    expect(connectionType.configSchema.schema().schema).toMatchObject({
+      properties: { baseUrl: { type: 'string' } },
+      required: ['baseUrl'],
+      additionalProperties: false,
+    });
+    expect(() =>
+      connectionType.configSchema.parse({
+        baseUrl: 'https://example.com/',
+        host: 'other.example.com',
+      }),
+    ).toThrow(InputError);
+
+    createConnectionType({
+      getLookupIdentity: getHostLookupIdentity,
+      type: 'invalid-output',
+      title: 'Invalid output',
+      // @ts-expect-error - connection configuration must remain an object
+      configSchema: z.object({ host: z.string() }).transform(() => 1),
+      authMethods: [
+        { method: 'none', title: 'None', configSchema: z.object({}) },
+      ],
+    });
+
+    createConnectionType({
+      getLookupIdentity: getHostLookupIdentity,
+      type: 'reserved-input',
+      title: 'Reserved input',
+      // @ts-expect-error - reserved input fields cannot be hidden by a transform
+      configSchema: z
+        .object({ type: z.string() })
+        .transform(() => ({ host: 'example.com' })),
+      authMethods: [
+        { method: 'none', title: 'None', configSchema: z.object({}) },
+      ],
+    });
+    createConnectionType({
+      getLookupIdentity: getHostLookupIdentity,
+      type: 'reserved-output',
+      title: 'Reserved output',
+      // @ts-expect-error - transforms must not produce framework-owned fields
+      configSchema: z
+        .object({ host: z.string() })
+        .transform(config => ({ ...config, type: 'other' })),
+      authMethods: [
+        { method: 'none', title: 'None', configSchema: z.object({}) },
+      ],
+    });
+  });
+
   it('wraps schema validation failures in an InputError', () => {
     const connectionType = createConnectionType({
+      getLookupIdentity: getHostLookupIdentity,
       type: 'wrapped-error',
       title: 'Wrapped Error',
       configSchema: z.object({ host: z.string() }),
@@ -133,6 +229,7 @@ describe('createConnectionType', () => {
   it('does not wrap unexpected schema errors', () => {
     const expectedError = new Error('Unexpected schema error');
     const connectionType = createConnectionType({
+      getLookupIdentity: getHostLookupIdentity,
       type: 'unexpected-error',
       title: 'Unexpected Error',
       configSchema: z.object({
@@ -163,6 +260,7 @@ describe('createConnectionType', () => {
 
   it('exposes the validate hook for rules that span a whole connection', () => {
     const ValidatedType = createConnectionType({
+      getLookupIdentity: () => undefined,
       type: 'validated',
       title: 'Validated',
       configSchema: z.object({ defaultToken: z.string().optional() }),
@@ -216,6 +314,7 @@ describe('createConnectionType', () => {
 
   it('builds a multi-auth-method connection type that discriminates on method', () => {
     const MultiAuthType = createConnectionType({
+      getLookupIdentity: getHostLookupIdentity,
       type: 'multi',
       title: 'Multi',
       configSchema: z.object({ host: z.string() }),

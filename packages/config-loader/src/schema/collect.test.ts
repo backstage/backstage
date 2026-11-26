@@ -33,6 +33,13 @@ const mockSchema = {
   },
 };
 
+// The tests change directory into the mock directory, and the next test file
+// that runs in the same Jest worker would otherwise start out in there
+const origDir = process.cwd();
+afterAll(() => {
+  process.chdir(origDir);
+});
+
 describe('collectConfigSchemas', () => {
   const mockDir = createMockDirectory();
 

@@ -153,25 +153,23 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const httpsFetchResolver: AsyncApiResolver = {
-  schema: 'https',
+// Definition content comes from catalog entities whose origin isn't necessarily
+// trusted, so external references are not resolved by default. Resolving the
+// reference to a small valid document (rather than throwing or declining)
+// keeps the parser from falling back to its built-in http/https readers, which
+// would fetch the reference from the viewer's browser, while letting the rest
+// of the definition render with a visible placeholder at the unresolved spot.
+// Use the `resolvers` prop to opt in to external reference resolution.
+const createExternalRefResolver = (schema: string): AsyncApiResolver => ({
+  schema,
   order: 1,
   canRead: true,
   async read(uri: any) {
-    const response = await fetch(uri.toString());
-    return response.text();
+    return JSON.stringify({
+      description: `External reference not resolved: ${uri.toString()}`,
+    });
   },
-};
-
-const httpFetchResolver: AsyncApiResolver = {
-  schema: 'http',
-  order: 1,
-  canRead: true,
-  async read(uri: any) {
-    const response = await fetch(uri.toString());
-    return response.text();
-  },
-};
+});
 
 type Props = {
   definition: string;
@@ -192,7 +190,10 @@ export const AsyncApiDefinition = ({
     parserOptions: {
       __unstable: {
         resolver: {
-          resolvers: [httpsFetchResolver, httpFetchResolver],
+          resolvers: [
+            createExternalRefResolver('https'),
+            createExternalRefResolver('http'),
+          ],
         },
       },
     },

@@ -38,10 +38,15 @@ export function assertScmUserCredentials(options: {
     sourceUrl = new URL(url);
   } catch {
     if (baseUrl) {
-      try {
-        sourceUrl = new URL(baseUrl);
-      } catch {
-        // Invalid URLs are reported by the fetch helpers.
+      // Resolve the URL the same way that the fetch helpers do, so that the
+      // check is applied to the host that will actually be read from.
+      const integration = integrations.byUrl(baseUrl);
+      if (integration) {
+        try {
+          sourceUrl = new URL(integration.resolveUrl({ url, base: baseUrl }));
+        } catch {
+          // Invalid URLs are reported by the fetch helpers.
+        }
       }
     }
   }

@@ -53,7 +53,7 @@ export const connectionsExampleBackendModuleGitlab = createBackendModule({
           });
           logger.info(
             `Found GitLab connection for host ${
-              (connection as unknown as { host: string }).host
+              new URL(connection.baseUrl).host
             }`,
           );
         } catch (e) {

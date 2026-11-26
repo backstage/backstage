@@ -47,7 +47,18 @@ describe('readLdapConfig', () => {
             dn: 'udn',
             options: {
               scope: 'one',
-              attributes: ['*', '+'],
+              attributes: [
+                'dn',
+                'entryDN',
+                'distinguishedName',
+                'entryUUID',
+                'objectGUID',
+                'ipaUniqueID',
+                'uid',
+                'cn',
+                'mail',
+                'memberOf',
+              ],
             },
             set: undefined,
             map: {
@@ -64,7 +75,20 @@ describe('readLdapConfig', () => {
             dn: 'gdn',
             options: {
               scope: 'one',
-              attributes: ['*', '+'],
+              attributes: [
+                'dn',
+                'entryDN',
+                'distinguishedName',
+                'entryUUID',
+                'objectGUID',
+                'ipaUniqueID',
+                'uid',
+                'cn',
+                'description',
+                'groupType',
+                'memberOf',
+                'member',
+              ],
             },
             set: undefined,
             map: {
@@ -120,7 +144,18 @@ describe('readLdapConfig', () => {
             dn: 'udn',
             options: {
               scope: 'one',
-              attributes: ['*', '+'],
+              attributes: [
+                'dn',
+                'entryDN',
+                'distinguishedName',
+                'entryUUID',
+                'objectGUID',
+                'ipaUniqueID',
+                'uid',
+                'cn',
+                'mail',
+                'memberOf',
+              ],
             },
             set: undefined,
             map: {
@@ -137,7 +172,20 @@ describe('readLdapConfig', () => {
             dn: 'gdn',
             options: {
               scope: 'one',
-              attributes: ['*', '+'],
+              attributes: [
+                'dn',
+                'entryDN',
+                'distinguishedName',
+                'entryUUID',
+                'objectGUID',
+                'ipaUniqueID',
+                'uid',
+                'cn',
+                'description',
+                'groupType',
+                'memberOf',
+                'member',
+              ],
             },
             set: undefined,
             map: {
@@ -475,5 +523,85 @@ describe('readLdapConfig', () => {
 
     expect(actual[0].users).toHaveLength(0);
     expect(actual[0].groups).toHaveLength(0);
+  });
+
+  it('merges vendor and map attributes into effective search attributes', () => {
+    const config = {
+      catalog: {
+        providers: {
+          ldapOrg: {
+            default: {
+              target: 'target',
+              vendor: {
+                dnAttributeName: 'customDN',
+                uuidAttributeName: 'entryuuid',
+              },
+              users: {
+                dn: 'udn',
+                map: {
+                  picture: 'thumbnailPhoto',
+                },
+              },
+              groups: {
+                dn: 'gdn',
+                map: {
+                  type: 'tt',
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+    const actual = readProviderConfigs(new ConfigReader(config));
+
+    expect(actual[0].users[0].options.attributes).toEqual(
+      expect.arrayContaining(['customDN', 'entryuuid', 'thumbnailPhoto']),
+    );
+    expect(actual[0].groups[0].options.attributes).toEqual(
+      expect.arrayContaining(['customDN', 'entryuuid', 'tt', 'member']),
+    );
+  });
+
+  it('preserves an explicit attributes list regardless of mappings', () => {
+    const attributes = [
+      'cn',
+      'description',
+      'groupType',
+      'entryDN',
+      'entryUUID',
+    ];
+    const config = {
+      catalog: {
+        providers: {
+          ldapOrg: {
+            default: {
+              target: 'target',
+              vendor: {
+                dnAttributeName: 'customDN',
+                uuidAttributeName: 'customUUID',
+              },
+              users: {
+                dn: 'udn',
+              },
+              groups: {
+                dn: 'gdn',
+                options: {
+                  attributes,
+                },
+                map: {
+                  picture: 'thumbnailPhoto',
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+    const actual = readProviderConfigs(new ConfigReader(config));
+
+    expect(actual[0].groups[0].options.attributes).toEqual(attributes);
+    expect(actual[0].groups[0].map.members).toBe('member');
+    expect(actual[0].groups[0].map.picture).toBe('thumbnailPhoto');
   });
 });

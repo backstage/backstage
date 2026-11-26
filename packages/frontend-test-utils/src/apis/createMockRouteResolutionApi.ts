@@ -20,78 +20,19 @@ import {
   RouteFunc,
   RouteRef,
   RouteResolutionApi,
-  RouteResolutionMatch,
   SubRouteRef,
 } from '@backstage/frontend-plugin-api';
+import type { mockApis } from './mockApis';
 import {
   OpaqueExternalRouteRef,
   OpaqueRouteRef,
   OpaqueSubRouteRef,
 } from '@internal/frontend';
 
-/**
- * Route ref types accepted by {@link MockRouteResolutionApiOptions.routes}.
- *
- * @public
- */
-export type MockRouteResolutionRouteRef =
+type MockRouteResolutionRouteRef =
   | RouteRef<AnyRouteRefParams>
   | SubRouteRef<AnyRouteRefParams>
   | ExternalRouteRef<AnyRouteRefParams>;
-
-/**
- * Options for {@link createMockRouteResolutionApi}.
- *
- * @public
- */
-export interface MockRouteResolutionApiOptions {
-  /**
-   * Map of route refs to absolute path templates. Path params use the
-   * `:param` form (e.g. `'/catalog/:namespace/:kind/:name'`). When a mapped
-   * route is resolved, params are substituted into the template.
-   *
-   * String values without `:` segments are returned as-is for parameter-less
-   * refs.
-   */
-  routes?:
-    | ReadonlyMap<MockRouteResolutionRouteRef, string>
-    | ReadonlyArray<[MockRouteResolutionRouteRef, string]>;
-  /**
-   * Optional full `resolve` implementation. When set, it takes precedence
-   * over {@link MockRouteResolutionApiOptions.routes}.
-   */
-  resolve?: RouteResolutionApi['resolve'];
-  /**
-   * Fixed matches or a custom path-matching implementation. Defaults to no
-   * matches. Fixed matches ignore the requested pathname and node, defaulting
-   * `routePattern` to `basePath`, `params` to `{}`, and `contributesPath` to
-   * `true`. Callbacks return complete matches without applying these defaults.
-   */
-  resolvePath?:
-    | {
-        matches: ReadonlyArray<
-          Pick<RouteResolutionMatch, 'node' | 'basePath'> &
-            Partial<Omit<RouteResolutionMatch, 'node' | 'basePath'>>
-        >;
-      }
-    | RouteResolutionApi['resolvePath'];
-}
-
-/**
- * A mock {@link @backstage/frontend-plugin-api#RouteResolutionApi} for unit
- * tests of `useRouteRef` and components that resolve
- * route refs under the new frontend system.
- *
- * @public
- */
-export interface MockRouteResolutionApi extends RouteResolutionApi {
-  /**
-   * The underlying jest mock for `resolve`, useful for call assertions.
-   */
-  resolve: jest.MockedFunction<RouteResolutionApi['resolve']>;
-  /** The underlying mock for pathname resolution. */
-  resolvePath: jest.MockedFunction<RouteResolutionApi['resolvePath']>;
-}
 
 function substitutePath(
   template: string,
@@ -128,43 +69,10 @@ function getRouteParamCount(ref: MockRouteResolutionRouteRef): number {
   return 0;
 }
 
-/**
- * Creates a mock {@link @backstage/frontend-plugin-api#RouteResolutionApi}.
- *
- * Prefer {@link MockRouteResolutionApiOptions.routes} for declarative path
- * maps. Pass {@link MockRouteResolutionApiOptions.resolve} when you need a
- * custom implementation (including always returning `undefined`).
- *
- * Also available as `mockApis.routeResolution()`. Pair with
- * {@link createMockAppHistory} for new frontend system `useRouteRef` tests.
- *
- * @public
- * @example
- * ```tsx
- * const navigate = jest.fn();
- * const catalogRouteRef = createRouteRef({ params: ['name'] });
- *
- * <TestApiProvider
- *   apis={[
- *     [
- *       routeResolutionApiRef,
- *       createMockRouteResolutionApi({
- *         routes: [[catalogRouteRef, '/catalog/:name']],
- *       }),
- *     ],
- *     [
- *       appHistoryApiRef,
- *       createMockAppHistory({ navigate }),
- *     ],
- *   ]}
- * >
- *   {children}
- * </TestApiProvider>
- * ```
- */
+/** Creates the implementation used by mockApis.routeResolution. @internal */
 export function createMockRouteResolutionApi(
-  options: MockRouteResolutionApiOptions = {},
-): MockRouteResolutionApi {
+  options: NonNullable<Parameters<typeof mockApis.routeResolution>[0]> = {},
+) {
   let routeMap: Map<MockRouteResolutionRouteRef, string> | undefined;
   if (options.routes) {
     routeMap = new Map(options.routes);

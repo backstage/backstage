@@ -57,9 +57,27 @@ const legacyValue = createVersionedValueMap({
   2: { routing: buiRoutingIntegration },
 });
 
+// Matches how browsers read an href: tabs and newlines are removed, and
+// leading control characters and spaces are ignored.
+function normalizeHref(href: string): string {
+  // eslint-disable-next-line no-control-regex
+  return href.replace(/[\t\n\r]/g, '').replace(/^[\x00-\x20]+/, '');
+}
+
+function isBrowserOwnedHref(href: string): boolean {
+  return /^(?:[a-z][a-z0-9+.-]*:|[/\\]{2})/i.test(normalizeHref(href));
+}
+
+function isExecutableHref(href: string): boolean {
+  return /^(?:javascript|data|vbscript):/i.test(normalizeHref(href));
+}
+
 function useLegacyHref(href: string): string {
   const resolved = useHref(href);
-  return !href || /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(href) ? href : resolved;
+  if (isExecutableHref(href)) {
+    return 'about:blank';
+  }
+  return !href || isBrowserOwnedHref(href) ? href : resolved;
 }
 
 /** App-owned compatibility for the frozen BUI V2 React Router contract. */
@@ -72,6 +90,15 @@ export function LegacyBUIProvider({ children }: { children: ReactNode }) {
         : undefined;
       if (delegatedNavigation) {
         delegatedNavigation();
+        return;
+      }
+      // React Aria client-navigates same-origin absolute URLs too, but React
+      // Router only navigates app paths and would nest the URL under the
+      // current path. Leave absolute URLs to the browser, like BUI does.
+      if (isBrowserOwnedHref(href)) {
+        if (!isExecutableHref(href)) {
+          window.location.assign(href);
+        }
         return;
       }
       providerNavigate(href, options);

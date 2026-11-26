@@ -309,7 +309,15 @@ export default {
             'features/software-catalog/well-known-annotations',
             'features/software-catalog/well-known-relations',
             'features/software-catalog/well-known-statuses',
-            'features/software-catalog/extending-the-model',
+            {
+              type: 'category',
+              label: 'Extending the model',
+              link: {
+                type: 'doc',
+                id: 'features/software-catalog/extending-the-model',
+              },
+              items: ['features/software-catalog/catalog-model-layers'],
+            },
             {
               type: 'category',
               label: 'External integrations',
@@ -326,6 +334,7 @@ export default {
             'features/software-catalog/catalog-customization',
             'features/software-catalog/entity-presentation',
             'features/software-catalog/audit-events',
+            'features/software-catalog/unprocessed-entities',
             {
               type: 'category',
               label: 'API',
@@ -423,6 +432,9 @@ export default {
       },
       [
         'integrations/index',
+        sidebarElementWithIndex({ label: 'AWS CodeCommit' }, [
+          'integrations/aws-codecommit/locations',
+        ]),
         sidebarElementWithIndex({ label: 'AWS S3' }, [
           'integrations/aws-s3/locations',
           'integrations/aws-s3/discovery',
@@ -509,6 +521,7 @@ export default {
               },
               [
                 'backend-system/architecture/index',
+                'backend-system/architecture/backends',
                 'backend-system/architecture/services',
                 'backend-system/architecture/plugins',
                 'backend-system/architecture/extension-points',
@@ -567,6 +580,7 @@ export default {
                 'backend-system/core-services/root-logger',
                 'backend-system/core-services/scheduler',
                 'backend-system/core-services/token-manager',
+                'backend-system/core-services/tracing',
                 'backend-system/core-services/url-reader',
                 'backend-system/core-services/user-info',
                 'backend-system/core-services/actions-registry',
@@ -614,6 +628,7 @@ export default {
                 'frontend-system/building-plugins/common-extension-blueprints',
                 'frontend-system/building-plugins/built-in-data-refs',
                 'frontend-system/building-plugins/page-routers',
+                'frontend-system/building-plugins/swappable-components',
                 'frontend-system/building-plugins/migrating',
                 'frontend-system/building-plugins/internationalization',
                 'frontend-system/building-plugins/analytics',
@@ -680,6 +695,7 @@ export default {
                 'tooling/cli/module-auth',
                 'tooling/cli/module-actions',
                 'tooling/cli/module-build',
+                'tooling/cli/module-catalog',
                 'tooling/cli/module-config',
                 'tooling/cli/module-github',
                 'tooling/cli/module-info',
@@ -687,6 +703,8 @@ export default {
                 'tooling/cli/module-maintenance',
                 'tooling/cli/module-migrate',
                 'tooling/cli/module-new',
+                'tooling/cli/module-scaffolder',
+                'tooling/cli/module-search',
                 'tooling/cli/module-test',
                 'tooling/cli/module-translations',
                 'tooling/cli/module-package-manager-yarn',

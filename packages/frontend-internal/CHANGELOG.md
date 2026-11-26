@@ -1,5 +1,15 @@
 # @internal/frontend
 
+## 0.0.26
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@1.0.0
+  - @backstage/errors@1.4.0
+  - @backstage/version-bridge@1.1.0
+  - @backstage/filter-predicates@0.2.1
+
 ## 0.0.26-next.2
 
 ### Patch Changes

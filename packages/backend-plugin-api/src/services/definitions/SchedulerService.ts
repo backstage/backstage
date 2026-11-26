@@ -26,9 +26,9 @@ import { Duration } from 'luxon';
  *
  * @public
  */
-export type SchedulerServiceTaskFunction =
-  | ((abortSignal: AbortSignal) => void | Promise<void>)
-  | (() => void | Promise<void>);
+export type SchedulerServiceTaskFunction = (
+  abortSignal: AbortSignal,
+) => void | Promise<void>;
 
 /**
  * A semi-opaque type to describe an actively scheduled task.

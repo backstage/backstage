@@ -1,5 +1,19 @@
 # @internal/backend
 
+## 0.0.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.1-next.0
+
+## 0.0.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0
+
 ## 0.0.6-next.1
 
 ### Patch Changes

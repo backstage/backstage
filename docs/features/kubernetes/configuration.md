@@ -679,6 +679,7 @@ Kubernetes resources.
 **Notes:**
 
 - The optional `kubernetes.customResources` property is overridden by `customResources` at the [clusters level](#clusterscustomresources-optional).
+- If a resource type returns a `404` from the cluster (for example, a CRD that is not installed on that cluster), it is silently skipped and its absence is logged at debug level. Other resource types are still fetched normally.
 
 Defaults to empty array. Example:
 

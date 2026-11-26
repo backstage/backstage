@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { createMockDirectory } from '@backstage/backend-test-utils';
 import { CliInitializer } from './CliInitializer';
 import { createCliModule } from './factory';
 
@@ -321,6 +322,195 @@ describe('CliInitializer', () => {
     initializer2.add([conflictingArrayModule, nonConflictingArrayModule]);
     await initializer2.run();
     expect(process.exit).toHaveBeenCalledTimes(2);
+  });
+
+  it('should keep array-sourced modules as the fallback for toggleable individual commands', async () => {
+    const calls: string[] = [];
+    const toggledModule = createCliModule({
+      packageJson: { name: '@backstage/toggled' },
+      init: async reg =>
+        reg.addPackageCommand({
+          path: ['test'],
+          description: 'toggled test',
+          if: ({ packageJson }) => packageJson.name === 'toggled-pkg',
+          execute: async () => {
+            calls.push('toggled');
+          },
+        }),
+    });
+    const fallbackArrayModule = createCliModule({
+      packageJson: { name: '@backstage/array-fallback' },
+      init: async reg =>
+        reg.addCommand({
+          path: ['package', 'test'],
+          description: 'fallback test',
+          execute: async () => {
+            calls.push('fallback');
+          },
+        }),
+    });
+    const cwdSpy = jest.spyOn(process, 'cwd');
+    const packageJson = (name: string) =>
+      JSON.stringify({ name, version: '0' });
+    const mockDir = createMockDirectory();
+    mockDir.setContent({
+      toggled: { 'package.json': packageJson('toggled-pkg') },
+      other: { 'package.json': packageJson('other-pkg') },
+    });
+
+    process.argv = ['node', 'cli', 'package', 'test'];
+    for (const dir of ['toggled', 'other']) {
+      cwdSpy.mockReturnValue(mockDir.resolve(dir));
+      const initializer = new CliInitializer();
+      initializer.add(toggledModule);
+      initializer.add([fallbackArrayModule]);
+      await initializer.run();
+    }
+
+    expect(calls).toEqual(['toggled', 'fallback']);
+    expect(process.exit).toHaveBeenCalledTimes(2);
+    expect(process.exit).toHaveBeenNthCalledWith(1, 0);
+    expect(process.exit).toHaveBeenNthCalledWith(2, 0);
+  });
+
+  it('should skip array-sourced modules that are also added individually', async () => {
+    const calls: string[] = [];
+    const createToggledModule = () =>
+      createCliModule({
+        packageJson: { name: '@backstage/toggled' },
+        init: async reg =>
+          reg.addPackageCommand({
+            path: ['test'],
+            description: 'toggled test',
+            if: () => true,
+            execute: async () => {
+              calls.push('toggled');
+            },
+          }),
+      });
+    const cwdSpy = jest.spyOn(process, 'cwd');
+    const mockDir = createMockDirectory();
+    mockDir.setContent({
+      'package.json': JSON.stringify({ name: 'pkg', version: '0' }),
+    });
+    cwdSpy.mockReturnValue(mockDir.path);
+
+    process.argv = ['node', 'cli', 'package', 'test'];
+    const initializer = new CliInitializer();
+    initializer.add(createToggledModule());
+    initializer.add([createToggledModule()]);
+    await initializer.run();
+
+    expect(calls).toEqual(['toggled']);
+    expect(process.exit).toHaveBeenCalledWith(0);
+  });
+
+  it('should keep the non-overlapping commands of an array-sourced module', async () => {
+    const calls: string[] = [];
+    const individualModule = createCliModule({
+      packageJson: { name: '@backstage/individual' },
+      init: async reg => {
+        reg.addCommand({
+          path: ['repo', 'lint'],
+          description: 'individual repo lint',
+          execute: async () => {
+            calls.push('individual repo lint');
+          },
+        });
+        reg.addPackageCommand({
+          path: ['lint'],
+          description: 'toggled package lint',
+          if: () => false,
+          execute: async () => {
+            calls.push('toggled package lint');
+          },
+        });
+      },
+    });
+    const defaultModule = createCliModule({
+      packageJson: { name: '@backstage/default' },
+      init: async reg => {
+        reg.addCommand({
+          path: ['repo', 'lint'],
+          description: 'default repo lint',
+          execute: async () => {
+            calls.push('default repo lint');
+          },
+        });
+        reg.addCommand({
+          path: ['package', 'lint'],
+          description: 'default package lint',
+          execute: async () => {
+            calls.push('default package lint');
+          },
+        });
+      },
+    });
+    const cwdSpy = jest.spyOn(process, 'cwd');
+    const mockDir = createMockDirectory();
+    mockDir.setContent({
+      pkg: { 'package.json': JSON.stringify({ name: 'pkg', version: '0' }) },
+    });
+    cwdSpy.mockReturnValue(mockDir.resolve('pkg'));
+
+    for (const argv of [
+      ['repo', 'lint'],
+      ['package', 'lint'],
+    ]) {
+      process.argv = ['node', 'cli', ...argv];
+      const initializer = new CliInitializer();
+      initializer.add(individualModule);
+      initializer.add([defaultModule]);
+      await initializer.run();
+    }
+
+    expect(calls).toEqual(['individual repo lint', 'default package lint']);
+  });
+
+  it('should keep toggled array-sourced commands next to an individual fallback', async () => {
+    const calls: string[] = [];
+    const individualModule = createCliModule({
+      packageJson: { name: '@backstage/individual' },
+      init: async reg =>
+        reg.addPackageCommand({
+          path: ['test'],
+          description: 'individual fallback',
+          execute: async () => {
+            calls.push('fallback');
+          },
+        }),
+    });
+    const toggledArrayModule = createCliModule({
+      packageJson: { name: '@backstage/array-toggled' },
+      init: async reg =>
+        reg.addPackageCommand({
+          path: ['test'],
+          description: 'array toggled',
+          if: ({ packageJson }) => packageJson.name === 'toggled-pkg',
+          execute: async () => {
+            calls.push('toggled');
+          },
+        }),
+    });
+    const cwdSpy = jest.spyOn(process, 'cwd');
+    const mockDir = createMockDirectory();
+    const packageJson = (name: string) =>
+      JSON.stringify({ name, version: '0' });
+    mockDir.setContent({
+      toggled: { 'package.json': packageJson('toggled-pkg') },
+      other: { 'package.json': packageJson('other-pkg') },
+    });
+
+    process.argv = ['node', 'cli', 'package', 'test'];
+    for (const dir of ['toggled', 'other']) {
+      cwdSpy.mockReturnValue(mockDir.resolve(dir));
+      const initializer = new CliInitializer();
+      initializer.add(individualModule);
+      initializer.add([toggledArrayModule]);
+      await initializer.run();
+    }
+
+    expect(calls).toEqual(['toggled', 'fallback']);
   });
 
   it('should error with package names when two individual modules conflict', async () => {

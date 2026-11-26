@@ -444,7 +444,7 @@ const customIconBundle = IconBundleBlueprint.make({
   name: 'custom-icons',
   params: {
     icons: {
-      github: ExampleIcon,
+      github: <ExampleIcon fontSize="inherit" />,
     },
   },
 });
@@ -475,7 +475,7 @@ const extraIcons = IconBundleBlueprint.make({
   name: 'extra-icons',
   params: {
     icons: {
-      alert: AlarmIcon,
+      alert: <AlarmIcon fontSize="inherit" />,
     },
   },
 });

@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import type {
-  IconComponent,
-  IconElement,
-} from '@backstage/frontend-plugin-api';
+import type { IconElement } from '@backstage/frontend-plugin-api';
+import type { IconComponent } from './types';
 import { cloneElement } from 'react';
 
 const legacyFontSizeMap = {

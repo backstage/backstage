@@ -29,16 +29,15 @@ import {
   Button,
 } from '@backstage/ui';
 import {
-  appHistoryApiRef,
-  NavigationProvider,
-  useNavigation,
   useAppLocation,
   useAppNavigate,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 import {
-  createMockAppHistory,
-  TestApiProvider,
-} from '@backstage/frontend-test-utils';
+  RoutingProvider,
+  useRoutingIntegration,
+} from '@backstage/frontend-plugin-api/routing';
+import { TestApiProvider, mockApis } from '@backstage/frontend-test-utils';
 import { Link as AriaLink } from 'react-aria-components';
 import {
   Link,
@@ -115,30 +114,30 @@ function FrameworkConsumer() {
 }
 
 it('preserves the frozen V2 contract through nested providers overriding V3', async () => {
-  const history = createMockAppHistory({
+  const history = mockApis.appHistory({
     basename: '/app',
     initialLocation: '/app/catalog/items/42/deep?q=1#hash',
   });
   render(
-    <TestApiProvider apis={[[appHistoryApiRef, history]]}>
+    <TestApiProvider apis={[[coreApis.appHistory, history]]}>
       <RootHistoryRouter history={history}>
         <LegacyBUIProvider>
-          <BUIProvider useNavigation={useNavigation}>
+          <BUIProvider useNavigation={useRoutingIntegration}>
             <Routes>
               <Route path="catalog">
                 <Route
                   path="items/:id/*"
                   element={
-                    <BUIProvider useNavigation={useNavigation}>
-                      <NavigationProvider
-                        useNavigation={() => ({
+                    <BUIProvider useNavigation={useRoutingIntegration}>
+                      <RoutingProvider
+                        useRoutingIntegration={() => ({
                           createHref: () => '/unrelated',
                           navigate: () => {},
                           pathname: '/unrelated',
                         })}
                       >
                         <LegacyConsumer />
-                      </NavigationProvider>
+                      </RoutingProvider>
                       <FrameworkConsumer />
                       <WorkaroundNavLink to="details">
                         Legacy sidebar
@@ -210,4 +209,59 @@ it('preserves the frozen V2 contract through nested providers overriding V3', as
     search: '',
     hash: '',
   });
+});
+
+it('leaves absolute URLs to the browser', () => {
+  const history = mockApis.appHistory({
+    basename: '/app',
+    initialLocation: '/app/catalog',
+  });
+  // jsdom can't load pages; it reports the attempt through console.error.
+  const consoleError = jest
+    .spyOn(console, 'error')
+    .mockImplementation(() => {});
+  render(
+    <TestApiProvider apis={[[coreApis.appHistory, history]]}>
+      <RootHistoryRouter history={history}>
+        <LegacyBUIProvider>
+          <AriaLink href={`${window.location.origin}/app/catalog/x`}>
+            Absolute
+          </AriaLink>
+        </LegacyBUIProvider>
+      </RootHistoryRouter>
+    </TestApiProvider>,
+  );
+
+  fireEvent.click(screen.getByRole('link', { name: 'Absolute' }));
+
+  expect(history.getSnapshot().location.pathname).toBe('/catalog');
+  expect(consoleError).toHaveBeenCalledWith(
+    expect.objectContaining({
+      message: expect.stringContaining('Not implemented: navigation'),
+    }),
+  );
+  consoleError.mockRestore();
+});
+
+it('never renders executable hrefs, even when obfuscated', () => {
+  const history = mockApis.appHistory({ initialLocation: '/catalog' });
+  render(
+    <TestApiProvider apis={[[coreApis.appHistory, history]]}>
+      <RootHistoryRouter history={history}>
+        <LegacyBUIProvider>
+          <AriaLink href={'java\tscript:alert(1)'}>Obfuscated</AriaLink>
+          <AriaLink href=" data:text/html,hi">Data</AriaLink>
+        </LegacyBUIProvider>
+      </RootHistoryRouter>
+    </TestApiProvider>,
+  );
+
+  expect(screen.getByRole('link', { name: 'Obfuscated' })).toHaveAttribute(
+    'href',
+    'about:blank',
+  );
+  expect(screen.getByRole('link', { name: 'Data' })).toHaveAttribute(
+    'href',
+    'about:blank',
+  );
 });

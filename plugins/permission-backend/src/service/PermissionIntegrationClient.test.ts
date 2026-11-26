@@ -86,7 +86,7 @@ describe('PermissionIntegrationClient', () => {
 
     beforeAll(() => {
       server = setupServer();
-      server.listen({ onUnhandledRequest: 'error' });
+      server.listen({ onUnhandledFrame: 'error' });
       server.use(
         http.post(
           `${mockBaseUrl}/plugin-1/.well-known/backstage/permissions/apply-conditions`,

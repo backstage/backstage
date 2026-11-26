@@ -15,15 +15,9 @@
  */
 
 import { useContext, useMemo, type ReactNode } from 'react';
+import { useApiHolder, useApi, coreApis } from '@backstage/frontend-plugin-api';
 import {
-  useApiHolder,
-  appHistoryApiRef,
-  NavigationProvider,
-  type Navigation,
-  useApi,
-  useRouteResolution,
-} from '@backstage/frontend-plugin-api';
-import {
+  useRouteMatches,
   createAppHistoryRouter,
   resolveAppPath,
   createPath,
@@ -31,6 +25,11 @@ import {
   sanitizeHref,
   type ReactRouterAdapterBindings,
 } from '@internal/frontend';
+import {
+  RoutingProvider,
+  type RoutingIntegration,
+} from '@backstage/frontend-plugin-api/routing';
+
 import {
   UNSAFE_LocationContext,
   UNSAFE_NavigationContext,
@@ -53,8 +52,8 @@ const v7Bindings: ReactRouterAdapterBindings = {
 };
 
 /** Called by each navigation consumer, inside its own React Router route context. */
-function useAdapterNavigation(): Navigation {
-  const history = useApi(appHistoryApiRef);
+function useAdapterNavigation(): RoutingIntegration {
+  const history = useApi(coreApis.appHistory);
   const location = useLocation();
   const navigate = useNavigate();
   const { matches } = useContext(UNSAFE_RouteContext);
@@ -138,8 +137,8 @@ export function ReactRouterV7PageRouter(props: { children?: ReactNode }) {
   // Read through the holder rather than `useApi`, which throws when no app
   // history is registered — that throw would happen before the passthrough
   // below could be reached, in exactly the apps that need it.
-  const appHistory = useApiHolder().get(appHistoryApiRef);
-  const mounts = useRouteResolution().matches;
+  const appHistory = useApiHolder().get(coreApis.appHistory);
+  const mounts = useRouteMatches();
   const routePattern = mounts.at(-1)?.routePattern;
 
   // Only ever recreated for a genuinely different router: a new element type
@@ -167,9 +166,9 @@ export function ReactRouterV7PageRouter(props: { children?: ReactNode }) {
 
   return (
     <scopedRouter.Router mounts={mounts}>
-      <NavigationProvider useNavigation={useAdapterNavigation}>
+      <RoutingProvider useRoutingIntegration={useAdapterNavigation}>
         {children}
-      </NavigationProvider>
+      </RoutingProvider>
     </scopedRouter.Router>
   );
 }

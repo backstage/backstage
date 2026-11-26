@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { CoreApis } from './coreApis';
 import { createApiRef } from '../system';
 import {
   AnyRouteRefParams,
@@ -22,6 +23,9 @@ import {
   ExternalRouteRef,
 } from '../../routing';
 import type { AppNode } from './AppTreeApi';
+
+// Retain documentation link targets in declarations.
+export type { CoreApis };
 
 /**
  * TS magic for handling route parameters.
@@ -61,6 +65,12 @@ export interface RouteResolutionMatch {
 }
 
 /**
+ * Resolves routes and app-relative pathnames against the app's route tree.
+ *
+ * @remarks
+ *
+ * Available as `coreApis.routeResolution`.
+ *
  * @public
  */
 export interface RouteResolutionApi {
@@ -80,6 +90,10 @@ export interface RouteResolutionApi {
     matches: readonly RouteResolutionMatch[];
   };
 
+  /**
+   * Resolves a route reference into a function that generates a path for it,
+   * or `undefined` when the route reference has no bound route in the app.
+   */
   resolve<TParams extends AnyRouteRefParams>(
     anyRouteRef:
       | RouteRef<TParams>
@@ -99,7 +113,7 @@ export interface RouteResolutionApi {
  * The `ApiRef` of {@link RouteResolutionApi}.
  *
  * @public
- * @deprecated Use {@link coreApis.routeResolution} instead.
+ * @deprecated Use {@link CoreApis.routeResolution | coreApis.routeResolution} instead.
  */
 export const routeResolutionApiRef = createApiRef<RouteResolutionApi>().with({
   id: 'core.route-resolution',

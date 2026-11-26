@@ -1,0 +1,11 @@
+---
+title: Pointing Poker
+author: Backstage Community
+authorUrl: https://github.com/backstage/community-plugins
+category: Agile Planning
+description: Collaborative story-point estimation in Backstage, with private voting, synchronized reveals, and ticket context from your tracker.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/pointing-poker/plugins/pointing-poker/README.md
+iconUrl: /img/logo-gradient-on-dark.svg
+npmPackageName: '@backstage-community/plugin-pointing-poker'
+addedDate: '2026-11-06'
+status: active

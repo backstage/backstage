@@ -38,7 +38,7 @@ const discoveryApi: DiscoveryApi = {
 describe('CatalogClient', () => {
   let client: CatalogClient;
 
-  beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+  beforeAll(() => server.listen({ onUnhandledFrame: 'error' }));
   afterAll(() => server.close());
   afterEach(() => server.resetHandlers());
 
@@ -1127,14 +1127,11 @@ describe('CatalogClient', () => {
 
     beforeEach(() => {
       server.use(
+        http.get(`${mockBaseUrl}/entities/by-name/:kind/default/exists`, () => {
+          return HttpResponse.json(existingEntity);
+        }),
         http.get(
-          `${mockBaseUrl}/entities/by-name/customkind/default/exists`,
-          () => {
-            return HttpResponse.json(existingEntity);
-          },
-        ),
-        http.get(
-          `${mockBaseUrl}/entities/by-name/customkind/default/missing`,
+          `${mockBaseUrl}/entities/by-name/:kind/default/missing`,
           () => {
             return new HttpResponse(null, { status: 404 });
           },

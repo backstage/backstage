@@ -167,7 +167,7 @@ describe('AwsAlbProvider', () => {
           { req },
           {
             issuer: 'ISSUER_URL',
-            signer: undefined,
+            signer: 'SIGNER_ARN',
             getKey: jest.fn().mockResolvedValue(signingKey),
           },
         )
@@ -196,7 +196,7 @@ describe('AwsAlbProvider', () => {
           { req },
           {
             issuer: 'ISSUER_URL',
-            signer: undefined,
+            signer: 'SIGNER_ARN',
             getKey: jest.fn().mockResolvedValue(signingKey),
           },
         )
@@ -235,7 +235,7 @@ describe('AwsAlbProvider', () => {
     });
 
     it('signer is invalid', async () => {
-      const jwt = await new SignJWT({})
+      const jwt = await new SignJWT(mockClaims)
         .setProtectedHeader({ alg: 'HS256', signer: 'INVALID_SIGNER_ARN' })
         .sign(signingKey);
       const req = {
@@ -260,7 +260,7 @@ describe('AwsAlbProvider', () => {
         )
         .catch(e => e);
       expect(err).toBeInstanceOf(AuthenticationError);
-      expect(err.message).toContain('Issuer mismatch on JWT token');
+      expect(err.message).toContain('Signer mismatch on JWT token');
     });
   });
 
@@ -269,14 +269,29 @@ describe('AwsAlbProvider', () => {
       const config = {
         config: new ConfigReader({
           issuer: 'ISSUER_URL',
+          signer: 'SIGNER_ARN',
           region: 'TEST_REGION',
         }),
       };
 
       expect(awsAlbAuthenticator.initialize(config)).toEqual({
         issuer: 'ISSUER_URL',
+        signer: 'SIGNER_ARN',
         getKey: expect.any(Function),
       });
+    });
+
+    it('without a signer in the configuration', async () => {
+      const config = {
+        config: new ConfigReader({
+          issuer: 'ISSUER_URL',
+          region: 'TEST_REGION',
+        }),
+      };
+
+      expect(() => awsAlbAuthenticator.initialize(config)).toThrow(
+        /Missing required config value at 'signer'/,
+      );
     });
   });
 });

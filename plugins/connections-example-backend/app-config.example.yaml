@@ -9,7 +9,7 @@ backend:
 
 connections:
   - type: gitlab
-    host: gitlab.example.com
+    baseUrl: https://gitlab.example.com/
     auth:
       - method: token
         token: example-token-not-a-real-credential

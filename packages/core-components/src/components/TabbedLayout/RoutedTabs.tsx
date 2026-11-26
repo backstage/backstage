@@ -62,6 +62,15 @@ export function useSelectedSubRoute(subRoutes: SubRoute[]): {
   };
 }
 
+/**
+ * Renders legacy tabs and their routed content.
+ * @public
+ * @deprecated Legacy routed tabs, superseded for new frontend development. Use
+ * `PageBlueprint` and `SubPageBlueprint` from `@backstage/frontend-plugin-api`
+ * for framework-managed page navigation. For standalone layouts, compose `Tabs`,
+ * `TabList`, `Tab`, and `TabPanel` from `@backstage/ui` with explicit routing and
+ * route content rendering.
+ */
 export function RoutedTabs(props: { routes: SubRoute[] }) {
   const { routes } = props;
 

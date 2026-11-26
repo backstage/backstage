@@ -33,10 +33,7 @@ import { Knex } from 'knex';
 import crypto from 'node:crypto';
 import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 
-const migrationsDir = resolvePackagePath(
-  '@backstage/plugin-notifications-backend',
-  'migrations',
-);
+const migrationsDir = resolvePackagePath(import.meta.url, 'migrations');
 
 const NOTIFICATION_COLUMNS = [
   'id',

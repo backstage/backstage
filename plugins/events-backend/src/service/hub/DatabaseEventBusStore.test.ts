@@ -596,9 +596,19 @@ describe.each(databases.eachSupportedId())(
         topics: ['test-5'],
       });
 
-      const start = Date.now();
-      const { events } = await store.readSubscription('tester');
-      const duration = Date.now() - start;
+      // Take the fastest of a few reads, since a single timing on a shared CI
+      // database is too noisy. Each read starts over from the beginning.
+      let duration = Infinity;
+      let events: Awaited<ReturnType<typeof store.readSubscription>>['events'] =
+        [];
+      for (let i = 0; i < 5; i++) {
+        await db('event_bus_subscriptions')
+          .where({ id: 'tester' })
+          .update({ read_until: 0 });
+        const start = Date.now();
+        ({ events } = await store.readSubscription('tester'));
+        duration = Math.min(duration, Date.now() - start);
+      }
 
       expect(events).toEqual([
         { topic: 'test-5', eventPayload: { id: '5' } },

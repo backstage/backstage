@@ -31,7 +31,9 @@ import { OidcDatabase } from '../database/OidcDatabase';
 import { DateTime } from 'luxon';
 import matcher from 'matcher';
 import { OfflineAccessService } from './OfflineAccessService';
+import { OidcError } from './OidcError';
 import { validateCimdUrl, fetchCimdMetadata } from './CimdClient';
+import { readBackstageTokenExpiration } from './readTokenExpiration';
 
 const WILDCARD_PORT = /:\*(?=\/|$)/;
 const EXPLICIT_PROTOCOL = /^[a-z][a-z0-9+.-]*:/i;
@@ -131,6 +133,75 @@ function matchesRedirectUri(
   });
 }
 
+type StaticClient = {
+  clientName: string;
+  clientSecret?: string;
+  redirectUris: string[];
+};
+
+function readStaticClients(
+  config: RootConfigService,
+): Map<string, StaticClient> {
+  const clients = new Map<string, StaticClient>();
+
+  const clientConfigs =
+    config.getOptionalConfigArray('auth.staticClients') ?? [];
+  for (const clientConfig of clientConfigs) {
+    const clientId = clientConfig.getString('clientId');
+    if (URL.canParse(clientId)) {
+      throw new Error(
+        `Invalid client ID '${clientId}' in auth.staticClients, client IDs must not be URLs`,
+      );
+    }
+    if (clients.has(clientId)) {
+      throw new Error(
+        `Duplicate client ID '${clientId}' in auth.staticClients`,
+      );
+    }
+
+    const redirectUris = clientConfig.getStringArray('redirectUris');
+    if (redirectUris.length === 0) {
+      throw new Error(
+        `Client '${clientId}' in auth.staticClients must have at least one redirect URI`,
+      );
+    }
+    for (const redirectUri of redirectUris) {
+      if (!URL.canParse(redirectUri)) {
+        throw new Error(
+          `Invalid redirect URI '${redirectUri}' for client '${clientId}' in auth.staticClients`,
+        );
+      }
+    }
+
+    clients.set(clientId, {
+      clientName: clientConfig.getOptionalString('clientName') ?? clientId,
+      clientSecret: clientConfig.getOptionalString('clientSecret'),
+      redirectUris,
+    });
+  }
+
+  return clients;
+}
+
+function safeEqual(a: string, b: string): boolean {
+  const expected = Buffer.from(a, 'utf8');
+  const provided = Buffer.from(b, 'utf8');
+  if (expected.length !== provided.length) {
+    return false;
+  }
+  return crypto.timingSafeEqual(expected, provided);
+}
+
+/**
+ * Credentials presented by an OAuth client. Confidential clients authenticate
+ * with both a client ID and a client secret, while public clients identify
+ * themselves with a client ID alone.
+ */
+export type OidcClientCredentials = {
+  clientId: string;
+  clientSecret?: string;
+};
+
 export class OidcService {
   private readonly auth: AuthService;
   private readonly tokenIssuer: TokenIssuer;
@@ -140,6 +211,8 @@ export class OidcService {
   private readonly config: RootConfigService;
   private readonly logger: LoggerService;
   private readonly offlineAccess?: OfflineAccessService;
+  private readonly tokenExpirationSeconds: number;
+  private readonly staticClients: Map<string, StaticClient>;
 
   private constructor(
     auth: AuthService,
@@ -159,6 +232,8 @@ export class OidcService {
     this.config = config;
     this.logger = logger;
     this.offlineAccess = offlineAccess;
+    this.tokenExpirationSeconds = readBackstageTokenExpiration(config);
+    this.staticClients = readStaticClients(config);
   }
 
   static create(options: {
@@ -185,6 +260,13 @@ export class OidcService {
 
   public getConfiguration() {
     const cimdEnabled = this.isCimdEnabled();
+    const staticClientsEnabled = this.hasStaticClients();
+    const confidentialClientsEnabled = [...this.staticClients.values()].some(
+      client => !!client.clientSecret,
+    );
+    const publicClientsEnabled =
+      cimdEnabled ||
+      [...this.staticClients.values()].some(client => !client.clientSecret);
 
     return {
       issuer: this.baseUrl,
@@ -209,15 +291,20 @@ export class OidcService {
         'openid',
         ...(this.offlineAccess ? ['offline_access'] : []),
       ],
-      token_endpoint_auth_methods_supported: ['none'],
+      token_endpoint_auth_methods_supported: [
+        ...(confidentialClientsEnabled
+          ? ['client_secret_basic', 'client_secret_post']
+          : []),
+        ...(publicClientsEnabled ? ['none'] : []),
+      ],
       claims_supported: ['sub', 'ent'],
       grant_types_supported: [
         'authorization_code',
         ...(this.offlineAccess ? ['refresh_token'] : []),
       ],
       authorization_endpoint: `${this.baseUrl}/v1/authorize`,
-      code_challenge_methods_supported: ['S256', 'plain'],
-      ...(cimdEnabled && {
+      code_challenge_methods_supported: ['S256'],
+      ...((cimdEnabled || staticClientsEnabled) && {
         revocation_endpoint: `${this.baseUrl}/v1/revoke`,
       }),
       ...(cimdEnabled && { client_id_metadata_document_supported: true }),
@@ -226,6 +313,10 @@ export class OidcService {
 
   public isCimdEnabled(): boolean {
     return this.getCimdConfig().enabled;
+  }
+
+  public hasStaticClients(): boolean {
+    return this.staticClients.size > 0;
   }
 
   public async listPublicKeys() {
@@ -279,14 +370,11 @@ export class OidcService {
 
     if (!codeChallenge) {
       throw new InputError(
-        'PKCE is required for public clients. Provide a code_challenge parameter.',
+        'PKCE is required for all clients. Provide a code_challenge parameter.',
       );
     }
 
-    if (
-      !codeChallengeMethod ||
-      !['S256', 'plain'].includes(codeChallengeMethod)
-    ) {
+    if (codeChallengeMethod !== 'S256') {
       throw new InputError('Invalid code_challenge_method');
     }
 
@@ -353,8 +441,33 @@ export class OidcService {
   private async resolveClient(opts: {
     clientId: string;
     redirectUri?: string;
-  }) {
+  }): Promise<{
+    clientName: string;
+    redirectUris: string[];
+  }> {
+    const staticClient = this.staticClients.get(opts.clientId);
+    if (staticClient) {
+      if (
+        opts.redirectUri &&
+        !staticClient.redirectUris.includes(opts.redirectUri)
+      ) {
+        throw new InputError(`Invalid redirect_uri '${opts.redirectUri}'`);
+      }
+      return {
+        clientName: staticClient.clientName,
+        redirectUris: staticClient.redirectUris,
+      };
+    }
+
     const cimdUrl = validateCimdUrl(opts.clientId);
+    return this.resolveCimdClient({ ...opts, cimdUrl });
+  }
+
+  private async resolveCimdClient(opts: {
+    clientId: string;
+    cimdUrl: URL;
+    redirectUri?: string;
+  }) {
     const cimd = this.getCimdConfig();
 
     if (!cimd.enabled) {
@@ -363,7 +476,7 @@ export class OidcService {
 
     const matchingPattern = cimd.allowedClientIdPatterns.find(pattern => {
       const matches = createUrlPatternMatcher(pattern);
-      return matches(cimdUrl);
+      return matches(opts.cimdUrl);
     });
     if (!matchingPattern) {
       throw new InputError(`Invalid client_id '${opts.clientId}'`);
@@ -377,7 +490,7 @@ export class OidcService {
 
     const cimdClient = await fetchCimdMetadata({
       clientId: opts.clientId,
-      validatedUrl: cimdUrl,
+      validatedUrl: opts.cimdUrl,
       skipSsrfCheck: isExactPattern,
     });
 
@@ -488,8 +601,16 @@ export class OidcService {
     redirectUri: string;
     codeVerifier?: string;
     grantType: string;
+    authenticatedClientId?: string;
   }) {
-    const { clientId, code, redirectUri, codeVerifier, grantType } = params;
+    const {
+      clientId,
+      code,
+      redirectUri,
+      codeVerifier,
+      grantType,
+      authenticatedClientId,
+    } = params;
 
     if (grantType !== 'authorization_code') {
       throw new InputError('Unsupported grant type');
@@ -524,6 +645,22 @@ export class OidcService {
       throw new AuthenticationError('Redirect URI mismatch');
     }
 
+    const requiresClientAuthentication = this.requiresClientAuthentication(
+      session.clientId,
+    );
+    if (!authenticatedClientId && requiresClientAuthentication) {
+      throw new OidcError(
+        'invalid_client',
+        'Client authentication required',
+        401,
+      );
+    }
+    if (authenticatedClientId && authenticatedClientId !== session.clientId) {
+      throw new AuthenticationError(
+        'Authorization code was not issued to this client',
+      );
+    }
+
     if (session.status !== 'approved') {
       throw new AuthenticationError('Authorization not approved');
     }
@@ -532,20 +669,19 @@ export class OidcService {
       throw new AuthenticationError('No user associated with authorization');
     }
 
-    if (session.codeChallenge) {
-      if (!codeVerifier) {
-        throw new AuthenticationError('Code verifier required for PKCE');
-      }
+    if (!codeVerifier) {
+      throw new AuthenticationError('Code verifier required for PKCE');
+    }
 
-      if (
-        !this.verifyPkce({
-          codeChallenge: session.codeChallenge,
-          codeVerifier,
-          method: session.codeChallengeMethod,
-        })
-      ) {
-        throw new AuthenticationError('Invalid code verifier');
-      }
+    if (
+      !session.codeChallenge ||
+      !this.verifyPkce({
+        codeChallenge: session.codeChallenge,
+        codeVerifier,
+        method: session.codeChallengeMethod,
+      })
+    ) {
+      throw new AuthenticationError('Invalid code verifier');
     }
 
     if (!clientId) {
@@ -586,7 +722,7 @@ export class OidcService {
     return {
       accessToken: token,
       tokenType: 'Bearer',
-      expiresIn: 3600,
+      expiresIn: this.tokenExpirationSeconds,
       idToken: token,
       scope: session.scope || 'openid',
       refreshToken,
@@ -596,6 +732,7 @@ export class OidcService {
   public async refreshAccessToken(params: {
     refreshToken: string;
     clientId?: string;
+    authenticatedClientId?: string;
   }): Promise<{
     accessToken: string;
     tokenType: string;
@@ -611,22 +748,69 @@ export class OidcService {
         refreshToken: params.refreshToken,
         tokenIssuer: this.tokenIssuer,
         clientId: params.clientId,
+        isClientAuthenticationRequired: clientId => {
+          const required = this.requiresClientAuthentication(clientId);
+          return required && params.authenticatedClientId !== clientId;
+        },
       });
 
     return {
       accessToken,
       tokenType: 'Bearer',
-      expiresIn: 3600,
+      expiresIn: this.tokenExpirationSeconds,
       refreshToken,
     };
   }
 
   /**
-   * Verifies a public client's ID without fetching its metadata, so tokens can
-   * still be revoked when the metadata document is unavailable.
+   * Verifies the credentials of a configured confidential client.
    */
-  public async verifyRevocationClient(clientId: string): Promise<boolean> {
-    let cimdUrl: URL;
+  public async verifyClientCredentials(
+    options: Required<OidcClientCredentials>,
+  ): Promise<boolean> {
+    const { clientId, clientSecret } = options;
+    const staticClient = this.staticClients.get(clientId);
+    if (!staticClient?.clientSecret) {
+      return false;
+    }
+    return safeEqual(staticClient.clientSecret, clientSecret);
+  }
+
+  private requiresClientAuthentication(clientId: string): boolean {
+    const staticClient = this.staticClients.get(clientId);
+    if (staticClient) {
+      return !!staticClient.clientSecret;
+    }
+
+    // CIMD clients have no database registration and need no metadata fetch here.
+    try {
+      validateCimdUrl(clientId);
+      return false;
+    } catch {
+      throw new AuthenticationError('Client is no longer registered');
+    }
+  }
+
+  /**
+   * Confidential static clients must present a valid secret for revocation.
+   * Public static clients and CIMD clients use their client ID alone. CIMD
+   * metadata is not fetched, so tokens can still be revoked when the document
+   * is unreachable or has been removed.
+   */
+  public async verifyRevocationClient(
+    options: OidcClientCredentials,
+  ): Promise<boolean> {
+    const { clientId, clientSecret } = options;
+
+    const staticClient = this.staticClients.get(clientId);
+    if (staticClient) {
+      return (
+        !staticClient.clientSecret ||
+        (!!clientSecret && safeEqual(staticClient.clientSecret, clientSecret))
+      );
+    }
+
+    let cimdUrl: URL | undefined;
     try {
       cimdUrl = validateCimdUrl(clientId);
     } catch {
@@ -657,10 +841,6 @@ export class OidcService {
     codeVerifier: string;
     method?: string;
   }): boolean {
-    if (!opts.method || opts.method === 'plain') {
-      return opts.codeChallenge === opts.codeVerifier;
-    }
-
     if (opts.method === 'S256') {
       const hash = crypto
         .createHash('sha256')

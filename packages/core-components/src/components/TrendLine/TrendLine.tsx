@@ -30,6 +30,9 @@ function color(data: number[], theme: Theme): string | undefined {
   return theme.palette.status.error;
 }
 
+/**
+ * @deprecated Use a suitable charting library for trend visualizations instead.
+ */
 export function TrendLine(
   props: SparklinesProps &
     Pick<SparklinesLineProps, 'color'> & { title?: string },

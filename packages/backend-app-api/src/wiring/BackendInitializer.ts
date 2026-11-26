@@ -83,6 +83,7 @@ type InstalledFeatureLoader = {
  */
 const instanceRegistry = new (class InstanceRegistry {
   #registered = false;
+  #isExiting = false;
   #instances = new Set<BackendInitializer>();
 
   register(instance: BackendInitializer) {
@@ -102,6 +103,11 @@ const instanceRegistry = new (class InstanceRegistry {
   }
 
   #exitHandler = async () => {
+    if (this.#isExiting) {
+      return;
+    }
+    this.#isExiting = true;
+
     try {
       const results = await Promise.allSettled(
         Array.from(this.#instances).map(b => b.stop()),
@@ -678,10 +684,10 @@ export class BackendInitializer {
 
   // It's fine to call .stop() multiple times, which for example can happen with manual stop + process exit
   async stop(): Promise<void> {
-    instanceRegistry.unregister(this);
-
     if (!this.#stopPromise) {
-      this.#stopPromise = this.#doStop();
+      this.#stopPromise = this.#doStop().finally(() => {
+        instanceRegistry.unregister(this);
+      });
     }
     await this.#stopPromise;
   }

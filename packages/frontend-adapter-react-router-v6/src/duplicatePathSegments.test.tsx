@@ -19,6 +19,7 @@ import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
   PageBlueprint,
   SubPageBlueprint,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 import { MemoryRouter, Route, Routes, useResolvedPath } from 'react-router-dom';
 import { Link as BuiLink } from '@backstage/ui';
@@ -270,7 +271,8 @@ describe('duplicate path segment guard', () => {
     });
 
     it('should not accumulate the prefix across sub-page and off-page navigation', async () => {
-      const { appHistory } = renderCatalog('/catalog/overview');
+      const { apis } = renderCatalog('/catalog/overview');
+      const appHistory = apis.get(coreApis.appHistory)!;
       await waitFor(() =>
         expect(screen.getByTestId('library')).toBeInTheDocument(),
       );
@@ -390,7 +392,8 @@ describe('duplicate path segment guard', () => {
     });
 
     it('should keep the prefix applied once across a change of concrete mount', async () => {
-      const { appHistory } = renderEntity(`${MOUNT}/overview`);
+      const { apis } = renderEntity(`${MOUNT}/overview`);
+      const appHistory = apis.get(coreApis.appHistory)!;
       await waitFor(() =>
         expect(screen.getByTestId('library')).toBeInTheDocument(),
       );

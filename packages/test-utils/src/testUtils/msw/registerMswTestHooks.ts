@@ -24,7 +24,11 @@ export function registerMswTestHooks(worker: {
   close: () => void;
   resetHandlers: () => void;
 }) {
-  beforeAll(() => worker.listen({ onUnhandledRequest: 'error' }));
+  // msw 3 renamed onUnhandledRequest to onUnhandledFrame. Pass both, so that
+  // msw 1, 2 and 3 all fail on unhandled requests
+  beforeAll(() =>
+    worker.listen({ onUnhandledRequest: 'error', onUnhandledFrame: 'error' }),
+  );
   afterAll(() => worker.close());
   afterEach(() => worker.resetHandlers());
 }

@@ -728,9 +728,9 @@ export type SchedulerServiceTaskDescriptor = {
 };
 
 // @public
-export type SchedulerServiceTaskFunction =
-  | ((abortSignal: AbortSignal) => void | Promise<void>)
-  | (() => void | Promise<void>);
+export type SchedulerServiceTaskFunction = (
+  abortSignal: AbortSignal,
+) => void | Promise<void>;
 
 // @public
 export interface SchedulerServiceTaskInvocationDefinition {

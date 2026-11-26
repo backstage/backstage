@@ -40,7 +40,12 @@ Then find the PR and author using `gh`:
 gh api repos/backstage/backstage/commits/<commit-sha>/pulls --jq '.[0] // empty | {number: .number, login: .user.login}'
 ```
 
-If `gh` returns nothing, check the commit message for a `#NNN` reference. If neither works, flag the entry for manual review and use the git author name without a GitHub link.
+If `gh` returns nothing, check the full commit message for a `#NNN` reference,
+then check the merge commit that first introduced the change on the mainline.
+Some changes are committed directly without a PR. For those, confirm the GitHub
+commit author; a direct commit by a known core maintainer needs no attribution
+or manual-review flag. Otherwise, flag unresolved attribution for manual review
+and use the git author name without a GitHub link.
 
 Run these lookups in batches to avoid excessive API calls.
 
@@ -100,12 +105,22 @@ Breaking change heading variants:
 - `### **BREAKING ALPHA**: Title` for alpha-only API breakage
 - `### **BREAKING PRODUCERS**: Title` for changes that only break code producing certain types (not consumers)
 
-If a changeset could not be traced to a PR or parsed, put it in a `### Needs manual review` section at the end of highlights.
+If a changeset could not be parsed or its contributor attribution remains
+unresolved, put it in a `### Needs manual review` section at the end of highlights.
 
-Do not add contributor attribution for maintainers. Current maintainers are
-`benjdlambert`, `freben`, `Rugvip`, `awanlin`, and `backstage-service`.
+Do not add contributor attribution for core maintainers. Read the current list
+from the `Core Maintainers` section of the repository-root `OWNERS.md`; do not
+use a hard-coded list or the project area and emeritus sections. Also omit
+service and bot accounts such as `backstage-service`.
 
 ### 7. Assemble the file
+
+Include a Contributors section between Security Fixes and Upgrade path, using
+the acknowledgment format from the template. Collect human PR authors and
+commit contributors since the previous mainline release through the release
+baseline, including documentation and test-only contributions without changesets.
+Exclude core maintainers, service accounts, and bots as described above.
+Deduplicate GitHub handles case-insensitively and sort them alphabetically.
 
 Use this structure:
 
@@ -127,6 +142,10 @@ A huge thanks to the whole team of maintainers and contributors as well as the a
 ## Security Fixes
 
 This release does not contain any security fixes.
+
+## Contributors
+
+<community contributor acknowledgments>
 
 ## Upgrade path
 

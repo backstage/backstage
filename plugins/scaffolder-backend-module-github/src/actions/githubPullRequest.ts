@@ -33,6 +33,7 @@ import {
 } from 'octokit-plugin-create-pull-request';
 import { getOctokitOptions } from '../util';
 import { examples } from './githubPullRequest.examples';
+import { assertValidTargetPath } from './helpers';
 import {
   LoggerService,
   resolveSafeChildPath,
@@ -302,6 +303,13 @@ export const createPublishGithubPullRequestAction = (
         forceEmptyGitAuthor,
         createWhenEmpty,
       } = ctx.input;
+
+      if (targetPath) {
+        assertValidTargetPath(targetPath);
+      }
+      for (const filePath of filesToDelete || []) {
+        assertValidTargetPath(filePath, 'filesToDelete entry');
+      }
 
       const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
 

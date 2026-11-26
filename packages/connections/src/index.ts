@@ -17,7 +17,7 @@ export type { ConnectionsService } from './api/ConnectionsService';
 export type { Connection, ConnectionAuth } from './api/Connection';
 export type {
   ConnectionTypeDefinition,
-  ConnectionLookupStrategy,
+  ConnectionLookupIdentity,
   PortableSchema,
 } from './api/ConnectionType';
 export { connectionTypes } from './definitions/types';

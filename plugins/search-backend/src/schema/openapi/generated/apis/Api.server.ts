@@ -21,21 +21,25 @@
 // ******************************************************************
 import { Query200Response } from '../models/Query200Response.model';
 
+
 /**
- * @public
- */
+  * @public
+  */
 export type Query = {
-  query: {
-    term?: string;
-    filters?: { [key: string]: any };
-    types?: Array<string>;
-    pageCursor?: string;
-    pageLimit?: number;
-    unknown?: { [key: string]: any };
-  };
-  response: Query200Response | Error;
-};
+    query: {
+        term?: string,
+        filters?: { [key: string]: any; },
+        types?: Array<string>,
+        pageCursor?: string,
+        pageLimit?: number,
+        unknown?: { [key: string]: any; },
+    },
+    response:  Query200Response  |   Error  
+}
 
 export type EndpointMap = {
-  '#get|/query': Query;
-};
+    
+    '#get|/query': Query,
+    
+}
+

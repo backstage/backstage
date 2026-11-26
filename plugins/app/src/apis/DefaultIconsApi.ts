@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  IconComponent,
-  IconElement,
-  IconsApi,
-} from '@backstage/frontend-plugin-api';
+import { IconElement, IconsApi } from '@backstage/frontend-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
 import { createElement, isValidElement } from 'react';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { createIconComponentLookup } from '../../../../packages/core-plugin-api/src/icons/createIconComponentLookup';

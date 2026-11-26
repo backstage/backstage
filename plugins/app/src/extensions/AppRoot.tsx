@@ -25,10 +25,10 @@ import {
   createExtensionInput,
   routeResolutionApiRef,
   pluginWrapperApiRef,
-  appHistoryApiRef,
   useAnalytics,
-  useNavigation,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
+import { useRoutingIntegration } from '@backstage/frontend-plugin-api/routing';
 import { BreadcrumbsRegistryProvider } from './BreadcrumbsRegistryProvider';
 import {
   AppRootWrapperBlueprint,
@@ -260,7 +260,7 @@ export function AppRouter(props: AppRouterProps) {
   const appIdentityProxy = toAppIdentityProxy(useApi(identityApiRef));
   const routeResolutionsApi = useApi(routeResolutionApiRef);
   const basePath = getBasePath(configApi);
-  const appHistory = useApi(appHistoryApiRef);
+  const appHistory = useApi(coreApis.appHistory);
 
   // TODO: Private access for now, probably replace with path -> node lookup method on the API
   if (!('getRouteObjects' in routeResolutionsApi)) {
@@ -299,7 +299,10 @@ export function AppRouter(props: AppRouterProps) {
   return (
     <RootHistoryRouter history={appHistory}>
       <LegacyBUIProvider>
-        <BUIProvider useAnalytics={useAnalytics} useNavigation={useNavigation}>
+        <BUIProvider
+          useAnalytics={useAnalytics}
+          useNavigation={useRoutingIntegration}
+        >
           <BreadcrumbsRegistryProvider>
             <AppRootElements elements={extraElements} />
             <RouteTracker routeObjects={routeObjects} />

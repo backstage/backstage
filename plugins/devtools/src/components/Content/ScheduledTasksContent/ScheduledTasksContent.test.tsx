@@ -19,10 +19,12 @@ import {
   TestApiProvider,
   mockApis,
 } from '@backstage/test-utils';
-import { screen, fireEvent, waitFor } from '@testing-library/react';
+import { act, screen, fireEvent, waitFor } from '@testing-library/react';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { toastApiRef } from '@backstage/frontend-plugin-api';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { SWRConfig } from 'swr';
 import { devToolsApiRef, DevToolsApi } from '../../../api';
 import {
   ScheduledTasks,
@@ -77,17 +79,23 @@ describe('ScheduledTasksContent', () => {
     },
   });
 
-  const renderComponent = async () => {
+  const renderComponent = async (
+    authorize:
+      | typeof AuthorizeResult.ALLOW
+      | typeof AuthorizeResult.DENY = AuthorizeResult.ALLOW,
+  ) => {
     return renderInTestApp(
       <TestApiProvider
         apis={[
           [configApiRef, configApi],
           [toastApiRef, mockToastApi],
           [devToolsApiRef, mockDevToolsApi],
-          [permissionApiRef, mockApis.permission()],
+          [permissionApiRef, mockApis.permission({ authorize })],
         ]}
       >
-        <ScheduledTasksContent />
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <ScheduledTasksContent />
+        </SWRConfig>
       </TestApiProvider>,
     );
   };
@@ -142,7 +150,7 @@ describe('ScheduledTasksContent', () => {
     expect(screen.getByText('task-a')).toBeInTheDocument();
   });
 
-  it('switching plugins shows progress', async () => {
+  it('switching plugins from the list shows progress', async () => {
     mockDevToolsApi.getScheduledTasksByPlugin.mockResolvedValueOnce({
       scheduledTasks: [mockTaskA],
     });
@@ -150,6 +158,8 @@ describe('ScheduledTasksContent', () => {
     await renderComponent();
 
     expect(await screen.findByText('task-a')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Trigger' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
 
     let resolvePluginB: (value: ScheduledTasks) => void = () => {};
     const pluginBPromise = new Promise<ScheduledTasks>(resolve => {
@@ -160,13 +170,18 @@ describe('ScheduledTasksContent', () => {
       () => pluginBPromise,
     );
 
-    const input = screen.getByRole('textbox', { name: /select plugin/i });
-    fireEvent.change(input, { target: { value: 'plugin-b' } });
-    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+    const input = screen.getByRole('combobox', { name: /select plugin/i });
+    expect(input).toHaveValue('plugin-a');
+    fireEvent.click(screen.getByRole('button', { name: /show suggestions/i }));
+    fireEvent.click(await screen.findByRole('option', { name: 'plugin-b' }));
 
     // Progress spinner should replace the table while loading the new plugin
     expect(await screen.findByTestId('progress')).toBeInTheDocument();
     expect(screen.queryByText('task-a')).not.toBeInTheDocument();
+    expect(mockDevToolsApi.getScheduledTasksByPlugin).toHaveBeenLastCalledWith(
+      'plugin-b',
+    );
+    expect(input).toHaveValue('plugin-b');
 
     resolvePluginB({
       scheduledTasks: [mockTaskB],
@@ -174,6 +189,171 @@ describe('ScheduledTasksContent', () => {
 
     expect(await screen.findByText('task-b')).toBeInTheDocument();
     expect(screen.queryByTestId('progress')).not.toBeInTheDocument();
+
+    // Enter after a mouse pick still commits typed text
+    mockDevToolsApi.getScheduledTasksByPlugin.mockResolvedValue({
+      scheduledTasks: [
+        { ...mockTaskB, taskId: 'task-c', pluginId: 'plugin-c' },
+      ],
+    });
+    fireEvent.change(input, { target: { value: 'plugin-c' } });
+    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+    expect(await screen.findByText('task-c')).toBeInTheDocument();
+    expect(mockDevToolsApi.getScheduledTasksByPlugin).toHaveBeenLastCalledWith(
+      'plugin-c',
+    );
+  });
+
+  it('commits keyboard selections and custom plugin IDs', async () => {
+    mockDevToolsApi.getScheduledTasksByPlugin.mockResolvedValueOnce({
+      scheduledTasks: [mockTaskA],
+    });
+
+    await renderComponent();
+
+    expect(await screen.findByText('task-a')).toBeInTheDocument();
+
+    const input = screen.getByRole('combobox', { name: /select plugin/i });
+
+    // Keyboard pick wins over the partially typed text
+    mockDevToolsApi.getScheduledTasksByPlugin.mockResolvedValue({
+      scheduledTasks: [mockTaskB],
+    });
+    act(() => input.focus());
+    fireEvent.change(input, { target: { value: '-b' } });
+    fireEvent.keyDown(input, { key: 'ArrowDown', code: 'ArrowDown' });
+    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+    expect(await screen.findByText('task-b')).toBeInTheDocument();
+    expect(input).toHaveValue('plugin-b');
+    expect(mockDevToolsApi.getScheduledTasksByPlugin).not.toHaveBeenCalledWith(
+      '-b',
+    );
+
+    // Plugin IDs outside the configured list still work
+    mockDevToolsApi.getScheduledTasksByPlugin.mockResolvedValue({
+      scheduledTasks: [
+        { ...mockTaskB, taskId: 'task-c', pluginId: 'plugin-c' },
+      ],
+    });
+    fireEvent.change(input, { target: { value: 'plugin-c' } });
+    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+    expect(await screen.findByText('task-c')).toBeInTheDocument();
+    expect(screen.getByText('Scheduled Tasks (plugin-c)')).toBeInTheDocument();
+    expect(mockDevToolsApi.getScheduledTasksByPlugin).toHaveBeenLastCalledWith(
+      'plugin-c',
+    );
+    expect(input).toHaveValue('plugin-c');
+
+    // Blur commits typed text, and an empty value is reverted instead
+    fireEvent.change(input, { target: { value: 'plugin-a' } });
+    act(() => input.blur());
+
+    expect(
+      await screen.findByText('Scheduled Tasks (plugin-a)'),
+    ).toBeInTheDocument();
+    expect(mockDevToolsApi.getScheduledTasksByPlugin).toHaveBeenLastCalledWith(
+      'plugin-a',
+    );
+
+    act(() => input.focus());
+    fireEvent.change(input, { target: { value: '  ' } });
+    act(() => input.blur());
+
+    expect(input).toHaveValue('plugin-a');
+    expect(mockDevToolsApi.getScheduledTasksByPlugin).not.toHaveBeenCalledWith(
+      '',
+    );
+  });
+
+  it('exposes the permission indicator without a nonfunctional button', async () => {
+    mockDevToolsApi.getScheduledTasksByPlugin.mockResolvedValue({
+      scheduledTasks: [mockTaskA],
+    });
+    await renderComponent(AuthorizeResult.DENY);
+
+    const indicator = await screen.findByRole('img', {
+      name: 'You are not allowed to perform this action',
+    });
+    expect(indicator).toHaveAttribute('tabindex', '0');
+    expect(
+      screen.queryByRole('button', { name: 'Trigger' }),
+    ).not.toBeInTheDocument();
+    act(() => indicator.focus());
+    expect(indicator).toHaveFocus();
+    expect(await screen.findByRole('tooltip')).toHaveTextContent(
+      'You are not allowed to perform this action',
+    );
+  });
+
+  it('updates a persistent status when an empty plugin result loads', async () => {
+    let resolveTasks: (value: ScheduledTasks) => void = () => {};
+    mockDevToolsApi.getScheduledTasksByPlugin.mockReturnValueOnce(
+      new Promise(resolve => {
+        resolveTasks = resolve;
+      }),
+    );
+    await renderComponent();
+
+    const status = screen.getByRole('status');
+    expect(status).toBeEmptyDOMElement();
+    resolveTasks({ scheduledTasks: [] });
+    expect(
+      await screen.findByText('No scheduled tasks found for plugin-a.', {
+        selector: '[role="status"]',
+      }),
+    ).toBe(status);
+    expect(screen.getByRole('status')).toBe(status);
+
+    mockDevToolsApi.getScheduledTasksByPlugin.mockResolvedValueOnce({
+      scheduledTasks: [mockTaskB],
+    });
+    fireEvent.click(screen.getByRole('button', { name: /show suggestions/i }));
+    fireEvent.click(await screen.findByRole('option', { name: 'plugin-b' }));
+    expect(await screen.findByText('task-b')).toBeInTheDocument();
+    expect(screen.getByRole('status')).toBe(status);
+    expect(status).toBeEmptyDOMElement();
+
+    mockDevToolsApi.getScheduledTasksByPlugin.mockResolvedValueOnce({
+      scheduledTasks: [],
+    });
+    fireEvent.click(screen.getByRole('button', { name: /show suggestions/i }));
+    fireEvent.click(await screen.findByRole('option', { name: 'plugin-a' }));
+    expect(
+      await screen.findByText('No scheduled tasks found for plugin-a.', {
+        selector: '[role="status"]',
+      }),
+    ).toBe(status);
+
+    mockDevToolsApi.getScheduledTasksByPlugin.mockRejectedValueOnce(
+      new Error('Unable to load tasks'),
+    );
+    const input = screen.getByRole('combobox', { name: /select plugin/i });
+    fireEvent.change(input, { target: { value: 'plugin-c' } });
+    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+    expect(await screen.findByText('Unable to load tasks')).toBeInTheDocument();
+    expect(status).toBeEmptyDOMElement();
+  });
+
+  it('distinguishes an empty search from an empty plugin response', async () => {
+    mockDevToolsApi.getScheduledTasksByPlugin.mockResolvedValue({
+      scheduledTasks: [mockTaskA],
+    });
+    await renderComponent();
+    expect(await screen.findByText('task-a')).toBeInTheDocument();
+
+    fireEvent.change(screen.getByRole('textbox', { name: /search/i }), {
+      target: { value: 'no-matching-task' },
+    });
+    expect(
+      await screen.findByText('No records to display'),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('status')).toBeEmptyDOMElement();
+    expect(
+      screen.queryByText('No scheduled tasks found for plugin-a.'),
+    ).not.toBeInTheDocument();
   });
 
   it('a 403 shows the real error message', async () => {

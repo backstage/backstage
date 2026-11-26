@@ -15,7 +15,8 @@
  */
 
 import { createApiRef } from '../apis/system';
-import type { AppLocation, AppNavigateOptions } from './AppLocation';
+import type { AppLocation } from './AppLocation';
+import type { AppNavigate } from './useAppNavigate';
 
 /** The operation that selected or updated a history entry. @public */
 export type AppHistoryAction = 'PUSH' | 'REPLACE' | 'POP';
@@ -59,7 +60,7 @@ export interface AppHistorySnapshot {
  * The public navigation surface mirrors the `navigate` + `useHref` pattern
  * used by libraries like react-aria: `AppHistoryApi.navigate` performs
  * navigation, and {@link AppHistoryApi.createHref} (paired with the public
- * {@link useAppHref} hook) resolves an app-absolute path (starting at `/`,
+ * `useAppHref` hook) resolves an app-absolute path (starting at `/`,
  * without the deployment basename) to a browser-ready href.
  *
  * @public
@@ -86,13 +87,15 @@ export interface AppHistoryApi {
    * through `subscribe`. External navigation does not synchronously update
    * the app location.
    */
-  navigate(path: string, options?: AppNavigateOptions): void;
-  /** Traverse a relative number of history entries. */
-  navigate(delta: number): void;
+  navigate: AppNavigate;
   /**
    * Reads the current immutable history snapshot without writing history.
    *
-   * Returns the same object until history changes. Each committed navigation
+   * Returns the same object until navigation is published. Reads do not
+   * discover browser history writes that have not been reported to subscribers,
+   * including silent URL synchronization by plugins.
+   *
+   * Each committed navigation
    * publishes a new snapshot, even when its URL and state are unchanged.
    * The nested location retains its identity while its fields are unchanged.
    *
@@ -134,7 +137,7 @@ export interface AppHistoryApi {
 /**
  * The `ApiRef` of {@link AppHistoryApi}.
  *
- * @public
+ * @internal
  */
 export const appHistoryApiRef = createApiRef<AppHistoryApi>().with({
   id: 'core.app-history',

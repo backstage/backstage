@@ -19,7 +19,7 @@ export default authModuleAwsAlbProvider;
 export const awsAlbAuthenticator: ProxyAuthenticator<
   {
     issuer: string;
-    signer: string | undefined;
+    signer: string;
     getKey: (header: JWTHeaderParameters) => Promise<KeyObject>;
   },
   AwsAlbResult,

@@ -38,17 +38,69 @@ import { toError, NotFoundError, NotModifiedError } from '@backstage/errors';
 import { ReadTreeResponseFactory, ReaderFactory } from './types';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 
+const PAT_DEPRECATION_DOCS_URL =
+  'https://backstage.io/docs/integrations/azure/locations#using-a-personal-access-token-pat';
+
+function isAzureDevOpsServicesHost(host: string): boolean {
+  return host === 'dev.azure.com' || host.endsWith('.visualstudio.com');
+}
+
+/**
+ * Throws if the response is not a successful read. Azure DevOps responds with
+ * HTTP 203 and a sign-in page when the credentials are rejected, for example
+ * because a PAT has expired or been retired, so that is treated as a failure.
+ */
+function assertOkResponse(
+  response: Response,
+  message: string,
+  host: string,
+): void {
+  if (response.status === 203) {
+    // Global PATs are only retired for Azure DevOps Services, not Server
+    const patHint = isAzureDevOpsServicesHost(host)
+      ? 'check that it has not expired and is not a global token'
+      : 'check that it has not expired';
+    throw new Error(
+      `${message}, Azure DevOps rejected the provided credentials. If you are using a personal access token, ${patHint}. See ${PAT_DEPRECATION_DOCS_URL}`,
+    );
+  }
+  if (response.ok) {
+    return;
+  }
+  const fullMessage = `${message}, ${response.status} ${response.statusText}`;
+  if (response.status === 404) {
+    throw new NotFoundError(fullMessage);
+  }
+  throw new Error(fullMessage);
+}
+
 /**
  * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for Azure repos.
  *
  * @public
  */
 export class AzureUrlReader implements UrlReaderService {
-  static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
+  static factory: ReaderFactory = ({ config, logger, treeResponseFactory }) => {
     const integrations = ScmIntegrations.fromConfig(config);
     const credentialProvider =
       DefaultAzureDevOpsCredentialsProvider.fromIntegrations(integrations);
     return integrations.azure.list().map(integration => {
+      const { host, credentials } = integration.config;
+      if (
+        process.env.NODE_ENV !== 'development' &&
+        isAzureDevOpsServicesHost(host) &&
+        credentials?.some(c => c.kind === 'PersonalAccessToken')
+      ) {
+        logger.warn(
+          `Personal access token credentials for Azure DevOps Services (${host}) are deprecated. ` +
+            `Global personal access tokens stop working on January 27, 2027, and Microsoft recommends Microsoft Entra ID credentials over all personal access tokens. ` +
+            `Use a service principal or managed identity instead${
+              host === 'dev.azure.com'
+                ? ''
+                : ', after moving this integration and its repository URLs to dev.azure.com'
+            }, see ${PAT_DEPRECATION_DOCS_URL}`,
+        );
+      }
       const reader = new AzureUrlReader(integration, {
         treeResponseFactory,
         credentialsProvider: credentialProvider,
@@ -107,16 +159,12 @@ export class AzureUrlReader implements UrlReaderService {
       throw new Error(`Unable to read ${url}, ${e}`);
     }
 
-    // for private repos when PAT is not valid, Azure API returns a http status code 203 with sign in page html
-    if (response.ok && response.status !== 203) {
-      return ReadUrlResponseFactory.fromResponse(response);
-    }
-
-    const message = `${url} could not be read as ${builtUrl}, ${response.status} ${response.statusText}`;
-    if (response.status === 404) {
-      throw new NotFoundError(message);
-    }
-    throw new Error(message);
+    assertOkResponse(
+      response,
+      `${url} could not be read as ${builtUrl}`,
+      this.integration.config.host,
+    );
+    return ReadUrlResponseFactory.fromResponse(response);
   }
 
   async readTree(
@@ -143,13 +191,11 @@ export class AzureUrlReader implements UrlReaderService {
       // https://github.com/backstage/backstage/issues/8242
       ...(signal && { signal: signal as any }),
     });
-    if (!commitsAzureResponse.ok) {
-      const message = `Failed to read tree from ${url}, ${commitsAzureResponse.status} ${commitsAzureResponse.statusText}`;
-      if (commitsAzureResponse.status === 404) {
-        throw new NotFoundError(message);
-      }
-      throw new Error(message);
-    }
+    assertOkResponse(
+      commitsAzureResponse,
+      `Failed to read tree from ${url}`,
+      this.integration.config.host,
+    );
 
     const commitSha = (await commitsAzureResponse.json()).value[0].commitId;
     if (etag && etag === commitSha) {
@@ -169,13 +215,11 @@ export class AzureUrlReader implements UrlReaderService {
       // https://github.com/backstage/backstage/issues/8242
       ...(signal && { signal: signal as any }),
     });
-    if (!archiveAzureResponse.ok) {
-      const message = `Failed to read tree from ${url}, ${archiveAzureResponse.status} ${archiveAzureResponse.statusText}`;
-      if (archiveAzureResponse.status === 404) {
-        throw new NotFoundError(message);
-      }
-      throw new Error(message);
-    }
+    assertOkResponse(
+      archiveAzureResponse,
+      `Failed to read tree from ${url}`,
+      this.integration.config.host,
+    );
 
     // When downloading a zip archive from azure on a subpath we get an extra directory
     // layer added at the top. With for example the file /a/b/c.txt and a download of

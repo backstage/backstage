@@ -23,6 +23,9 @@ import { StepActions } from './types';
 import { coreComponentsTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
+/**
+ * @deprecated Compose an application-specific workflow instead of using SimpleStepper.
+ */
 export type SimpleStepperFooterClassKey = 'root';
 
 const useStyles = makeStyles(

@@ -42,8 +42,20 @@ selection rules, and a typed consumption example.
 
 ## Developer platforms
 
+- [Argo CD](./types/argocd.md) supports API token authentication.
+- [Datadog](./types/datadog.md) supports paired API and application keys.
+- [Grafana](./types/grafana.md) supports service-account tokens for Grafana Cloud
+  and self-hosted instances, and basic authentication for self-hosted instances.
 - [Harness](./types/harness.md) supports token authentication with an optional
   additional API key.
+- [Jenkins](./types/jenkins.md) supports API tokens and unauthenticated access.
+- [Jira](./types/jira.md) supports Cloud API tokens, Data Center personal access
+  tokens and unauthenticated access.
+- [PagerDuty](./types/pagerduty.md) supports account-specific REST API tokens
+  with an explicit regional API destination.
+- [Snyk](./types/snyk.md) supports API tokens for regional API endpoints.
+- [SonarQube](./types/sonarqube.md) supports Bearer tokens, explicit Basic token
+  compatibility and unauthenticated access.
 
 ## Common behavior
 
@@ -55,7 +67,7 @@ framework-owned `type`, `title`, `match`, and `auth` fields. Every
 Most built-in types have [multiton cardinality](./01-concepts.md#cardinality) and
 use the `host` [lookup strategy](./01-concepts.md#lookup-strategies). Their
 consumers pass `query: { url }`, and the service selects the connection whose
-configured `host` matches the parsed URL host.
+`baseUrl` host matches the parsed query URL host.
 
 AWS is the exception. It is a singleton that accepts `accountId` or `arn` in
 its [lookup query](./01-concepts.md#lookup-queries) and selects an account

@@ -171,7 +171,7 @@ export const createGitlabRepoPushAction: (options: {
     sourcePath?: string | undefined;
     targetPath?: string | undefined;
     token?: string | undefined;
-    commitAction?: 'auto' | 'update' | 'create' | 'delete' | undefined;
+    commitAction?: 'auto' | 'update' | 'delete' | 'create' | undefined;
     allowEmpty?: boolean | undefined;
   },
   {
@@ -292,9 +292,10 @@ export const createPublishGitlabMergeRequestAction: (options: {
     sourcePath?: string | undefined;
     targetPath?: string | undefined;
     token?: string | undefined;
-    commitAction?: 'auto' | 'update' | 'create' | 'delete' | 'skip' | undefined;
+    commitAction?: 'auto' | 'update' | 'delete' | 'create' | 'skip' | undefined;
     projectid?: string | undefined;
     removeSourceBranch?: boolean | undefined;
+    squash?: boolean | undefined;
     assignee?: string | undefined;
     reviewers?: string[] | undefined;
     assignReviewersFromApprovalRules?: boolean | undefined;

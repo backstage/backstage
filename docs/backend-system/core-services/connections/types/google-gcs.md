@@ -13,7 +13,7 @@ The `google-gcs` connection type represents a Google Cloud Storage host. It has
 ```yaml title="app-config.yaml"
 connections:
   - type: google-gcs
-    host: storage.googleapis.com
+    baseUrl: https://storage.googleapis.com/
     auth:
       - method: serviceAccount
         clientEmail: ${GCS_CLIENT_EMAIL}
@@ -22,9 +22,9 @@ connections:
 
 ## Connection fields
 
-| Field  | Type     | Required | Description                                               |
-| ------ | -------- | -------- | --------------------------------------------------------- |
-| `host` | `string` | Yes      | Storage host matched against the consumer's resource URL. |
+| Field     | Type     | Required | Description                                                    |
+| --------- | -------- | -------- | -------------------------------------------------------------- |
+| `baseUrl` | `string` | Yes      | HTTP(S) base URL of the instance. Its host is used for lookup. |
 
 ## Authentication methods
 
@@ -43,7 +43,7 @@ Use `none` explicitly for publicly readable objects.
 ## Lookup and selection
 
 The consumer supplies a [lookup query](../01-concepts.md#lookup-queries) containing
-a Google Cloud Storage URL. The service selects the connection whose `host`
+a Google Cloud Storage URL. The service selects the connection whose `baseUrl` host
 matches the parsed URL host exactly.
 
 When more than one authentication entry is visible to the calling plugin, the

@@ -13,7 +13,7 @@ The `harness` connection type represents a Harness host. It has
 ```yaml title="app-config.yaml"
 connections:
   - type: harness
-    host: app.harness.io
+    baseUrl: https://app.harness.io/
     auth:
       - method: token
         token: ${HARNESS_TOKEN}
@@ -22,9 +22,9 @@ connections:
 
 ## Connection fields
 
-| Field  | Type     | Required | Description                                               |
-| ------ | -------- | -------- | --------------------------------------------------------- |
-| `host` | `string` | Yes      | Harness host matched against the consumer's resource URL. |
+| Field     | Type     | Required | Description                                                    |
+| --------- | -------- | -------- | -------------------------------------------------------------- |
+| `baseUrl` | `string` | Yes      | HTTP(S) base URL of the instance. Its host is used for lookup. |
 
 ## Authentication methods
 
@@ -41,7 +41,7 @@ both values.
 ## Lookup and selection
 
 The consumer supplies a [lookup query](../01-concepts.md#lookup-queries) containing
-a Harness URL. The service selects the connection whose `host` matches the
+a Harness URL. The service selects the connection whose `baseUrl` host matches the
 parsed URL host exactly.
 
 When more than one token entry is visible to the calling plugin, the first
@@ -59,6 +59,7 @@ const connection = await connections.find({
   authMethods: ['token'],
 });
 
+connection.baseUrl; // string
 connection.auth.method; // 'token'
 connection.auth.token; // string
 connection.auth.apiKey; // string | undefined

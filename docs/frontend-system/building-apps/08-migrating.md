@@ -403,6 +403,25 @@ app:
   packages: all # ✨
 ```
 
+#### Auto-discovery and explicit imports
+
+When feature discovery is enabled, the app still allows you to import plugins
+explicitly and pass them to `createApp`. If the same plugin is both
+auto-discovered and imported manually, the app deduplicates them by plugin ID
+and the **manual import wins**. In practice, this means an explicit import
+overrides the auto-discovered version of that plugin.
+
+This matters during migration because some core plugins still expose the legacy
+plugin as their package's default export, while the new frontend-system plugin
+is only available from an `/alpha` subpath — for example
+`@backstage/plugin-home/alpha`. Feature discovery only picks up the default
+export, so for those plugins you must import the `/alpha` version manually.
+Once you do, the auto-discovered legacy version is ignored.
+
+If a plugin already exports its new-system version from the package root,
+auto-discovery will install it without any manual import, and you can safely
+remove the import from your app code.
+
 ### Removing legacy routes
 
 After migrating a plugin page to the new frontend system, verify that the
@@ -489,8 +508,8 @@ const queryClientWrapper = AppRootWrapperBlueprint.make({
 ```
 
 In tests, replace a root `MemoryRouter` with `renderInTestApp` or
-`renderTestApp` from `@backstage/frontend-test-utils` and navigate through the
-`appHistory` they return. The old frontend system still accepts
+`renderTestApp` from `@backstage/frontend-test-utils` and navigate through
+`apis.get(appHistoryApiRef)` on the render result. The old frontend system still accepts
 `components.Router`, so a plugin that has to run under both systems does not
 need to change its own React Router usage.
 
@@ -625,16 +644,16 @@ const app = createApp({
 
 #### `icons`
 
-Icons are now installed as extensions, using the `IconBundleBlueprint` to make new instances which can be added to the app.
+Icons are now installed as extensions, using the `IconBundleBlueprint` to make new instances which can be added to the app. Pass icon elements rather than components, and set `fontSize="inherit"` for Material UI icons.
 
-```ts
+```tsx
 import { IconBundleBlueprint } from '@backstage/plugin-app-react';
 
 const exampleIconBundle = IconBundleBlueprint.make({
   name: 'example-bundle',
   params: {
     icons: {
-      user: MyOwnUserIcon,
+      user: <MyOwnUserIcon fontSize="inherit" />,
     },
   },
 });

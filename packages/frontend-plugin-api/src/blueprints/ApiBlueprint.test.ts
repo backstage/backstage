@@ -17,9 +17,41 @@
 import { createExtensionInput } from '../wiring';
 import { z } from 'zod/v4';
 import { ApiBlueprint } from './ApiBlueprint';
-import { createApiRef } from '../apis/system';
+import { createApiFactory, createApiRef } from '../apis/system';
 
 describe('ApiBlueprint', () => {
+  it('should retain promise values in factory and dependency types', async () => {
+    const dependency = createApiRef<Promise<{ value: string }>>().with({
+      id: 'test.dependency',
+    });
+    const api = createApiRef<Promise<string>>().with({ id: 'test.api' });
+    const factory = createApiFactory({
+      api,
+      deps: { dependency },
+      factory: async deps => {
+        const promise: Promise<{ value: string }> = deps.dependency;
+        return (await promise).value;
+      },
+    });
+    expect(
+      ApiBlueprint.make({ params: defineParams => defineParams(factory) }),
+    ).toBeDefined();
+    const result: Promise<string> = factory.factory({
+      dependency: Promise.resolve({ value: 'API' }),
+    });
+    await expect(result).resolves.toBe('API');
+
+    ApiBlueprint.make({
+      params: defineParams =>
+        defineParams({
+          api: createApiRef<string>().with({ id: 'test.direct' }),
+          deps: {},
+          // @ts-expect-error A promise-returning factory needs a promise-valued API ref.
+          factory: async () => 'API',
+        }),
+    });
+  });
+
   it('should create an extension with sensible defaults', () => {
     const api = createApiRef<{ foo: string }>().with({ id: 'test' });
 

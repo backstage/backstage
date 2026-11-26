@@ -710,6 +710,230 @@ describe('PlaceholderProcessor', () => {
     );
   });
 
+  it('rejects placeholders that reference a different repository on Azure DevOps hosts whose URLs parse no file path', async () => {
+    const azureIntegrations = ScmIntegrations.fromConfig(
+      new ConfigReader({
+        integrations: {
+          azure: [
+            { host: 'dev.azure.com' },
+            { host: 'org.visualstudio.com' },
+            { host: 'azs.example.com' },
+          ],
+        },
+      }),
+    );
+    const processor = new PlaceholderProcessor({
+      resolvers: { text: textPlaceholderResolver },
+      reader,
+      integrations: azureIntegrations,
+    });
+
+    // git-url-parse only splits dev.azure.com URLs into a repository and a
+    // file path; the legacy cloud and Azure DevOps Server hosts carry the
+    // file in a query parameter instead
+    for (const [base, target] of [
+      [
+        'https://dev.azure.com/org/proj/_git/my-repo?path=%2Fcatalog-info.yaml&version=GBmain',
+        'https://dev.azure.com/org/proj/_git/victim-repo?path=%2Fsecret.txt&version=GBmain',
+      ],
+      [
+        'https://org.visualstudio.com/proj/_git/my-repo?path=%2Fcatalog-info.yaml&version=GBmain',
+        'https://org.visualstudio.com/proj/_git/victim-repo?path=%2Fsecret.txt&version=GBmain',
+      ],
+      [
+        'https://azs.example.com/collection/proj/_git/my-repo?path=%2Fcatalog-info.yaml&version=GBmain',
+        'https://azs.example.com/collection/proj/_git/victim-repo?path=%2Fsecret.txt&version=GBmain',
+      ],
+      [
+        'https://azs.example.com/collection/proj/_git/my-repo?path=%2Fcatalog-info.yaml&version=GBmain',
+        'https://azs.example.com/collection/other-proj/_git/my-repo?path=%2Fsecret.txt&version=GBmain',
+      ],
+      [
+        'https://azs.example.com/collection/proj/_git/my-repo?path=%2Fcatalog-info.yaml&version=GBmain',
+        'https://azs.example.com/collection/proj/%5Fgit/victim-repo?path=%2Fsecret.txt&version=GBmain',
+      ],
+    ]) {
+      await expect(
+        processor.preProcessEntity(
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'n' },
+            spec: { data: { $text: target } },
+          } as any,
+          { type: 'url', target: base },
+          () => {},
+        ),
+      ).rejects.toThrow(
+        /Placeholder may only reference files from the same repository/,
+      );
+    }
+
+    expect(reader.readUrl).not.toHaveBeenCalled();
+  });
+
+  it('rejects Azure DevOps placeholder targets that are not repository URLs', async () => {
+    const processor = new PlaceholderProcessor({
+      resolvers: { text: textPlaceholderResolver },
+      reader,
+      integrations: ScmIntegrations.fromConfig(
+        new ConfigReader({
+          integrations: {
+            azure: [{ host: 'org.visualstudio.com' }],
+          },
+        }),
+      ),
+    });
+
+    // Such URLs cannot be attributed to a repository, and the azure URL
+    // reader cannot fetch them either
+    await expect(
+      processor.preProcessEntity(
+        {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n' },
+          spec: {
+            data: {
+              $text:
+                'https://org.visualstudio.com/proj/_apis/git/repositories/victim-repo/items?path=%2Fsecret.txt&api-version=6.0',
+            },
+          },
+        } as any,
+        {
+          type: 'url',
+          target:
+            'https://org.visualstudio.com/proj/_git/my-repo?path=%2Fcatalog-info.yaml&version=GBmain',
+        },
+        () => {},
+      ),
+    ).rejects.toThrow(
+      /Placeholder may only reference files from the same repository/,
+    );
+
+    expect(reader.readUrl).not.toHaveBeenCalled();
+  });
+
+  it('still allows same-repository reads on every Azure DevOps host dialect', async () => {
+    const processor = new PlaceholderProcessor({
+      resolvers: { text: textPlaceholderResolver },
+      reader,
+      integrations: ScmIntegrations.fromConfig(
+        new ConfigReader({
+          integrations: {
+            azure: [
+              { host: 'dev.azure.com' },
+              { host: 'org.visualstudio.com' },
+              { host: 'azs.example.com' },
+            ],
+          },
+        }),
+      ),
+    });
+
+    reader.readUrl.mockResolvedValue({
+      buffer: jest.fn().mockResolvedValue(Buffer.from('TEXT', 'utf-8')),
+    });
+
+    for (const [base, target] of [
+      [
+        'https://dev.azure.com/org/proj/_git/my-repo?path=%2Fdocs%2Fcatalog-info.yaml&version=GBmain',
+        './openapi.yaml',
+      ],
+      [
+        'https://org.visualstudio.com/proj/_git/my-repo?path=%2Fdocs%2Fcatalog-info.yaml&version=GBmain',
+        './openapi.yaml',
+      ],
+      [
+        'https://azs.example.com/collection/proj/_git/my-repo?path=%2Fdocs%2Fcatalog-info.yaml&version=GBmain',
+        './openapi.yaml',
+      ],
+      [
+        'https://azs.example.com/collection/proj/_git/my-repo?path=%2Fdocs%2Fcatalog-info.yaml&version=GBmain',
+        'https://azs.example.com/collection/proj/_git/my-repo?path=%2Fsecret.txt&version=GBmain',
+      ],
+    ]) {
+      await expect(
+        processor.preProcessEntity(
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'n' },
+            spec: { data: { $text: target } },
+          } as any,
+          { type: 'url', target: base },
+          () => {},
+        ),
+      ).resolves.toEqual({
+        apiVersion: 'a',
+        kind: 'k',
+        metadata: { name: 'n' },
+        spec: { data: 'TEXT' },
+      });
+    }
+
+    expect(reader.readUrl).toHaveBeenCalledWith(
+      'https://dev.azure.com/org/proj/_git/my-repo?path=%2Fdocs%2Fopenapi.yaml&version=GBmain',
+    );
+    expect(reader.readUrl).toHaveBeenCalledWith(
+      'https://org.visualstudio.com/proj/_git/my-repo?path=%2Fdocs%2Fopenapi.yaml&version=GBmain',
+    );
+    expect(reader.readUrl).toHaveBeenCalledWith(
+      'https://azs.example.com/collection/proj/_git/my-repo?path=%2Fdocs%2Fopenapi.yaml&version=GBmain',
+    );
+    expect(reader.readUrl).toHaveBeenCalledWith(
+      'https://azs.example.com/collection/proj/_git/my-repo?path=%2Fsecret.txt&version=GBmain',
+    );
+  });
+
+  it('still allows Azure DevOps targets on entities whose location is not a web URL', async () => {
+    const processor = new PlaceholderProcessor({
+      resolvers: { text: textPlaceholderResolver },
+      reader,
+      integrations: ScmIntegrations.fromConfig(
+        new ConfigReader({
+          integrations: {
+            azure: [{ host: 'azs.example.com' }],
+          },
+        }),
+      ),
+    });
+
+    reader.readUrl.mockResolvedValue({
+      buffer: jest.fn().mockResolvedValue(Buffer.from('TEXT', 'utf-8')),
+    });
+
+    await expect(
+      processor.preProcessEntity(
+        {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n' },
+          spec: {
+            data: {
+              $text:
+                'https://azs.example.com/collection/proj/_git/my-repo?path=%2Fopenapi.yaml&version=GBmain',
+            },
+          },
+        } as any,
+        {
+          type: 'managed-entities',
+          target: 'managed-entities-v2:api:default/foo',
+        },
+        () => {},
+      ),
+    ).resolves.toEqual({
+      apiVersion: 'a',
+      kind: 'k',
+      metadata: { name: 'n' },
+      spec: { data: 'TEXT' },
+    });
+
+    expect(reader.readUrl).toHaveBeenCalledWith(
+      'https://azs.example.com/collection/proj/_git/my-repo?path=%2Fopenapi.yaml&version=GBmain',
+    );
+  });
+
   it('not resolves relative file path for relative file location', async () => {
     // We explicitly don't support this case, as it would allow for file system
     // traversal attacks. If we want to implement this, we need to have additional
@@ -779,6 +1003,63 @@ describe('PlaceholderProcessor', () => {
       type: 'refresh',
       key: 'url:http://example.com/path-to-file.json',
     });
+  });
+
+  it('waits for all placeholders to finish before failing, reporting the first error', async () => {
+    let release: () => void = () => {};
+    const gate = new Promise<void>(resolve => {
+      release = resolve;
+    });
+    const processor = new PlaceholderProcessor({
+      resolvers: {
+        failLate: async () => {
+          await gate;
+          throw new Error('late');
+        },
+        failEarly: async () => {
+          throw new Error('early');
+        },
+        slow: async ({ emit }) => {
+          await gate;
+          emit({ type: 'refresh', key: 'url:slow' });
+          return 'slow';
+        },
+      },
+      reader,
+      integrations,
+    });
+
+    const emitted = new Array<CatalogProcessorResult>();
+    let settled = false;
+    const result = processor
+      .preProcessEntity(
+        {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n' },
+          spec: {
+            a: { $failLate: 'x' },
+            b: { c: [{ $failEarly: 'y' }] },
+            d: [{ e: { $slow: 'z' } }],
+          },
+        },
+        { type: 'fake', target: 'http://example.com' },
+        r => emitted.push(r),
+      )
+      .finally(() => {
+        settled = true;
+      });
+
+    // The failing placeholder must not end processing while others are still
+    // running
+    await new Promise(resolve => setTimeout(resolve, 10));
+    expect(settled).toBe(false);
+
+    release();
+    // The error that happened first is reported, even though it comes later
+    // in the entity and is nested deeper
+    await expect(result).rejects.toThrow('early');
+    expect(emitted).toEqual([{ type: 'refresh', key: 'url:slow' }]);
   });
 
   it('accepts arbitrary object as value', async () => {

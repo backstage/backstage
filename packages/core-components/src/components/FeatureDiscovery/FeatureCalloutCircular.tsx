@@ -30,7 +30,10 @@ import { createPortal } from 'react-dom';
 import { usePortal } from './lib/usePortal';
 import { useShowCallout } from './lib/useShowCallout';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Compose application-specific onboarding instead of using FeatureCalloutCircular.
+ */
 export type FeatureCalloutCircleClassKey =
   | '@keyframes pulsateSlightly'
   | '@keyframes pulsateAndFade'
@@ -113,7 +116,7 @@ type Placement = {
  * One-time, round 'telescope' animation showing new feature.
  *
  * @public
- *
+ * @deprecated Compose application-specific onboarding instead.
  */
 export function FeatureCalloutCircular(props: PropsWithChildren<Props>) {
   const { featureId, title, description, children } = props;

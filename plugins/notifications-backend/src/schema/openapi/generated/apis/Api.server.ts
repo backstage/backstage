@@ -29,141 +29,156 @@ import { NotificationStatus } from '../models/NotificationStatus.model';
 import { OrderField } from '../models/OrderField.model';
 import { UpdateNotificationsRequest } from '../models/UpdateNotificationsRequest.model';
 
+
 /**
- * @public
- */
+  * @public
+  */
 export type CreateNotifications = {
-  body: NotificationSendOptions;
-  response: Array<Notification> | Error;
-};
+        body: NotificationSendOptions,
+    response:  Array<Notification>  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type CreateNotificationsLegacy = {
-  body: NotificationSendOptions;
-  response: Array<Notification> | Error;
-};
+        body: NotificationSendOptions,
+    response:  Array<Notification>  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type GetNotification = {
-  path: {
-    id: string;
-  };
-  response: Notification | Error;
-};
+    path: {
+            id: string,
+    },
+    response:  Notification  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type GetNotificationLegacy = {
-  path: {
-    id: string;
-  };
-  response: Notification | Error;
-};
+    path: {
+            id: string,
+    },
+    response:  Notification  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type GetSettings = {
-  response: NotificationSettings | Error;
-};
+    response:  NotificationSettings  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type GetStatus = {
-  response: NotificationStatus | Error;
-};
+    response:  NotificationStatus  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type GetTopics = {
-  query: {
-    search?: string;
-    read?: 'true' | 'false';
-    saved?: 'true' | 'false';
-    createdAfter?: string;
-    minimumSeverity?: NotificationSeverity;
-  };
-  response: GetTopicsResponse | Error;
-};
+    query: {
+        search?: string,
+        read?: 'true' | 'false',
+        saved?: 'true' | 'false',
+        createdAfter?: string,
+        minimumSeverity?: NotificationSeverity,
+    },
+    response:  GetTopicsResponse  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type ListNotifications = {
-  query: {
-    offset?: number;
-    limit?: number;
-    orderField?: OrderField;
-    topic?: string;
-    search?: string;
-    read?: 'true' | 'false';
-    saved?: 'true' | 'false';
-    createdAfter?: string;
-    minimumSeverity?: NotificationSeverity;
-  };
-  response: ListNotificationsResponse | Error;
-};
+    query: {
+        offset?: number,
+        limit?: number,
+        orderField?: OrderField,
+        topic?: string,
+        search?: string,
+        read?: 'true' | 'false',
+        saved?: 'true' | 'false',
+        createdAfter?: string,
+        minimumSeverity?: NotificationSeverity,
+    },
+    response:  ListNotificationsResponse  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type ListNotificationsLegacy = {
-  query: {
-    offset?: number;
-    limit?: number;
-    orderField?: OrderField;
-    topic?: string;
-    search?: string;
-    read?: 'true' | 'false';
-    saved?: 'true' | 'false';
-    createdAfter?: string;
-    minimumSeverity?: NotificationSeverity;
-  };
-  response: ListNotificationsResponse | Error;
-};
+    query: {
+        offset?: number,
+        limit?: number,
+        orderField?: OrderField,
+        topic?: string,
+        search?: string,
+        read?: 'true' | 'false',
+        saved?: 'true' | 'false',
+        createdAfter?: string,
+        minimumSeverity?: NotificationSeverity,
+    },
+    response:  ListNotificationsResponse  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type UpdateNotifications = {
-  body: UpdateNotificationsRequest;
-  response: Array<Notification> | Error;
-};
+        body: UpdateNotificationsRequest,
+    response:  Array<Notification>  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type UpdateNotificationsLegacy = {
-  body: UpdateNotificationsRequest;
-  response: Array<Notification> | Error;
-};
+        body: UpdateNotificationsRequest,
+    response:  Array<Notification>  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type UpdateSettings = {
-  body: NotificationSettings;
-  response: NotificationSettings | Error;
-};
+        body: NotificationSettings,
+    response:  NotificationSettings  |   Error  
+}
 
 export type EndpointMap = {
-  '#post|/notifications': CreateNotifications;
+    
+    '#post|/notifications': CreateNotifications,
+    
+    
+    '#post|/': CreateNotificationsLegacy,
+    
+    
+    '#get|/notifications/{id}': GetNotification,
+    
+    
+    '#get|/{id}': GetNotificationLegacy,
+    
+    
+    '#get|/settings': GetSettings,
+    
+    
+    '#get|/status': GetStatus,
+    
+    
+    '#get|/topics': GetTopics,
+    
+    
+    '#get|/notifications': ListNotifications,
+    
+    
+    '#get|/': ListNotificationsLegacy,
+    
+    
+    '#post|/notifications/update': UpdateNotifications,
+    
+    
+    '#post|/update': UpdateNotificationsLegacy,
+    
+    
+    '#post|/settings': UpdateSettings,
+    
+}
 
-  '#post|/': CreateNotificationsLegacy;
-
-  '#get|/notifications/{id}': GetNotification;
-
-  '#get|/{id}': GetNotificationLegacy;
-
-  '#get|/settings': GetSettings;
-
-  '#get|/status': GetStatus;
-
-  '#get|/topics': GetTopics;
-
-  '#get|/notifications': ListNotifications;
-
-  '#get|/': ListNotificationsLegacy;
-
-  '#post|/notifications/update': UpdateNotifications;
-
-  '#post|/update': UpdateNotificationsLegacy;
-
-  '#post|/settings': UpdateSettings;
-};

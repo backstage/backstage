@@ -1,5 +1,15 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.9.15
+
+### Patch Changes
+
+- 68abde4: Allow AWS Kubernetes clusters to select credentials from a configured AWS account without assuming another role. Set `kubernetes.io/aws-account-id` in the cluster's auth metadata to use that account's credentials directly, including credentials obtained through web identity federation.
+- ca14116: Moved `kubernetes-models` and `@kubernetes-models/apimachinery` to dev dependencies, since they are only used for types. Backends no longer install `kubernetes-models` through `@backstage/plugin-kubernetes-common`.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.3
+  - @backstage/plugin-permission-common@0.9.13
+
 ## 0.9.15-next.2
 
 ### Patch Changes

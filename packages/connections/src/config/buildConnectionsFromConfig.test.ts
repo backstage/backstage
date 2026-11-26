@@ -44,6 +44,38 @@ describe('buildConnectionsFromConfig', () => {
     expect(logger.warn).not.toHaveBeenCalled();
   });
 
+  it('preserves legacy instance paths and endpoint protocols in URL-based connections', () => {
+    const connections = buildConnectionsFromConfig({
+      config: rootConfig({
+        integrations: {
+          gitlab: [
+            {
+              host: 'gitlab.example.com:8080',
+              baseUrl: 'http://gitlab.example.com:8080/context',
+            },
+          ],
+          awsS3: [{ endpoint: 'http://localhost:4566/storage' }],
+        },
+      }),
+    });
+    expect(connections).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: 'gitlab',
+          baseUrl: 'http://gitlab.example.com:8080/context/',
+        }),
+        expect.objectContaining({
+          type: 'aws-s3',
+          baseUrl: 'http://localhost:4566/storage/',
+          endpoint: 'http://localhost:4566/storage',
+        }),
+      ]),
+    );
+    for (const connection of connections) {
+      expect(connection).not.toHaveProperty('host');
+    }
+  });
+
   it('converts legacy integrations, merges explicit connections, and assigns default titles', () => {
     const connections = buildConnectionsFromConfig({
       config: rootConfig({
@@ -53,7 +85,7 @@ describe('buildConnectionsFromConfig', () => {
         connections: [
           {
             type: 'gitlab',
-            host: 'gitlab.com',
+            baseUrl: 'https://gitlab.com/',
             auth: [{ method: 'token', token: 'gl-token' }],
           },
         ],
@@ -64,13 +96,13 @@ describe('buildConnectionsFromConfig', () => {
     expect(connections).toMatchObject([
       {
         type: 'github',
-        host: 'github.com',
+        baseUrl: 'https://github.com/',
         title: 'GitHub',
         auth: [{ method: 'token', token: 'gh-token', title: 'Token' }],
       },
       {
         type: 'gitlab',
-        host: 'gitlab.com',
+        baseUrl: 'https://gitlab.com/',
         title: 'GitLab',
         auth: [{ method: 'token', token: 'gl-token', title: 'Token' }],
       },
@@ -84,12 +116,12 @@ describe('buildConnectionsFromConfig', () => {
         connections: [
           {
             type: 'github',
-            host: 'github.com',
+            baseUrl: 'https://github.com/',
             auth: [{ method: 'token', token: 'public' }],
           },
           {
             type: 'github',
-            host: 'ghe.acme.com',
+            baseUrl: 'https://ghe.acme.com/',
             title: 'Enterprise GitHub',
             auth: [{ method: 'token', token: 'enterprise' }],
           },
@@ -112,7 +144,7 @@ describe('buildConnectionsFromConfig', () => {
         connections: [
           {
             type: 'github',
-            host: 'github.com',
+            baseUrl: 'https://github.com/',
             auth: [{ method: 'token', token: 'explicit-token' }],
           },
         ],
@@ -120,7 +152,9 @@ describe('buildConnectionsFromConfig', () => {
       logger,
     });
 
-    expect(connections).toMatchObject([{ type: 'github', host: 'github.com' }]);
+    expect(connections).toMatchObject([
+      { type: 'github', baseUrl: 'https://github.com/' },
+    ]);
     expect(logger.warn).toHaveBeenCalledWith(
       expect.stringContaining('legacy integrations of this type are ignored'),
     );
@@ -142,12 +176,12 @@ describe('buildConnectionsFromConfig', () => {
     expect(connections).toMatchObject([
       {
         type: 'github',
-        host: 'ghe.acme.com',
+        baseUrl: 'https://ghe.acme.com/',
         auth: [{ method: 'token', token: 'first-token' }],
       },
     ]);
     expect(logger.warn).toHaveBeenCalledWith(
-      expect.stringContaining('github ghe.acme.com'),
+      expect.stringContaining('github host ghe.acme.com'),
     );
   });
 
@@ -163,7 +197,7 @@ describe('buildConnectionsFromConfig', () => {
         }),
       }),
     ).toThrow(
-      /Invalid connection of type "github" in connections config:[\s\S]*host/,
+      /Invalid connection of type "github" in connections config:[\s\S]*baseUrl/,
     );
 
     // Legacy entries that fail conversion get legacy integrations context.
@@ -192,12 +226,12 @@ describe('buildConnectionsFromConfig', () => {
           connections: [
             {
               type: 'github',
-              host: 'github.com',
+              baseUrl: 'https://github.com/',
               auth: [{ method: 'token', token: 'one' }],
             },
             {
               type: 'github',
-              host: 'github.com',
+              baseUrl: 'https://github.com/',
               auth: [{ method: 'token', token: 'two' }],
             },
           ],

@@ -147,6 +147,7 @@ const config: Config = {
       src: 'https://widget.kapa.ai/kapa-widget.bundle.js',
       'data-website-id': '4f3b7b51-4ea6-4a5b-aede-44fbe128c0f2',
       'data-project-name': 'Backstage',
+      'data-view-mode': 'sidebar',
       'data-project-color': '#36baa2',
       'data-project-logo': 'https://backstage.io/img/favicon.svg',
       'data-launcher-button-image': 'https://backstage.io/img/favicon.svg',

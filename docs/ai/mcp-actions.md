@@ -140,6 +140,10 @@ By default, the Backstage backend requires authentication for all requests.
 This is meant to be a temporary workaround until device authentication is completed.
 :::
 
+:::warning
+The `permission` & `permissionAttribute` restrictions as detailed in the [Service to Service Auth](../auth/service-to-service-auth.md#access-restrictions) documentation cannot be used on a static token to provide granular access (e.g. `my-plugin.add-item` ) to plugins via MCP Tools. You can use `accessRestrictions`, to restrict actions to individual plugins.
+:::
+
 Configure external access with static tokens in your app configuration:
 
 ```yaml title="app-config.yaml"
@@ -233,17 +237,44 @@ auth:
     #   - 'http://[::1]:*/*'
 ```
 
+#### Pre-registered clients
+
+Some MCP clients and integration platforms support neither CIMD nor Dynamic Client Registration, and instead only offer a manual OAuth setup with a fixed client ID, client secret, and the authorization and token URLs. You can register these clients statically in config:
+
+```yaml title="app-config.yaml"
+auth:
+  staticClients:
+    - clientId: my-integration
+      clientName: My Integration
+      # Optional. Clients with a secret must also authenticate at the token endpoint.
+      clientSecret: ${MY_INTEGRATION_CLIENT_SECRET}
+      # Redirect URIs must match exactly, wildcards are not supported.
+      redirectUris:
+        - https://integration.example.com/oauth/callback
+```
+
+The client ID must be unique and must not be a URL. When configuring the client, use `<backend-url>/api/auth/v1/authorize` as the authorization URL and `<backend-url>/api/auth/v1/token` as the token URL. Prefer CIMD for clients that support it, and use pre-registered clients for those that don't.
+
+All static clients must use PKCE, including clients with a secret. Configure the client to send a fresh PKCE challenge with each authorization request and the matching verifier when exchanging the code. The `S256` challenge method is required for all clients, including CIMD clients. The `plain` method is not supported.
+
+Static clients use the same scopes as CIMD clients: `openid`, and `offline_access` when refresh tokens are enabled.
+
+Removing a client from `auth.staticClients` and restarting the backend prevents its outstanding authorization codes and refresh tokens from being exchanged. Clients using HTTP Basic authentication must form-encode the client ID and secret before constructing the Basic credentials.
+
+Confidential clients must authenticate for both code exchange and refresh token requests. Missing or incorrect credentials return HTTP 401 with `invalid_client`. Public clients can identify themselves using HTTP Basic with an empty secret. This does not authenticate a confidential client.
+
 #### Migrating from Dynamic Client Registration
 
 Backstage previously supported experimental Dynamic Client Registration (DCR).
 This support has been removed in favor of [Client ID Metadata Documents](#client-id-metadata-documents).
 Remove `auth.experimentalDynamicClientRegistration` from your configuration and
-enable CIMD instead. Clients must support CIMD and use a metadata document URL as
-their client ID; previously registered client IDs and secrets no longer work.
+enable CIMD instead, or configure [pre-registered clients](#pre-registered-clients).
+CIMD clients use a metadata document URL as their client ID. Previously registered
+client IDs and secrets no longer work unless explicitly configured as static clients.
 
 The database migration deletes registered clients and their authorization and
 offline sessions. Existing DCR authorization codes and refresh tokens stop working;
-users must sign in again through a CIMD client. User tokens that have already been
+users must sign in again through a CIMD or pre-registered client. User tokens that have already been
 issued remain valid until they expire.
 
 ## Configuring MCP Clients

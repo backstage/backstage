@@ -65,7 +65,7 @@ describe('getLegacyIntegrations', () => {
       expect(getLegacyIntegrations(config)).toEqual([
         {
           type: 'github',
-          host: 'github.com',
+          baseUrl: 'https://github.com/',
           auth: [{ method: 'token', token: 'gh-token' }],
         },
       ]);
@@ -90,7 +90,7 @@ describe('getLegacyIntegrations', () => {
       expect(getLegacyIntegrations(config)).toEqual([
         {
           type: 'github',
-          host: 'enterprise.example.com',
+          baseUrl: 'https://enterprise.example.com/',
           apiBaseUrl: 'https://enterprise.example.com/api/v3',
           rawBaseUrl: 'https://enterprise.example.com/raw',
           auth: [{ method: 'token', token: 'enterprise-token' }],
@@ -132,7 +132,7 @@ describe('getLegacyIntegrations', () => {
       expect(getLegacyIntegrations(config)).toEqual([
         {
           type: 'github',
-          host: 'github.com',
+          baseUrl: 'https://github.com/',
           auth: [
             { method: 'token', token: 'gh-token' },
             {
@@ -170,9 +170,9 @@ describe('getLegacyIntegrations', () => {
       });
 
       const result = getLegacyIntegrations(config);
-      expect(result.map(c => (c as { host: string }).host)).toEqual([
-        'github.com',
-        'enterprise.example.com',
+      expect(result.map(c => c.baseUrl)).toEqual([
+        'https://github.com/',
+        'https://enterprise.example.com/',
       ]);
     });
 
@@ -186,7 +186,11 @@ describe('getLegacyIntegrations', () => {
       });
 
       expect(getLegacyIntegrations(config)).toEqual([
-        { type: 'github', host: 'github.com', auth: [{ method: 'none' }] },
+        {
+          type: 'github',
+          baseUrl: 'https://github.com/',
+          auth: [{ method: 'none' }],
+        },
       ]);
     });
 
@@ -202,7 +206,7 @@ describe('getLegacyIntegrations', () => {
       expect(getLegacyIntegrations(config)).toEqual([
         {
           type: 'github',
-          host: 'github.com',
+          baseUrl: 'https://github.com/',
           auth: [{ method: 'token', token: 'gh-token' }],
         },
       ]);
@@ -257,7 +261,7 @@ describe('getLegacyIntegrations', () => {
       expect(getLegacyIntegrations(config)).toEqual([
         {
           type: 'gitlab',
-          host: 'gitlab.com',
+          baseUrl: 'https://gitlab.com/',
           auth: [{ method: 'token', token: 'gl-token' }],
         },
       ]);
@@ -282,7 +286,6 @@ describe('getLegacyIntegrations', () => {
       expect(getLegacyIntegrations(config)).toEqual([
         {
           type: 'gitlab',
-          host: 'gitlab.example.com',
           apiBaseUrl: 'https://gitlab.example.com/api/v4',
           baseUrl: 'https://gitlab.example.com',
           auth: [{ method: 'token', token: 'self-hosted-token' }],
@@ -313,7 +316,7 @@ describe('getLegacyIntegrations', () => {
       expect(getLegacyIntegrations(config)).toEqual([
         {
           type: 'gitlab',
-          host: 'gitlab.com',
+          baseUrl: 'https://gitlab.com/',
           auth: [{ method: 'token', token: 'gl-token' }],
         },
       ]);
@@ -329,7 +332,11 @@ describe('getLegacyIntegrations', () => {
       });
 
       expect(getLegacyIntegrations(config)).toEqual([
-        { type: 'gitlab', host: 'gitlab.com', auth: [{ method: 'none' }] },
+        {
+          type: 'gitlab',
+          baseUrl: 'https://gitlab.com/',
+          auth: [{ method: 'none' }],
+        },
       ]);
     });
 
@@ -377,7 +384,7 @@ describe('getLegacyIntegrations', () => {
       expect(getLegacyIntegrations(config)).toEqual([
         {
           type: 'bitbucket-cloud',
-          host: 'bitbucket.org',
+          baseUrl: 'https://bitbucket.org/',
           auth: [
             { method: 'token', username: 'user', token: 'tok' },
             { method: 'appPassword', username: 'user', appPassword: 'pwd' },
@@ -455,7 +462,7 @@ describe('getLegacyIntegrations', () => {
       expect(getLegacyIntegrations(config)).toEqual([
         {
           type: 'bitbucket-server',
-          host: 'bitbucket.example.com',
+          baseUrl: 'https://bitbucket.example.com/',
           apiBaseUrl: 'https://bitbucket.example.com/rest/api/1.0',
           auth: [
             { method: 'token', token: 'tok' },
@@ -483,7 +490,7 @@ describe('getLegacyIntegrations', () => {
       expect(getLegacyIntegrations(config)).toEqual([
         {
           type: 'bitbucket-server',
-          host: 'bitbucket.example.com',
+          baseUrl: 'https://bitbucket.example.com/',
           auth: [{ method: 'token', token: 'tok' }],
         },
       ]);
@@ -550,7 +557,7 @@ describe('getLegacyIntegrations', () => {
       expect(getLegacyIntegrations(config)).toEqual([
         {
           type: 'azure',
-          host: 'dev.azure.com',
+          baseUrl: 'https://dev.azure.com/',
           auth: [
             {
               method: 'pat',
@@ -594,7 +601,11 @@ describe('getLegacyIntegrations', () => {
       });
 
       expect(getLegacyIntegrations(config)).toEqual([
-        { type: 'azure', host: 'dev.azure.com', auth: [{ method: 'none' }] },
+        {
+          type: 'azure',
+          baseUrl: 'https://dev.azure.com/',
+          auth: [{ method: 'none' }],
+        },
       ]);
     });
 
@@ -610,7 +621,7 @@ describe('getLegacyIntegrations', () => {
       expect(getLegacyIntegrations(config)).toEqual([
         {
           type: 'azure',
-          host: 'dev.azure.com',
+          baseUrl: 'https://dev.azure.com/',
           auth: [{ method: 'pat', personalAccessToken: 'pat' }],
         },
       ]);
@@ -660,7 +671,6 @@ describe('getLegacyIntegrations', () => {
       expect(getLegacyIntegrations(config)).toEqual([
         {
           type: 'gerrit',
-          host: 'gerrit.example.com',
           baseUrl: 'https://gerrit.example.com',
           gitilesBaseUrl: 'https://gerrit.example.com/plugins/gitiles',
           cloneUrl: 'https://gerrit.example.com/clone',
@@ -712,7 +722,6 @@ describe('getLegacyIntegrations', () => {
       expect(getLegacyIntegrations(config)).toEqual([
         {
           type: 'gitea',
-          host: 'gitea.example.com',
           baseUrl: 'https://gitea.example.com',
           auth: [{ method: 'basic', username: 'user', password: 'pwd' }],
         },
@@ -925,7 +934,7 @@ describe('getLegacyIntegrations', () => {
       expect(getLegacyIntegrations(config)).toEqual([
         {
           type: 'aws-codecommit',
-          host: 'us-east-1.console.aws.amazon.com',
+          baseUrl: 'https://us-east-1.console.aws.amazon.com/',
           region: 'us-east-1',
           auth: [
             {
@@ -975,7 +984,7 @@ describe('getLegacyIntegrations', () => {
       expect(getLegacyIntegrations(config)).toEqual([
         {
           type: 'aws-codecommit',
-          host: 'us-west-2.console.aws.amazon.com',
+          baseUrl: 'https://us-west-2.console.aws.amazon.com/',
           region: 'us-west-2',
           auth: [],
         },
@@ -1024,7 +1033,7 @@ describe('getLegacyIntegrations', () => {
       expect(getLegacyIntegrations(config)).toEqual([
         {
           type: 'aws-s3',
-          host: 'amazonaws.com',
+          baseUrl: 'https://amazonaws.com/',
           auth: [
             {
               method: 'accessKey',
@@ -1058,7 +1067,7 @@ describe('getLegacyIntegrations', () => {
       expect(getLegacyIntegrations(config)).toEqual([
         {
           type: 'aws-s3',
-          host: 'localhost:4566',
+          baseUrl: 'http://localhost:4566',
           endpoint: 'http://localhost:4566',
           s3ForcePathStyle: true,
           auth: [{ method: 'none' }],
@@ -1119,7 +1128,7 @@ describe('getLegacyIntegrations', () => {
       expect(getLegacyIntegrations(config)).toEqual([
         {
           type: 'google-gcs',
-          host: 'storage.cloud.google.com',
+          baseUrl: 'https://storage.cloud.google.com/',
           auth: [
             {
               method: 'serviceAccount',
@@ -1163,7 +1172,7 @@ describe('getLegacyIntegrations', () => {
       expect(getLegacyIntegrations(config)).toEqual([
         {
           type: 'google-gcs',
-          host: 'storage.cloud.google.com',
+          baseUrl: 'https://storage.cloud.google.com/',
           auth: [{ method: 'none' }],
         },
       ]);
@@ -1206,7 +1215,7 @@ describe('getLegacyIntegrations', () => {
       expect(getLegacyIntegrations(config)).toEqual([
         {
           type: 'azure-blob-storage',
-          host: 'blob.core.windows.net',
+          baseUrl: 'https://blob.core.windows.net/',
           accountName: 'myaccount',
           auth: [{ method: 'accountKey', accountKey: 'ak' }],
         },
@@ -1275,7 +1284,7 @@ describe('getLegacyIntegrations', () => {
       expect(getLegacyIntegrations(config)).toEqual([
         {
           type: 'azure-blob-storage',
-          host: 'blob.core.windows.net',
+          baseUrl: 'https://blob.core.windows.net/',
           accountName: 'myaccount',
           auth: [
             {
@@ -1371,7 +1380,7 @@ describe('getLegacyIntegrations', () => {
       expect(getLegacyIntegrations(config)).toEqual([
         {
           type: 'harness',
-          host: 'app.harness.io',
+          baseUrl: 'https://app.harness.io/',
           auth: [{ method: 'token', token: 'tok', apiKey: 'ak' }],
         },
       ]);
@@ -1393,7 +1402,7 @@ describe('getLegacyIntegrations', () => {
       expect(getLegacyIntegrations(config)).toEqual([
         {
           type: 'harness',
-          host: 'kept.harness.io',
+          baseUrl: 'https://kept.harness.io/',
           auth: [{ method: 'token', token: 'tok' }],
         },
       ]);

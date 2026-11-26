@@ -24,14 +24,17 @@ requested anyway. Never fall back to a smaller matrix silently.
 
 - **Cut:** when the candidate generates byte-identical SQL to the baseline for
   a case, run it once to compare results, and reuse the baseline's timing.
-- **Assumption:** on PostgreSQL, only `$in` lists on fields other than the
-  broad ones (`kind`, `metadata.namespace`, `spec.type` and `spec.lifecycle`)
-  are compiled differently, and only from `IN_SUBQUERY_MIN_VALUES` values (10
-  at the time of writing) as direct conditions of the filter, or from
-  `INDIRECT_IN_MIN_VALUES` values (100) inside an `$any` or a `$not` and not on
-  first pages of up to 100 entities. See `src/service/request/longInLists.ts`.
-  Scenarios without permissions, short claim lists and filters with short lists
-  produce the same SQL.
+- **Assumption:** on PostgreSQL, `$in` lists change the SQL in two ways.
+  Lists on fields other than the broad ones (`kind`, `metadata.namespace`,
+  `spec.type` and `spec.lifecycle`) are matched as sets from
+  `IN_SUBQUERY_MIN_VALUES` values (10 at the time of writing) as direct
+  conditions of the filter, or from `INDIRECT_IN_MIN_VALUES` values (100)
+  inside an `$any` or a `$not` and not on pages of up to 100 entities. Lists
+  on any field, broad ones included, that stay per row are hashed in the
+  probe from 100 values, and on pages of up to 100 entities from 10 values,
+  with or without permissions. See `src/service/request/longInLists.ts`. Only
+  requests whose lists are all shorter than 10 values produce the same SQL
+  in every case.
 - **Check:** compare the generated SQL strings, not the claim count. Read the
   thresholds from the code under test and print them in the report.
 - **Invalidated by:** any change to the thresholds, to the broad fields, to

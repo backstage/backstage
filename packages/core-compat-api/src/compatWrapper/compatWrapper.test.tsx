@@ -21,7 +21,6 @@ import {
   iconsApiRef,
   createApiRef,
   IconsApi,
-  IconComponent,
   useRouteRef as useNewRouteRef,
   createRouteRef as createNewRouteRef,
   useApi,
@@ -36,6 +35,7 @@ import {
 import { screen } from '@testing-library/react';
 import { compatWrapper } from './compatWrapper';
 import {
+  IconComponent,
   useApp,
   useRouteRef as useOldRouteRef,
   createRouteRef as createOldRouteRef,
@@ -87,6 +87,7 @@ describe('BackwardsCompatProvider', () => {
                   {app
                     .getPlugins()
                     .map(p => p.getId())
+                    .sort()
                     .join(', ')}
                   {'\n'}
                   components: {Object.keys(app.getComponents()).join(', ')}
@@ -105,7 +106,7 @@ describe('BackwardsCompatProvider', () => {
     );
 
     expect(screen.getByTestId('ctx').textContent).toMatchInlineSnapshot(`
-      "plugins: test, app
+      "plugins: app, test
       components: NotFoundErrorPage, BootErrorPage, Progress, Router, ErrorBoundaryFallback
       icons: brokenImage, catalog, scaffolder, techdocs, search, chat, dashboard, docs, email, github, group, help, kind:api, kind:component, kind:domain, kind:group, kind:location, kind:system, kind:user, kind:resource, kind:template, user, warning, star, unstarred, externalLink"
     `);
@@ -119,15 +120,14 @@ describe('BackwardsCompatProvider', () => {
       return <div>link: {link()}</div>;
     }
 
-    renderInNewTestApp(compatWrapper(<Component />), {
-      // `compatWrapper` bridges the route resolver, not the routing library:
-      // `useRouteRef` from `@backstage/core-plugin-api` reads `useLocation` on
-      // every call. Content converted by `convertLegacyPageExtension` gets the
-      // adapter from the converter; content wrapped by hand, as here, names it
-      // where it is rendered.
-      router: ReactRouterV6PageRouter,
-      mountedRoutes: { '/test': convertLegacyRouteRef(routeRef) },
-    });
+    renderInNewTestApp(
+      <ReactRouterV6PageRouter>
+        {compatWrapper(<Component />)}
+      </ReactRouterV6PageRouter>,
+      {
+        mountedRoutes: { '/test': convertLegacyRouteRef(routeRef) },
+      },
+    );
 
     expect(screen.getByText('link: /test')).toBeInTheDocument();
   });

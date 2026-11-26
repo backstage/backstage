@@ -69,15 +69,13 @@ This example defines a host-based type with token and unauthenticated methods:
 ```ts title="packages/connections/src/schema/acme.ts"
 import { z } from 'zod/v4';
 import { createConnectionType } from '../system/createConnectionType';
+import { withBaseUrl } from '../system/withBaseUrl';
 
 /** @public */
 export const AcmeConnectionType = createConnectionType({
   type: 'acme',
   title: 'Acme',
-  configSchema: z.object({
-    host: z.string(),
-    apiBaseUrl: z.string().optional(),
-  }),
+  ...withBaseUrl(z.object({})),
   authMethods: [
     {
       method: 'none',
@@ -101,15 +99,48 @@ export const AcmeConnectionType = createConnectionType({
 });
 ```
 
-`cardinality` defaults to `multiton`, and `lookupStrategy` defaults to `host`.
-For a host-based type, include a `host` string in the connection schema so the
-configuration pipeline can enforce unique identities and the service can
-match `query.url`.
+`cardinality` defaults to `multiton`. Each definition supplies
+`getLookupIdentity(config)`, returning a key and value for matching, duplicate
+validation and default titles:
+
+```ts
+getLookupIdentity: config => ({
+  key: 'host',
+  value: new URL(config.baseUrl).host,
+}),
+```
+
+The URL helper supplies this callback without adding `host` to returned data.
+The framework compares a `host` identity with the host parsed from the query's
+`url`. URL-based types derive their host identity from `baseUrl`. AWS returns `undefined`
+to select its singleton connection before choosing account credentials.
 
 Each type must declare at least one authentication method. Add `none` only
 when consumers can use the system without authentication. An empty method
 schema still makes unauthenticated access explicit in configuration and in
 consumer code.
+
+For HTTP(S) base roots, opt in to `connectionBaseUrlSchema`. It accepts either
+trailing-slash form and returns a trailing slash, so `new URL('items', baseUrl)`
+keeps a context prefix such as `/context/`. Consumer paths must be relative,
+without a leading slash. Credentials, queries and fragments are rejected; keep
+any provider-specific HTTPS or host checks as additional refinements.
+
+Spread `withBaseUrl` into the definition as above, passing a Zod object schema
+for any additional connection fields. It adds a required `baseUrl` using
+`connectionBaseUrlSchema` and supplies `getHostLookupIdentity` as the lookup
+callback. It does not add an API URL field.
+
+For definitions that also need an API URL, `withConnectionBaseUrl` accepts a
+schema declaring `baseUrl` and optional `apiBaseUrl` with
+`connectionBaseUrlSchema`. The optional `apiBaseUrl` defaults to the normalized
+instance URL. Explicit API overrides can use another host, such as an internal endpoint.
+Provider checks run for supplied URLs and the fallback. API transforms must not
+replace the fallback with an automatically derived API destination.
+
+Lookup still matches hosts only. Deployments at different paths on the same
+host cannot be distinguished and are rejected as duplicates. Designing lookup
+by instance URL or path is a separate follow-up.
 
 ### Avoid reserved fields
 

@@ -16,7 +16,11 @@
 
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { applyEntityFilterToQuery } from './applyEntityFilterToQuery';
-import { INDIRECT_IN_MIN_VALUES, IN_SUBQUERY_MIN_VALUES } from './longInLists';
+import {
+  INDIRECT_IN_MIN_VALUES,
+  IN_SUBQUERY_MIN_VALUES,
+  sortsAfterMatching,
+} from './longInLists';
 import {
   DbFinalEntitiesRow,
   DbRefreshStateRow,
@@ -36,7 +40,7 @@ const databases = TestDatabases.create();
 describe('PostgreSQL query generation', () => {
   function compile(
     filter: FilterPredicate,
-    options?: { matchLongInListsPerRow?: boolean; smallFirstPage?: boolean },
+    options?: { matchLongInListsPerRow?: boolean; smallPage?: boolean },
   ) {
     const knex = knexFactory({ client: 'pg' });
     const query = knex('final_entities').select('*');
@@ -147,8 +151,8 @@ describe('PostgreSQL query generation', () => {
     const inSet =
       '"final_entities"."entity_id" in (select "search_flt"."entity_id" from "search" as "search_flt"';
     const joined = '"in_set_1"."entity_id" is not null';
-    const perRow =
-      '"search_flt"."key" = ? and ("search_flt"."value" = ANY(?::text[]))';
+    const hashedPerRow =
+      '"search_flt"."key" = ? and ("search_flt"."value" || \'\') = ANY(?::text[]) offset 0';
     const form = (sql: string) => {
       if (sql.includes(joined)) {
         return sql.includes(inSet) ? 'both' : 'join';
@@ -170,8 +174,26 @@ describe('PostgreSQL query generation', () => {
     ).toBe('in');
     expect(form(compile({ 'metadata.name': 'a', ...owned }).sql)).toBe('in');
 
+    // Sorted queries sort the matches after matching only when a direct
+    // condition is a set, not for sets inside an $any or a $not
+    for (const smallPage of [false, true]) {
+      expect(sortsAfterMatching(owned, { smallPage })).toBe(true);
+      expect(
+        sortsAfterMatching(
+          { $all: [{ kind: 'component' }, owned] },
+          { smallPage },
+        ),
+      ).toBe(true);
+      expect(
+        sortsAfterMatching(groups(IN_SUBQUERY_MIN_VALUES - 1), { smallPage }),
+      ).toBe(false);
+      expect(
+        sortsAfterMatching({ $any: [ownedLong, absent] }, { smallPage }),
+      ).toBe(false);
+    }
+
     // A list inside an $any or a $not is probed per row below the higher
-    // threshold, and on small first pages
+    // threshold, and on small pages
     for (const filter of [
       { $any: [{ kind: { $in: ['component', 'api'] } }, owned] },
       { $all: [{ kind: 'component' }, { $any: [owned, absent] }] },
@@ -183,7 +205,7 @@ describe('PostgreSQL query generation', () => {
       { $any: [ownedLong, absent] },
       { $not: ownedLong },
     ] as FilterPredicate[]) {
-      expect(form(compile(filter, { smallFirstPage: true }).sql)).toBe('row');
+      expect(form(compile(filter, { smallPage: true }).sql)).toBe('row');
     }
 
     // From the higher threshold, it is an IN set, or joined when negated so
@@ -194,14 +216,70 @@ describe('PostgreSQL query generation', () => {
     ).toBe('join');
 
     // A list that is joined as a direct condition reuses that set where it
-    // appears again inside an $any, even on small first pages
+    // appears again inside an $any, even on small pages
     const reused = compile(
       { $all: [{ kind: 'component', ...owned }, { $any: [owned, absent] }] },
-      { smallFirstPage: true },
+      { smallPage: true },
     ).sql;
     expect(reused.split(joined)).toHaveLength(3);
     expect(reused).not.toContain('"in_set_2"');
     expect(reused).not.toContain(inSet);
+
+    // Per-row probes hash lists from the higher threshold, and on small pages
+    // from the lower one, but keep shorter lists in the index condition
+    const plainPerRow =
+      '"search_flt"."key" = ? and ("search_flt"."value" = ANY(?::text[]))';
+    const anyOwned = { $any: [owned, absent] };
+    expect(compile(anyOwned).sql).toContain(plainPerRow);
+    expect(compile(anyOwned, { smallPage: true }).sql).toContain(hashedPerRow);
+    expect(
+      compile({ $any: [ownedLong, absent] }, { smallPage: true }).sql,
+    ).toContain(hashedPerRow);
+    expect(
+      compile(
+        { $any: [groups(IN_SUBQUERY_MIN_VALUES - 1), absent] },
+        {
+          smallPage: true,
+        },
+      ).sql,
+    ).toContain(plainPerRow);
+    for (const filter of [owned, ownedLong]) {
+      expect(compile(filter, { matchLongInListsPerRow: true }).sql).toContain(
+        filter === owned ? plainPerRow : hashedPerRow,
+      );
+    }
+
+    // A relation $contains list is probed the same way as the field form
+    const containsOwned = (length: number) => ({
+      relations: {
+        $contains: {
+          type: 'ownedBy',
+          targetRef: {
+            $in: Array.from({ length }, (_, i) => `group:default/team-${i}`),
+          },
+        },
+      },
+    });
+    for (const length of [IN_SUBQUERY_MIN_VALUES, INDIRECT_IN_MIN_VALUES]) {
+      for (const smallPage of [false, true]) {
+        const viaField = compile(
+          { $any: [groups(length), absent] },
+          { smallPage },
+        );
+        const viaContains = compile(
+          { $any: [containsOwned(length), absent] },
+          { smallPage },
+        );
+        expect(viaContains.sql).toBe(viaField.sql);
+        expect(viaContains.bindings).toEqual(viaField.bindings);
+      }
+    }
+    expect(
+      compile(
+        { $any: [containsOwned(IN_SUBQUERY_MIN_VALUES), absent] },
+        { smallPage: true },
+      ).sql,
+    ).toContain(hashedPerRow);
 
     // Probed per row when the list is on a broad field, even if long
     const types = {
@@ -215,7 +293,7 @@ describe('PostgreSQL query generation', () => {
       { $any: [types, owned] },
     ] as FilterPredicate[]) {
       const query = compile(filter);
-      expect(query.sql).toContain(perRow);
+      expect(query.sql).toContain(hashedPerRow);
       expect(query.sql).toContain('exists');
     }
     expect(form(compile({ $any: [types, ownedLong] }).sql)).toBe('in');
@@ -232,7 +310,9 @@ describe('PostgreSQL query generation', () => {
       $any: [...negated, ownedLong] as FilterPredicate[],
     });
     const direct = compile({ $all: [...negated, owned] as FilterPredicate[] });
-    expect(Date.now() - start).toBeLessThan(2000);
+    // A quadratic analysis takes far longer than this, so the limit leaves
+    // plenty of room for slow CI machines
+    expect(Date.now() - start).toBeLessThan(10000);
     expect(form(narrowed.sql)).toBe('in');
     expect(form(alternated.sql)).toBe('in');
     expect(form(direct.sql)).toBe('join');

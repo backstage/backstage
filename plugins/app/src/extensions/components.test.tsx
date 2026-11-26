@@ -30,6 +30,7 @@ import {
   PageLayout,
   SubPageBlueprint,
   createFrontendPlugin,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 
 describe('PageLayout', () => {
@@ -140,7 +141,7 @@ describe('PageLayout', () => {
       ],
     });
 
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       features: [myPlugin],
       initialRouteEntries: ['/my-plugin/example/tasks'],
       config: {
@@ -148,6 +149,7 @@ describe('PageLayout', () => {
         backend: { baseUrl: 'http://localhost:7007' },
       },
     });
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     const overview = await screen.findByRole('tab', { name: 'Overview' });
     expect(overview).toHaveAttribute(
@@ -191,7 +193,7 @@ describe('PageLayout', () => {
       ['Query', '?redirect=https://example.com/docs'],
       ['Fragment', '#details'],
     ];
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [
         PageBlueprint.make({
           params: {
@@ -218,6 +220,7 @@ describe('PageLayout', () => {
         backend: { baseUrl: 'http://localhost:7007' },
       },
     });
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     await screen.findByRole('tab', { name: 'Query' });
     const breadcrumbs = screen.getByRole('navigation', { name: 'Breadcrumbs' });

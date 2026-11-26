@@ -15,14 +15,29 @@
  */
 
 import { ComponentType, PropsWithChildren } from 'react';
-import {
-  TypesToApiRefs,
-  useApi,
-  useApiHolder,
-} from '@backstage/frontend-plugin-api';
+import { useApiHolder } from '@backstage/frontend-plugin-api';
 import { NotImplementedError } from '@backstage/errors';
+import type { ApiRef, TypesToApiRefs } from './types';
 
-export { useApiHolder, useApi };
+export { useApiHolder };
+
+/**
+ * React hook for retrieving APIs in the old frontend system.
+ *
+ * Returns the API value directly, including promise-valued APIs. Unlike the
+ * frontend system's hook, it does not unwrap promises or suspend.
+ *
+ * @param apiRef - Reference of the API to use.
+ * @public
+ */
+export function useApi<T>(apiRef: ApiRef<T>): T {
+  const apiHolder = useApiHolder();
+  const api = apiHolder.get(apiRef);
+  if (api === undefined) {
+    throw new NotImplementedError(`No implementation available for ${apiRef}`);
+  }
+  return api;
+}
 
 /**
  * Wrapper for giving a component an API context.

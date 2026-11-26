@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import { createMockDirectory } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
+import webpack from 'webpack';
 import { createConfig } from './config';
 import { BundlingPaths } from './paths';
 import { BundlingOptions } from './types';
@@ -48,6 +50,22 @@ function createOptions(
 }
 
 describe('createConfig', () => {
+  const env = {
+    EXPERIMENTAL_LAZY_COMPILATION: process.env.EXPERIMENTAL_LAZY_COMPILATION,
+    BROWSERSLIST_ENV: process.env.BROWSERSLIST_ENV,
+  };
+  const mockDir = createMockDirectory();
+
+  afterEach(() => {
+    for (const [name, value] of Object.entries(env)) {
+      if (value === undefined) {
+        delete process.env[name];
+      } else {
+        process.env[name] = value;
+      }
+    }
+  });
+
   it('places deferredEntryPoints after targetEntry, and targetEntry after additionalEntryPoints', async () => {
     const options = createOptions({
       additionalEntryPoints: ['additional-entry-package'],
@@ -77,5 +95,63 @@ describe('createConfig', () => {
 
     expect(entryArray).toContain(paths.targetEntry);
     expect(entryArray).toHaveLength(2); // webpack-public-path + targetEntry
+  });
+
+  // Rspack and WebPack each reject the other's shape for these options, so a
+  // mix-up only shows up when the bundler validates the config.
+  it('uses the option shapes that each bundler accepts', async () => {
+    process.env.EXPERIMENTAL_LAZY_COMPILATION = 'true';
+
+    const rspackConfig = await createConfig(paths, createOptions());
+    expect(rspackConfig.lazyCompilation).toBe(true);
+    expect(rspackConfig.experiments).toBeUndefined();
+    expect(rspackConfig.module?.parser?.javascript).toEqual({
+      exportsPresence: 'auto',
+      requireAlias: true,
+    });
+
+    const webpackConfig = await createConfig(paths, createOptions({ webpack }));
+    expect(webpackConfig).not.toHaveProperty('lazyCompilation');
+    expect(webpackConfig.experiments).toEqual({ lazyCompilation: true });
+    expect(webpackConfig.module?.parser).toBeUndefined();
+
+    // A remote's lazy compilation requests would go to the host app
+    const remoteConfig = await createConfig(
+      paths,
+      createOptions({
+        moduleFederationRemote: { name: 'remote', sharedDependencies: {} },
+      }),
+    );
+    expect(remoteConfig.lazyCompilation).toBe(false);
+  });
+
+  // Rspack picks the browserslist environment by NODE_ENV, which package
+  // builds in the same process can change, unless the target names it.
+  it('names the browserslist environment for production builds', async () => {
+    mockDir.setContent({
+      'package.json': JSON.stringify({
+        browserslist: { production: ['chrome 100'] },
+      }),
+    });
+    const appPaths = { ...paths, targetPath: mockDir.path };
+    delete process.env.BROWSERSLIST_ENV;
+
+    expect((await createConfig(appPaths, createOptions())).target).toBe(
+      'browserslist:production',
+    );
+    expect(
+      (await createConfig(appPaths, createOptions({ isDev: true }))).target,
+    ).toBeUndefined();
+    expect(
+      (await createConfig(appPaths, createOptions({ webpack }))).target,
+    ).toBeUndefined();
+
+    process.env.BROWSERSLIST_ENV = 'modern';
+    expect((await createConfig(appPaths, createOptions())).target).toBe(
+      'browserslist:modern',
+    );
+
+    // Without a browserslist config, Rspack targets `web`
+    expect((await createConfig(paths, createOptions())).target).toBeUndefined();
   });
 });
