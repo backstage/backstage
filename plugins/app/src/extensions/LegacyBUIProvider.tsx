@@ -68,8 +68,15 @@ function isBrowserOwnedHref(href: string): boolean {
   return /^(?:[a-z][a-z0-9+.-]*:|[/\\]{2})/i.test(normalizeHref(href));
 }
 
+function isExecutableHref(href: string): boolean {
+  return /^(?:javascript|data|vbscript):/i.test(normalizeHref(href));
+}
+
 function useLegacyHref(href: string): string {
   const resolved = useHref(href);
+  if (isExecutableHref(href)) {
+    return 'about:blank';
+  }
   return !href || isBrowserOwnedHref(href) ? href : resolved;
 }
 
@@ -89,7 +96,7 @@ export function LegacyBUIProvider({ children }: { children: ReactNode }) {
       // Router only navigates app paths and would nest the URL under the
       // current path. Leave absolute URLs to the browser, like BUI does.
       if (isBrowserOwnedHref(href)) {
-        if (!/^(?:javascript|data|vbscript):/i.test(normalizeHref(href))) {
+        if (!isExecutableHref(href)) {
           window.location.assign(href);
         }
         return;

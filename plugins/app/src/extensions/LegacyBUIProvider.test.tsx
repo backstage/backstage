@@ -242,3 +242,26 @@ it('leaves absolute URLs to the browser', () => {
   );
   consoleError.mockRestore();
 });
+
+it('never renders executable hrefs, even when obfuscated', () => {
+  const history = mockApis.appHistory({ initialLocation: '/catalog' });
+  render(
+    <TestApiProvider apis={[[coreApis.appHistory, history]]}>
+      <RootHistoryRouter history={history}>
+        <LegacyBUIProvider>
+          <AriaLink href={'java\tscript:alert(1)'}>Obfuscated</AriaLink>
+          <AriaLink href=" data:text/html,hi">Data</AriaLink>
+        </LegacyBUIProvider>
+      </RootHistoryRouter>
+    </TestApiProvider>,
+  );
+
+  expect(screen.getByRole('link', { name: 'Obfuscated' })).toHaveAttribute(
+    'href',
+    'about:blank',
+  );
+  expect(screen.getByRole('link', { name: 'Data' })).toHaveAttribute(
+    'href',
+    'about:blank',
+  );
+});
