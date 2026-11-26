@@ -474,11 +474,12 @@ export class StorageTaskBroker implements TaskBroker {
             after,
             isTaskRecoverable,
           });
+          const completionId = lastCompletionId;
           const events = result.events.filter(
             event =>
               event.type !== 'completion' ||
-              lastCompletionId === undefined ||
-              event.id > lastCompletionId,
+              completionId === undefined ||
+              event.id > completionId,
           );
           if (events.length) {
             // listEvents also returns completion events older than the cursor
