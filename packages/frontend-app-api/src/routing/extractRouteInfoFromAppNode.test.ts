@@ -38,6 +38,7 @@ import { Root } from '../extensions/Root';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 import { createRouteAliasResolver } from './RouteAliasResolver';
+import { RouteResolver } from './RouteResolver';
 import { createErrorCollector } from '../wiring/createErrorCollector';
 
 const collector = createErrorCollector();
@@ -148,17 +149,46 @@ function routeObj(
     caseSensitive: false,
     routeRefs: new Set(refs),
     children: [
+      ...children,
       {
         path: '*',
         caseSensitive: false,
         routeRefs: new Set(),
       },
-      ...children,
     ],
   };
 }
 
 describe('discovery', () => {
+  it('should let an empty-path child match paths below its parent', () => {
+    const info = routeInfoFromExtensions([
+      createTestExtension({ name: 'page', path: 'foo', routeRef: ref1 }),
+      createTestExtension({ name: 'index', parent: 'page', path: '' }),
+      createTestExtension({ name: 'other', parent: 'page', path: 'other' }),
+    ]);
+
+    const resolver = new RouteResolver(
+      info.routePaths,
+      info.routeParents,
+      info.routeObjects,
+      new Map(),
+      '',
+      info.routeAliasResolver,
+      new Map(),
+    );
+
+    expect(
+      resolver
+        .resolvePath({ pathname: '/foo/detail' })
+        .matches.map(match => match.node.spec.id),
+    ).toEqual(['test/page', 'test/index']);
+    expect(
+      resolver
+        .resolvePath({ pathname: '/foo/other' })
+        .matches.map(match => match.node.spec.id),
+    ).toEqual(['test/page', 'test/other']);
+  });
+
   it('should collect routes', () => {
     const info = routeInfoFromExtensions([
       createTestExtension({
