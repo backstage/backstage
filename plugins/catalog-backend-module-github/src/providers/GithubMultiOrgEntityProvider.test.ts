@@ -1175,6 +1175,51 @@ describe('GithubMultiOrgEntityProvider', () => {
 
       expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
     });
+
+    it('should not call applyMutation if the scheduled task is aborted', async () => {
+      let taskFn: ((signal: AbortSignal) => void | Promise<void>) | undefined;
+      entityProvider = GithubMultiOrgEntityProvider.fromConfig(
+        new ConfigReader({
+          integrations: { github: [{ host: 'github.com', token: 'blah' }] },
+        }),
+        {
+          id: 'my-id',
+          githubCredentialsProvider: {
+            getCredentials: mockGetCredentials,
+          },
+          githubUrl: 'https://github.com',
+          logger,
+          orgs: ['orgA', 'orgB'],
+          schedule: {
+            run: async task => {
+              taskFn = task.fn;
+            },
+          },
+        },
+      );
+      await entityProvider.connect(entityProviderConnection);
+
+      const controller = new AbortController();
+      mockClient.mockImplementation(() => {
+        controller.abort();
+        return Promise.resolve({
+          organization: {
+            membersWithRole: { pageInfo: { hasNextPage: false }, nodes: [] },
+            teams: { pageInfo: { hasNextPage: false }, nodes: [] },
+          },
+        });
+      });
+
+      await taskFn!(AbortSignal.abort());
+      expect(mockGetCredentials).not.toHaveBeenCalled();
+
+      await taskFn!(controller.signal);
+      expect(mockClient).toHaveBeenCalledTimes(1);
+      expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
+
+      await taskFn!(new AbortController().signal);
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('withLocations', () => {
