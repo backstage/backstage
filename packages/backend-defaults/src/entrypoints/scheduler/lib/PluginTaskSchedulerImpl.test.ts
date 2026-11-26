@@ -502,6 +502,8 @@ describe('PluginTaskSchedulerImpl metrics', () => {
     );
     const counter = jest.mocked(metrics.createCounter).mock.results[0].value;
     const duration = jest.mocked(metrics.createHistogram).mock.results[0].value;
+    const lastCompleted = jest.mocked(metrics.createGauge).mock.results[1]
+      .value;
 
     const run = async (
       cause: TaskAbortCause | undefined,
@@ -509,6 +511,7 @@ describe('PluginTaskSchedulerImpl metrics', () => {
     ) => {
       counter.add.mockClear();
       duration.record.mockClear();
+      lastCompleted.record.mockClear();
       const controller = new AbortController();
       if (cause) {
         abortTask(controller, cause);
@@ -527,6 +530,10 @@ describe('PluginTaskSchedulerImpl metrics', () => {
       await fn(controller.signal).catch(() => {});
       const result = counter.add.mock.calls[1][1].result;
       expect(duration.record).toHaveBeenCalledWith(
+        expect.any(Number),
+        expect.objectContaining({ result }),
+      );
+      expect(lastCompleted.record).toHaveBeenCalledWith(
         expect.any(Number),
         expect.objectContaining({ result }),
       );
