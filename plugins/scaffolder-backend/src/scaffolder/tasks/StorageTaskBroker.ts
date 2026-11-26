@@ -68,6 +68,7 @@ export class TaskManager implements TaskContext {
     logger: LoggerService,
     auth?: AuthService,
     workspaceProvider?: WorkspaceProvider,
+    onComplete?: () => void,
   ) {
     const workspaceService = DefaultWorkspaceService.create(
       task,
@@ -81,6 +82,7 @@ export class TaskManager implements TaskContext {
       logger,
       workspaceService,
       auth,
+      onComplete,
     );
     agent.startTimeout();
     return agent;
@@ -101,6 +103,7 @@ export class TaskManager implements TaskContext {
     logger: LoggerService,
     workspaceService: WorkspaceService,
     auth?: AuthService,
+    private readonly onComplete?: () => void,
   ) {
     this.task = task;
     this.storage = storage;
@@ -210,6 +213,7 @@ export class TaskManager implements TaskContext {
       },
     });
     this.isDone = true;
+    this.onComplete?.();
     if (this.heartbeatTimeoutId) {
       clearTimeout(this.heartbeatTimeoutId);
     }
@@ -235,6 +239,7 @@ export class TaskManager implements TaskContext {
         this.startTimeout();
       } catch (error) {
         this.isDone = true;
+        this.onComplete?.();
 
         this.logger.error(
           `Heartbeat for task ${this.task.taskId} failed`,
@@ -367,6 +372,7 @@ export class StorageTaskBroker implements TaskBroker {
         }
       },
     });
+    return () => subscription.unsubscribe();
   }
 
   public async recoverTasks(): Promise<void> {
@@ -407,7 +413,10 @@ export class StorageTaskBroker implements TaskBroker {
       const pendingTask = await this.storage.claimTask();
       if (pendingTask) {
         const abortController = new AbortController();
-        await this.registerCancellable(pendingTask.id, abortController);
+        const stopCancellationWatcher = await this.registerCancellable(
+          pendingTask.id,
+          abortController,
+        );
         return TaskManager.create(
           {
             taskId: pendingTask.id,
@@ -421,6 +430,7 @@ export class StorageTaskBroker implements TaskBroker {
           this.logger,
           this.auth,
           this.workspaceProvider,
+          stopCancellationWatcher,
         );
       }
 
