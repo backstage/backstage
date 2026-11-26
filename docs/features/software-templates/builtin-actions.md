@@ -18,7 +18,7 @@ There are several action modules that are available to be added:
 - [Gerrit](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-gerrit): `@backstage/plugin-scaffolder-backend-module-gerrit`
 - [Gitea](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-gitea): `@backstage/plugin-scaffolder-backend-module-gitea`
 - [GitHub](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-github): `@backstage/plugin-scaffolder-backend-module-github`
-- [GitLab](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-gitlab): `@backstage/plugin-scaffolder-backend-module-gitlab`
+- [GitLab](../../integrations/gitlab/scaffolder.md): `@backstage/plugin-scaffolder-backend-module-gitlab`
 - [Rails](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-rails): `@backstage/plugin-scaffolder-backend-module-rails`
 - [Yeoman](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-yeoman): `@backstage/plugin-scaffolder-backend-module-yeoman`
 - [Sentry](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-sentry): `@backstage/plugin-scaffolder-backend-module-sentry`
