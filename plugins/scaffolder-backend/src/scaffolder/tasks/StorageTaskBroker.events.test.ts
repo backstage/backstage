@@ -27,7 +27,7 @@ const event = (
   type,
   taskId: 'task',
   createdAt: '',
-  body: {},
+  body: { message: 'test event' },
 });
 
 describe('StorageTaskBroker completion delivery', () => {
