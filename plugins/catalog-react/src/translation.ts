@@ -47,10 +47,8 @@ export const catalogReactTranslationRef = createTranslationRef({
       title: 'Drill into the entity to see all of the tags.',
       emailCardAction: {
         title: 'Email {{email}}',
-        subTitle: 'mailto {{email}}',
         ariaLabel: 'Email',
       },
-      entityCardActionsAriaLabel: 'Show',
       entityCardActionsTitle: 'Show details',
     },
     entitySearchBar: {
