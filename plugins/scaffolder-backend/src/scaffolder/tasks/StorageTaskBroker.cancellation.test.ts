@@ -39,13 +39,11 @@ describe('StorageTaskBroker cancellation watcher lifecycle', () => {
       claimTask: jest
         .fn()
         .mockResolvedValue({ id: 'task', spec: { steps: [] } }),
-      getTask: jest
-        .fn()
-        .mockResolvedValue({
-          spec: {
-            EXPERIMENTAL_recovery: { EXPERIMENTAL_strategy: 'startOver' },
-          },
-        }),
+      getTask: jest.fn().mockResolvedValue({
+        spec: {
+          EXPERIMENTAL_recovery: { EXPERIMENTAL_strategy: 'startOver' },
+        },
+      }),
       listEvents,
       heartbeatTask: jest.fn().mockResolvedValue(undefined),
       completeTask: jest.fn().mockResolvedValue(undefined),
