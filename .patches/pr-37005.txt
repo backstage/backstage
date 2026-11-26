@@ -1,0 +1,1 @@
+Fixed sub-pages with an empty path not rendering for paths below them, such as a detail route inside an index tab
