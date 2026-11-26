@@ -428,12 +428,13 @@ const SidebarItemBase = forwardRef<
       : { lineHeight: '0' };
 
   const displayItemIcon = (
-    <Box style={divStyle}>
-      <Box component="span" className={classes.itemIcon}>
+    <div style={divStyle}>
+      {/* eslint-disable-next-line react/forbid-elements */}
+      <span className={classes.itemIcon}>
         <Icon fontSize="inherit" />
-      </Box>
+      </span>
       {!isOpen && hasSubmenu ? <ArrowRightIcon fontSize="small" /> : <></>}
-    </Box>
+    </div>
   );
 
   const itemIcon = (
@@ -450,9 +451,9 @@ const SidebarItemBase = forwardRef<
 
   const openContent = (
     <>
-      <Box data-testid="login-button" className={classes.iconContainer}>
+      <div data-testid="login-button" className={classes.iconContainer}>
         {itemIcon}
-      </Box>
+      </div>
       {text && (
         <Typography
           variant="subtitle2"
