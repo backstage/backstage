@@ -175,11 +175,9 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'entityProcessingStatusPicker.title': 'Processing Status';
     readonly 'entityTagPicker.title': 'Tags';
     readonly 'entityPeekAheadPopover.title': 'Drill into the entity to see all of the tags.';
-    readonly 'entityPeekAheadPopover.entityCardActionsAriaLabel': 'Show';
     readonly 'entityPeekAheadPopover.entityCardActionsTitle': 'Show details';
     readonly 'entityPeekAheadPopover.emailCardAction.title': 'Email {{email}}';
     readonly 'entityPeekAheadPopover.emailCardAction.ariaLabel': 'Email';
-    readonly 'entityPeekAheadPopover.emailCardAction.subTitle': 'mailto {{email}}';
     readonly 'entitySearchBar.placeholder': 'Search';
     readonly 'entityTypePicker.title': 'Type';
     readonly 'entityTypePicker.errorMessage': 'Failed to load entity types';
