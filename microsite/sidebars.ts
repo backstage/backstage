@@ -235,6 +235,13 @@ export default {
         ),
         sidebarElementWithIndex(
           {
+            label: 'User Settings',
+            description: 'Per-user settings stored in Backstage.',
+          },
+          ['features/user-settings/backend'],
+        ),
+        sidebarElementWithIndex(
+          {
             label: 'Permissions',
             description: 'Access control for your Backstage instance.',
           },
