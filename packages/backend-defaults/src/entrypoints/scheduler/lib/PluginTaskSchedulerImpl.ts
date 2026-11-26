@@ -275,15 +275,18 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
         });
         labels.result = 'completed';
       } catch (ex) {
-        // Runs that the scheduler stopped on shutdown or handed over to
-        // another host aren't failures. Timeouts still are.
-        const abortCause = getTaskAbortCause(abort);
-        labels.result =
-          abortCause === 'shutdown' || abortCause === 'ticket-lost'
-            ? 'aborted'
-            : 'failed';
+        labels.result = 'failed';
         throw ex;
       } finally {
+        // Whether the task threw or returned normally, runs that the scheduler
+        // stopped on shutdown or handed over to another host aren't failures,
+        // and timeouts always are.
+        const abortCause = getTaskAbortCause(abort);
+        if (abortCause === 'timeout') {
+          labels.result = 'failed';
+        } else if (abortCause === 'shutdown' || abortCause === 'ticket-lost') {
+          labels.result = 'aborted';
+        }
         const delta = process.hrtime(startTime);
         const endTime = delta[0] + delta[1] / 1e9;
         this.counter.add(1, labels);

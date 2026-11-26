@@ -184,6 +184,42 @@ describe('LocalTaskWorker', () => {
     controller.abort();
   });
 
+  it('reports a timeout even when the task returns normally after it', async () => {
+    const warn = jest.spyOn(logger, 'warn');
+    const controller = new AbortController();
+    const worker = new LocalTaskWorker(
+      'timeout-task',
+      signal =>
+        new Promise<void>(resolve =>
+          signal.addEventListener('abort', () => resolve(), { once: true }),
+        ),
+      logger,
+    );
+    worker.start(
+      {
+        version: 2,
+        initialDelayDuration: undefined,
+        cadence: 'PT10S',
+        timeoutAfterDuration: 'PT0.1S',
+      },
+      { signal: controller.signal },
+    );
+
+    await waitFor(() => {
+      expect(worker.taskState()).toEqual(
+        expect.objectContaining({
+          lastRunError: expect.stringContaining(
+            'Task \\"timeout-task\\" timed out after PT0.1S',
+          ),
+        }),
+      );
+    });
+    expect(warn).toHaveBeenCalledWith(
+      'Task "timeout-task" timed out after PT0.1S',
+    );
+    controller.abort();
+  });
+
   it('goes through the expected states', async () => {
     const fn = jest
       .fn()

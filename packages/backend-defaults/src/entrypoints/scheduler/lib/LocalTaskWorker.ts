@@ -175,24 +175,27 @@ export class LocalTaskWorker {
       status: 'running',
     };
 
+    let thrown: { error: Error } | undefined;
     try {
       await this.fn(this.taskAbortController.signal);
-      this.#taskState.lastRunEndedAt = DateTime.utc().toISO()!;
+    } catch (error) {
+      thrown = { error: error as Error };
+    }
+
+    // Whether the task threw or returned normally, a run that the scheduler
+    // aborted is reported based on why it was aborted.
+    this.#taskState.lastRunEndedAt = DateTime.utc().toISO()!;
+    const abortCause = getTaskAbortCause(taskAbortController.signal);
+    if (abortCause === 'timeout') {
+      const error = new Error(
+        `Task "${this.taskId}" timed out after ${settings.timeoutAfterDuration}`,
+      );
+      this.logger.warn(error.message);
+      this.#taskState.lastRunError = serializeError(error);
+    } else if (thrown && abortCause !== 'shutdown') {
+      this.#taskState.lastRunError = serializeError(thrown.error);
+    } else {
       this.#taskState.lastRunError = undefined;
-    } catch (e) {
-      this.#taskState.lastRunEndedAt = DateTime.utc().toISO()!;
-      const abortCause = getTaskAbortCause(taskAbortController.signal);
-      if (abortCause === 'shutdown') {
-        this.#taskState.lastRunError = undefined;
-      } else if (abortCause === 'timeout') {
-        const error = new Error(
-          `Task "${this.taskId}" timed out after ${settings.timeoutAfterDuration}`,
-        );
-        this.logger.warn(error.message);
-        this.#taskState.lastRunError = serializeError(error);
-      } else {
-        this.#taskState.lastRunError = serializeError(e);
-      }
     }
 
     // release resources
