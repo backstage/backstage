@@ -13691,9 +13691,14 @@
           "id": "backstage-ui-popover--with-long-content",
           "name": "With Long Content",
           "snippet": "const WithLongContent = ({ isOpen, hideArrow, placement }) => (\n  <DialogTrigger>\n    <Button>Open Popover</Button>\n    <Popover isOpen={isOpen} hideArrow={hideArrow} placement={placement}>\n      <Flex direction=\"column\" gap=\"3\" style={{ width: '320px' }}>\n        <Text style={{ fontWeight: 'bold' }}>Long Content Example</Text>\n        <Text>\n          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do\n          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim\n          ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut\n          aliquip ex ea commodo consequat.\n        </Text>\n        <Text>\n          Duis aute irure dolor in reprehenderit in voluptate velit esse\n          cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat\n          cupidatat non proident, sunt in culpa qui officia deserunt mollit\n          anim id est laborum.\n        </Text>\n        <Text>\n          Sed ut perspiciatis unde omnis iste natus error sit voluptatem\n          accusantium doloremque laudantium, totam rem aperiam, eaque ipsa\n          quae ab illo inventore veritatis et quasi architecto beatae vitae\n          dicta sunt explicabo.\n        </Text>\n        <Text>\n          Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut\n          fugit, sed quia consequuntur magni dolores eos qui ratione\n          voluptatem sequi nesciunt.\n        </Text>\n        <Text>\n          Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet,\n          consectetur, adipisci velit, sed quia non numquam eius modi tempora\n          incidunt ut labore et dolore magnam aliquam quaerat voluptatem.\n        </Text>\n      </Flex>\n    </Popover>\n  </DialogTrigger>\n);"
+        },
+        {
+          "id": "backstage-ui-popover--preview",
+          "name": "Preview",
+          "snippet": "const Preview = () => (\n  <PreviewTrigger delay={500}>\n    <Button>Hover or focus to preview</Button>\n    <Popover placement=\"bottom\" aria-label=\"Preview\">\n      <Flex direction=\"column\" gap=\"3\">\n        <Text>Interactive content can be reached with Tab.</Text>\n        <Button>Preview action</Button>\n      </Flex>\n    </Popover>\n  </PreviewTrigger>\n);"
         }
       ],
-      "import": "import { Box, Button, DialogTrigger, Flex, Popover, Text } from \"@backstage/ui\";",
+      "import": "import { Box, Button, DialogTrigger, Flex, Popover, PreviewTrigger, Text } from \"@backstage/ui\";",
       "jsDocTags": {
         "remarks": [
           " The Popover component supports multiple placements (top, right, bottom, left), automatic viewport-constrained scrolling, and conditional arrow rendering. It automatically handles positioning, collision detection, and ARIA attributes for accessibility. Content is automatically padded and scrollable when it exceeds available space."
@@ -18062,6 +18067,6 @@
   },
   "meta": {
     "docgen": "react-docgen",
-    "durationMs": 4210
+    "durationMs": 4308
   }
 }
