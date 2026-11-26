@@ -176,6 +176,71 @@ describe.each(databases.eachSupportedId())('TaskWorker, %s', databaseId => {
     });
   });
 
+  it('reports aborted runs based on why the scheduler aborted them', async () => {
+    jest.spyOn(logger, 'error');
+    jest.spyOn(logger, 'warn');
+    const settings: TaskSettingsV2 = {
+      version: 2,
+      initialDelayDuration: undefined,
+      cadence: '* * * * * *',
+      timeoutAfterDuration: Duration.fromMillis(100).toISO()!,
+    };
+    const waitForAbort = async (signal: AbortSignal) => {
+      await new Promise(resolve =>
+        signal.addEventListener('abort', resolve, { once: true }),
+      );
+      signal.throwIfAborted();
+    };
+
+    // A timeout is logged as a warning and recorded as the run's error
+    const timeoutWorker = new TaskWorker(
+      'timeout-task',
+      waitForAbort,
+      knex,
+      logger,
+      poller,
+    );
+    timeoutWorker.start(settings, { signal: testScopedSignal() });
+    await waitForExpect(async () => {
+      expect(logger.warn).toHaveBeenCalledWith(
+        'Task "timeout-task" timed out after PT0.1S',
+      );
+      const states = await TaskWorker.taskStates(knex);
+      expect(states.get('timeout-task')?.lastRunError).toEqual(
+        expect.stringContaining('timed out'),
+      );
+    });
+
+    // A shutdown is neither logged as an error nor recorded as one
+    const shutdown = new AbortController();
+    let started = false;
+    const shutdownWorker = new TaskWorker(
+      'shutdown-task',
+      async signal => {
+        started = true;
+        await waitForAbort(signal);
+      },
+      knex,
+      logger,
+      poller,
+      Duration.fromMillis(100),
+    );
+    shutdownWorker.start(
+      { ...settings, timeoutAfterDuration: 'PT1M' },
+      { signal: shutdown.signal },
+    );
+    await waitForExpect(() => expect(started).toBe(true));
+    shutdown.abort();
+    await waitForExpect(async () => {
+      const states = await TaskWorker.taskStates(knex);
+      expect(states.get('shutdown-task')).toEqual(
+        expect.objectContaining({ status: 'idle' }),
+      );
+      expect(states.get('shutdown-task')?.lastRunError).toBeUndefined();
+    });
+    expect(logger.error).not.toHaveBeenCalled();
+  });
+
   it('runs tasks more than once even when the task throws', async () => {
     const fn = jest.fn().mockRejectedValue(new Error('failed'));
     const settings: TaskSettingsV2 = {

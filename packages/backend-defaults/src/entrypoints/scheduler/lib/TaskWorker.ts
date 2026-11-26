@@ -32,6 +32,8 @@ import {
   sleep,
   dbTime,
   serializeError,
+  getTaskAbortCause,
+  TaskAbortError,
 } from './util';
 import { SchedulerServiceTaskFunction } from '@backstage/backend-plugin-api';
 import { TaskStatePoller } from './TaskStatePoller';
@@ -248,6 +250,7 @@ export class TaskWorker {
     | { result: 'abort' }
     | { result: 'claim-lost' }
     | { result: 'failed' }
+    | { result: 'aborted' }
     | { result: 'completed' }
   > {
     const findResult = await this.poller.waitForTask(this.taskId, {
@@ -264,7 +267,10 @@ export class TaskWorker {
     taskSettings: TaskSettingsV2,
     signal: AbortSignal,
   ): Promise<
-    { result: 'claim-lost' } | { result: 'failed' } | { result: 'completed' }
+    | { result: 'claim-lost' }
+    | { result: 'failed' }
+    | { result: 'aborted' }
+    | { result: 'completed' }
   > {
     const ticket = uuid();
 
@@ -276,9 +282,21 @@ export class TaskWorker {
     // Abort the task execution either if the worker is stopped, or if the
     // task timeout is hit, or if the task ticket was lost (e.g. due to
     // cancellation from another host)
-    const taskAbortController = delegateAbortController(signal);
+    const taskAbortController = delegateAbortController(
+      signal,
+      () =>
+        new TaskAbortError(
+          'shutdown',
+          `Task "${this.taskId}" was aborted because its worker stopped`,
+        ),
+    );
     const timeoutHandle = setTimeout(() => {
-      taskAbortController.abort();
+      taskAbortController.abort(
+        new TaskAbortError(
+          'timeout',
+          `Task "${this.taskId}" timed out after ${taskSettings.timeoutAfterDuration}`,
+        ),
+      );
     }, Duration.fromISO(taskSettings.timeoutAfterDuration).as('milliseconds'));
     let livenessHandle: ReturnType<typeof setTimeout> | undefined;
     const scheduleLivenessCheck = () => {
@@ -296,8 +314,24 @@ export class TaskWorker {
         status: 'running',
       };
       await this.fn(taskAbortController.signal);
-      taskAbortController.abort(); // releases resources
     } catch (e) {
+      // Errors thrown after the scheduler itself aborted the run are expected
+      // consequences of that abort, and are reported based on its cause.
+      const abortCause = getTaskAbortCause(taskAbortController.signal);
+      if (abortCause === 'shutdown') {
+        this.logger.debug(`Task "${this.taskId}" stopped on shutdown, ${e}`);
+        await this.tryReleaseTask(ticket, taskSettings);
+        return { result: 'aborted' };
+      } else if (abortCause === 'timeout') {
+        const reason = taskAbortController.signal.reason as TaskAbortError;
+        this.logger.warn(reason.message);
+        await this.tryReleaseTask(ticket, taskSettings, reason);
+        return { result: 'failed' };
+      } else if (abortCause === 'ticket-lost') {
+        // Already logged by the liveness check, and the run belongs to
+        // another host now, so there is nothing to release.
+        return { result: 'aborted' };
+      }
       this.logger.error(e);
       await this.tryReleaseTask(ticket, taskSettings, e);
       return { result: 'failed' };
@@ -309,6 +343,15 @@ export class TaskWorker {
       clearTimeout(livenessHandle);
     }
 
+    // The task may also return normally after being aborted
+    if (getTaskAbortCause(taskAbortController.signal) === 'timeout') {
+      const reason = taskAbortController.signal.reason as TaskAbortError;
+      this.logger.warn(reason.message);
+      await this.tryReleaseTask(ticket, taskSettings, reason);
+      return { result: 'failed' };
+    }
+
+    taskAbortController.abort(); // releases resources
     await this.tryReleaseTask(ticket, taskSettings);
     return { result: 'completed' };
   }
@@ -413,7 +456,12 @@ export class TaskWorker {
         this.logger.info(
           `Task ticket for "${this.taskId}" is no longer valid; aborting execution`,
         );
-        taskAbortController.abort();
+        taskAbortController.abort(
+          new TaskAbortError(
+            'ticket-lost',
+            `Task ticket for "${this.taskId}" is no longer valid`,
+          ),
+        );
       }
     } catch (e) {
       this.logger.warn(

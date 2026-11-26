@@ -20,7 +20,13 @@ import { ConflictError } from '@backstage/errors';
 import { CronTime } from 'cron';
 import { DateTime, Duration } from 'luxon';
 import { TaskSettingsV2, TaskApiTasksResponse } from './types';
-import { delegateAbortController, serializeError, sleep } from './util';
+import {
+  delegateAbortController,
+  getTaskAbortCause,
+  serializeError,
+  sleep,
+  TaskAbortError,
+} from './util';
 
 /**
  * Implements tasks that run locally without cross-host collaboration.
@@ -145,10 +151,22 @@ export class LocalTaskWorker {
   ): Promise<void> {
     // Abort the task execution either if the worker is stopped, or if the
     // task timeout is hit
-    this.taskAbortController = delegateAbortController(signal);
+    this.taskAbortController = delegateAbortController(
+      signal,
+      () =>
+        new TaskAbortError(
+          'shutdown',
+          `Task "${this.taskId}" was aborted because its worker stopped`,
+        ),
+    );
     const timeoutDuration = Duration.fromISO(settings.timeoutAfterDuration);
     const timeoutHandle = setTimeout(() => {
-      this.taskAbortController?.abort();
+      this.taskAbortController?.abort(
+        new TaskAbortError(
+          'timeout',
+          `Task "${this.taskId}" timed out after ${settings.timeoutAfterDuration}`,
+        ),
+      );
     }, timeoutDuration.as('milliseconds'));
 
     this.#taskState = {
@@ -168,7 +186,17 @@ export class LocalTaskWorker {
       this.#taskState.lastRunError = undefined;
     } catch (e) {
       this.#taskState.lastRunEndedAt = DateTime.utc().toISO()!;
-      this.#taskState.lastRunError = serializeError(e);
+      const abortCause = getTaskAbortCause(this.taskAbortController.signal);
+      if (abortCause === 'shutdown') {
+        this.#taskState.lastRunError = undefined;
+      } else if (abortCause === 'timeout') {
+        this.logger.warn(this.taskAbortController.signal.reason.message);
+        this.#taskState.lastRunError = serializeError(
+          this.taskAbortController.signal.reason,
+        );
+      } else {
+        this.#taskState.lastRunError = serializeError(e);
+      }
     }
 
     // release resources

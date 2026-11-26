@@ -111,16 +111,21 @@ export async function sleep(
  * reaches aborted state.
  *
  * @param parent - The "parent" signal that can trigger the delegate
+ * @param reason - Optionally creates the abort reason to use when the parent
+ *   aborts, instead of the default one
  */
-export function delegateAbortController(parent?: AbortSignal): AbortController {
+export function delegateAbortController(
+  parent?: AbortSignal,
+  reason?: () => unknown,
+): AbortController {
   const delegate = new AbortController();
 
   if (parent) {
     if (parent.aborted) {
-      delegate.abort();
+      delegate.abort(reason?.());
     } else {
       const onParentAborted = () => {
-        delegate.abort();
+        delegate.abort(reason?.());
       };
 
       const onChildAborted = () => {
@@ -141,4 +146,41 @@ export function serializeError(error: Error): string {
       includeStack: process.env.NODE_ENV === 'development',
     }),
   );
+}
+
+/**
+ * Why the scheduler aborted a task run.
+ *
+ * - `shutdown`: the worker stopped, for example because the backend is
+ *   shutting down or the task was deregistered
+ * - `timeout`: the run exceeded its configured timeout
+ * - `ticket-lost`: another host took over the run, for example after it was
+ *   cancelled
+ */
+export type TaskAbortCause = 'shutdown' | 'timeout' | 'ticket-lost';
+
+/**
+ * The abort reason that the scheduler sets on a task run's signal. It is named
+ * `AbortError` so that `signal.throwIfAborted()` in task functions throws an
+ * error that looks like any other abort.
+ */
+export class TaskAbortError extends Error {
+  readonly abortCause: TaskAbortCause;
+
+  constructor(abortCause: TaskAbortCause, message: string) {
+    super(message);
+    this.name = 'AbortError';
+    this.abortCause = abortCause;
+  }
+}
+
+/**
+ * Returns why the scheduler aborted the given task run signal, if it did.
+ */
+export function getTaskAbortCause(
+  signal: AbortSignal,
+): TaskAbortCause | undefined {
+  return signal.aborted && signal.reason instanceof TaskAbortError
+    ? signal.reason.abortCause
+    : undefined;
 }

@@ -39,7 +39,12 @@ import { LocalTaskWorker } from './LocalTaskWorker';
 import { TaskStatePoller } from './TaskStatePoller';
 import { TaskWorker } from './TaskWorker';
 import { TaskSettingsV2, TaskApiTasksResponse } from './types';
-import { delegateAbortController, TRACER_ID, validateId } from './util';
+import {
+  delegateAbortController,
+  getTaskAbortCause,
+  TRACER_ID,
+  validateId,
+} from './util';
 
 const tracer = trace.getTracer(TRACER_ID);
 
@@ -270,7 +275,13 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
         });
         labels.result = 'completed';
       } catch (ex) {
-        labels.result = 'failed';
+        // Runs that the scheduler stopped on shutdown or handed over to
+        // another host aren't failures. Timeouts still are.
+        const abortCause = getTaskAbortCause(abort);
+        labels.result =
+          abortCause === 'shutdown' || abortCause === 'ticket-lost'
+            ? 'aborted'
+            : 'failed';
         throw ex;
       } finally {
         const delta = process.hrtime(startTime);
