@@ -18,8 +18,6 @@ import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import {
   coreExtensionData,
   createExtensionInput,
-  createExtensionDataRef,
-  createExtensionBlueprint,
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
 import { z } from 'zod/v4';
@@ -36,33 +34,7 @@ import CategoryIcon from '@material-ui/icons/Category';
 import { rootRouteRef } from '../routes';
 import { buildFilterFn } from './filter/FilterWrapper';
 import type { CatalogExportSettings } from '../components/CatalogExportButton';
-
-const catalogExportConfigDataRef = createExtensionDataRef<{
-  exporters?: CatalogExportSettings['exporters'];
-  columns?: CatalogExportSettings['columns'];
-  onSuccess?: CatalogExportSettings['onSuccess'];
-  onError?: CatalogExportSettings['onError'];
-}>().with({
-  id: 'catalog.export-customization',
-});
-
-/**
- * Blueprint for creating catalog export configuration extensions.
- * @public
- */
-export const CatalogExportConfigBlueprint = createExtensionBlueprint({
-  kind: 'catalog-export-config',
-  attachTo: { id: 'page:catalog', input: 'exportConfig' },
-  output: [catalogExportConfigDataRef],
-  factory(params: {
-    exporters?: CatalogExportSettings['exporters'];
-    columns?: CatalogExportSettings['columns'];
-    onSuccess?: CatalogExportSettings['onSuccess'];
-    onError?: CatalogExportSettings['onError'];
-  }) {
-    return [catalogExportConfigDataRef(params)];
-  },
-});
+import { catalogExportConfigDataRef } from '../CatalogExportConfigBlueprint';
 
 export const catalogPage = PageBlueprint.makeWithOverrides({
   inputs: {

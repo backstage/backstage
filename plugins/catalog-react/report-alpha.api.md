@@ -249,7 +249,7 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-// @alpha (undocumented)
+// @public
 export type EntityCardType = 'info' | 'content';
 
 // @public (undocumented)
@@ -399,7 +399,7 @@ export type EntityContentGroupDefinitions = Record<
   }
 >;
 
-// @alpha (undocumented)
+// @public
 export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
   kind: 'entity-content-layout';
   params: {
@@ -454,7 +454,7 @@ export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-// @alpha (undocumented)
+// @public
 export interface EntityContentLayoutProps {
   // (undocumented)
   cards: Array<{
@@ -463,7 +463,7 @@ export interface EntityContentLayoutProps {
   }>;
 }
 
-// @alpha (undocumented)
+// @public
 export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
   kind: 'entity-context-menu-item';
   params: EntityContextMenuItemParams;
@@ -501,18 +501,32 @@ export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-// @alpha (undocumented)
+// @public
 export type EntityContextMenuItemData = {
   icon: IconElement;
-  useProps: UseProps;
+  useProps: EntityContextMenuItemUseProps;
 };
 
-// @alpha (undocumented)
+// @public
 export type EntityContextMenuItemParams = {
-  useProps: UseProps;
+  useProps: EntityContextMenuItemUseProps;
   icon: IconElement;
   filter?: FilterPredicate | ((entity: Entity) => boolean);
 };
+
+// @public
+export type EntityContextMenuItemUseProps = () =>
+  | {
+      title: ReactNode;
+      href: string;
+      onClick?: () => void | Promise<void>;
+      disabled?: boolean;
+    }
+  | {
+      title: ReactNode;
+      onClick: () => void | Promise<void>;
+      disabled?: boolean;
+    };
 
 // @public (undocumented)
 export function EntityDataTable(props: EntityDataTableProps): JSX_3.Element;
@@ -606,7 +620,7 @@ export const EntityHeaderBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-// @alpha (undocumented)
+// @public
 export const EntityHeaderLayoutBlueprint: ExtensionBlueprint<{
   kind: 'entity-header-layout';
   params: {
@@ -647,7 +661,7 @@ export const EntityHeaderLayoutBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-// @alpha (undocumented)
+// @public
 export interface EntityHeaderLayoutProps {
   // (undocumented)
   activeTabId?: string;
@@ -800,19 +814,8 @@ export function useEntityPermission(
   error?: Error;
 };
 
-// @alpha (undocumented)
-export type UseProps = () =>
-  | {
-      title: ReactNode;
-      href: string;
-      onClick?: () => void | Promise<void>;
-      disabled?: boolean;
-    }
-  | {
-      title: ReactNode;
-      onClick: () => void | Promise<void>;
-      disabled?: boolean;
-    };
+// @alpha @deprecated (undocumented)
+export type UseProps = EntityContextMenuItemUseProps;
 
 // (No @packageDocumentation comment for this package)
 ```

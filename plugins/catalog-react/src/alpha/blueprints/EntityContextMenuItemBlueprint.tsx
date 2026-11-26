@@ -27,19 +27,25 @@ import type { Entity } from '@backstage/catalog-model';
 import {
   entityContextMenuItemDataRef,
   entityFilterFunctionDataRef,
-  type UseProps,
+  type EntityContextMenuItemUseProps,
 } from './extensionData';
 
 export type { EntityContextMenuItemData, UseProps } from './extensionData';
 
-/** @alpha */
+/**
+ * Parameters for registering an entity context menu item.
+ * @public
+ */
 export type EntityContextMenuItemParams = {
-  useProps: UseProps;
+  useProps: EntityContextMenuItemUseProps;
   icon: IconElement;
   filter?: FilterPredicate | ((entity: Entity) => boolean);
 };
 
-/** @alpha */
+/**
+ * Registers a link or action in the Catalog entity page context menu.
+ * @public
+ */
 export const EntityContextMenuItemBlueprint = createExtensionBlueprint({
   kind: 'entity-context-menu-item',
   attachTo: { id: 'page:catalog/entity', input: 'contextMenuItems' },

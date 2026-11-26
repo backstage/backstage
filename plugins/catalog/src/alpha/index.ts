@@ -16,7 +16,7 @@
 
 export { default } from './plugin';
 
-export { CatalogExportConfigBlueprint } from './pages';
+export { CatalogExportConfigBlueprint } from '../CatalogExportConfigBlueprint';
 export type {
   CatalogExportSettings,
   CatalogExporterConfig,

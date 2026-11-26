@@ -19,6 +19,8 @@ import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
 import { EntityPresentationApi } from '@backstage/plugin-catalog-react';
 import { EntityRefPresentation } from '@backstage/plugin-catalog-react';
 import { EntityRefPresentationSnapshot } from '@backstage/plugin-catalog-react';
+import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { HumanDuration } from '@backstage/types';
 import { IconComponent } from '@backstage/core-plugin-api';
@@ -80,6 +82,31 @@ export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 // @public (undocumented)
 export const CatalogEntityPage: () => JSX.Element;
+
+// @public
+export const CatalogExportConfigBlueprint: ExtensionBlueprint<{
+  kind: 'catalog-export-config';
+  params: {
+    exporters?: CatalogExportSettings['exporters'];
+    columns?: CatalogExportSettings['columns'];
+    onSuccess?: CatalogExportSettings['onSuccess'];
+    onError?: CatalogExportSettings['onError'];
+  };
+  output: ExtensionDataRef<
+    {
+      exporters?: CatalogExportSettings['exporters'];
+      columns?: CatalogExportSettings['columns'];
+      onSuccess?: CatalogExportSettings['onSuccess'];
+      onError?: CatalogExportSettings['onError'];
+    },
+    'catalog.export-customization',
+    {}
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: never;
+}>;
 
 // @public
 export type CatalogExporter = (options: {

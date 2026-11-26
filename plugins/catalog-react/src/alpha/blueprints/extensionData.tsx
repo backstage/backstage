@@ -21,8 +21,11 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { ReactElement, type ReactNode } from 'react';
 
-/** @alpha */
-export type UseProps = () =>
+/**
+ * Hook that returns the link or action for an entity context menu item.
+ * @public
+ */
+export type EntityContextMenuItemUseProps = () =>
   | {
       title: ReactNode;
       href: string;
@@ -35,10 +38,19 @@ export type UseProps = () =>
       disabled?: boolean;
     };
 
-/** @alpha */
+/**
+ * @alpha
+ * @deprecated Use `EntityContextMenuItemUseProps` from `@backstage/plugin-catalog-react` instead.
+ */
+export type UseProps = EntityContextMenuItemUseProps;
+
+/**
+ * Data contributed by an entity context menu item extension.
+ * @public
+ */
 export type EntityContextMenuItemData = {
   icon: IconElement;
-  useProps: UseProps;
+  useProps: EntityContextMenuItemUseProps;
 };
 
 /** @internal */
@@ -133,7 +145,10 @@ export const entityCardTypes = [
   'content',
 ] as const satisfies readonly EntityCardType[];
 
-/** @alpha */
+/**
+ * The layout category of an entity card.
+ * @public
+ */
 export type EntityCardType = 'info' | 'content';
 
 /** @internal */

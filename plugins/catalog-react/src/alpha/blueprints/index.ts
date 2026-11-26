@@ -30,7 +30,10 @@ export {
   defaultEntityContentGroupDefinitions,
   type EntityContentGroupDefinitions,
 } from './extensionData';
-export type { EntityCardType } from './extensionData';
+export type {
+  EntityCardType,
+  EntityContextMenuItemUseProps,
+} from './extensionData';
 export {
   EntityContextMenuItemBlueprint,
   type EntityContextMenuItemData,

@@ -66,8 +66,10 @@ For advanced export customization like custom export formats, create a frontend 
 
 ```tsx title="src/catalogExportExtension.tsx"
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
-import { CatalogExportConfigBlueprint } from '@backstage/plugin-catalog/alpha';
-import type { CatalogExporter } from '@backstage/plugin-catalog';
+import {
+  CatalogExportConfigBlueprint,
+  type CatalogExporter,
+} from '@backstage/plugin-catalog';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 
 // Define custom export formats using streaming async generators
@@ -617,7 +619,7 @@ You can configure the context menu items using `EntityContextMenuItemBlueprint`.
 To add a new context item you can do something like this:
 
 ```tsx
-import { EntityContextMenuItemBlueprint } from '@backstage/plugin-catalog-react/alpha';
+import { EntityContextMenuItemBlueprint } from '@backstage/plugin-catalog-react';
 const customEntityMenuItem = EntityContextMenuItemBlueprint.make({
   name: 'open-dialog',
   params: {

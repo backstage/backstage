@@ -30,8 +30,25 @@ export * from './filters';
 export type { EntityRouteParamsOptions } from './routes';
 export { entityRouteParams, entityRouteRef } from './routes';
 export * from './types';
+export type { EntityCardType } from './alpha/blueprints/extensionData';
 export * from './overridableComponents';
 export { getEntityRelations, getEntitySourceLocation } from './utils';
 export type { EntitySourceLocation } from './utils';
 export * from './deprecated';
 export { catalogReactTranslationRef } from './translation';
+export {
+  EntityContentLayoutBlueprint,
+  type EntityContentLayoutProps,
+} from './alpha/blueprints/EntityContentLayoutBlueprint';
+export {
+  EntityHeaderLayoutBlueprint,
+  type EntityHeaderLayoutProps,
+} from './alpha/blueprints/EntityHeaderLayoutBlueprint';
+export {
+  EntityContextMenuItemBlueprint,
+  type EntityContextMenuItemParams,
+} from './alpha/blueprints/EntityContextMenuItemBlueprint';
+export type {
+  EntityContextMenuItemData,
+  EntityContextMenuItemUseProps,
+} from './alpha/blueprints/extensionData';
