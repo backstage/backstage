@@ -1,5 +1,18 @@
 # @backstage/eslint-plugin
 
+## 0.3.4
+
+### Patch Changes
+
+- 1892d2f: chore(deps): bump `minimatch` from 10.2.6 to 11.0.1
+- 245d9e3: Internal changes for TypeScript 7 compatibility. The rules work the same as before.
+
+## 0.3.4-next.1
+
+### Patch Changes
+
+- 1892d2f: chore(deps): bump `minimatch` from 10.2.6 to 11.0.1
+
 ## 0.3.4-next.0
 
 ### Patch Changes

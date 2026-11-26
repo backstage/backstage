@@ -31,7 +31,7 @@ auth:
           - resolver: emailMatchingUserEntityProfileEmail
 ```
 
-Ensure that you have set the signer correctly. It is also recommended that you restrict your target groups' security policy to only accept connections from that ALB.
+The `signer` option is required, and the provider fails to start if it is missing. The value is not validated at startup, so make sure it is the ARN of the ALB that signs the tokens. At sign-in, the `signer` claim of the token must match the configured value exactly, and the sign-in is rejected otherwise. It is also recommended that you restrict your target groups' security policy to only accept connections from that ALB.
 
 ### Optional
 

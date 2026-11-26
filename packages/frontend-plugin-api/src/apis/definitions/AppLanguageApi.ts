@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
+import type { CoreApis } from './coreApis';
 import { createApiRef } from '../system';
 import { Observable } from '@backstage/types';
+
+// Retain documentation link targets in declarations.
+export type { CoreApis };
 
 /** @public */
 export type AppLanguageApi = {
@@ -30,7 +34,7 @@ export type AppLanguageApi = {
 
 /**
  * @public
- * @deprecated Use {@link coreApis.appLanguage} instead.
+ * @deprecated Use {@link CoreApis.appLanguage | coreApis.appLanguage} instead.
  */
 export const appLanguageApiRef = createApiRef<AppLanguageApi>().with({
   id: 'core.applanguage',

@@ -60,6 +60,8 @@ describe('readAzureIntegrationConfig', () => {
       [{ data: { integrations: { azure: [data] } }, context: 'app' }],
       { visibility: ['frontend'] },
     );
+    // Shows what visibility filtering kept, should it drop the config again
+    expect(processed[0].data).toHaveProperty('integrations.azure.0');
     return new ConfigReader((processed[0].data as any).integrations.azure[0]);
   }
 
@@ -165,6 +167,80 @@ describe('readAzureIntegrationConfig', () => {
         },
       ],
     });
+  });
+
+  it('reads all values when using a client certificate credential', () => {
+    const output = readAzureIntegrationConfig(
+      buildConfig({
+        host: 'dev.azure.com',
+        credentials: [
+          {
+            organizations: ['org1'],
+            clientId: 'id',
+            clientCertificate: 'pem\n',
+            tenantId: 'tenant',
+          },
+        ],
+      }),
+    );
+
+    expect(output).toEqual({
+      host: 'dev.azure.com',
+      credentials: [
+        {
+          kind: 'ClientCertificate',
+          organizations: ['org1'],
+          clientId: 'id',
+          clientCertificate: 'pem',
+          tenantId: 'tenant',
+        },
+      ],
+    });
+  });
+
+  it('reads all values when using a client certificate path credential', () => {
+    const output = readAzureIntegrationConfig(
+      buildConfig({
+        host: 'dev.azure.com',
+        credentials: [
+          {
+            clientId: 'id',
+            clientCertificatePath: '/path/to/cert.pem',
+            tenantId: 'tenant',
+          },
+        ],
+      }),
+    );
+
+    expect(output).toEqual({
+      host: 'dev.azure.com',
+      credentials: [
+        {
+          kind: 'ClientCertificate',
+          clientId: 'id',
+          clientCertificatePath: '/path/to/cert.pem',
+          tenantId: 'tenant',
+        },
+      ],
+    });
+  });
+
+  it('rejects config when both client certificate and path are set', () => {
+    expect(() =>
+      readAzureIntegrationConfig(
+        buildConfig({
+          host: 'dev.azure.com',
+          credentials: [
+            {
+              clientId: 'id',
+              clientCertificate: 'pem',
+              clientCertificatePath: '/path/to/cert.pem',
+              tenantId: 'tenant',
+            },
+          ],
+        }),
+      ),
+    ).toThrow(/is not a valid credential/);
   });
 
   it('reads all values when using a managed identity client assertion credential', () => {

@@ -6,6 +6,7 @@ addon
 addons
 ADRs
 airbrake
+argocd
 Airbrake
 Airbrakes
 ajv
@@ -34,6 +35,8 @@ backend's
 backoff
 backported
 backporting
+Basename
+Bazel
 BEPs
 bg
 bigint
@@ -148,6 +151,7 @@ dyno
 ecco
 elasticsearch
 Entra
+enum
 enums
 env
 Env
@@ -205,6 +209,8 @@ Hostname
 hotspot
 hotspots
 howto
+href
+hrefs
 http
 https
 Iain
@@ -301,6 +307,7 @@ misconfiguration
 misconfigured
 mkdocs
 Mkdocs
+mock's
 modularization
 monopackage
 monopackages
@@ -379,6 +386,7 @@ plantuml
 Platformize
 pluggable
 Pluggable
+pnpm
 Podman
 polyfills
 posix
@@ -425,6 +433,7 @@ requestors
 rerender
 rerenders
 resizable
+resolver's
 resourcequotas
 retryable
 reusability
@@ -444,6 +453,7 @@ Rspack
 rst
 rsync
 ruleset
+rulesets
 runbook
 sam
 sandbox
@@ -488,6 +498,7 @@ sqs
 squidfunk
 src
 statefulsets
+stderr
 stdout
 storable
 storages
@@ -525,6 +536,8 @@ Talkdesk
 Tanzu
 targetRef
 tasklist
+teardown
+Teardown
 techdocs
 Telenor
 telus

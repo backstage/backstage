@@ -15,7 +15,7 @@ or S3-compatible endpoint. It has
 connections:
   - type: aws-s3
     title: Internal object storage
-    host: s3.example.com
+    baseUrl: https://s3.example.com/
     endpoint: https://s3.example.com
     s3ForcePathStyle: true
     auth:
@@ -26,11 +26,11 @@ connections:
 
 ## Connection fields
 
-| Field              | Type      | Required | Description                                                     |
-| ------------------ | --------- | -------- | --------------------------------------------------------------- |
-| `host`             | `string`  | Yes      | Host matched against the resource URL supplied by the consumer. |
-| `endpoint`         | `string`  | No       | Custom S3 API endpoint.                                         |
-| `s3ForcePathStyle` | `boolean` | No       | Whether an S3 client should use path-style bucket URLs.         |
+| Field              | Type      | Required | Description                                                    |
+| ------------------ | --------- | -------- | -------------------------------------------------------------- |
+| `baseUrl`          | `string`  | Yes      | HTTP(S) base URL of the instance. Its host is used for lookup. |
+| `endpoint`         | `string`  | No       | Custom S3 API endpoint.                                        |
+| `s3ForcePathStyle` | `boolean` | No       | Whether an S3 client should use path-style bucket URLs.        |
 
 ## Authentication methods
 
@@ -51,7 +51,7 @@ credential provider performs role assumption and credential refresh.
 ## Lookup and selection
 
 The consumer supplies a [lookup query](../01-concepts.md#lookup-queries) containing
-a URL. The service selects the connection whose `host` matches the parsed URL
+a URL. The service selects the connection whose `baseUrl` host matches the parsed URL
 host exactly, including a port when one is present.
 
 When more than one authentication entry is visible to the calling plugin, the
@@ -69,6 +69,7 @@ const connection = await connections.find({
   authMethods: ['accessKey', 'assumeRole', 'none'],
 });
 
+connection.baseUrl; // string
 connection.endpoint; // string | undefined
 connection.s3ForcePathStyle; // boolean | undefined
 ```

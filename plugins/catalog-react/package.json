@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-react",
-  "version": "4.0.0-next.1",
+  "version": "4.0.1-next.0",
   "description": "A frontend library that helps other Backstage plugins interact with the catalog",
   "backstage": {
     "role": "web-library",
@@ -78,13 +78,12 @@
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
-    "@mui/material": "^5.12.2",
     "@react-hookz/web": "^24.0.0",
     "@remixicon/react": ">=4.6.0 <4.9.0",
     "classnames": "^2.2.6",
     "lodash": "^4.17.21",
-    "material-ui-popup-state": "^5.3.6",
     "qs": "^6.15.2",
+    "react-aria": "~3.53.0",
     "react-use": "^17.2.4",
     "react-window": "^1.8.10",
     "yaml": "^2.0.0",
@@ -112,9 +111,9 @@
   },
   "peerDependencies": {
     "@backstage/frontend-test-utils": "workspace:^",
-    "@types/react": "^17.0.0 || ^18.0.0",
-    "react": "^17.0.0 || ^18.0.0",
-    "react-dom": "^17.0.0 || ^18.0.0",
+    "@types/react": "^18.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
     "react-router-dom": "^6.30.2"
   },
   "peerDependenciesMeta": {

@@ -80,3 +80,11 @@ export function getErrorMessage(e: unknown): string {
   if (isGitlabError(e)) return `${e} - ${e.description}`;
   return String(e);
 }
+
+export function assertValidTargetPath(targetPath: string) {
+  if (targetPath.startsWith('/') || targetPath.split('/').includes('..')) {
+    throw new InputError(
+      `Invalid targetPath '${targetPath}': must be a relative path within the target repository, without '..' segments`,
+    );
+  }
+}

@@ -305,6 +305,7 @@ describe('TechdocsGenerator.run', () => {
       mockLogger,
       undefined,
       ['additional-plugin', 'default-plugin'],
+      undefined,
     );
   });
 

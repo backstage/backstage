@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-export * from '../models/ErrorError.model';
-export * from '../models/ErrorRequest.model';
-export * from '../models/ErrorResponse.model';
-export * from '../models/Event.model';
-export * from '../models/GetSubscriptionEvents200Response.model';
-export * from '../models/ModelError.model';
-export * from '../models/PostEventRequest.model';
-export * from '../models/PutSubscriptionRequest.model';
+
+export * from '../models/ErrorError.model'
+export * from '../models/ErrorRequest.model'
+export * from '../models/ErrorResponse.model'
+export * from '../models/Event.model'
+export * from '../models/GetSubscriptionEvents200Response.model'
+export * from '../models/ModelError.model'
+export * from '../models/PostEventRequest.model'
+export * from '../models/PutSubscriptionRequest.model'

@@ -254,7 +254,7 @@ export class I18nextTranslationApi implements TranslationApi {
       fallbackNS: false,
 
       // Disable resource loading on init, meaning i18n will be ready to use immediately
-      initImmediate: false,
+      initAsync: false,
     });
 
     i18n.init();
@@ -343,6 +343,10 @@ export class I18nextTranslationApi implements TranslationApi {
     return this.#createSnapshot(internalRef);
   }
 
+  /**
+   * Observes translation updates for the selected language. Pending loads from
+   * previous languages do not emit snapshots or errors to this subscription.
+   */
   translation$<TMessages extends { [key in string]: string }>(
     translationRef: TranslationRef<string, TMessages>,
   ): Observable<TranslationSnapshot<TMessages>> {
@@ -374,6 +378,7 @@ export class I18nextTranslationApi implements TranslationApi {
       };
 
       const onChange = () => {
+        loadTicket = {};
         const snapshot = this.#createSnapshot(internalRef);
         if (snapshot.ready) {
           subscriber.next(snapshot);
@@ -388,6 +393,7 @@ export class I18nextTranslationApi implements TranslationApi {
 
       this.#languageChangeListeners.add(onChange);
       return () => {
+        loadTicket = {};
         this.#languageChangeListeners.delete(onChange);
       };
     });
@@ -404,15 +410,11 @@ export class I18nextTranslationApi implements TranslationApi {
   #createSnapshot<TMessages extends { [key in string]: string }>(
     internalRef: InternalTranslationRef<string, TMessages>,
   ): TranslationSnapshot<TMessages> {
-    if (this.#loader.needsLoading(this.#language, internalRef.id)) {
-      return { ready: false };
-    }
-
     const unwrappedT = this.#i18n.getFixedT(null, internalRef.id);
     const t = this.#jsxInterpolator.wrapT<TMessages>(unwrappedT);
 
     return {
-      ready: true,
+      ready: !this.#loader.needsLoading(this.#language, internalRef.id),
       t,
     };
   }

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/module-federation-common",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Helper library for module federation",
   "backstage": {
     "role": "common-library"
@@ -39,7 +39,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@module-federation/runtime": "~2.8.2"
+    "@module-federation/runtime": "~2.9.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
@@ -54,9 +54,9 @@
     "@material-ui/core": "^4.12.2",
     "@material-ui/styles": "^4.10.0",
     "@mui/material": "^5.12.2",
-    "@types/react": "^17.0.0 || ^18.0.0",
-    "react": "^17.0.0 || ^18.0.0",
-    "react-dom": "^17.0.0 || ^18.0.0",
+    "@types/react": "^18.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
     "react-router": "^6.30.2",
     "react-router-dom": "^6.30.2"
   },

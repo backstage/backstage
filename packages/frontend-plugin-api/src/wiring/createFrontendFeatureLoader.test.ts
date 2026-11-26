@@ -123,7 +123,7 @@ describe('createFrontendFeatureLoader', () => {
 
     expect(featureLoader).toBeDefined();
     expect(String(featureLoader)).toMatch(
-      /^FeatureLoader{description=created at '.*\/packages\/frontend-plugin-api\/src\/wiring\/createFrontendFeatureLoader\.test\.ts:.*'}$/,
+      /^FeatureLoader{description=created at '.*[\\/]packages[\\/]frontend-plugin-api[\\/]src[\\/]wiring[\\/]createFrontendFeatureLoader\.test\.ts:.*'}$/,
     );
 
     await renderWithEffects(
@@ -158,7 +158,7 @@ describe('createFrontendFeatureLoader', () => {
         }),
       ),
     ).rejects.toThrow(
-      /^Failed to read frontend features from loader created at '.*\/packages\/frontend-plugin-api\/src\/wiring\/createFrontendFeatureLoader\.test\.ts:.*': TypeError: boom$/,
+      /^Failed to read frontend features from loader created at '.*[\\/]packages[\\/]frontend-plugin-api[\\/]src[\\/]wiring[\\/]createFrontendFeatureLoader\.test\.ts:.*': TypeError: boom$/,
     );
   });
 
@@ -253,7 +253,7 @@ describe('createFrontendFeatureLoader', () => {
 
     expect(featureLoader).toBeDefined();
     expect(String(featureLoader)).toMatch(
-      /^FeatureLoader{description=created at '.*\/packages\/frontend-plugin-api\/src\/wiring\/createFrontendFeatureLoader\.test\.ts:.*'}$/,
+      /^FeatureLoader{description=created at '.*[\\/]packages[\\/]frontend-plugin-api[\\/]src[\\/]wiring[\\/]createFrontendFeatureLoader\.test\.ts:.*'}$/,
     );
 
     await renderWithEffects(
@@ -306,7 +306,7 @@ describe('createFrontendFeatureLoader', () => {
 
     expect(featureLoader).toBeDefined();
     expect(String(featureLoader)).toMatch(
-      /^FeatureLoader{description=created at '.*\/packages\/frontend-plugin-api\/src\/wiring\/createFrontendFeatureLoader\.test\.ts:.*'}$/,
+      /^FeatureLoader{description=created at '.*[\\/]packages[\\/]frontend-plugin-api[\\/]src[\\/]wiring[\\/]createFrontendFeatureLoader\.test\.ts:.*'}$/,
     );
 
     await renderWithEffects(
@@ -466,7 +466,7 @@ describe('createFrontendFeatureLoader', () => {
         }),
       ),
     ).rejects.toThrow(
-      /^Maximum feature loading recursion depth \(5\) reached for the feature loader created at '.*\/packages\/frontend-plugin-api\/src\/wiring\/createFrontendFeatureLoader\.test\.ts:.*'$/,
+      /^Maximum feature loading recursion depth \(5\) reached for the feature loader created at '.*[\\/]packages[\\/]frontend-plugin-api[\\/]src[\\/]wiring[\\/]createFrontendFeatureLoader\.test\.ts:.*'$/,
     );
 
     const nestedLoaders = await (

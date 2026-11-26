@@ -34,6 +34,8 @@ import {
 
 const MATERIAL_THEME = 'material';
 const PYMDOWNX_SNIPPETS_EXTENSION = 'pymdownx.snippets';
+const PYMDOWNX_EXTENSION_PREFIX = 'pymdownx.';
+const MARKDOWN_EXTENSIONS_PREFIX = 'markdown.extensions.';
 
 const DEFAULT_ALLOWED_MKDOCS_PLUGINS = new Set([
   'techdocs-core',
@@ -45,10 +47,65 @@ const DEFAULT_ALLOWED_MKDOCS_PLUGINS = new Set([
 ]);
 const MKDOCS_PLUGIN_GROUPS = new Set(['group', 'material/group']);
 
+// Plain extension names must be checked against an allowlist rather than
+// passed through: extensions that ship in build images can execute code or
+// load files from the documentation input directory during generation.
+const DEFAULT_ALLOWED_EXTENSIONS = new Set([
+  // Built-in Python-Markdown extensions, bundled with the `markdown` package
+  // that both official TechDocs build images ship.
+  'abbr',
+  'admonition',
+  'attr_list',
+  'codehilite',
+  'def_list',
+  'extra',
+  'fenced_code',
+  'footnotes',
+  'legacy_attrs',
+  'legacy_em',
+  'md_in_html',
+  'meta',
+  'nl2br',
+  'sane_lists',
+  'smarty',
+  'tables',
+  'toc',
+  'wikilinks',
+  // Rendering extensions shipped in the official TechDocs build images.
+  'markdown_inline_graphviz',
+  'mdx_truly_sane_lists',
+  'plantuml_markdown',
+  'plantuml-markdown',
+  // Zensical's rendering extensions. Extensions that load code or files
+  // during generation are deliberately not allowed by default.
+  'zensical.extensions.autorefs',
+  'zensical.extensions.context',
+  'zensical.extensions.emoji',
+  'zensical.extensions.glightbox',
+  'zensical.extensions.links',
+]);
+
 function isPymdownxSnippetsExtension(extensionName: string): boolean {
   return (
     extensionName === PYMDOWNX_SNIPPETS_EXTENSION ||
     extensionName === `${PYMDOWNX_SNIPPETS_EXTENSION}:SnippetExtension`
+  );
+}
+
+function isAllowedExtensionName(
+  extensionName: string,
+  allowedExtensions: Set<string>,
+): boolean {
+  // Python-Markdown accepts the full module path for built-in extensions,
+  // e.g. markdown.extensions.toc is the same extension as toc.
+  const shortName = extensionName.startsWith(MARKDOWN_EXTENSIONS_PREFIX)
+    ? extensionName.slice(MARKDOWN_EXTENSIONS_PREFIX.length)
+    : extensionName;
+  // The pymdownx.* family consists of long-established rendering extensions;
+  // the file-including pymdownx.snippets extension is special-cased above.
+  return (
+    allowedExtensions.has(shortName) ||
+    shortName.startsWith(PYMDOWNX_EXTENSION_PREFIX)
   );
 }
 
@@ -413,6 +470,7 @@ export const patchMkdocsYmlWithFontDisabled = async (
  * @param logger - A logger instance
  * @param additionalAllowedKeys - Optional array of additional keys to allow beyond the default allowlist
  * @param additionalAllowedPlugins - Optional array of additional plugins to allow beyond the default set
+ * @param additionalAllowedExtensions - Optional array of additional markdown extensions to allow beyond the default set
  * @alpha
  */
 export const sanitizeMkdocsYml = async (
@@ -420,6 +478,7 @@ export const sanitizeMkdocsYml = async (
   logger: LoggerService,
   additionalAllowedKeys?: string[],
   additionalAllowedPlugins?: string[],
+  additionalAllowedExtensions?: string[],
 ) => {
   await patchMkdocsFileOrThrow(mkdocsYmlPath, logger, mkdocsYml => {
     // Combine default allowed keys with additional keys
@@ -431,6 +490,18 @@ export const sanitizeMkdocsYml = async (
         )}. This may introduce security vulnerabilities. Only use in trusted environments.`,
       );
       additionalAllowedKeys.forEach(key => allowedKeys.add(key));
+    }
+
+    const allowedExtensions = new Set(DEFAULT_ALLOWED_EXTENSIONS);
+    if (additionalAllowedExtensions && additionalAllowedExtensions.length > 0) {
+      logger.warn(
+        `DANGEROUS: Allowing additional MkDocs markdown extensions beyond the default safe allowlist: ${additionalAllowedExtensions.join(
+          ', ',
+        )}. Some markdown extensions execute code or load files from the documentation input directory. Only use in trusted environments.`,
+      );
+      additionalAllowedExtensions.forEach(extension =>
+        allowedExtensions.add(extension),
+      );
     }
 
     // Identify keys that will be removed for logging
@@ -490,6 +561,11 @@ export const sanitizeMkdocsYml = async (
             removedEntries.push(ext);
             return [];
           }
+
+          if (!isAllowedExtensionName(ext, allowedExtensions)) {
+            removedEntries.push(ext);
+            return [];
+          }
           return [ext];
         }
 
@@ -515,6 +591,11 @@ export const sanitizeMkdocsYml = async (
 
         const sanitizedExtension: Record<string, unknown> = {};
         for (const [extensionName, extensionConfig] of extensionEntries) {
+          if (!isAllowedExtensionName(extensionName, allowedExtensions)) {
+            removedEntries.push(extensionName);
+            continue;
+          }
+
           if (extensionConfig instanceof UnknownTag) {
             removedEntries.push(
               `dynamically configured ${extensionName} extension`,
@@ -575,9 +656,9 @@ export const sanitizeMkdocsYml = async (
 
     if (removedEntries.length > 0) {
       logger.warn(
-        `Removed the following dangerous entries from markdown_extensions in mkdocs.yml: ${removedEntries.join(
+        `Removed the following dangerous or unsupported entries from markdown_extensions in mkdocs.yml: ${removedEntries.join(
           ', ',
-        )}.`,
+        )}. To allow additional markdown extensions, configure 'techdocs.generator.mkdocs.dangerouslyAllowAdditionalExtensions' in your Backstage app-config. When using the TechDocs CLI, use '--dangerouslyAllowAdditionalExtensions' instead.`,
       );
     }
 

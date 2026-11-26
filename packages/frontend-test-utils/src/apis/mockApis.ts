@@ -16,8 +16,15 @@
 
 import {
   coreApis,
+  type RouteRef,
+  type SubRouteRef,
+  type ExternalRouteRef,
+  type AnyRouteRefParams,
+  type RouteResolutionMatch,
   type AnalyticsApi,
   type AnalyticsEvent,
+  type AppNavigate,
+  type RouteResolutionApi,
   type ConfigApi,
   type DiscoveryApi,
   type ErrorApi,
@@ -39,6 +46,7 @@ import {
   type PluginHeaderActionsApi,
   type ToastApi,
   type ToastApiMessage,
+  type AppHistoryApi,
 } from '@backstage/frontend-plugin-api';
 import {
   alertApiRef,
@@ -62,7 +70,7 @@ import { MockFeatureFlagsApi } from './FeatureFlagsApi';
 import { MockAnalyticsApi } from './AnalyticsApi';
 import { MockConfigApi } from './ConfigApi';
 import { MockErrorApi } from './ErrorApi';
-import { MockFetchApi, MockFetchApiOptions } from './FetchApi';
+import { MockFetchApi } from './FetchApi';
 import { MockStorageApi } from './StorageApi';
 import { MockPermissionApi } from './PermissionApi';
 import { MockTranslationApi } from './TranslationApi';
@@ -70,7 +78,9 @@ import {
   attachMockApiFactory,
   type MockWithApiFactory,
 } from './MockWithApiFactory';
-import { createApiMock } from './createApiMock';
+import { createApiMock, type ApiMock } from './createApiMock';
+import { createMockAppHistory } from './createMockAppHistory';
+import { createMockRouteResolutionApi } from './createMockRouteResolutionApi';
 
 function createObservableState<T>(initialValue: T) {
   let value = initialValue;
@@ -97,8 +107,9 @@ function createObservableState<T>(initialValue: T) {
 
 /**
  * Mock implementations of the core utility APIs, to be used in tests.
- * Each {@link @backstage/frontend-plugin-api#coreApis} member has a matching
- * `.mock()` helper. Some APIs also provide functional fake instances.
+ * Each API in {@link @backstage/frontend-plugin-api#coreApis}, including those
+ * grouped under {@link @backstage/frontend-plugin-api#coreApis.internal}, has a
+ * matching `.mock()` helper. Some APIs also provide functional fake instances.
  *
  * @public
  * @remarks
@@ -478,9 +489,61 @@ export namespace mockApis {
    *
    * @public
    */
-  export function fetch(
-    options?: MockFetchApiOptions,
-  ): MockWithApiFactory<FetchApi> {
+  export function fetch(options?: {
+    /**
+     * Define the underlying base `fetch` implementation.
+     *
+     * @defaultValue undefined
+     * @remarks
+     *
+     * Leaving out this parameter or passing `undefined`, makes the API use the
+     * global `fetch` implementation to make real network requests.
+     *
+     * `'none'` swallows all calls and makes no requests at all.
+     *
+     * You can also pass in any `fetch` compatible callback, such as a
+     * `jest.fn()`, if you want to use a custom implementation or to just track
+     * and assert on calls.
+     */
+    baseImplementation?: undefined | 'none' | typeof globalThis.fetch;
+
+    /**
+     * Add translation from `plugin://` URLs to concrete http(s) URLs, basically
+     * simulating what
+     * {@link @backstage/core-app-api#FetchMiddlewares.resolvePluginProtocol}
+     * does.
+     *
+     * @defaultValue undefined
+     * @remarks
+     *
+     * Leaving out this parameter or passing `undefined`, disables plugin protocol
+     * translation.
+     *
+     * To enable the feature, pass in a discovery API which is then used to
+     * resolve the URLs.
+     */
+    resolvePluginProtocol?:
+      | undefined
+      | { discoveryApi: Pick<DiscoveryApi, 'getBaseUrl'> };
+
+    /**
+     * Add token based Authorization headers to requests, basically simulating
+     * what {@link @backstage/core-app-api#FetchMiddlewares.injectIdentityAuth}
+     * does.
+     *
+     * @defaultValue undefined
+     * @remarks
+     *
+     * Leaving out this parameter or passing `undefined`, disables auth injection.
+     *
+     * To enable the feature, pass in either a static token or an identity API
+     * which is queried on each request for a token.
+     */
+    injectIdentityAuth?:
+      | undefined
+      | { token: string }
+      | { identityApi: Pick<IdentityApi, 'getCredentials'> };
+  }): MockWithApiFactory<FetchApi> {
     const instance = new MockFetchApi(options);
     return attachMockApiFactory(coreApis.fetch, instance);
   }
@@ -562,7 +625,7 @@ export namespace mockApis {
     return attachMockApiFactory<
       AppLifecycleApi,
       AppLifecycleApi & { setFinalized(finalized: boolean): void }
-    >(coreApis.appLifecycle, {
+    >(coreApis.internal.appLifecycle, {
       isFinalized: () => finalized,
       subscribe(listener: () => void) {
         listeners.add(listener);
@@ -591,7 +654,7 @@ export namespace mockApis {
      *
      * @public
      */
-    export const mock = createApiMock(coreApis.appLifecycle, () => ({
+    export const mock = createApiMock(coreApis.internal.appLifecycle, () => ({
       isFinalized: jest.fn(),
       subscribe: jest.fn(),
     }));
@@ -715,7 +778,7 @@ export namespace mockApis {
    */
   export function oauthRequest(): MockWithApiFactory<OAuthRequestApi> {
     return attachMockApiFactory(
-      coreApis.oauthRequest,
+      coreApis.internal.oauthRequest,
       new OAuthRequestManager(),
     );
   }
@@ -732,7 +795,7 @@ export namespace mockApis {
      *
      * @public
      */
-    export const mock = createApiMock(coreApis.oauthRequest, () => ({
+    export const mock = createApiMock(coreApis.internal.oauthRequest, () => ({
       createAuthRequester: jest.fn(),
       authRequest$: jest.fn(),
     }));
@@ -748,7 +811,7 @@ export namespace mockApis {
   }): MockWithApiFactory<PluginHeaderActionsApi> {
     const actions = new Map(Object.entries(options?.actions ?? {}));
     return attachMockApiFactory<PluginHeaderActionsApi>(
-      coreApis.pluginHeaderActions,
+      coreApis.internal.pluginHeaderActions,
       {
         getPluginHeaderActions: pluginId => [...(actions.get(pluginId) ?? [])],
       },
@@ -767,9 +830,12 @@ export namespace mockApis {
      *
      * @public
      */
-    export const mock = createApiMock(coreApis.pluginHeaderActions, () => ({
-      getPluginHeaderActions: jest.fn(),
-    }));
+    export const mock = createApiMock(
+      coreApis.internal.pluginHeaderActions,
+      () => ({
+        getPluginHeaderActions: jest.fn(),
+      }),
+    );
   }
 
   /**
@@ -784,10 +850,153 @@ export namespace mockApis {
      *
      * @public
      */
-    export const mock = createApiMock(coreApis.pluginWrapper, () => ({
+    export const mock = createApiMock(coreApis.internal.pluginWrapper, () => ({
       getRootWrapper: jest.fn(),
       getPluginWrapper: jest.fn(),
     }));
+  }
+
+  /**
+   * Fake implementation of {@link @backstage/frontend-plugin-api#AppHistoryApi}.
+   *
+   * @public
+   */
+  export function appHistory(options?: {
+    /**
+     * Initial location for the mock app history's snapshot.
+     * Defaults to `'/'`.
+     *
+     * Stands in for the browser URL, so a `basename` is stripped from it just as
+     * the real app history strips it from `window.location` — every location the
+     * API then hands out is app-relative.
+     */
+    initialLocation?: string;
+    /**
+     * Optional jest mock (or function) invoked by `navigate`. Location
+     * emission still happens before this is called.
+     */
+    navigate?: jest.Mock | AppHistoryApi['navigate'];
+    /**
+     * App deploy basename prefixed onto `createHref` results, mirroring the
+     * real `AppHistoryApi` implementation — including leaving targets that are
+     * not app-relative alone, and stripping the prefix back off
+     * `initialLocation`.
+     *
+     * `navigate` targets and snapshot locations are app-relative on both
+     * sides of the basename, exactly as in production: the real implementation
+     * prepends the basename on the way into the History API and strips it on the
+     * way back out, so a round trip through it is invisible.
+     */
+    basename?: string;
+  }): AppHistoryApi & {
+    /** Recorded navigation calls, in order. */
+    navigateCalls: Array<{
+      to: string | number;
+      options?: Parameters<AppNavigate>[1];
+    }>;
+  } & MockWithApiFactory<AppHistoryApi> {
+    const instance = createMockAppHistory(options);
+    return attachMockApiFactory(coreApis.appHistory, instance);
+  }
+
+  /**
+   * Mock helpers for {@link @backstage/frontend-plugin-api#AppHistoryApi}.
+   * Backed by in-memory history: navigation still validates paths and emits
+   * locations even when the call is observed by a Jest mock.
+   *
+   * @public
+   */
+  export namespace appHistory {
+    export const mock: (
+      partialImpl?: Partial<AppHistoryApi> | undefined,
+    ) => ApiMock<AppHistoryApi> = partialImpl => {
+      // Preserve location updates when observing navigation.
+      const { navigate, ...rest } = partialImpl ?? {};
+      const instance = createMockAppHistory({ navigate });
+      const navigateMock = jest.fn(
+        (
+          ...args:
+            | [path: string, options?: Parameters<AppNavigate>[1]]
+            | [delta: number]
+        ) => {
+          if (typeof args[0] === 'number') {
+            instance.navigate(args[0]);
+          } else if (args.length === 1) {
+            instance.navigate(args[0]);
+          } else {
+            instance.navigate(args[0], args[1]);
+          }
+        },
+      ) as unknown as jest.MockedFunction<AppHistoryApi['navigate']>;
+
+      return createApiMock(coreApis.appHistory, () => ({
+        getSnapshot: jest.fn(instance.getSnapshot),
+        subscribe: jest.fn(instance.subscribe),
+        navigate: navigateMock,
+        createHref: jest.fn(
+          (...args: Parameters<AppHistoryApi['createHref']>) =>
+            instance.createHref(...args),
+        ),
+      }))(rest);
+    };
+  }
+
+  /**
+   * Fake implementation of {@link @backstage/frontend-plugin-api#RouteResolutionApi}.
+   *
+   * @public
+   */
+  export function routeResolution(options?: {
+    /**
+     * Map of route refs to absolute path templates. Path params use the
+     * `:param` form (e.g. `'/catalog/:namespace/:kind/:name'`). When a mapped
+     * route is resolved, params are substituted into the template.
+     *
+     * String values without `:` segments are returned as-is for parameter-less
+     * refs.
+     */
+    routes?:
+      | ReadonlyMap<
+          | RouteRef<AnyRouteRefParams>
+          | SubRouteRef<AnyRouteRefParams>
+          | ExternalRouteRef<AnyRouteRefParams>,
+          string
+        >
+      | ReadonlyArray<
+          [
+            (
+              | RouteRef<AnyRouteRefParams>
+              | SubRouteRef<AnyRouteRefParams>
+              | ExternalRouteRef<AnyRouteRefParams>
+            ),
+            string,
+          ]
+        >;
+    /**
+     * Optional full `resolve` implementation. When set, it takes precedence
+     * over `routes`.
+     */
+    resolve?: RouteResolutionApi['resolve'];
+    /**
+     * Fixed matches or a custom path-matching implementation. Defaults to no
+     * matches. Fixed matches ignore the requested pathname and node, defaulting
+     * `routePattern` to `basePath`, `params` to `{}`, and `contributesPath` to
+     * `true`. Callbacks return complete matches without applying these defaults.
+     */
+    resolvePath?:
+      | {
+          matches: ReadonlyArray<
+            Pick<RouteResolutionMatch, 'node' | 'basePath'> &
+              Partial<Omit<RouteResolutionMatch, 'node' | 'basePath'>>
+          >;
+        }
+      | RouteResolutionApi['resolvePath'];
+  }): RouteResolutionApi & {
+    resolve: jest.MockedFunction<RouteResolutionApi['resolve']>;
+    resolvePath: jest.MockedFunction<RouteResolutionApi['resolvePath']>;
+  } & MockWithApiFactory<RouteResolutionApi> {
+    const instance = createMockRouteResolutionApi(options);
+    return attachMockApiFactory(coreApis.routeResolution, instance);
   }
 
   /**
@@ -804,6 +1013,10 @@ export namespace mockApis {
      */
     export const mock = createApiMock(coreApis.routeResolution, () => ({
       resolve: jest.fn(),
+      resolvePath: jest.fn<
+        ReturnType<RouteResolutionApi['resolvePath']>,
+        Parameters<RouteResolutionApi['resolvePath']>
+      >(() => ({ matches: [] })),
     }));
   }
 
@@ -819,9 +1032,12 @@ export namespace mockApis {
      *
      * @public
      */
-    export const mock = createApiMock(coreApis.swappableComponents, () => ({
-      getComponent: jest.fn(),
-    }));
+    export const mock = createApiMock(
+      coreApis.internal.swappableComponents,
+      () => ({
+        getComponent: jest.fn(),
+      }),
+    );
   }
 
   /**

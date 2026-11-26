@@ -38,6 +38,7 @@ import { Root } from '../extensions/Root';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 import { createRouteAliasResolver } from './RouteAliasResolver';
+import { RouteResolver } from './RouteResolver';
 import { createErrorCollector } from '../wiring/createErrorCollector';
 
 const collector = createErrorCollector();
@@ -140,28 +141,54 @@ function routeObj(
   path: string,
   refs: RouteRef[],
   children: any[] = [],
-  type: 'mounted' | 'gathered' = 'mounted',
   appNode?: AppNode,
 ) {
   return {
     appNode,
     path: path,
     caseSensitive: false,
-    element: type,
     routeRefs: new Set(refs),
     children: [
+      ...children,
       {
         path: '*',
         caseSensitive: false,
-        element: 'match-all',
         routeRefs: new Set(),
       },
-      ...children,
     ],
   };
 }
 
 describe('discovery', () => {
+  it('should let an empty-path child match paths below its parent', () => {
+    const info = routeInfoFromExtensions([
+      createTestExtension({ name: 'page', path: 'foo', routeRef: ref1 }),
+      createTestExtension({ name: 'index', parent: 'page', path: '' }),
+      createTestExtension({ name: 'other', parent: 'page', path: 'other' }),
+    ]);
+
+    const resolver = new RouteResolver(
+      info.routePaths,
+      info.routeParents,
+      info.routeObjects,
+      new Map(),
+      '',
+      info.routeAliasResolver,
+      new Map(),
+    );
+
+    expect(
+      resolver
+        .resolvePath({ pathname: '/foo/detail' })
+        .matches.map(match => match.node.spec.id),
+    ).toEqual(['test/page', 'test/index']);
+    expect(
+      resolver
+        .resolvePath({ pathname: '/foo/other' })
+        .matches.map(match => match.node.spec.id),
+    ).toEqual(['test/page', 'test/other']);
+  });
+
   it('should collect routes', () => {
     const info = routeInfoFromExtensions([
       createTestExtension({
@@ -213,7 +240,7 @@ describe('discovery', () => {
       [ref5, ref1],
     ]);
     expect(info.routeObjects).toEqual([
-      routeObj('nothing', [], undefined, undefined, expect.any(Object)),
+      routeObj('nothing', [], undefined, expect.any(Object)),
       routeObj(
         'foo',
         [ref1],
@@ -221,16 +248,14 @@ describe('discovery', () => {
           routeObj(
             'bar/:id',
             [ref2],
-            [routeObj('baz', [ref3], undefined, undefined, expect.any(Object))],
-            undefined,
+            [routeObj('baz', [ref3], undefined, expect.any(Object))],
             expect.any(Object),
           ),
-          routeObj('blop', [ref5], undefined, undefined, expect.any(Object)),
+          routeObj('blop', [ref5], undefined, expect.any(Object)),
         ],
-        undefined,
         expect.any(Object),
       ),
-      routeObj('divsoup', [ref4], undefined, undefined, expect.any(Object)),
+      routeObj('divsoup', [ref4], undefined, expect.any(Object)),
     ]);
   });
 
@@ -391,12 +416,11 @@ describe('discovery', () => {
       [ref5, ref3],
     ]);
     expect(info.routeObjects).toEqual([
-      routeObj('foo', [ref1, ref2], [], 'mounted', expect.any(Object)),
+      routeObj('foo', [ref1, ref2], [], expect.any(Object)),
       routeObj(
         'bar',
         [ref3],
-        [routeObj('', [ref4, ref5], [], 'mounted', expect.any(Object))],
-        'mounted',
+        [routeObj('', [ref4, ref5], [], expect.any(Object))],
         expect.any(Object),
       ),
     ]);
@@ -464,24 +488,13 @@ describe('discovery', () => {
               routeObj(
                 'baz',
                 [ref3],
-                [
-                  routeObj(
-                    'blop',
-                    [ref4],
-                    undefined,
-                    undefined,
-                    expect.any(Object),
-                  ),
-                ],
-                undefined,
+                [routeObj('blop', [ref4], undefined, expect.any(Object))],
                 expect.any(Object),
               ),
             ],
-            'mounted',
             expect.any(Object),
           ),
         ],
-        undefined,
         expect.any(Object),
       ),
     ]);
@@ -541,7 +554,7 @@ describe('discovery', () => {
         'r',
         [],
         [
-          routeObj('x', [ref1], [], 'mounted', expect.any(Object)),
+          routeObj('x', [ref1], [], expect.any(Object)),
           routeObj(
             'y',
             [],
@@ -550,30 +563,15 @@ describe('discovery', () => {
                 '1',
                 [ref2],
                 [
-                  routeObj(
-                    'a',
-                    [ref3],
-                    undefined,
-                    'mounted',
-                    expect.any(Object),
-                  ),
-                  routeObj(
-                    'b',
-                    [ref4],
-                    undefined,
-                    'mounted',
-                    expect.any(Object),
-                  ),
+                  routeObj('a', [ref3], undefined, expect.any(Object)),
+                  routeObj('b', [ref4], undefined, expect.any(Object)),
                 ],
-                'mounted',
                 expect.any(Object),
               ),
             ],
-            'mounted',
             expect.any(Object),
           ),
         ],
-        undefined,
         expect.any(Object),
       ),
     ]);
@@ -614,8 +612,8 @@ describe('discovery', () => {
         [r3, undefined],
       ]);
       expect(info.routeObjects).toEqual([
-        routeObj('foo', [r1], undefined, undefined, expect.any(Object)),
-        routeObj('bar', [r3], undefined, undefined, expect.any(Object)),
+        routeObj('foo', [r1], undefined, expect.any(Object)),
+        routeObj('bar', [r3], undefined, expect.any(Object)),
       ]);
     });
 

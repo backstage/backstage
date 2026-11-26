@@ -31,6 +31,7 @@ import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
 import request from 'supertest';
+import { AddressInfo } from 'node:net';
 import { eventsPlugin } from './EventsPlugin';
 
 jest.setTimeout(60_000);
@@ -251,26 +252,27 @@ describe.each(eventBusDatabases.eachSupportedId())(
         events: [{ topic: 'test', payload: { n: 1 } }],
       });
 
-      // Two clients for subscriber 2, only one gets the event.
-      // We wrap each promise to track which index resolved first.
-      const res1Promise = helper.readEvents('tester-2').then(r => r);
-      const res2Promise = helper.readEvents('tester-2').then(r => r);
-
-      const winnerIndex = await Promise.race([
-        res1Promise.then(() => 0),
-        res2Promise.then(() => 1),
-      ]);
-      const winner = await (winnerIndex === 0 ? res1Promise : res2Promise);
-      expect(winner.status).toBe(200);
-      expect(winner.body).toEqual({
+      // Two clients for subscriber 2, only one gets the event. A blocked read
+      // sends its 202 headers only after it has read nothing and started
+      // listening, so waiting for both sets of headers makes sure the second
+      // event below is published while the other client is blocked.
+      const { port } = backend.server.address() as AddressInfo;
+      const readTester2 = () =>
+        fetch(
+          `http://localhost:${port}/api/events/bus/v1/subscriptions/tester-2/events`,
+          { headers: { authorization: mockCredentials.service.header() } },
+        );
+      const responses = await Promise.all([readTester2(), readTester2()]);
+      expect(responses.map(r => r.status).sort()).toEqual([200, 202]);
+      const winner = responses.find(r => r.status === 200)!;
+      const loser = responses.find(r => r.status === 202)!;
+      await expect(winner.json()).resolves.toEqual({
         events: [{ topic: 'test', payload: { n: 1 } }],
       });
 
       // Post another event, which triggers the long-polling client to return
       await helper.publish('test', { n: 2 }).expect(201);
-
-      const loser = await (winnerIndex === 0 ? res2Promise : res1Promise);
-      expect(loser.status).toBe(202);
+      await expect(loser.text()).resolves.toBe('');
 
       // Reading subscriber 2 should now return the second event only
       await helper.readEvents('tester-2').expect(200, {

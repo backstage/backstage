@@ -86,6 +86,11 @@ export function registerCommands(program: Command) {
       [],
     )
     .option(
+      '--dangerouslyAllowAdditionalExtensions [additionalExtensions...]',
+      'Markdown extensions to allow in mkdocs.yml beyond the built-in permitted set, without stripping them. Same as the techdocs.generator.mkdocs.dangerouslyAllowAdditionalExtensions backend config option, which techdocs-cli generate does not currently read from a config file.',
+      [],
+    )
+    .option(
       '--runAsDefaultUser',
       'Bypass setting the container user as the same user and group id as host for Linux and MacOS',
       false,

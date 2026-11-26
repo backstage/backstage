@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
+import { screen } from '@testing-library/react';
+import { renderTestApp } from '@backstage/frontend-test-utils';
+import {
+  AppRootElementBlueprint,
+  appTreeApiRef,
+  iconsApiRef,
+  useApi,
+} from '@backstage/frontend-plugin-api';
+import { IconBundleBlueprint } from '@backstage/plugin-app-react';
 import { convertLegacyAppOptions } from './convertLegacyAppOptions';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
@@ -70,5 +79,48 @@ describe('convertLegacyAppOptions', () => {
         "Extension{id=sign-in-page:app}",
       ]
     `);
+  });
+
+  it('should convert legacy icon components to elements with inherited sizing', async () => {
+    const Icon = ({ fontSize }: { fontSize?: string }) => (
+      <svg role="img" aria-label="Custom icon" style={{ fontSize }} />
+    );
+    const module = convertLegacyAppOptions({ icons: { custom: Icon } });
+    function Consumer() {
+      const icon = useApi(iconsApiRef).icon('custom');
+      const { tree } = useApi(appTreeApiRef).getTree();
+      const bundle = tree.nodes
+        .get('icon-bundle:app/app-options')
+        ?.instance?.getData(IconBundleBlueprint.dataRefs.icons);
+      expect(bundle?.custom).toBe(icon);
+      expect(icon).toMatchObject({
+        type: Icon,
+        props: { fontSize: 'inherit' },
+      });
+      return icon;
+    }
+
+    await renderTestApp({
+      features: [module],
+      extensions: [
+        AppRootElementBlueprint.make({
+          name: 'icon-consumer',
+          params: { element: <Consumer /> },
+        }),
+      ],
+    });
+    expect(await screen.findByRole('img', { name: 'Custom icon' })).toHaveStyle(
+      {
+        fontSize: 'inherit',
+      },
+    );
+  });
+
+  it('should reject legacy root router components', () => {
+    expect(() =>
+      convertLegacyAppOptions({
+        components: { Router: () => null } as any,
+      }),
+    ).toThrow('components.Router is not supported by convertLegacyAppOptions');
   });
 });

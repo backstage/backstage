@@ -97,6 +97,7 @@ Options:
   --check
   --config <string>
   --entrypoint <string>
+  --import <string>
   --inspect <string>
   --inspect-brk <string>
   --link <string>
@@ -149,6 +150,7 @@ Usage: @backstage/cli-module-build repo start [flags...] [packages...]
 
 Options:
   --config <string>
+  --import <string>
   --inspect <string>
   --inspect-brk <string>
   --link <string>

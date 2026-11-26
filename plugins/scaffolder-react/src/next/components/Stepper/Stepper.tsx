@@ -308,9 +308,11 @@ export const Stepper = (stepperProps: StepperProps) => {
           <ReviewStepComponent
             disableButtons={isValidating}
             formData={wizard.filteredFormState}
+            schemaFormState={wizard.stepsState}
             handleBack={wizard.handleBack}
             handleReset={() => {}}
             steps={visibleSteps}
+            allSteps={steps}
             handleCreate={wizard.handleCreate}
           />
         ) : (
@@ -319,6 +321,7 @@ export const Stepper = (stepperProps: StepperProps) => {
               formState={wizard.filteredFormState}
               schemaFormState={wizard.stepsState}
               schemas={visibleSteps}
+              maskSchemas={steps}
             />
             <div className={styles.footer}>
               <Button

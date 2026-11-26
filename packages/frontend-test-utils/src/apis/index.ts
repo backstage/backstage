@@ -27,8 +27,3 @@ export {
   type TestApiPair,
   type TestApiPairs,
 } from './TestApiProvider';
-
-/**
- * @public
- */
-export type { MockFetchApiOptions } from './FetchApi/MockFetchApi';

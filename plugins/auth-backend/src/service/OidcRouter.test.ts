@@ -27,6 +27,7 @@ import {
   mockCredentials,
 } from '@backstage/backend-test-utils';
 import request from 'supertest';
+import express from 'express';
 import crypto from 'node:crypto';
 import type { JsonObject } from '@backstage/types';
 import { OidcRouter } from './OidcRouter';
@@ -54,6 +55,11 @@ const mockFetchCimdMetadata =
     typeof CimdClient.fetchCimdMetadata
   >;
 
+const TEST_CODE_CHALLENGE = crypto
+  .createHash('sha256')
+  .update('test-code-verifier')
+  .digest('base64url');
+
 jest.setTimeout(60_000);
 
 describe('OidcRouter', () => {
@@ -65,11 +71,29 @@ describe('OidcRouter', () => {
     mockFetchCimdMetadata.mockReset();
   });
 
+  function createCimdClient(options: {
+    clientName: string;
+    redirectUris: string[];
+    responseTypes?: string[];
+    grantTypes?: string[];
+    scope?: string;
+  }) {
+    const client = {
+      clientId: `https://example.com/${crypto.randomUUID()}.json`,
+      responseTypes: ['code'],
+      grantTypes: ['authorization_code'],
+      ...options,
+    };
+    mockFetchCimdMetadata.mockResolvedValue(client);
+    return client;
+  }
+
   async function createRouter(
     databaseId: TestDatabaseId,
     authConfig: JsonObject = {
-      experimentalDynamicClientRegistration: {
+      clientIdMetadataDocuments: {
         enabled: true,
+        allowedClientIdPatterns: ['https://example.com/*'],
         allowedRedirectUriPatterns: ['*'],
       },
     },
@@ -77,10 +101,7 @@ describe('OidcRouter', () => {
     const knex = await databases.init(databaseId);
 
     await knex.migrate.latest({
-      directory: resolvePackagePath(
-        '@backstage/plugin-auth-backend',
-        'migrations',
-      ),
+      directory: resolvePackagePath(import.meta.url, 'migrations'),
     });
 
     const authDatabase = AuthDatabase.create({
@@ -153,10 +174,7 @@ describe('OidcRouter', () => {
     const knex = await databases.init(databaseId);
 
     await knex.migrate.latest({
-      directory: resolvePackagePath(
-        '@backstage/plugin-auth-backend',
-        'migrations',
-      ),
+      directory: resolvePackagePath(import.meta.url, 'migrations'),
     });
 
     const authDatabase = AuthDatabase.create({
@@ -188,8 +206,9 @@ describe('OidcRouter', () => {
     const mockConfig = mockServices.rootConfig({
       data: {
         auth: {
-          experimentalDynamicClientRegistration: {
+          clientIdMetadataDocuments: {
             enabled: true,
+            allowedClientIdPatterns: ['https://example.com/*'],
             allowedRedirectUriPatterns: ['*'],
           },
           experimentalRefreshToken: {
@@ -201,12 +220,13 @@ describe('OidcRouter', () => {
       },
     });
 
+    const mockLogger = mockServices.logger.mock();
     const mockLifecycle = mockServices.lifecycle.mock();
 
     const offlineAccess = await OfflineAccessService.create({
       config: mockConfig,
       database: { getClient: async () => knex },
-      logger: mockServices.logger.mock(),
+      logger: mockLogger,
       lifecycle: mockLifecycle,
       catalog: mockCatalog,
       auth: mockAuth,
@@ -219,7 +239,7 @@ describe('OidcRouter', () => {
       userInfo: userInfoDatabase,
       oidc: oidcDatabase,
       config: mockConfig,
-      logger: mockServices.logger.mock(),
+      logger: mockLogger,
       offlineAccess,
     });
 
@@ -228,7 +248,7 @@ describe('OidcRouter', () => {
       tokenIssuer: mockTokenIssuer,
       baseUrl: 'http://localhost:7000',
       appUrl: 'http://localhost:3000',
-      logger: mockServices.logger.mock(),
+      logger: mockLogger,
       userInfo: userInfoDatabase,
       oidc: oidcDatabase,
       httpAuth: mockHttpAuth,
@@ -246,37 +266,297 @@ describe('OidcRouter', () => {
         service: oidcService,
         tokenIssuer: mockTokenIssuer,
         catalog: mockCatalog,
+        offlineAccess,
+        logger: mockLogger,
       },
     };
   }
 
   describe.each(databases.eachSupportedId())('%p', databaseId => {
-    describe('deprecation warnings', () => {
-      it('should warn when DCR is enabled', async () => {
-        const {
-          router,
-          mocks: { logger },
-        } = await createRouter(databaseId);
-
-        router.getRouter();
-
-        expect(logger.warn).toHaveBeenCalledWith(
-          "DEPRECATION WARNING: The 'auth.experimentalDynamicClientRegistration' configuration is deprecated. Migrate to Client ID Metadata Documents (CIMD) using 'auth.clientIdMetadataDocuments'.",
-        );
+    it('should decode form-encoded Basic client credentials', async () => {
+      const clientId = 'integration +/=';
+      const codeVerifier = 'static-client-code-verifier-for-pkce';
+      const codeChallenge = crypto
+        .createHash('sha256')
+        .update(codeVerifier)
+        .digest('base64url');
+      const clientSecret = 'secret +/:=%';
+      const redirectUri = 'https://integration.example.com/callback';
+      const { router, mocks } = await createRouterWithOfflineAccess(
+        databaseId,
+        undefined,
+        {
+          staticClients: [
+            { clientId, clientSecret, redirectUris: [redirectUri] },
+          ],
+        },
+      );
+      mocks.tokenIssuer.issueToken.mockResolvedValue({ token: 'access-token' });
+      const session = await mocks.service.createAuthorizationSession({
+        clientId,
+        redirectUri,
+        responseType: 'code',
+        codeChallenge,
+        codeChallengeMethod: 'S256',
       });
+      const { redirectUrl } = await mocks.service.approveAuthorizationSession({
+        sessionId: session.id,
+        userEntityRef: MOCK_USER_ENTITY_REF,
+      });
+      const encode = (value: string) =>
+        new URLSearchParams({ value }).toString().slice('value='.length);
+      const basic = Buffer.from(
+        `${encode(clientId)}:${encode(clientSecret)}`,
+      ).toString('base64');
+      const app = express().use(router.getRouter());
+      const exchange = (verifier?: string) =>
+        request(app)
+          .post('/v1/token')
+          .set('Authorization', `Basic ${basic}`)
+          .send({
+            grant_type: 'authorization_code',
+            code: new URL(redirectUrl).searchParams.get('code'),
+            redirect_uri: redirectUri,
+            code_verifier: verifier,
+          });
+      const tokenRequest = {
+        grant_type: 'authorization_code',
+        code: new URL(redirectUrl).searchParams.get('code'),
+        redirect_uri: redirectUri,
+        code_verifier: codeVerifier,
+      };
+      for (const credentials of [
+        {},
+        { client_id: clientId },
+        { client_id: clientId, client_secret: 'wrong-secret' },
+      ]) {
+        const rejected = await request(app)
+          .post('/v1/token')
+          .send({ ...tokenRequest, ...credentials });
+        expect(rejected.status).toBe(401);
+        expect(rejected.body.error).toBe('invalid_client');
+      }
+      for (const secret of ['', 'wrong-secret']) {
+        const rejected = await request(app)
+          .post('/v1/token')
+          .set(
+            'Authorization',
+            `Basic ${Buffer.from(
+              `${encode(clientId)}:${encode(secret)}`,
+            ).toString('base64')}`,
+          )
+          .send(tokenRequest);
+        expect(rejected.status).toBe(401);
+        expect(rejected.body.error).toBe('invalid_client');
+        expect(rejected.header['www-authenticate']).toBe('Basic realm="auth"');
+      }
+      expect((await exchange()).status).toBe(400);
+      expect((await exchange('wrong-verifier')).status).toBe(400);
+      await mocks.oidc.updateAuthorizationSession({
+        id: session.id,
+        codeChallenge: codeVerifier,
+        codeChallengeMethod: 'plain',
+      });
+      expect((await exchange(codeVerifier)).status).toBe(400);
+      await mocks.oidc.updateAuthorizationSession({
+        id: session.id,
+        codeChallenge: '',
+        codeChallengeMethod: 'S256',
+      });
+      expect((await exchange(codeVerifier)).status).toBe(400);
+      expect(mocks.tokenIssuer.issueToken).not.toHaveBeenCalled();
+      await mocks.oidc.updateAuthorizationSession({
+        id: session.id,
+        codeChallenge,
+      });
+      const response = await exchange(codeVerifier);
+      expect(response.status).toBe(200);
+      expect(response.body.access_token).toBe('access-token');
+      expect(mocks.logger.warn).not.toHaveBeenCalledWith(
+        expect.stringContaining(
+          'Authorization-code exchange without client_id',
+        ),
+      );
+    });
 
-      it('should not warn when only CIMD is enabled', async () => {
-        const {
-          router,
-          mocks: { logger },
-        } = await createRouter(databaseId, {
-          experimentalClientIdMetadataDocuments: { enabled: true },
+    it.each(['static', 'CIMD'])(
+      'should accept an empty Basic secret for a public %s client',
+      async kind => {
+        const redirectUri = 'https://example.com/callback';
+        const cimdClient = createCimdClient({
+          clientName: 'Public Client',
+          redirectUris: [redirectUri],
         });
+        const clientId =
+          kind === 'CIMD' ? cimdClient.clientId : 'public-client';
+        const { router, mocks } = await createRouter(databaseId, {
+          staticClients: [
+            { clientId: 'public-client', redirectUris: [redirectUri] },
+          ],
+          clientIdMetadataDocuments: {
+            enabled: true,
+            allowedClientIdPatterns: ['https://example.com/*'],
+            allowedRedirectUriPatterns: ['*'],
+          },
+        });
+        expect(
+          mocks.service.getConfiguration()
+            .token_endpoint_auth_methods_supported,
+        ).toEqual(['none']);
+        mocks.tokenIssuer.issueToken.mockResolvedValue({
+          token: 'public-access-token',
+        });
+        const session = await mocks.service.createAuthorizationSession({
+          clientId,
+          redirectUri,
+          responseType: 'code',
+          codeChallenge: TEST_CODE_CHALLENGE,
+          codeChallengeMethod: 'S256',
+        });
+        const { redirectUrl } = await mocks.service.approveAuthorizationSession(
+          { sessionId: session.id, userEntityRef: MOCK_USER_ENTITY_REF },
+        );
+        const response = await request(express().use(router.getRouter()))
+          .post('/v1/token')
+          .set(
+            'Authorization',
+            `Basic ${Buffer.from(`${encodeURIComponent(clientId)}:`).toString(
+              'base64',
+            )}`,
+          )
+          .send({
+            grant_type: 'authorization_code',
+            code: new URL(redirectUrl).searchParams.get('code'),
+            redirect_uri: redirectUri,
+            code_verifier: 'test-code-verifier',
+          });
+        expect(response.status).toBe(200);
+        expect(response.body.access_token).toBe('public-access-token');
+        expect(mocks.logger.warn).not.toHaveBeenCalledWith(
+          expect.stringContaining(
+            'Authorization-code exchange without client_id',
+          ),
+        );
+      },
+    );
 
-        router.getRouter();
-
-        expect(logger.warn).not.toHaveBeenCalled();
+    it('should reject outstanding codes and refresh tokens after removing a configured client', async () => {
+      const clientId = 'removed-client';
+      const codeVerifier = 'static-client-code-verifier-for-pkce';
+      const codeChallenge = crypto
+        .createHash('sha256')
+        .update(codeVerifier)
+        .digest('base64url');
+      const clientSecret = 'client-secret';
+      const redirectUri = 'https://integration.example.com/callback';
+      const { router, mocks } = await createRouterWithOfflineAccess(
+        databaseId,
+        undefined,
+        {
+          staticClients: [
+            { clientId, clientSecret, redirectUris: [redirectUri] },
+          ],
+        },
+      );
+      mocks.tokenIssuer.issueToken.mockResolvedValue({ token: 'access-token' });
+      const codes: string[] = [];
+      for (let i = 0; i < 2; i++) {
+        const session = await mocks.service.createAuthorizationSession({
+          clientId,
+          redirectUri,
+          responseType: 'code',
+          codeChallenge,
+          codeChallengeMethod: 'S256',
+          scope: 'openid offline_access',
+        });
+        const { redirectUrl } = await mocks.service.approveAuthorizationSession(
+          {
+            sessionId: session.id,
+            userEntityRef: MOCK_USER_ENTITY_REF,
+          },
+        );
+        codes.push(new URL(redirectUrl).searchParams.get('code')!);
+      }
+      const app = express().use(router.getRouter());
+      const issued = await request(app).post('/v1/token').send({
+        grant_type: 'authorization_code',
+        code: codes[0],
+        redirect_uri: redirectUri,
+        code_verifier: codeVerifier,
+        client_id: clientId,
+        client_secret: clientSecret,
       });
+      expect(issued.status).toBe(200);
+      expect(issued.body.refresh_token).toEqual(expect.any(String));
+      const refreshRequest = {
+        grant_type: 'refresh_token',
+        refresh_token: issued.body.refresh_token,
+      };
+      expect(
+        (await request(app).post('/v1/token').send(refreshRequest)).status,
+      ).toBe(401);
+      expect(
+        (
+          await request(app)
+            .post('/v1/token')
+            .send({ ...refreshRequest, client_id: clientId })
+        ).status,
+      ).toBe(401);
+      const authenticatedRefresh = await request(app)
+        .post('/v1/token')
+        .send({
+          ...refreshRequest,
+          client_id: clientId,
+          client_secret: clientSecret,
+        });
+      expect(authenticatedRefresh.status).toBe(200);
+      refreshRequest.refresh_token = authenticatedRefresh.body.refresh_token;
+      const restarted = OidcRouter.create({
+        auth: mocks.auth,
+        httpAuth: mocks.httpAuth,
+        oidc: mocks.oidc,
+        userInfo: mocks.userInfo,
+        tokenIssuer: mocks.tokenIssuer,
+        offlineAccess: mocks.offlineAccess,
+        logger: mockServices.logger.mock(),
+        baseUrl: 'http://localhost:7000',
+        appUrl: 'http://localhost:3000',
+        config: mockServices.rootConfig({
+          data: {
+            auth: {
+              staticClients: [
+                {
+                  clientId: 'remaining-client',
+                  clientSecret: 'another-secret',
+                  redirectUris: [redirectUri],
+                },
+              ],
+            },
+          },
+        }),
+      });
+      const restartedApp = express().use(restarted.getRouter());
+      mocks.tokenIssuer.issueToken.mockClear();
+      const refresh = await request(restartedApp)
+        .post('/v1/token')
+        .send(refreshRequest);
+      expect(refresh.status).toBe(400);
+      expect(refresh.body.error).toBe('invalid_grant');
+      expect(
+        (
+          await request(restartedApp)
+            .post('/v1/token')
+            .send({ ...refreshRequest, client_id: clientId })
+        ).status,
+      ).toBe(400);
+      const code = await request(restartedApp).post('/v1/token').send({
+        grant_type: 'authorization_code',
+        code: codes[1],
+        redirect_uri: redirectUri,
+      });
+      expect(code.status).toBe(400);
+      expect(code.body.error).toBe('invalid_grant');
+      expect(mocks.tokenIssuer.issueToken).not.toHaveBeenCalled();
     });
 
     describe('/v1/userinfo', () => {
@@ -390,105 +670,10 @@ describe('OidcRouter', () => {
     });
 
     describe('auth flow', () => {
-      it('should register a client', async () => {
+      it('should create an authorization session via authorization endpoint', async () => {
         const { router } = await createRouter(databaseId);
 
-        const { server } = await startTestBackend({
-          features: [
-            createBackendPlugin({
-              pluginId: 'auth',
-              register(reg) {
-                reg.registerInit({
-                  deps: { httpRouter: coreServices.httpRouter },
-                  async init({ httpRouter }) {
-                    httpRouter.use(router.getRouter());
-                    httpRouter.addAuthPolicy({
-                      path: '/',
-                      allow: 'unauthenticated',
-                    });
-                  },
-                });
-              },
-            }),
-          ],
-        });
-
-        const response = await request(server)
-          .post('/api/auth/v1/register')
-          .send({
-            client_name: 'Test Client',
-            redirect_uris: ['https://example.com/callback'],
-            response_types: ['code'],
-            grant_types: ['authorization_code'],
-            scope: 'openid',
-          })
-          .expect(201);
-
-        expect(response.body).toEqual({
-          client_id: expect.any(String),
-          client_secret: expect.any(String),
-          redirect_uris: ['https://example.com/callback'],
-        });
-      });
-
-      it('should reject redirect_uri allowlist matches across URL components', async () => {
-        const { router } = await createRouter(databaseId, {
-          experimentalDynamicClientRegistration: {
-            enabled: true,
-            allowedRedirectUriPatterns: ['https://*.spotify.com/*'],
-          },
-        });
-
-        const { server } = await startTestBackend({
-          features: [
-            createBackendPlugin({
-              pluginId: 'auth',
-              register(reg) {
-                reg.registerInit({
-                  deps: { httpRouter: coreServices.httpRouter },
-                  async init({ httpRouter }) {
-                    httpRouter.use(router.getRouter());
-                    httpRouter.addAuthPolicy({
-                      path: '/',
-                      allow: 'unauthenticated',
-                    });
-                  },
-                });
-              },
-            }),
-          ],
-        });
-
-        await request(server)
-          .post('/api/auth/v1/register')
-          .send({
-            client_name: 'Test Client',
-            redirect_uris: ['https://app.spotify.com/oauth/cb'],
-            response_types: ['code'],
-            grant_types: ['authorization_code'],
-            scope: 'openid',
-          })
-          .expect(201);
-
-        await request(server)
-          .post('/api/auth/v1/register')
-          .send({
-            client_name: 'Other Client',
-            redirect_uris: ['https://example.org/.spotify.com/cb'],
-            response_types: ['code'],
-            grant_types: ['authorization_code'],
-            scope: 'openid',
-          })
-          .expect(400);
-      });
-
-      it('should create an authorization session via authorization endpoint', async () => {
-        const {
-          mocks: { service },
-          router,
-        } = await createRouter(databaseId);
-
-        const client = await service.registerClient({
+        const client = createCimdClient({
           clientName: 'Test Client',
           redirectUris: ['https://example.com/callback'],
           responseTypes: ['code'],
@@ -522,6 +707,8 @@ describe('OidcRouter', () => {
             client_id: client.clientId,
             redirect_uri: 'https://example.com/callback',
             response_type: 'code',
+            code_challenge: TEST_CODE_CHALLENGE,
+            code_challenge_method: 'S256',
             scope: 'openid',
             state: 'test-state',
           })
@@ -538,7 +725,7 @@ describe('OidcRouter', () => {
           router,
         } = await createRouter(databaseId);
 
-        const client = await service.registerClient({
+        const client = createCimdClient({
           clientName: 'Test Client',
           redirectUris: ['https://example.com/callback'],
           responseTypes: ['code'],
@@ -547,6 +734,8 @@ describe('OidcRouter', () => {
         });
 
         const authSession = await service.createAuthorizationSession({
+          codeChallenge: TEST_CODE_CHALLENGE,
+          codeChallengeMethod: 'S256',
           clientId: client.clientId,
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
@@ -593,7 +782,7 @@ describe('OidcRouter', () => {
           router,
         } = await createRouter(databaseId);
 
-        const client = await service.registerClient({
+        const client = createCimdClient({
           clientName: 'Test Client',
           redirectUris: ['https://example.com/callback'],
           responseTypes: ['code'],
@@ -602,6 +791,8 @@ describe('OidcRouter', () => {
         });
 
         const authSession = await service.createAuthorizationSession({
+          codeChallenge: TEST_CODE_CHALLENGE,
+          codeChallengeMethod: 'S256',
           clientId: client.clientId,
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
@@ -653,7 +844,7 @@ describe('OidcRouter', () => {
           router,
         } = await createRouter(databaseId);
 
-        const client = await service.registerClient({
+        const client = createCimdClient({
           clientName: 'Test Client',
           redirectUris: ['https://example.com/callback'],
           responseTypes: ['code'],
@@ -662,6 +853,8 @@ describe('OidcRouter', () => {
         });
 
         const authSession = await service.createAuthorizationSession({
+          codeChallenge: TEST_CODE_CHALLENGE,
+          codeChallengeMethod: 'S256',
           clientId: client.clientId,
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
@@ -713,7 +906,7 @@ describe('OidcRouter', () => {
     describe('token exchange', () => {
       it('should exchange authorization code for tokens', async () => {
         const {
-          mocks: { auth, service, tokenIssuer, httpAuth },
+          mocks: { auth, service, tokenIssuer, httpAuth, logger },
           router,
         } = await createRouter(databaseId);
 
@@ -727,7 +920,7 @@ describe('OidcRouter', () => {
           token: 'mock-access-token',
         });
 
-        const client = await service.registerClient({
+        const client = createCimdClient({
           clientName: 'Test Client',
           redirectUris: ['https://example.com/callback'],
           responseTypes: ['code'],
@@ -736,6 +929,8 @@ describe('OidcRouter', () => {
         });
 
         const authSession = await service.createAuthorizationSession({
+          codeChallenge: TEST_CODE_CHALLENGE,
+          codeChallengeMethod: 'S256',
           clientId: client.clientId,
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
@@ -773,13 +968,42 @@ describe('OidcRouter', () => {
 
         expect(authorizationCode).toBeDefined();
 
+        const tokenRequest = {
+          grant_type: 'authorization_code',
+          code: authorizationCode,
+          redirect_uri: 'https://example.com/callback',
+          code_verifier: 'test-code-verifier',
+          client_id: client.clientId,
+        };
+        for (const clientId of [
+          'https://example.com/other-client.json',
+          'legacy-client-id',
+        ]) {
+          const response = await request(server)
+            .post('/api/auth/v1/token')
+            .send({ ...tokenRequest, client_id: clientId })
+            .expect(400);
+          expect(response.body).toEqual({
+            error: 'invalid_grant',
+            error_description: 'Client ID mismatch',
+          });
+        }
+        for (const invalidParams of [
+          { code_verifier: undefined },
+          { code_verifier: 'wrong-verifier' },
+          { redirect_uri: 'https://example.com/other-callback' },
+        ]) {
+          const response = await request(server)
+            .post('/api/auth/v1/token')
+            .send({ ...tokenRequest, ...invalidParams })
+            .expect(400);
+          expect(response.body.error).toBe('invalid_grant');
+        }
+        expect(tokenIssuer.issueToken).not.toHaveBeenCalled();
+
         const tokenResponse = await request(server)
           .post('/api/auth/v1/token')
-          .send({
-            grant_type: 'authorization_code',
-            code: authorizationCode,
-            redirect_uri: 'https://example.com/callback',
-          })
+          .send(tokenRequest)
           .expect(200);
 
         expect(tokenResponse.body).toEqual({
@@ -795,6 +1019,46 @@ describe('OidcRouter', () => {
             sub: MOCK_USER_ENTITY_REF,
           },
         });
+        const replayResponse = await request(server)
+          .post('/api/auth/v1/token')
+          .send(tokenRequest)
+          .expect(400);
+        expect(replayResponse.body.error).toBe('invalid_grant');
+        expect(tokenIssuer.issueToken).toHaveBeenCalledTimes(1);
+        expect(logger.warn).not.toHaveBeenCalled();
+
+        for (const clientId of [undefined, '']) {
+          const legacySession = await service.createAuthorizationSession({
+            clientId: client.clientId,
+            redirectUri: tokenRequest.redirect_uri,
+            responseType: 'code',
+            codeChallenge: crypto
+              .createHash('sha256')
+              .update(tokenRequest.code_verifier)
+              .digest('base64url'),
+            codeChallengeMethod: 'S256',
+          });
+          const { redirectUrl: legacyRedirectUrl } =
+            await service.approveAuthorizationSession({
+              sessionId: legacySession.id,
+              userEntityRef: MOCK_USER_ENTITY_REF,
+            });
+          const legacyTokenResponse = await request(server)
+            .post('/api/auth/v1/token')
+            .send({
+              ...tokenRequest,
+              client_id: clientId,
+              code: new URL(legacyRedirectUrl).searchParams.get('code'),
+            })
+            .expect(200);
+          expect(legacyTokenResponse.body.access_token).toBe(
+            'mock-access-token',
+          );
+        }
+        expect(logger.warn).toHaveBeenCalledTimes(2);
+        expect(logger.warn).toHaveBeenCalledWith(
+          'Authorization-code exchange without client_id is deprecated and will be rejected in a future release. Update the client to include client_id.',
+        );
       });
 
       it('should exchange authorization code for tokens with PKCE', async () => {
@@ -813,7 +1077,7 @@ describe('OidcRouter', () => {
 
         auth.isPrincipal.mockReturnValueOnce(true);
 
-        const client = await service.registerClient({
+        const client = createCimdClient({
           clientName: 'Test Client',
           redirectUris: ['https://example.com/callback'],
           responseTypes: ['code'],
@@ -823,7 +1087,10 @@ describe('OidcRouter', () => {
 
         const codeVerifier =
           'test-code-verifier-123456789012345678901234567890123456789012345';
-        const codeChallenge = codeVerifier;
+        const codeChallenge = crypto
+          .createHash('sha256')
+          .update(codeVerifier)
+          .digest('base64url');
 
         const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
@@ -832,7 +1099,7 @@ describe('OidcRouter', () => {
           scope: 'openid',
           state: 'test-state',
           codeChallenge,
-          codeChallengeMethod: 'plain',
+          codeChallengeMethod: 'S256',
         });
 
         const { server } = await startTestBackend({
@@ -869,6 +1136,7 @@ describe('OidcRouter', () => {
           .post('/api/auth/v1/token')
           .send({
             grant_type: 'authorization_code',
+            client_id: client.clientId,
             code: authorizationCode,
             redirect_uri: 'https://example.com/callback',
             code_verifier: codeVerifier,
@@ -917,6 +1185,8 @@ describe('OidcRouter', () => {
           .post('/api/auth/v1/token')
           .send({
             grant_type: 'authorization_code',
+            client_id: 'https://example.com/client.json',
+            code_verifier: 'test-code-verifier',
             code: 'invalid-code',
             redirect_uri: 'https://example.com/callback',
           })
@@ -944,7 +1214,7 @@ describe('OidcRouter', () => {
 
         auth.isPrincipal.mockReturnValueOnce(true);
 
-        const client = await service.registerClient({
+        const client = createCimdClient({
           clientName: 'Test Client',
           redirectUris: ['https://example.com/callback'],
           responseTypes: ['code'],
@@ -1003,6 +1273,7 @@ describe('OidcRouter', () => {
           .post('/api/auth/v1/token')
           .send({
             grant_type: 'authorization_code',
+            client_id: client.clientId,
             code: authorizationCode,
             redirect_uri: 'https://example.com/callback',
             code_verifier: codeVerifier,
@@ -1047,7 +1318,7 @@ describe('OidcRouter', () => {
       );
       auth.isPrincipal.mockReturnValueOnce(true);
 
-      const client = await service.registerClient({
+      const client = createCimdClient({
         clientName: 'Test Client',
         redirectUris: ['https://example.com/callback'],
         responseTypes: ['code'],
@@ -1056,6 +1327,8 @@ describe('OidcRouter', () => {
       });
 
       const authSession = await service.createAuthorizationSession({
+        codeChallenge: TEST_CODE_CHALLENGE,
+        codeChallengeMethod: 'S256',
         clientId: client.clientId,
         redirectUri: 'https://example.com/callback',
         responseType: 'code',
@@ -1094,6 +1367,8 @@ describe('OidcRouter', () => {
         .post('/api/auth/v1/token')
         .send({
           grant_type: 'authorization_code',
+          client_id: client.clientId,
+          code_verifier: 'test-code-verifier',
           code: authorizationCode,
           redirect_uri: 'https://example.com/callback',
         })
@@ -1145,50 +1420,18 @@ describe('OidcRouter', () => {
         );
       });
 
-      it('should refresh a token with valid client credentials', async () => {
-        const { server, tokenResponse, client, mocks } =
-          await doAuthFlowWithOfflineAccess(databaseId);
-
-        mocks.tokenIssuer.issueToken.mockResolvedValue({
-          token: 'mock-refreshed-token',
-        });
-
-        const basicAuth = Buffer.from(
-          `${client.clientId}:${client.clientSecret}`,
-        ).toString('base64');
-
-        const refreshResponse = await request(server)
-          .post('/api/auth/v1/token')
-          .set('Authorization', `Basic ${basicAuth}`)
-          .send({
-            grant_type: 'refresh_token',
-            refresh_token: tokenResponse.body.refresh_token,
-          })
-          .expect(200);
-
-        expect(refreshResponse.body).toEqual({
-          access_token: 'mock-refreshed-token',
-          token_type: 'Bearer',
-          expires_in: 3600,
-          refresh_token: expect.any(String),
-        });
-      });
-
-      it('should reject refresh with invalid client credentials', async () => {
+      it('should reject refresh for a different public client', async () => {
         const { server, tokenResponse } = await doAuthFlowWithOfflineAccess(
           databaseId,
         );
-
-        const badAuth = Buffer.from('bad-client:bad-secret').toString('base64');
-
         await request(server)
           .post('/api/auth/v1/token')
-          .set('Authorization', `Basic ${badAuth}`)
           .send({
             grant_type: 'refresh_token',
+            client_id: 'https://example.com/other-client.json',
             refresh_token: tokenResponse.body.refresh_token,
           })
-          .expect(401);
+          .expect(400);
       });
 
       it('should reject refresh with an invalid refresh token', async () => {
@@ -1377,12 +1620,10 @@ describe('OidcRouter', () => {
           scope: 'openid offline_access',
         });
 
-        // Only CIMD enabled, NOT DCR
         const result = await createRouterWithOfflineAccess(
           databaseId_,
           undefined,
           {
-            experimentalDynamicClientRegistration: { enabled: false },
             clientIdMetadataDocuments: {
               enabled: true,
               allowedClientIdPatterns: ['https://example.com/*'],
@@ -1451,6 +1692,7 @@ describe('OidcRouter', () => {
           .post('/api/auth/v1/token')
           .send({
             grant_type: 'authorization_code',
+            client_id: cimdClientId,
             code: authorizationCode,
             redirect_uri: 'http://localhost:8080/callback',
             code_verifier: codeVerifier,
@@ -1460,7 +1702,7 @@ describe('OidcRouter', () => {
         return { server, tokenResponse, cimdClientId, ...result };
       }
 
-      it('should revoke a refresh token for a DCR client with valid client credentials', async () => {
+      it('should revoke a refresh token for a public client', async () => {
         const { server, tokenResponse, client } =
           await doAuthFlowWithOfflineAccess(databaseId);
 
@@ -1469,7 +1711,6 @@ describe('OidcRouter', () => {
           .send({
             token: tokenResponse.body.refresh_token,
             client_id: client.clientId,
-            client_secret: client.clientSecret,
           })
           .expect(200);
 
@@ -1494,48 +1735,6 @@ describe('OidcRouter', () => {
           .send({
             token: 'not-a-valid-token',
             client_id: client.clientId,
-            client_secret: client.clientSecret,
-          })
-          .expect(200);
-      });
-
-      it('should reject revocation with missing or invalid DCR client credentials', async () => {
-        const { server, tokenResponse, client, mocks } =
-          await doAuthFlowWithOfflineAccess(databaseId);
-
-        // No client identification at all
-        await request(server)
-          .post('/api/auth/v1/revoke')
-          .send({ token: tokenResponse.body.refresh_token })
-          .expect(401);
-
-        // DCR clients are confidential and must provide their secret
-        await request(server)
-          .post('/api/auth/v1/revoke')
-          .send({
-            token: tokenResponse.body.refresh_token,
-            client_id: client.clientId,
-          })
-          .expect(401);
-
-        await request(server)
-          .post('/api/auth/v1/revoke')
-          .send({
-            token: tokenResponse.body.refresh_token,
-            client_id: client.clientId,
-            client_secret: 'wrong-secret',
-          })
-          .expect(401);
-
-        // The refresh token was not revoked by the failed attempts
-        mocks.tokenIssuer.issueToken.mockResolvedValue({
-          token: 'mock-refreshed-token',
-        });
-        await request(server)
-          .post('/api/auth/v1/token')
-          .send({
-            grant_type: 'refresh_token',
-            refresh_token: tokenResponse.body.refresh_token,
           })
           .expect(200);
       });
@@ -1601,7 +1800,9 @@ describe('OidcRouter', () => {
 
     describe('CIMD metadata endpoint', () => {
       it('should return 404 when CIMD is not enabled', async () => {
-        const { router } = await createRouter(databaseId);
+        const { router } = await createRouter(databaseId, {
+          experimentalDynamicClientRegistration: { enabled: true },
+        });
 
         const { server } = await startTestBackend({
           features: [
@@ -1631,16 +1832,19 @@ describe('OidcRouter', () => {
           error: 'not_found',
           error_description: 'Client ID metadata documents not enabled',
         });
+        await request(server)
+          .post('/api/auth/v1/register')
+          .send({})
+          .expect(404);
+        await request(server).get('/api/auth/v1/authorize').expect(404);
+        await request(server).post('/api/auth/v1/token').send({}).expect(404);
       });
 
       it('should return CIMD document when enabled', async () => {
         const knex = await databases.init(databaseId);
 
         await knex.migrate.latest({
-          directory: resolvePackagePath(
-            '@backstage/plugin-auth-backend',
-            'migrations',
-          ),
+          directory: resolvePackagePath(import.meta.url, 'migrations'),
         });
 
         const authDatabase = AuthDatabase.create({
@@ -1720,7 +1924,7 @@ describe('OidcRouter', () => {
     });
 
     describe('CIMD authorization', () => {
-      it('should enable authorization routes when only CIMD is enabled (not DCR)', async () => {
+      it('should enable authorization routes when CIMD is enabled', async () => {
         const cimdClientId = 'https://example.com/oauth-client';
         const cimdMetadata: CimdClientInfo = {
           clientId: cimdClientId,
@@ -1737,10 +1941,7 @@ describe('OidcRouter', () => {
         const knex = await databases.init(databaseId);
 
         await knex.migrate.latest({
-          directory: resolvePackagePath(
-            '@backstage/plugin-auth-backend',
-            'migrations',
-          ),
+          directory: resolvePackagePath(import.meta.url, 'migrations'),
         });
 
         const authDatabase = AuthDatabase.create({
@@ -1762,7 +1963,6 @@ describe('OidcRouter', () => {
 
         const mockAuth = mockServices.auth.mock();
         const mockHttpAuth = mockServices.httpAuth.mock();
-        // Only CIMD enabled, NOT DCR
         const mockConfig = mockServices.rootConfig({
           data: {
             auth: {
@@ -1771,7 +1971,6 @@ describe('OidcRouter', () => {
                 allowedClientIdPatterns: ['*'],
                 allowedRedirectUriPatterns: ['*'],
               },
-              // DCR is NOT enabled
             },
           },
         });
@@ -1839,7 +2038,7 @@ describe('OidcRouter', () => {
         expect(location.origin).toBe('http://localhost:3000');
         expect(location.pathname).toMatch(/^\/oauth2\/authorize\/[a-f0-9-]+$/);
 
-        // /v1/register should NOT be available (DCR disabled)
+        // Dynamic client registration is no longer supported
         await request(server)
           .post('/api/auth/v1/register')
           .send({

@@ -1,5 +1,77 @@
 # @backstage/plugin-catalog
 
+## 2.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.17-next.0
+  - @backstage/core-compat-api@0.6.1-next.0
+  - @backstage/integration-react@1.3.1-next.0
+  - @backstage/plugin-catalog-react@4.0.1-next.0
+  - @backstage/plugin-scaffolder-common@2.4.1-next.0
+  - @backstage/plugin-search-react@1.12.1-next.0
+  - @backstage/plugin-techdocs-react@1.5.1-next.0
+
+## 2.1.0
+
+### Minor Changes
+
+- d4f458e: Added support for translated entity content titles through `EntityContentBlueprint`.
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+
+### Patch Changes
+
+- 0da6298: Entity page tabs now generate app-absolute links from the entity route, so they work correctly when navigation comes from outside the page router.
+- 57111dc: Migrated the `EntityNotFound` component from Material UI to Backstage UI.
+- 9d0a31b: Removed an unused `use-sync-external-store` dependency, which is no longer needed now that React 18 is the minimum supported version.
+- 118d84a: Updated catalog tabs to render icon elements through the current frontend icon API.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@1.0.0
+  - @backstage/core-plugin-api@1.13.0
+  - @backstage/catalog-client@1.16.4
+  - @backstage/core-components@0.18.16
+  - @backstage/errors@1.4.0
+  - @backstage/plugin-catalog-react@4.0.0
+  - @backstage/core-compat-api@0.6.0
+  - @backstage/ui@0.20.0
+  - @backstage/integration-react@1.3.0
+  - @backstage/plugin-permission-react@0.5.7
+  - @backstage/plugin-search-react@1.12.0
+  - @backstage/plugin-techdocs-react@1.5.0
+  - @backstage/version-bridge@1.1.0
+  - @backstage/plugin-scaffolder-common@2.4.0
+  - @backstage/catalog-model@1.10.3
+  - @backstage/filter-predicates@0.2.1
+  - @backstage/plugin-catalog-common@1.2.2
+  - @backstage/plugin-search-common@1.2.27
+  - @backstage/plugin-techdocs-common@0.1.3
+
+## 2.0.11-next.2
+
+### Patch Changes
+
+- 0da6298: Entity page tabs now generate app-absolute links from the entity route, so they work correctly when navigation comes from outside the page router.
+- Updated dependencies
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/core-components@0.18.16-next.1
+  - @backstage/ui@0.20.0-next.0
+  - @backstage/core-compat-api@0.6.0-next.2
+  - @backstage/frontend-plugin-api@0.19.0-next.2
+  - @backstage/catalog-client@1.16.4-next.1
+  - @backstage/catalog-model@1.10.3-next.0
+  - @backstage/core-plugin-api@1.12.12-next.2
+  - @backstage/filter-predicates@0.2.1-next.0
+  - @backstage/plugin-catalog-react@4.0.0-next.2
+  - @backstage/plugin-scaffolder-common@2.4.0-next.1
+  - @backstage/integration-react@1.2.24-next.1
+  - @backstage/plugin-catalog-common@1.2.2-next.0
+  - @backstage/plugin-techdocs-react@1.4.1-next.2
+  - @backstage/plugin-permission-react@0.5.7-next.1
+  - @backstage/plugin-search-common@1.2.27-next.0
+  - @backstage/plugin-techdocs-common@0.1.3-next.0
+  - @backstage/plugin-search-react@1.11.10-next.2
+
 ## 2.0.11-next.1
 
 ### Patch Changes

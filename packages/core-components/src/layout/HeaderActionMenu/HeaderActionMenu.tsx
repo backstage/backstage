@@ -28,6 +28,8 @@ import { useTheme } from '@material-ui/core/styles';
 
 /**
  * @public
+ * @deprecated Use the replacement described in {@link HeaderActionMenu} instead.
+ * BUI components use their own props and styling contracts.
  */
 export type HeaderActionMenuItem = {
   label?: ListItemTextProps['primary'];
@@ -65,6 +67,8 @@ const ActionItem = ({
 
 /**
  * @public
+ * @deprecated Use the replacement described in {@link HeaderActionMenu} instead.
+ * BUI components use their own props and styling contracts.
  */
 export type HeaderActionMenuProps = {
   actionItems: HeaderActionMenuItem[];
@@ -72,6 +76,9 @@ export type HeaderActionMenuProps = {
 
 /**
  * @public
+ * @deprecated Compose `MenuTrigger`, `ButtonIcon`, `Menu`, and `MenuItem`
+ * from `@backstage/ui` instead. Give the trigger an accessible label and
+ * adapt item callbacks to `onAction` and disabled state to `isDisabled`.
  */
 export function HeaderActionMenu(props: HeaderActionMenuProps) {
   const {

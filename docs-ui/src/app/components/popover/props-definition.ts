@@ -18,6 +18,24 @@ export const dialogTriggerPropDefs: Record<string, PropDef> = {
   ...childrenPropDefs,
 };
 
+export const previewTriggerPropDefs: Record<string, PropDef> = {
+  delay: {
+    type: 'number',
+    default: '600',
+    description: 'The delay in milliseconds before the preview opens.',
+  },
+  closeDelay: {
+    type: 'number',
+    default: '200',
+    description: 'The delay in milliseconds before the preview closes.',
+  },
+  isDisabled: {
+    type: 'boolean',
+    description: 'Prevents the preview from opening.',
+  },
+  ...dialogTriggerPropDefs,
+};
+
 export const popoverPropDefs: Record<string, PropDef> = {
   placement: {
     type: 'enum',

@@ -20,7 +20,7 @@ import { Header } from './Header';
 import { HeaderMetadataUsers } from './HeaderMetadataUsers';
 import { HeaderMetadataStatus } from './HeaderMetadataStatus';
 import type { HeaderNavTabItem } from './types';
-import { MemoryRouter } from 'react-router-dom';
+import { TestRouter } from '../../testUtils/TestRouter';
 import { BUIProvider } from '../../provider';
 import { Button, ButtonIcon, MenuTrigger, Menu, MenuItem } from '../../';
 import { RiMore2Line } from '@remixicon/react';
@@ -83,11 +83,11 @@ const menuItems = [
 ];
 
 const withRouter = (Story: StoryFn) => (
-  <MemoryRouter initialEntries={['/overview']}>
+  <TestRouter initialEntries={['/overview']}>
     <BUIProvider>
       <Story />
     </BUIProvider>
-  </MemoryRouter>
+  </TestRouter>
 );
 
 export const Default = meta.story({
@@ -373,16 +373,55 @@ const groupedTabs: HeaderNavTabItem[] = [
 export const WithGroupedTabs = meta.story({
   decorators: [
     (Story: StoryFn) => (
-      <MemoryRouter initialEntries={['/docs']}>
+      <TestRouter initialEntries={['/docs']}>
         <BUIProvider>
           <Story />
         </BUIProvider>
-      </MemoryRouter>
+      </TestRouter>
     ),
   ],
   args: {
     ...Default.input.args,
     tabs: groupedTabs,
+  },
+});
+
+export const WithManyTabs = meta.story({
+  decorators: [
+    withRouter,
+    (Story: StoryFn) => (
+      <div
+        style={{
+          width: 480,
+          maxWidth: '100%',
+          resize: 'horizontal',
+          overflow: 'hidden',
+        }}
+      >
+        <Story />
+      </div>
+    ),
+  ],
+  args: {
+    ...Default.input.args,
+    tabs: [
+      ...tabs,
+      ...[
+        'Dependencies',
+        'Deployments',
+        'Pull Requests',
+        'Documentation',
+        'API Definition',
+        'Cost Insights',
+        'Security Scans',
+        'Feature Flags',
+        'On-call Schedule',
+      ].map(label => ({
+        id: label.toLowerCase().replace(/ /g, '-'),
+        label,
+        href: `/${label.toLowerCase().replace(/ /g, '-')}`,
+      })),
+    ],
   },
 });
 

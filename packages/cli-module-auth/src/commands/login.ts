@@ -123,6 +123,7 @@ export default async ({ args, info }: CliCommandContext) => {
 
     const token = await exchangeAuthorizationCode({
       authBaseUrl,
+      clientId,
       code,
       redirectUri: callback.url,
       verifier,
@@ -289,11 +290,12 @@ async function waitForAuthorizationCode(
 
 async function exchangeAuthorizationCode(options: {
   authBaseUrl: string;
+  clientId: string;
   code: string;
   redirectUri: string;
   verifier: string;
 }) {
-  const { authBaseUrl, code, redirectUri, verifier } = options;
+  const { authBaseUrl, clientId, code, redirectUri, verifier } = options;
   return await httpJson<{
     access_token: string;
     token_type: string;
@@ -304,6 +306,7 @@ async function exchangeAuthorizationCode(options: {
     method: 'POST',
     body: {
       grant_type: 'authorization_code',
+      client_id: clientId,
       code,
       redirect_uri: redirectUri,
       code_verifier: verifier,

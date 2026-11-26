@@ -1,14 +1,19 @@
-# Migrating an App to the New Frontend System
+---
+name: app-frontend-system-migration
+description: Migrate a Backstage app from the old frontend system to the new one. Use this skill when converting an app to use the new extension-based frontend system, including the hybrid migration phase and the full migration of routes, sidebar, plugins, APIs, themes, and other app-level concerns.
+---
 
-This guide migrates a Backstage app package, usually `packages/app`, from the old frontend system (`@backstage/app-defaults`) to the new extension-based frontend system (`@backstage/frontend-defaults`).
+# App Frontend System Migration Skill
 
-The migration follows a two-phase approach: first get the app running in hybrid mode with compatibility helpers, then gradually remove legacy code until the app is fully on the new system. If the repository also has plugins to migrate, migrate them between the two phases, as described in `SKILL.md`, using `references/plugin.md`.
+This skill helps migrate a Backstage app package (`packages/app`) from the old frontend system (`@backstage/app-defaults`) to the new extension-based frontend system (`@backstage/frontend-defaults`).
+
+The migration follows a two-phase approach: first get the app running in hybrid mode with compatibility helpers, then gradually remove legacy code until the app is fully on the new system.
 
 ## Key Concepts
 
 - **Old system:** `createApp` from `@backstage/app-defaults`, plugins installed via `<Route>` elements in `FlatRoutes`, manual app shell with `AppRouter` + `Root`
 - **New system:** `createApp` from `@backstage/frontend-defaults`, plugins installed as `features`, extensions wired into an extension tree, no manual app shell
-- **Feature discovery:** The new system can automatically discover and install plugins from your app's dependencies — no manual imports needed. This is the default for new apps, and should be turned on once the app runs in hybrid mode.
+- **Feature discovery:** The new system can automatically discover and install plugins from your app's dependencies — no manual imports needed. This is the default for new apps and should be enabled early in migration.
 - **Hybrid mode:** The new `createApp` with `convertLegacyAppRoot` and `convertLegacyAppOptions` from `@backstage/core-compat-api` to bridge old code
 
 ## Feature Discovery
@@ -24,9 +29,7 @@ app:
   packages: all
 ```
 
-This is the **recommended default** for all apps using the new frontend system. Turn it on at the end of Phase 1, once the app runs in hybrid mode, and not in the same change as the switch to the new `createApp`.
-
-Before turning it on, list the app's dependencies that already export a new-system plugin. Each one gets installed as soon as discovery is on: its pages and tabs appear, and it takes ownership of its APIs, so app-level overrides of those APIs stop applying unless they move to a module for that plugin (see Step 2). Use `exclude` below for plugins that aren't ready, such as one whose pages clash with an existing route.
+This is the **recommended default** for all apps using the new frontend system. Enable it as early as Phase 1.
 
 ### Filtering Discovered Packages
 
@@ -69,7 +72,7 @@ Plugins that are both manually imported in `features` and auto-discovered are de
 Omit `app.packages` from config entirely (not `app.packages: none` — just leave it out) to disable discovery. You might do this if:
 
 - You need full control over which plugins are loaded
-- You're still switching to the new `createApp` in Phase 1, and want to introduce features one at a time
+- You're in early Phase 1 and want to introduce features one at a time
 - You're running in an environment where the `@backstage/cli` webpack integration isn't available
 
 Feature discovery requires that the app is built using `@backstage/cli`, which is the default for all Backstage apps.
@@ -90,7 +93,7 @@ import { createApp } from '@backstage/frontend-defaults';
 
 ### Step 2: Convert `createApp` options
 
-Use `convertLegacyAppOptions` to wrap legacy options (`apis`, `icons`, `featureFlags`, `components`, `themes`) as a feature:
+Use `convertLegacyAppOptions` to wrap legacy options (`apis`, `icons`, `featureFlags`, `components`, `themes`) as a feature.
 
 ```tsx
 import { createApp } from '@backstage/frontend-defaults';
@@ -129,17 +132,124 @@ Check these before moving on, because they fail without an error:
 - **Feature flags of legacy plugins.** The old `createApp` registered the feature flags that each plugin passed to `createPlugin`. `convertLegacyAppOptions` takes only the APIs from `plugins`, so pass those flags in its `featureFlags` option too.
 - **Route bindings.** `bindRoutes` is still an option of the new `createApp` and can stay as it is.
 
+#### Migrating `components.Router`
+
+`components.Router` is the one option it rejects, and it throws rather than
+converting. The app owns browser history now and exposes it as `AppHistoryApi`,
+so a root component that installs its own router would create a second history
+the app cannot observe. What to do with the old `Router` depends on what it did:
+
+- If it only rendered `BrowserRouter`, delete it. The app provides history.
+- If it wrapped the router in global providers, move those providers to
+  `AppRootWrapperBlueprint` from `@backstage/plugin-app-react`.
+- If it installed a different routing library, that is now a per-page decision.
+  See the next section.
+
+#### Migrate page routing gradually
+
+Existing new frontend system pages retain implicit React Router v6 routing.
+Route parameters, relative links and nested routes continue to work without
+an immediate migration. In development, consuming this fallback logs a warning
+once per extension per app instance. Render an explicit page adapter to migrate
+that content; pages using only framework routing do not need an adapter.
+Preserve the old frontend system's behavior.
+
+Prefer framework routing, which needs no router at all. If the page only needs
+parameters and hrefs, use `useRouteRef`, `useRouteRefParams` and `useAppHref` from
+`@backstage/frontend-plugin-api`. This is usually the better answer, and it is
+avoids coupling the page to a router library.
+
+A page that genuinely routes with its library renders that library's adapter
+**inside its lazily loaded component** — render-time, plain React, no extension wiring:
+
+```tsx
+import { PageBlueprint } from '@backstage/frontend-plugin-api';
+
+PageBlueprint.make({
+  params: {
+    path: '/catalog',
+    loader: () => import('./Page').then(m => <m.Page />),
+  },
+});
+```
+
+The adapter belongs in the lazily loaded component module. Wrap the page's existing JSX directly; only hooks that consume this router need to be in a child beneath it.
+
+```tsx title="./Page.tsx"
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
+
+export function Page() {
+  return (
+    <ReactRouterV6PageRouter>
+      {/* Existing page JSX and local routes go here. */}
+    </ReactRouterV6PageRouter>
+  );
+}
+```
+
+Three adapter packages ship with Backstage, each exporting one component:
+
+| Package                                       | Component                 |
+| --------------------------------------------- | ------------------------- |
+| `@backstage/frontend-adapter-react-router-v6` | `ReactRouterV6PageRouter` |
+| `@backstage/frontend-adapter-react-router-v7` | `ReactRouterV7PageRouter` |
+| `@backstage/frontend-adapter-tanstack-router` | `TanStackPageRouter`      |
+
+Adapters are **added, not selected**. Each library publishes a different React
+context object, so an adapter nests inside another instead of replacing it. A
+sub-page declares its own adapter in its lazily loaded component, which scopes it to the
+sub-page, and mixed page/sub-page combinations work in both directions.
+
+The app root still has a React Router v6 context for app chrome. That is
+unchanged. Existing pages receive their own implicit v6 matches as well.
+
+**Legacy pages converted by `@backstage/core-compat-api` already have an
+adapter.** `convertLegacyAppRoot` wraps every route it collects in
+`ReactRouterV6PageRouter`, and so does `convertLegacyPageExtension`. A legacy
+page was written under the app's own router and has to keep working without its
+author changing anything. When migrating pages by hand, declare an adapter explicitly to stop relying on
+the compatibility fallback.
+
+**Declare adapters at route mounts.** Pages and sub-pages are common examples;
+ordinary extensions that publish `coreExtensionData.routePath` and render
+through `ExtensionBoundary` also receive their own matched mount. Content
+without its own route mount normally uses the adapter above it. Do not wrap
+entity cards or tabs merely to repeat an enclosing page's mount: that can
+discard matches created by the page's routing library.
+
+In tests, `renderInTestApp` supplies the same root context as production.
+Assert page parameters and relative hrefs to catch missing adapters. Pass the
+same adapter the page renders, and render app chrome as chrome:
+
+```tsx
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
+
+// Page content that routes with React Router.
+renderInTestApp(<EntityPage />, { router: ReactRouterV6PageRouter });
+
+// App chrome — a sidebar, an error page. Chrome is not a page, so it must
+// not get a page adapter.
+renderInTestApp(<MySidebarItem />, { renderAs: 'chrome' });
+```
+
+See [Choose a router for a page](https://backstage.io/docs/frontend-system/building-plugins/page-routers).
+
 ### Step 3: Convert the app root
 
-Use `convertLegacyAppRoot` to convert the app element tree (routes, sidebar, root elements) into features:
+Use `convertLegacyAppRoot` to extract the root containing `FlatRoutes` and convert it into features. Conversion does not preserve the entire element tree: arbitrary siblings and intervening wrappers are discarded. Before conversion, move custom providers to app root wrapper extensions and global elements to app root element extensions. Recreate custom options such as alert timeouts in those extensions:
 
 ```tsx
 import { convertLegacyAppRoot } from '@backstage/core-compat-api';
 
 const convertedRootFeatures = convertLegacyAppRoot(
-  <AppRouter>
-    <Root>{routes}</Root>
-  </AppRouter>,
+  <>
+    <AlertDisplay transientTimeoutMs={2500} />
+    <OAuthRequestDialog />
+    <AppRouter>
+      <VisitListener />
+      <Root>{routes}</Root>
+    </AppRouter>
+  </>,
 );
 
 const app = createApp({
@@ -150,12 +260,6 @@ export default app.createRoot();
 ```
 
 Note: `app.createRoot()` now takes **no arguments** and returns a React **element** (not a component).
-
-`convertLegacyAppRoot` keeps only the element directly inside `AppRouter` that wraps `FlatRoutes`, usually `Root`, and replaces its children with the converted routes. Everything else is dropped without an error: elements outside `AppRouter`, other children of `AppRouter`, and wrappers between `Root` and `FlatRoutes`. The new app already renders `AlertDisplay` and `OAuthRequestDialog` itself, so those can go. Before converting:
-
-- Move custom providers and global elements, such as context providers, sidebars, and analytics or survey loaders, inside the component that wraps `FlatRoutes`, so they are kept. In phase 2, move them to extensions, as described under "Migrating Root Elements".
-- If the app has its own alert or OAuth dialog UI, disable the built-in one, for example with `- app-root-element:app/alert-display: false` under `app.extensions` in `app-config.yaml`.
-- Give every route in `FlatRoutes` its own path. A catch-all `<Route path="/*">` that renders more routes inside it becomes a route at `/` after conversion, and its nested pages stop rendering.
 
 ### Step 4: Update `index.tsx`
 
@@ -513,14 +617,6 @@ Only one version of a plugin can be active in the app at a time. When legacy rou
 
 The practical consequence: when you migrate a plugin, remove _all_ of its legacy touchpoints — routes _and_ entity page extensions — at the same time.
 
-#### Plugins from npm That Don't Support the New System
-
-Before removing an npm plugin's legacy routes, check whether the installed version exports a new-system plugin: a default export of `createFrontendPlugin`, usually from its `./alpha` entry. Open its `package.json` `exports` and that entry in `node_modules`, or check its changelog.
-
-- **It does:** remove its legacy touchpoints as described above.
-- **A newer version does:** upgrade the plugin first, in its own change.
-- **No version does:** keep its legacy routes and entity page JSX for now, which keeps the app in hybrid mode. To finish the migration without it, wrap the plugin with `convertLegacyPlugin` and its pages with `convertLegacyPageExtension` from `@backstage/core-compat-api`, and install the result as a feature. See the [plugin conversion guide](https://backstage.io/docs/frontend-system/building-apps/plugin-conversion). If the plugin's code is in this repository, migrate it with `references/plugin.md` instead.
-
 ### Migrating Entity Pages
 
 Entity pages are typically the most complex part of the migration because they pull in content from many different plugins. The `entityPage` option in `convertLegacyAppRoot` provides a way to migrate them gradually.
@@ -625,16 +721,15 @@ app:
 
 ### Phase 1 (Hybrid)
 
-1. [ ] Backstage is on 1.49 or later, upgraded in a separate change if needed
-2. [ ] Add `@backstage/frontend-defaults` and `@backstage/core-compat-api` dependencies
-3. [ ] Switch `createApp` import to `@backstage/frontend-defaults`
-4. [ ] Wrap legacy options with `convertLegacyAppOptions`, pass legacy plugins' feature flags in `featureFlags`, and move overrides of plugin-owned APIs to modules for those plugins
-5. [ ] Wrap app element tree with `convertLegacyAppRoot`, with custom providers and global elements moved inside the component that wraps `FlatRoutes`, and no catch-all `/*` route
+1. [ ] Add `@backstage/frontend-defaults` and `@backstage/core-compat-api` dependencies
+2. [ ] Switch `createApp` import to `@backstage/frontend-defaults`
+3. [ ] Enable feature discovery: add `app.packages: all` to `app-config.yaml`
+4. [ ] Wrap legacy options with `convertLegacyAppOptions`
+5. [ ] Wrap app element tree with `convertLegacyAppRoot`
 6. [ ] Change `app.createRoot()` to take no arguments
 7. [ ] Update `index.tsx` to render element instead of component
 8. [ ] Update `App.test.tsx`
-9. [ ] Verify app starts and works in hybrid mode, with no `API_FACTORY_CONFLICT` in the `App startup encountered warnings` block
-10. [ ] Enable feature discovery: add `app.packages: all` to `app-config.yaml`, excluding plugins that aren't ready
+9. [ ] Verify app starts and works in hybrid mode
 
 ### Phase 2 (Full Migration)
 
@@ -645,7 +740,7 @@ app:
 5. [ ] Convert translations to `TranslationBlueprint`
 6. [ ] Migrate sidebar to `NavContentBlueprint`
 7. [ ] Remove built-in root elements (`AlertDisplay`, `OAuthRequestDialog`, etc.)
-8. [ ] Migrate routes from `FlatRoutes` to plugin features (one plugin at a time, removing all routes + entity content for each plugin together), moving redirect routes to the `app/routes` config, and upgrading or converting npm plugins that don't support the new system
+8. [ ] Migrate routes from `FlatRoutes` to plugin features (one plugin at a time, removing all routes + entity content for each plugin together), moving redirect routes to the `app/routes` config
 9. [ ] Set up entity page migration with `convertLegacyAppRoot(routes, { entityPage })`
 10. [ ] Migrate catalog plugin: remove catalog routes from `FlatRoutes`, install `catalogPlugin` as a feature
 11. [ ] Gradually remove legacy entity card/content JSX as each contributing plugin is migrated, after checking `app-config` does not disable or narrow the replacing extension
@@ -661,9 +756,8 @@ app:
 - `Invalid element inside FlatRoutes`: push `FeatureFlagged`/`RequirePermissions` wrappers into plugin code instead of the route table
 - Check the browser console for an `App startup encountered warnings:` block. Warnings such as `EXTENSION_IGNORED` and `FEATURE_FLAG_INVALID` do not stop the app, so something can be missing with no visible error. See `references/troubleshooting.md` in the `frontend-plugin-development` skill for these and other startup messages.
 
-## Further reading
+## Reference
 
-- Migrating the plugins themselves: `references/plugin.md` in this skill
 - [App migration guide](https://backstage.io/docs/frontend-system/building-apps/migrating)
 - [Architecture overview](https://backstage.io/docs/frontend-system/architecture/index)
 - [Extension blueprints](https://backstage.io/docs/frontend-system/building-plugins/common-extension-blueprints)

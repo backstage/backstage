@@ -7,11 +7,15 @@ import { AlertApi } from '@backstage/core-plugin-api';
 import { AlertMessage } from '@backstage/core-plugin-api';
 import { AnalyticsApi } from '@backstage/frontend-plugin-api';
 import { AnalyticsEvent } from '@backstage/frontend-plugin-api';
+import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
+import type { ApiHolder } from '@backstage/frontend-plugin-api';
 import { ApiRef } from '@backstage/frontend-plugin-api';
 import { AppError } from '@backstage/frontend-app-api';
+import { AppHistoryApi } from '@backstage/frontend-plugin-api';
 import { AppLanguageApi } from '@backstage/frontend-plugin-api';
 import { AppLifecycleApi } from '@backstage/frontend-plugin-api';
+import { AppNavigate } from '@backstage/frontend-plugin-api';
 import { AppNode } from '@backstage/frontend-plugin-api';
 import { AppNodeInstance } from '@backstage/frontend-plugin-api';
 import { AppTheme } from '@backstage/frontend-plugin-api';
@@ -22,7 +26,6 @@ import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/frontend-plugin-api';
 import { DialogApi } from '@backstage/frontend-plugin-api';
 import { DiscoveryApi } from '@backstage/frontend-plugin-api';
-import { DiscoveryApi as DiscoveryApi_2 } from '@backstage/core-plugin-api';
 import { ErrorApi } from '@backstage/frontend-plugin-api';
 import { ErrorApiError } from '@backstage/frontend-plugin-api';
 import { ErrorApiErrorContext } from '@backstage/frontend-plugin-api';
@@ -38,7 +41,6 @@ import { FrontendFeature } from '@backstage/frontend-plugin-api';
 import { IconElement } from '@backstage/frontend-plugin-api';
 import { IconsApi } from '@backstage/frontend-plugin-api';
 import { IdentityApi } from '@backstage/frontend-plugin-api';
-import { IdentityApi as IdentityApi_2 } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
 import { OAuthRequestApi } from '@backstage/frontend-plugin-api';
@@ -47,10 +49,12 @@ import { PluginHeaderActionsApi } from '@backstage/frontend-plugin-api';
 import { PluginWrapperApi } from '@backstage/frontend-plugin-api';
 import { ReactNode } from 'react';
 import { registerMswTestHooks } from '@backstage/test-utils';
-import { RenderResult } from '@testing-library/react';
+import type { RenderResult } from '@testing-library/react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { RouteResolutionApi } from '@backstage/frontend-plugin-api';
+import { RouteResolutionMatch } from '@backstage/frontend-plugin-api';
 import { StorageApi } from '@backstage/frontend-plugin-api';
+import { SubRouteRef } from '@backstage/frontend-plugin-api';
 import { SwappableComponentsApi } from '@backstage/frontend-plugin-api';
 import { ToastApi } from '@backstage/frontend-plugin-api';
 import { ToastApiMessage } from '@backstage/frontend-plugin-api';
@@ -139,7 +143,6 @@ export class ExtensionTester<UOutput extends ExtensionDataRef> {
   query<T extends ExtensionDefinitionParameters>(
     extension: ExtensionDefinition<T>,
   ): ExtensionQuery<NonNullable<T['output']>>;
-  // (undocumented)
   reactElement(): JSX.Element;
   snapshot(): ExtensionSnapshotNode;
 }
@@ -170,6 +173,22 @@ export namespace mockApis {
       mock: (
         partialImpl?: Partial<AnalyticsApi> | undefined,
       ) => ApiMock<AnalyticsApi>;
+  }
+  export function appHistory(options?: {
+    initialLocation?: string;
+    navigate?: jest.Mock | AppHistoryApi['navigate'];
+    basename?: string;
+  }): AppHistoryApi & {
+    navigateCalls: Array<{
+      to: string | number;
+      options?: Parameters<AppNavigate>[1];
+    }>;
+  } & MockWithApiFactory<AppHistoryApi>;
+  export namespace appHistory {
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<AppHistoryApi> | undefined,
+      ) => ApiMock<AppHistoryApi>;
   }
   export function appLanguage(options?: {
     defaultLanguage?: string;
@@ -256,9 +275,22 @@ export namespace mockApis {
       partialImpl?: Partial<FeatureFlagsApi> | undefined,
     ) => ApiMock<FeatureFlagsApi>;
   }
-  export function fetch(
-    options?: MockFetchApiOptions,
-  ): MockWithApiFactory<FetchApi>;
+  export function fetch(options?: {
+    baseImplementation?: undefined | 'none' | typeof globalThis.fetch;
+    resolvePluginProtocol?:
+      | undefined
+      | {
+          discoveryApi: Pick<DiscoveryApi, 'getBaseUrl'>;
+        };
+    injectIdentityAuth?:
+      | undefined
+      | {
+          token: string;
+        }
+      | {
+          identityApi: Pick<IdentityApi, 'getCredentials'>;
+        };
+  }): MockWithApiFactory<FetchApi>;
   export namespace fetch {
     const // (undocumented)
       mock: (partialImpl?: Partial<FetchApi> | undefined) => ApiMock<FetchApi>;
@@ -318,6 +350,37 @@ export namespace mockApis {
       partialImpl?: Partial<PluginWrapperApi> | undefined,
     ) => ApiMock<PluginWrapperApi>;
   }
+  export function routeResolution(options?: {
+    routes?:
+      | ReadonlyMap<
+          | RouteRef<AnyRouteRefParams>
+          | SubRouteRef<AnyRouteRefParams>
+          | ExternalRouteRef<AnyRouteRefParams>,
+          string
+        >
+      | ReadonlyArray<
+          [
+            (
+              | RouteRef<AnyRouteRefParams>
+              | SubRouteRef<AnyRouteRefParams>
+              | ExternalRouteRef<AnyRouteRefParams>
+            ),
+            string,
+          ]
+        >;
+    resolve?: RouteResolutionApi['resolve'];
+    resolvePath?:
+      | {
+          matches: ReadonlyArray<
+            Pick<RouteResolutionMatch, 'node' | 'basePath'> &
+              Partial<Omit<RouteResolutionMatch, 'node' | 'basePath'>>
+          >;
+        }
+      | RouteResolutionApi['resolvePath'];
+  }): RouteResolutionApi & {
+    resolve: jest.MockedFunction<RouteResolutionApi['resolve']>;
+    resolvePath: jest.MockedFunction<RouteResolutionApi['resolvePath']>;
+  } & MockWithApiFactory<RouteResolutionApi>;
   export namespace routeResolution {
     const mock: (
       partialImpl?: Partial<RouteResolutionApi> | undefined,
@@ -354,24 +417,6 @@ export namespace mockApis {
 }
 
 // @public
-export interface MockFetchApiOptions {
-  baseImplementation?: undefined | 'none' | typeof fetch;
-  injectIdentityAuth?:
-    | undefined
-    | {
-        token: string;
-      }
-    | {
-        identityApi: Pick<IdentityApi_2, 'getCredentials'>;
-      };
-  resolvePluginProtocol?:
-    | undefined
-    | {
-        discoveryApi: Pick<DiscoveryApi_2, 'getBaseUrl'>;
-      };
-}
-
-// @public
 export type MockWithApiFactory<TApi> = TApi & {
   [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}>;
 };
@@ -382,12 +427,12 @@ export { registerMswTestHooks };
 export function renderInTestApp<const TApiPairs extends any[] = any[]>(
   element: JSX.Element,
   options?: TestAppOptions<TApiPairs>,
-): RenderResult;
+): TestAppRenderResult;
 
 // @public
 export function renderTestApp<const TApiPairs extends any[] = any[]>(
   options?: RenderTestAppOptions<TApiPairs>,
-): RenderResult;
+): TestAppRenderResult;
 
 // @public
 export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
@@ -404,7 +449,12 @@ export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
 
 // @public
 export type TestApiPair<TApi> =
-  | readonly [ApiRef<TApi>, TApi extends infer TImpl ? Partial<TImpl> : never]
+  | readonly [
+      ApiRef<TApi>,
+      TApi extends PromiseLike<infer TImpl>
+        ? Partial<Awaited<TImpl>> | PromiseLike<Partial<Awaited<TImpl>>>
+        : Partial<TApi>,
+    ]
   | MockWithApiFactory<NoInfer<TApi>>;
 
 // @public
@@ -424,16 +474,15 @@ export type TestApiProviderProps<TApiPairs extends any[]> = {
 };
 
 // @public
-export type TestAppOptions<TApiPairs extends any[] = any[]> = {
-  mountedRoutes?: {
-    [path: string]: RouteRef | ExternalRouteRef;
+export type TestAppOptions<TApiPairs extends any[] = any[]> =
+  RenderTestAppOptions<TApiPairs> & {
+    mountPath?: string;
+    renderAs?: 'page' | 'chrome';
   };
-  config?: JsonObject;
-  features?: FrontendFeature[];
-  mountPath?: string;
-  initialRouteEntries?: string[];
-  apis?: readonly [...TestApiPairs<TApiPairs>];
-  isExpectedError?: (error: AppError) => boolean;
+
+// @public
+export type TestAppRenderResult = RenderResult & {
+  apis: ApiHolder;
 };
 
 export { withLogCollector };

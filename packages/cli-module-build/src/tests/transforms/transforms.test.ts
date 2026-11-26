@@ -114,6 +114,16 @@ describe('node runtime module transforms', () => {
       loadFixture('json/print.mts', ['--no-experimental-require-module']),
     ).toEqual(expected);
   });
+
+  it('should detect the format of JavaScript in typeless packages', async () => {
+    const expected = { named: 'esm', plain: 'cjs' };
+    expect(loadFixture('typeless-dep/print.mts')).toEqual(expected);
+    expect(
+      loadFixture('typeless-dep/print.mts', [
+        '--no-experimental-require-module',
+      ]),
+    ).toEqual(expected);
+  });
 });
 
 describe('Jest runtime module transforms', () => {

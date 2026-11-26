@@ -12,7 +12,7 @@ metadata:
     - title: Storybook
       url: https://backstage.io/storybook
     - title: Discord Chat
-      url: https://discord.com/invite/EBHEGzX
+      url: https://discord.gg/backstage-687207715902193673
   annotations:
     github.com/project-slug: backstage/backstage
     backstage.io/techdocs-ref: dir:.

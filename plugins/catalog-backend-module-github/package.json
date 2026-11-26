@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-github",
-  "version": "0.14.2-next.1",
+  "version": "0.14.3-next.0",
   "description": "A Backstage catalog backend module that helps integrate towards GitHub",
   "backstage": {
     "role": "backend-plugin-module",
@@ -69,7 +69,7 @@
     "@octokit/webhooks-types": "^7.6.1",
     "git-url-parse": "^15.0.0",
     "lodash": "^4.17.21",
-    "minimatch": "^10.2.1",
+    "minimatch": "^11.0.1",
     "octokit": "^3.0.0"
   },
   "devDependencies": {
@@ -81,7 +81,8 @@
     "@backstage/plugin-events-backend-module-github": "workspace:^",
     "@backstage/plugin-events-backend-module-google-pubsub": "workspace:^",
     "@types/lodash": "^4.14.151",
-    "msw": "^2.0.0"
+    "graphql": "^16.0.0",
+    "msw": "^3.0.4"
   },
   "configSchema": "config.d.ts"
 }

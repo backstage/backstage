@@ -1,5 +1,30 @@
 # @backstage/cli-module-test-jest
 
+## 0.1.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.7-next.0
+
+## 0.1.8
+
+### Patch Changes
+
+- 9120c46: Updated dependency `glob` to `^14.0.0`.
+- Updated dependencies
+  - @backstage/cli-node@0.3.6
+  - @backstage/cli-common@0.3.3
+
+## 0.1.8-next.1
+
+### Patch Changes
+
+- 9120c46: Updated dependency `glob` to `^14.0.0`.
+- Updated dependencies
+  - @backstage/cli-node@0.3.6-next.2
+  - @backstage/cli-common@0.3.3-next.0
+
 ## 0.1.8-next.0
 
 ### Patch Changes

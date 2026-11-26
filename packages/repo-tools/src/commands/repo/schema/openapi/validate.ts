@@ -30,8 +30,26 @@ import {
   getPathToOpenApiSpec,
   loadAndValidateOpenApiYaml,
 } from '../../../../lib/openapi/helpers';
+import { verifyManifest } from '../../../../lib/openapi/manifest';
+
+async function validateManifest(directoryPath: string) {
+  const result = await verifyManifest(directoryPath);
+  if (!result) {
+    return;
+  }
+  for (const warning of result.warnings) {
+    console.warn(chalk.yellow(`${directoryPath}: ${warning}`));
+  }
+  if (result.errors.length > 0) {
+    throw new Error(result.errors.join('\n'));
+  }
+}
 
 async function validate(directoryPath: string) {
+  // Runs for every package with generated output, including clients that have
+  // no local spec.
+  await validateManifest(directoryPath);
+
   let openapiPath = '';
   try {
     openapiPath = await getPathToOpenApiSpec(directoryPath);

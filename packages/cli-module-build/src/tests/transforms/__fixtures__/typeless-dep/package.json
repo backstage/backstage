@@ -1,0 +1,10 @@
+{
+  "name": "typeless-dep",
+  "exports": {
+    ".": {
+      "import": "./esm.js",
+      "require": "./cjs.js"
+    },
+    "./cjs": "./cjs.js"
+  }
+}

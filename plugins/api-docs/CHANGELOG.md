@@ -1,5 +1,52 @@
 # @backstage/plugin-api-docs
 
+## 0.14.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.17-next.0
+  - @backstage/plugin-catalog@2.1.1-next.0
+  - @backstage/plugin-catalog-react@4.0.1-next.0
+
+## 0.14.9
+
+### Patch Changes
+
+- Bumped version to account for a patch release.
+
+## 0.14.7
+
+### Patch Changes
+
+- a44c5eb: The AsyncAPI definition widget no longer resolves external references by default. References to whole external documents still render, with a placeholder naming the document that was not loaded; references that point into an external document (using a `#` fragment) fail to render with an error naming the reference. To resolve external references — for example to reach internal schema registries that require authentication — provide the `resolvers` prop to enable external reference resolution.
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+- Updated dependencies
+  - @backstage/frontend-plugin-api@1.0.0
+  - @backstage/core-plugin-api@1.13.0
+  - @backstage/plugin-catalog@2.1.0
+  - @backstage/core-components@0.18.16
+  - @backstage/plugin-catalog-react@4.0.0
+  - @backstage/ui@0.20.0
+  - @backstage/plugin-permission-react@0.5.7
+  - @backstage/catalog-model@1.10.3
+  - @backstage/plugin-catalog-common@1.2.2
+
+## 0.14.7-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@2.0.11-next.2
+  - @backstage/core-components@0.18.16-next.1
+  - @backstage/ui@0.20.0-next.0
+  - @backstage/frontend-plugin-api@0.19.0-next.2
+  - @backstage/catalog-model@1.10.3-next.0
+  - @backstage/core-plugin-api@1.12.12-next.2
+  - @backstage/plugin-catalog-react@4.0.0-next.2
+  - @backstage/plugin-catalog-common@1.2.2-next.0
+  - @backstage/plugin-permission-react@0.5.7-next.1
+
 ## 0.14.7-next.1
 
 ### Patch Changes

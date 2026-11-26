@@ -51,6 +51,7 @@ import {
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { FilterPredicate } from '@backstage/filter-predicates';
 import { applyEntityFilterToQuery } from './request/applyEntityFilterToQuery';
+import { sortsAfterMatching } from './request/longInLists';
 import {
   applySetEntityFilterToQuery,
   needsSetFilter,
@@ -58,6 +59,11 @@ import {
 import { entityFilterToFilterPredicate } from './request/entityFilterToFilterPredicate';
 import { processRawEntitiesResult } from './response';
 
+/**
+ * The largest limit at which a page is matched as one that can stop early,
+ * see `request/longInLists.ts`.
+ */
+const SMALL_PAGE_LIMIT = 100;
 const DEFAULT_LIMIT = 200;
 
 function parsePagination(input?: EntityPagination): EntityPagination {
@@ -331,12 +337,15 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       return { items: await processRawEntitiesResult([], request.fields) };
     }
 
+    // Stored refs are lowercased by stringifyEntityRef, so lowercase the
+    // requested refs the same way to match them case insensitively, like
+    // entities/by-name does. Order and length are preserved for the response.
+    const normalizedRefs = request.entityRefs.map(ref => ref.toLowerCase());
+
     const lookup = new Map<string, string>();
     const isPg = this.database.client.config.client === 'pg';
 
-    const chunks = isPg
-      ? [request.entityRefs]
-      : lodashChunk(request.entityRefs, 200);
+    const chunks = isPg ? [normalizedRefs] : lodashChunk(normalizedRefs, 200);
 
     for (const chunk of chunks) {
       let query = this.database<DbFinalEntitiesRow>('final_entities').select({
@@ -358,6 +367,9 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           targetQuery: query,
           onEntityIdField: 'final_entities.entity_id',
           knex: this.database,
+          // The refs already pick the rows, so matching long lists as whole
+          // sets would only add work
+          matchLongInListsPerRow: true,
         });
       }
 
@@ -366,7 +378,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       }
     }
 
-    const items = request.entityRefs.map(ref => lookup.get(ref) ?? null);
+    const items = normalizedRefs.map(ref => lookup.get(ref) ?? null);
 
     return { items: await processRawEntitiesResult(items, request.fields) };
   }
@@ -401,6 +413,17 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       sortKey || 'metadata.uid',
     ];
 
+    // Cursors of permissioned requests carry the permission filter and the
+    // request filter separately. They are applied as one filter, the same way
+    // the first page combines them, since how a long `$in` list is matched
+    // depends on its siblings (see `request/longInLists.ts`).
+    const cursorFilters = [
+      ...(cursor.filter ? [entityFilterToFilterPredicate(cursor.filter)] : []),
+      ...(cursor.query ? [cursor.query] : []),
+    ];
+    const combinedFilter: FilterPredicate | undefined =
+      cursorFilters.length > 1 ? { $all: cursorFilters } : cursorFilters[0];
+
     // Shared predicate logic applied to both the list CTE and the
     // standalone count query so they stay in sync. The `searchInScope`
     // flag indicates whether a `search` table is already joined in the
@@ -416,6 +439,10 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           targetQuery: q,
           onEntityIdField: 'final_entities.entity_id',
           knex: this.database,
+          // A small page can stop early, so long lists that are not direct
+          // conditions are cheaper to probe per row there. The count has no
+          // limit and reads every match, so it is never a small page.
+          smallPage: !options?.asSet && limit <= SMALL_PAGE_LIMIT,
         };
         if (options?.asSet && this.useSetFilter(filter)) {
           applySetEntityFilterToQuery(filterOptions);
@@ -423,11 +450,8 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           applyEntityFilterToQuery(filterOptions);
         }
       };
-      if (cursor.filter) {
-        applyFilter(entityFilterToFilterPredicate(cursor.filter));
-      }
-      if (cursor.query) {
-        applyFilter(cursor.query);
+      if (combinedFilter) {
+        applyFilter(combinedFilter);
       }
 
       if (normalizedFullTextFilterTerm) {
@@ -554,8 +578,19 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     if (isFetchingBackwards) {
       order = invertOrder(order);
     }
+    // With a sort field, a list that is matched as a set of entity IDs is
+    // sorted after matching, see `sortsAfterMatching`
+    const sortExpression =
+      sortField &&
+      this.database.client.config.client === 'pg' &&
+      combinedFilter &&
+      sortsAfterMatching(combinedFilter, {
+        smallPage: limit <= SMALL_PAGE_LIMIT,
+      })
+        ? this.database.raw(`("filtered"."value" || '')`)
+        : 'filtered.value';
     dbQuery.orderBy([
-      ...(sortField ? [{ column: 'filtered.value', order }] : []),
+      ...(sortField ? [{ column: sortExpression, order }] : []),
       { column: 'filtered.entity_id', order },
     ]);
 

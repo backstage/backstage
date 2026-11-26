@@ -32,7 +32,7 @@ import {
   ClusterDetails,
   KubernetesCredential,
 } from '@backstage/plugin-kubernetes-node';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import type { LoggerService } from '@backstage/backend-plugin-api';
 import { KubernetesConnection } from './KubernetesConnection';
 
 export interface KubernetesClientBasedFetcherOptions {
@@ -44,6 +44,13 @@ type FetchResult = FetchResponse | KubernetesFetchError;
 
 const isError = (fr: FetchResult): fr is KubernetesFetchError =>
   fr.hasOwnProperty('errorType');
+
+function suppressNotFound(wrapper: FetchResponseWrapper): FetchResponseWrapper {
+  return {
+    ...wrapper,
+    errors: wrapper.errors.filter(e => e.errorType !== 'NOT_FOUND'),
+  };
+}
 
 function fetchResultsToResponseWrapper(
   results: FetchResult[],
@@ -95,11 +102,14 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
               : this.connection.handleUnsuccessfulResponse(
                   params.clusterDetails.name,
                   r,
+                  { silentNotFound: true },
                 ),
         ),
       );
 
-    return Promise.all(fetchResults).then(fetchResultsToResponseWrapper);
+    return Promise.all(fetchResults)
+      .then(fetchResultsToResponseWrapper)
+      .then(suppressNotFound);
   }
 
   async fetchPodMetricsByNamespaces(
@@ -117,7 +127,9 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
       ),
     );
 
-    return Promise.all(fetchResults).then(fetchResultsToResponseWrapper);
+    return Promise.all(fetchResults)
+      .then(fetchResultsToResponseWrapper)
+      .then(suppressNotFound);
   }
 
   private async fetchPodMetricsForNamespace(
@@ -161,11 +173,21 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
       return this.connection.handleUnsuccessfulResponse(
         clusterDetails.name,
         podList,
+        { silentNotFound: true },
+      );
+    } else if (!podList.ok && podMetrics.status === 404) {
+      // Metrics API unavailable (404) but the core pod-list also failed —
+      // report the pod-list error so a real failure is not silently dropped.
+      return this.connection.handleUnsuccessfulResponse(
+        clusterDetails.name,
+        podList,
+        { silentNotFound: true },
       );
     }
     return this.connection.handleUnsuccessfulResponse(
       clusterDetails.name,
       podMetrics,
+      { silentNotFound: true },
     );
   }
 

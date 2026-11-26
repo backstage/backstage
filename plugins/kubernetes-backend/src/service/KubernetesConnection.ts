@@ -139,13 +139,19 @@ export class KubernetesConnection {
   async handleUnsuccessfulResponse(
     clusterName: string,
     res: Response,
+    { silentNotFound = false }: { silentNotFound?: boolean } = {},
   ): Promise<KubernetesFetchError> {
     const resourcePath = new URL(res.url).pathname;
-    this.logger.warn(
-      `Received ${
-        res.status
-      } status when fetching "${resourcePath}" from cluster "${clusterName}"; body=[${await res.text()}]`,
-    );
+    const body = await res.text();
+    if (res.status === 404 && silentNotFound) {
+      this.logger.debug(
+        `Resource "${resourcePath}" not found on cluster "${clusterName}", skipping`,
+      );
+    } else {
+      this.logger.warn(
+        `Received ${res.status} status when fetching "${resourcePath}" from cluster "${clusterName}"; body=[${body}]`,
+      );
+    }
     return {
       errorType: statusCodeToErrorType(res.status),
       statusCode: res.status,

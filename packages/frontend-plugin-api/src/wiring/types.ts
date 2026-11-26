@@ -61,6 +61,4 @@ export type ExtensionDataContainer<UExtensionData extends ExtensionDataRef> =
   };
 
 /** @public  */
-export type FrontendFeature =
-  | (Omit<FrontendPlugin, 'pluginId'> & { pluginId?: string })
-  | FrontendModule;
+export type FrontendFeature = FrontendPlugin | FrontendModule;

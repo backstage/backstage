@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { TestRouter } from '../../testUtils/TestRouter';
 import preview from '../../../../../.storybook/preview';
 import type { StoryFn } from '@storybook/react-vite';
 import { FullPage } from './FullPage';
@@ -21,7 +22,7 @@ import { PluginHeader } from '../PluginHeader';
 import { Container } from '../Container';
 import { Text } from '../Text';
 import type { HeaderTab } from '../PluginHeader/types';
-import { MemoryRouter } from 'react-router-dom';
+
 import { BUIProvider } from '../../provider';
 
 const meta = preview.meta({
@@ -33,11 +34,11 @@ const meta = preview.meta({
 });
 
 const withRouter = (Story: StoryFn) => (
-  <MemoryRouter>
+  <TestRouter>
     <BUIProvider>
       <Story />
     </BUIProvider>
-  </MemoryRouter>
+  </TestRouter>
 );
 
 const tabs: HeaderTab[] = [

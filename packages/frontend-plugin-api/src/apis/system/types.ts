@@ -15,11 +15,11 @@
  */
 
 /**
- * API reference.
+ * API reference. Defaults to a reference to any API when no type argument is provided.
  *
  * @public
  */
-export type ApiRef<T, TId extends string = string> = {
+export type ApiRef<T = unknown, TId extends string = string> = {
   readonly $$type?: '@backstage/ApiRef';
   readonly id: TId;
   readonly T: T;
@@ -27,6 +27,8 @@ export type ApiRef<T, TId extends string = string> = {
 
 /**
  * Catch-all {@link ApiRef} type.
+ *
+ * @deprecated Use {@link ApiRef} without type arguments instead.
  *
  * @public
  */
@@ -51,12 +53,17 @@ export type ApiHolder = {
 /**
  * Describes type returning API implementations.
  *
+ * @remarks
+ *
+ * Without type arguments, accepts factories for any API and dependencies.
+ * When only the API type is provided, the implementation defaults to that API type.
+ *
  * @public
  */
 export type ApiFactory<
-  Api,
-  Impl extends Api,
-  Deps extends { [name in string]: unknown },
+  Api = unknown,
+  Impl extends Api = Api,
+  Deps extends { [name in string]: unknown } = { [name in string]: unknown },
 > = {
   api: ApiRef<Api>;
   deps: TypesToApiRefs<Deps>;
@@ -65,6 +72,8 @@ export type ApiFactory<
 
 /**
  * Catch-all {@link ApiFactory} type.
+ *
+ * @deprecated Use {@link ApiFactory} without type arguments instead.
  *
  * @public
  */

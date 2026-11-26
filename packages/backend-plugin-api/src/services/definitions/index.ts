@@ -39,6 +39,8 @@ export type { HttpAuthService } from './HttpAuthService';
 export type {
   HttpRouterService,
   HttpRouterServiceAuthPolicy,
+  HttpRouterServiceWebSocketHandler,
+  HttpRouterServiceWebSocketContext,
 } from './HttpRouterService';
 export type {
   LifecycleService,
@@ -59,7 +61,10 @@ export type {
 export type { PluginMetadataService } from './PluginMetadataService';
 export type { RootConfigService } from './RootConfigService';
 export type { RootHealthService } from './RootHealthService';
-export type { RootHttpRouterService } from './RootHttpRouterService';
+export type {
+  RootHttpRouterService,
+  RootHttpRouterServiceWebSocketHandler,
+} from './RootHttpRouterService';
 export type { RootLifecycleService } from './RootLifecycleService';
 export type { RootLoggerService } from './RootLoggerService';
 export { readSchedulerServiceTaskScheduleDefinitionFromConfig } from './SchedulerService';

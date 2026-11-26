@@ -24,6 +24,7 @@ import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TableItem } from '@backstage/ui';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
+import { TranslationRefTuple } from '@backstage/frontend-plugin-api';
 
 // @alpha
 export const CatalogFilterBlueprint: ExtensionBlueprint<{
@@ -52,11 +53,9 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'entityProcessingStatusPicker.title': 'Processing Status';
     readonly 'entityTagPicker.title': 'Tags';
     readonly 'entityPeekAheadPopover.title': 'Drill into the entity to see all of the tags.';
-    readonly 'entityPeekAheadPopover.entityCardActionsAriaLabel': 'Show';
     readonly 'entityPeekAheadPopover.entityCardActionsTitle': 'Show details';
     readonly 'entityPeekAheadPopover.emailCardAction.title': 'Email {{email}}';
     readonly 'entityPeekAheadPopover.emailCardAction.ariaLabel': 'Email';
-    readonly 'entityPeekAheadPopover.emailCardAction.subTitle': 'mailto {{email}}';
     readonly 'entitySearchBar.placeholder': 'Search';
     readonly 'entityTypePicker.title': 'Type';
     readonly 'entityTypePicker.errorMessage': 'Failed to load entity types';
@@ -284,7 +283,7 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
     defaultPath?: [Error: `Use the 'path' param instead`];
     path: string;
     defaultTitle?: [Error: `Use the 'title' param instead`];
-    title: string;
+    title: string | TranslationRefTuple<undefined>;
     defaultGroup?: [Error: `Use the 'group' param instead`];
     group?: keyof typeof defaultEntityContentGroups | (string & {});
     icon?: string | ReactElement;
@@ -302,6 +301,13 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
         }
       >
     | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+    | ExtensionDataRef<
+        TranslationRefTuple<undefined>,
+        'core.titleTranslation',
+        {
+          optional: true;
+        }
+      >
     | ExtensionDataRef<
         (entity: Entity) => boolean,
         'catalog.entity-filter-function',
@@ -350,6 +356,11 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
     title: ConfigurableExtensionDataRef<
       string,
       'catalog.entity-content-title',
+      {}
+    >;
+    titleTranslation: ConfigurableExtensionDataRef<
+      TranslationRefTuple<undefined>,
+      'core.titleTranslation',
       {}
     >;
     filterFunction: ConfigurableExtensionDataRef<

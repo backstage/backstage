@@ -26,8 +26,6 @@ import {
 } from '@backstage/core-plugin-api';
 /**
  * Options for configuring the mock fetch API.
- *
- * @public
  */
 export interface MockFetchApiOptions {
   /**

@@ -1,5 +1,36 @@
 # @backstage/plugin-signals-backend
 
+## 0.3.22-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.1-next.0
+  - @backstage/plugin-events-node@0.5.1-next.0
+  - @backstage/plugin-signals-node@0.2.8-next.0
+
+## 0.3.21
+
+### Patch Changes
+
+- bcb1697: Register WebSocket upgrades through the framework router so the first connection works without a prior HTTP request. Preserve user-only authentication and existing token-as-protocol clients, while keeping only the health endpoint public over HTTP.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/plugin-events-node@0.5.0
+  - @backstage/config@1.3.11
+  - @backstage/plugin-signals-node@0.2.7
+
+## 0.3.21-next.2
+
+### Patch Changes
+
+- bcb1697: Register WebSocket upgrades through the framework router so the first connection works without a prior HTTP request. Preserve user-only authentication and existing token-as-protocol clients, while keeping only the health endpoint public over HTTP.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/plugin-events-node@0.5.0-next.2
+  - @backstage/plugin-signals-node@0.2.7-next.2
+  - @backstage/config@1.3.11-next.0
+
 ## 0.3.21-next.1
 
 ### Patch Changes

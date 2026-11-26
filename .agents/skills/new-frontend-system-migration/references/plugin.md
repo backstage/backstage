@@ -36,6 +36,7 @@ In large repositories, a plugin is often migrated a page or tab at a time. When 
 - **New system:** `createFrontendPlugin` from `@backstage/frontend-plugin-api`, pages via `PageBlueprint`, routes owned by the plugin
 - **Page shell:** Old-system pages render their own `Page`/`Header`/`PageWithHeader` from `@backstage/core-components`. In the new system, the framework's `PageLayout` renders `PluginHeader` from `@backstage/ui` above each page, unless the page sets `noHeader: true`. Step 4 explains how to handle the old shell.
 - **Wrapper packages:** Some repositories import `@backstage/*` packages through their own re-exports, such as `@internal/backstage/core-plugin-api`. Treat those imports like the package they re-export in every step.
+- **Blueprints, not app edits:** A migrated plugin should work once it is installed. Everything it adds attaches to an extension input through a blueprint, not a component that adopters render in their app. Read "Contribute through extension inputs" in the `frontend-plugin-development` skill, including what to do when no extension input fits.
 
 ## Step 1: Route Refs
 
@@ -335,7 +336,7 @@ Old plugins often use React Router `<Route>` trees inside a router component. Re
 
 > "Does your plugin use top-level tabs that users navigate between via a header (for example Overview / Settings)? Or does it use detail or drill-down routes (for example `/my-plugin/items/:id`)?"
 
-Keep the internal routing in a `PageBlueprint` `loader` when the routes are detail pages or deeply nested or dynamic:
+Keep drill-down routing inside a `PageBlueprint` `loader`. If its content uses React Router `<Routes>`, render the matching page adapter at that mount:
 
 ```tsx
 export const myPage = PageBlueprint.make({
@@ -346,6 +347,20 @@ export const myPage = PageBlueprint.make({
   },
 });
 ```
+
+In the lazy `components/Router` module, wrap the component that uses router hooks:
+
+```tsx
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
+
+export const MyPluginRouter = () => (
+  <ReactRouterV6PageRouter>
+    <MyPluginRouterContent />
+  </ReactRouterV6PageRouter>
+);
+```
+
+Add the adapter package as a dependency. Use the v7 or TanStack adapter when the content uses that router instead. Each page or sub-page scopes its own adapter; don't wrap unrelated entity content or cards. If content only reads params or builds links, use framework `useRouteRefParams`, `useRouteRef`, and `useAppHref` instead of a router adapter. `renderInTestApp` accepts the same adapter through `router` when testing a bare page.
 
 Use `SubPageBlueprint` when the routes are top-level tabs:
 
@@ -440,7 +455,7 @@ For path A, replace every `@backstage/core-plugin-api` import with `@backstage/f
 | `useApi`, `useRouteRef`                                                                                | Same names                                                                                                                       |
 | `configApiRef`, `discoveryApiRef`, `fetchApiRef`, `identityApiRef`, `storageApiRef`, `analyticsApiRef` | Same names                                                                                                                       |
 | `createRoutableExtension`                                                                              | `PageBlueprint.make`                                                                                                             |
-| `createComponentExtension`                                                                             | A plain component export, if other plugins or the app import and render it. Otherwise a blueprint, such as `EntityCardBlueprint` |
+| `createComponentExtension`                                                                             | A blueprint, such as `EntityCardBlueprint`. See the "Blueprints, not app edits" key concept for when a plain export fits instead |
 
 ## Step 7: Refs and Translations (Path B)
 
@@ -502,11 +517,13 @@ Items marked (A) or (B) apply to that path only.
 14. [ ] (B) Refs and translations exported from the main entry, not duplicated in `./alpha`
 15. [ ] (B) Old-system pages and exports still work
 16. [ ] Smoke test that renders the new plugin's main page
-17. [ ] The plugin's legacy wiring removed from a new-system app in the same repository, with the app's redirects moved to config, and no export removed that other code still imports
-18. [ ] `yarn tsc` and `yarn lint` pass
-19. [ ] `yarn build:api-reports` run, if the project uses API reports
-20. [ ] The dev app renders the page, with no `App startup encountered warnings` block in the browser console
-21. [ ] Tested in a new-system app, and for path B also in an old-system app
+17. [ ] Everything the plugin adds attaches to an extension input, with no app code in the new-system install docs
+18. [ ] Any missing extension input reported to the user, with app code only as a documented last resort
+19. [ ] The plugin's legacy wiring removed from a new-system app in the same repository, with the app's redirects moved to config, and no export removed that other code still imports
+20. [ ] `yarn tsc` and `yarn lint` pass
+21. [ ] `yarn build:api-reports` run, if the project uses API reports
+22. [ ] The dev app renders the page, with no `App startup encountered warnings` block in the browser console
+23. [ ] Tested in a new-system app, and for path B also in an old-system app
 
 ## Further reading
 

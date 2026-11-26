@@ -125,6 +125,61 @@ describe('createGetScaffolderTaskLogsAction', () => {
     );
   });
 
+  it('should return the events of a recovered task', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    const mockScaffolderService = scaffolderServiceMock.mock();
+
+    mockScaffolderService.getLogs.mockResolvedValue([
+      {
+        id: 9,
+        taskId: 'task-4',
+        createdAt: '2025-01-01T00:00:00Z',
+        type: 'recovered',
+        body: { recoverStrategy: 'startOver' },
+      } as unknown as LogEvent,
+      {
+        id: 10,
+        taskId: 'task-4',
+        createdAt: '2025-01-01T00:00:01Z',
+        type: 'log',
+        body: { message: 'Task recovered', stepId: 'step-1' },
+      },
+    ]);
+
+    createGetScaffolderTaskLogsAction({
+      actionsRegistry: mockActionsRegistry,
+      scaffolderService: mockScaffolderService,
+    });
+
+    const result = await mockActionsRegistry.invoke({
+      id: 'test:get-scaffolder-task-logs',
+      input: { taskId: 'task-4' },
+    });
+
+    expect(result.output).toEqual({
+      events: [
+        {
+          id: 9,
+          taskId: 'task-4',
+          createdAt: '2025-01-01T00:00:00Z',
+          type: 'recovered',
+          body: { message: undefined, stepId: undefined, status: undefined },
+        },
+        {
+          id: 10,
+          taskId: 'task-4',
+          createdAt: '2025-01-01T00:00:01Z',
+          type: 'log',
+          body: {
+            message: 'Task recovered',
+            stepId: 'step-1',
+            status: undefined,
+          },
+        },
+      ],
+    });
+  });
+
   it('should throw when the service call fails', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
     const mockScaffolderService = scaffolderServiceMock.mock();

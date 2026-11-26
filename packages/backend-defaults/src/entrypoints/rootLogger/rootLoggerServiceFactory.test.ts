@@ -43,6 +43,32 @@ describe('rootLoggerServiceFactory', () => {
     });
   });
 
+  it('should format logs as JSON with a timestamp in production', async () => {
+    const env = jest.replaceProperty(process, 'env', {
+      ...process.env,
+      NODE_ENV: 'production',
+    });
+    try {
+      await ServiceFactoryTester.from(rootLoggerServiceFactory, {
+        dependencies: [mockServices.rootConfig.factory()],
+      }).getSubject();
+
+      const { format } = jest.mocked(WinstonLogger.create).mock.lastCall![0];
+      const info = format!.transform({
+        level: 'info',
+        message: 'hello',
+      }) as unknown as Record<symbol, string>;
+
+      expect(JSON.parse(info[MESSAGE])).toEqual({
+        level: 'info',
+        message: 'hello',
+        timestamp: expect.any(String),
+      });
+    } finally {
+      env.restore();
+    }
+  });
+
   it('should create WinstonLogger from config', async () => {
     await ServiceFactoryTester.from(rootLoggerServiceFactory, {
       dependencies: [

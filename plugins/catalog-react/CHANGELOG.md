@@ -1,5 +1,58 @@
 # @backstage/plugin-catalog-react
 
+## 4.0.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-test-utils@1.0.1-next.0
+  - @backstage/core-components@0.18.17-next.0
+  - @backstage/core-compat-api@0.6.1-next.0
+  - @backstage/integration-react@1.3.1-next.0
+
+## 4.0.0
+
+### Minor Changes
+
+- d4f458e: Added support for translated entity content titles through `EntityContentBlueprint`.
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@1.0.0
+  - @backstage/core-plugin-api@1.13.0
+  - @backstage/catalog-client@1.16.4
+  - @backstage/core-components@0.18.16
+  - @backstage/errors@1.4.0
+  - @backstage/frontend-test-utils@1.0.0
+  - @backstage/core-compat-api@0.6.0
+  - @backstage/ui@0.20.0
+  - @backstage/integration-react@1.3.0
+  - @backstage/plugin-permission-react@0.5.7
+  - @backstage/version-bridge@1.1.0
+  - @backstage/catalog-model@1.10.3
+  - @backstage/filter-predicates@0.2.1
+  - @backstage/plugin-permission-common@0.9.13
+
+## 4.0.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/core-components@0.18.16-next.1
+  - @backstage/ui@0.20.0-next.0
+  - @backstage/core-compat-api@0.6.0-next.2
+  - @backstage/frontend-plugin-api@0.19.0-next.2
+  - @backstage/catalog-client@1.16.4-next.1
+  - @backstage/catalog-model@1.10.3-next.0
+  - @backstage/core-plugin-api@1.12.12-next.2
+  - @backstage/filter-predicates@0.2.1-next.0
+  - @backstage/plugin-permission-common@0.9.13-next.0
+  - @backstage/integration-react@1.2.24-next.1
+  - @backstage/plugin-permission-react@0.5.7-next.1
+
 ## 4.0.0-next.1
 
 ### Patch Changes

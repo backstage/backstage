@@ -15,6 +15,7 @@
  */
 import preview from '../../../../../.storybook/preview';
 import { Popover } from './Popover';
+import { PreviewTrigger } from '../../react-aria-components';
 import { Button } from '../Button/Button';
 import { DialogTrigger } from '../Dialog/Dialog';
 import { Text } from '../Text/Text';
@@ -296,5 +297,19 @@ export const WithLongContent = Default.extend({
         </Flex>
       </Popover>
     </DialogTrigger>
+  ),
+});
+
+export const Preview = meta.story({
+  render: () => (
+    <PreviewTrigger delay={500}>
+      <Button>Hover or focus to preview</Button>
+      <Popover placement="bottom" aria-label="Preview">
+        <Flex direction="column" gap="3">
+          <Text>Interactive content can be reached with Tab.</Text>
+          <Button>Preview action</Button>
+        </Flex>
+      </Popover>
+    </PreviewTrigger>
   ),
 });

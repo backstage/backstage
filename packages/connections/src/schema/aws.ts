@@ -47,7 +47,8 @@ export const AwsConnectionType = createConnectionType({
   type: 'aws',
   title: 'AWS',
   cardinality: 'singleton',
-  lookupStrategy: 'aws',
+  // All accounts share one connection; matchAuth selects account credentials.
+  getLookupIdentity: () => undefined,
   configSchema: z
     .object({
       roleName: z.string().optional(),
@@ -134,7 +135,7 @@ export const AwsConnectionType = createConnectionType({
         }),
     },
   ],
-  matchAuth: (authMethods, query) => {
+  matchAuth: (authMethods, query: { accountId?: string; arn?: string }) => {
     const accountId =
       query.accountId ?? (query.arn ? accountIdFromArn(query.arn) : undefined);
 

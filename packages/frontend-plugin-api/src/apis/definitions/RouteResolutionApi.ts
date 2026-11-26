@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
+import type { CoreApis } from './coreApis';
+import { createApiRef } from '../system';
 import {
   AnyRouteRefParams,
   RouteRef,
   SubRouteRef,
   ExternalRouteRef,
 } from '../../routing';
-import { createApiRef } from '../system';
+import type { AppNode } from './AppTreeApi';
+
+// Retain documentation link targets in declarations.
+export type { CoreApis };
 
 /**
  * TS magic for handling route parameters.
@@ -42,9 +47,53 @@ export type RouteFunc<TParams extends AnyRouteRefParams> = (
 ) => string;
 
 /**
+ * A route-bearing app node matched against a pathname.
+ *
+ * @public
+ */
+export interface RouteResolutionMatch {
+  /** The extension that declares this route. */
+  node: AppNode;
+  /** Matched app-relative URL prefix, excluding the splat tail. */
+  basePath: string;
+  /** Accumulated route pattern, retaining optional segments and splats. */
+  routePattern: string;
+  /** Decoded parameters contributed by this route and its ancestors. */
+  params: Record<string, string>;
+  /** Whether this route declares a non-empty path, even if optional segments are omitted. */
+  contributesPath: boolean;
+}
+
+/**
+ * Resolves routes and app-relative pathnames against the app's route tree.
+ *
+ * @remarks
+ *
+ * Available as `coreApis.routeResolution`.
+ *
  * @public
  */
 export interface RouteResolutionApi {
+  /**
+   * Matches an app-relative pathname against the app's route tree.
+   *
+   * Matches are ordered from outermost to innermost. When a node is supplied,
+   * only matches belonging to that node or its app-tree ancestors are returned.
+   * Nodes without a route inherit their ancestors' routing scope. An unmatched
+   * pathname returns an empty array of matches.
+   *
+   * The pathname excludes the deployment basename. It can differ from the
+   * current browser location, allowing adapters to resolve navigation before
+   * React renders the destination.
+   */
+  resolvePath(options: { pathname: string; node?: AppNode }): {
+    matches: readonly RouteResolutionMatch[];
+  };
+
+  /**
+   * Resolves a route reference into a function that generates a path for it,
+   * or `undefined` when the route reference has no bound route in the app.
+   */
   resolve<TParams extends AnyRouteRefParams>(
     anyRouteRef:
       | RouteRef<TParams>
@@ -64,7 +113,7 @@ export interface RouteResolutionApi {
  * The `ApiRef` of {@link RouteResolutionApi}.
  *
  * @public
- * @deprecated Use {@link coreApis.routeResolution} instead.
+ * @deprecated Use {@link CoreApis.routeResolution | coreApis.routeResolution} instead.
  */
 export const routeResolutionApiRef = createApiRef<RouteResolutionApi>().with({
   id: 'core.route-resolution',

@@ -21,13 +21,17 @@
 // ******************************************************************
 import { Remote } from '../models/Remote.model';
 
+
 /**
- * @public
- */
+  * @public
+  */
 export type GetRemotes = {
-  response: Array<Remote> | Error | Error;
-};
+    response:  Array<Remote>  |   Error  |   Error  
+}
 
 export type EndpointMap = {
-  '#get|/remotes': GetRemotes;
-};
+    
+    '#get|/remotes': GetRemotes,
+    
+}
+

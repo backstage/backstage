@@ -42,13 +42,13 @@ describe('createRouter', () => {
         $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'object',
         properties: {
-          host: {
+          baseUrl: {
             type: 'string',
           },
         },
         additionalProperties: false,
       });
-      expect(response.body.required).toEqual(['host']);
+      expect(response.body.required).toEqual(['baseUrl']);
       expect(response.body).not.toHaveProperty('parse');
     });
 

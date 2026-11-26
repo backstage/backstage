@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
+import type { InternalCoreApis } from './coreApis';
 import { SwappableComponentRef } from '../../components';
 import { createApiRef } from '../system';
+
+// Retain documentation link targets in declarations.
+export type { InternalCoreApis };
 
 /**
  * API for looking up components based on component refs.
@@ -35,7 +39,7 @@ export interface SwappableComponentsApi {
  * The `ApiRef` of {@link SwappableComponentsApi}.
  *
  * @public
- * @deprecated Use {@link coreApis.swappableComponents} instead.
+ * @deprecated Use {@link InternalCoreApis.swappableComponents | coreApis.internal.swappableComponents} instead.
  */
 export const swappableComponentsApiRef =
   createApiRef<SwappableComponentsApi>().with({

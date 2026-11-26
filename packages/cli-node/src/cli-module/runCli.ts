@@ -26,7 +26,11 @@ import chalk from 'chalk';
 import { cli, command } from 'cleye';
 import type { Renderers } from 'cleye';
 import { CommandGraph } from './CommandGraph';
-import type { CliCommand, CliModule } from './types';
+import {
+  findCliPackageContext,
+  resolveCommandVariant,
+} from './resolveCommandVariant';
+import type { CliCommand, CliModule, CliPackageCommand } from './types';
 
 interface HelpNode {
   id?: string;
@@ -159,8 +163,10 @@ function createHelpOptions(options: {
       const { name, children } = OpaqueCommandTreeNode.toInternal(node);
       groupRows.push([name, createGroupPreview(children, previewWidth)]);
     } else {
-      const { name, command: cmd } = OpaqueCommandLeafNode.toInternal(node);
-      commandRows.push([name, cmd.description]);
+      const { name, variants } = OpaqueCommandLeafNode.toInternal(node);
+      // The fallback is the default implementation, so it describes the command
+      const described = variants.find(v => !v.if) ?? variants[0];
+      commandRows.push([name, described.command.description]);
     }
   }
   if (includeHelpCommand) {
@@ -263,11 +269,11 @@ async function runCommandLevel(options: {
               version,
             });
           } else {
-            await executeCommand(
-              OpaqueCommandLeafNode.toInternal(node).command,
-              commandArgs,
-              programName,
+            const selected = await resolveCommandVariant(
+              OpaqueCommandLeafNode.toInternal(node).variants,
+              () => findCliPackageContext(process.cwd()),
             );
+            await executeCommand(selected, commandArgs, programName);
             await flushStdio();
             process.exit(process.exitCode ?? 0);
           }
@@ -358,6 +364,11 @@ function hasVersionFlag(args: string[]): boolean {
  * This is intended for creating custom CLI packages from a fixed set of
  * directly imported modules. Module discovery and override behavior are left
  * to the caller.
+ *
+ * Multiple modules may provide the same `package` command if all but at most
+ * one of them declare `if`. The variant to run is selected at invocation
+ * time based on the package at the current working directory, see
+ * {@link CliPackageCommand.if}.
  *
  * Invoking the program or a command group without a subcommand displays
  * help for that level and completes successfully. Command groups and commands

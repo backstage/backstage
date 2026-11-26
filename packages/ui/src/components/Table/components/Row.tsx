@@ -88,7 +88,7 @@ export function Row<T extends object>(props: RowProps<T>) {
 
   return (
     <ReactAriaRow
-      {...restProps}
+      {...(restProps as React.ComponentProps<typeof ReactAriaRow>)}
       {...dataAttributes}
       target={effectiveTarget}
       rel={effectiveRel}

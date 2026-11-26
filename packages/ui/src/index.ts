@@ -94,7 +94,11 @@ export type {
 
 // Provider
 export { BUIProvider } from './provider';
-export type { BUIProviderProps } from './provider';
+export type {
+  BUIProviderProps,
+  BUINavigation,
+  BUINavigationOptions,
+} from './provider';
 
 // Analytics
 export { useAnalytics, getNodeText } from './analytics';

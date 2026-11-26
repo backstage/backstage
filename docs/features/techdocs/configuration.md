@@ -216,6 +216,24 @@ techdocs:
 
 Plugins listed in `defaultPlugins` are also automatically permitted and carry the same trust considerations. When using the TechDocs CLI, use `--defaultPlugin` to both add and permit a plugin.
 
+#### Permitted Markdown Extensions
+
+TechDocs also validates the `markdown_extensions` entries in `mkdocs.yml` during documentation generation. By default, it permits the extensions that are built into the `markdown` package (usable with either their short name like `admonition`, or the full module path like `markdown.extensions.admonition`), the `pymdownx.*` family of extensions, and the rendering extensions that ship with the official TechDocs build images. Other extensions are removed before the build runs, and a warning is logged.
+
+If your documentation requires another extension, for example one from a custom build image, you can extend the permitted set using `dangerouslyAllowAdditionalExtensions`. Only allow extensions that have been audited for use in your environment, including every configuration option that documentation authors can supply. Some markdown extensions load files or execute code as part of documentation generation.
+
+**Example:**
+
+```yaml
+techdocs:
+  generator:
+    mkdocs:
+      dangerouslyAllowAdditionalExtensions:
+        - markdown_inline_mermaid
+```
+
+When running `techdocs-cli generate` directly, the same behavior is available via the `--dangerouslyAllowAdditionalExtensions` CLI flag, since the CLI does not currently read this option from a config file.
+
 ## Builder Configuration
 
 `techdocs.builder`

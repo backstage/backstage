@@ -69,7 +69,12 @@ Use the after parameter to fetch only events after a specific event ID for incre
                     ),
                   body: z
                     .object({
-                      message: z.string().describe('The log message'),
+                      message: z
+                        .string()
+                        .optional()
+                        .describe(
+                          'The log message; absent on a recovered event',
+                        ),
                       stepId: z
                         .string()
                         .optional()

@@ -17,6 +17,50 @@ yarn add @backstage/ui
 - [Backstage Readme](https://github.com/backstage/backstage/blob/master/README.md)
 - [Backstage Documentation](https://backstage.io/docs)
 
+## Routing
+
+BUI uses React Aria for link activation, including keyboard input, modified
+clicks, downloads, and event cancellation. Backstage apps configure BUI routing
+automatically. A standalone app can configure client navigation with
+`BUIProvider`'s `useNavigation` prop:
+
+```tsx
+type BUINavigation = {
+  navigate: (
+    href: string,
+    options?: { replace?: boolean; state?: unknown },
+  ) => void;
+  createHref: (href: string) => string;
+  pathname: string;
+};
+```
+
+The hook runs at each consuming control's position in the app. Return a
+`createHref` function and a `navigate` function that interpret relative targets
+from that same position. Resolved hrefs and `pathname` must include the deployment
+basename. `createHref` is a normal function so collections can resolve multiple
+items. Absolute URLs remain browser-owned.
+
+BUI uses browser navigation unless the app supplies a host hook or a React Aria
+`RouterProvider` from the control's installation. BUI no longer detects an
+ambient React Router. Nested BUI providers inherit the host hook.
+
+### Migrating an existing integration
+
+- Upgrade the app's BUI provider before separately bundled BUI components.
+  Backstage apps retain the frozen V2 React Router integration for older
+  components; nested new providers preserve it independently of their host hook.
+- Standalone apps that relied on automatic React Router integration must supply
+  `useNavigation`. React Router is no longer a BUI peer dependency.
+- Use the router-neutral `routerOptions` fields `replace` and `state`. Options
+  specific to React Router are no longer part of the BUI contract.
+- In Backstage apps, use app-absolute paths or route-ref destinations. A page
+  adapter also enables its library's relative routing for BUI controls inside it.
+  Empty hrefs follow React Aria's native behavior.
+- When using React Aria components directly in a Backstage app, bind them at their route scope to
+  `useNavigation` from `@backstage/frontend-plugin-api`.
+  See [page router integration](https://backstage.io/docs/frontend-system/building-plugins/page-routers).
+
 ## Writing Changesets for Components
 
 When creating changesets for component-specific changes, add component metadata to help maintain documentation:

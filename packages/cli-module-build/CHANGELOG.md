@@ -1,5 +1,74 @@
 # @backstage/cli-module-build
 
+## 0.2.0-next.0
+
+### Minor Changes
+
+- a6a72ab: **BREAKING**: Updated the frontend bundler to Rspack 2. The `LEGACY_WEBPACK_BUILD` fallback is unchanged. Production bundles are smaller, as Rspack 2 removes more unused code by default.
+
+  Production CSS is now minified for the browsers in the app's `browserslist` configuration, rather than for all browsers that fully support ES6, which usually means fewer vendor prefixes and fallbacks. Production builds now always use the `production` environment of that configuration, or the one that `BROWSERSLIST_ENV` names, instead of picking it by `NODE_ENV`. Apps without a `browserslist` configuration are unaffected.
+
+  The new Rspack dev server dropped the `path` and `logLevel` options of the `proxy` configuration in `package.json`. Rename `path` to `context`, and remove `logLevel`, which no longer has an effect. Both are still accepted for now and log a warning.
+
+  The `EXPERIMENTAL_LAZY_COMPILATION` environment variable now enables lazy compilation in the frontend dev server. With Rspack it had no effect before. It still has no effect on module federation remotes.
+
+  The error overlay of the frontend dev server is now rendered in an element with the ID `rspack-dev-server-client-overlay` instead of `webpack-dev-server-client-overlay`. Update any end-to-end tests that look for the overlay by its ID.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.7-next.0
+
+## 0.1.10
+
+### Patch Changes
+
+- 04a54e2: Switched the compilation target to ES2024, which all supported Node.js versions fully support. Package builds, app bundles, and the backend development server now compile code for ES2024, and the TypeScript `target` and `lib` options in `@backstage/cli/config/tsconfig.json` are set to `ES2024`. This requires TypeScript 5.9 or later, which is now the oldest supported version according to the [versioning policy](https://backstage.io/docs/overview/versioning-policy#typescript-releases).
+
+  The `lib` change allows code to use ES2024 built-in APIs such as `Object.groupBy` and `Promise.withResolvers`. Backstage doesn't include polyfills, so frontend code that uses these APIs needs at least Chrome or Edge 119, Firefox 121, or Safari 17.4.
+
+- ed81712: Fixed `backstage-cli package start` and `backstage-cli repo start` so the `--require` flag can be repeated again. `repo start` also forwards every `--require` from a backend package's `start` script, instead of only the last one.
+- ed81712: Added `--import` flag to `backstage-cli repo start` and `backstage-cli package start`. This flag can be specified multiple times and is forwarded to the underlying node process.
+- ed8f1ef: Updated dependency `@module-federation/sdk` to `~2.9.0`.
+  Updated dependency `@module-federation/enhanced` to `~2.9.0`.
+  Updated dependency `@module-federation/runtime` to `~2.9.0`.
+  Updated dependency `@module-federation/runtime-core` to `~2.9.0`.
+- 20e14f5: Updated dependency `@types/react-dom` to `19.3.0`.
+  Updated dependency `react` to `19.3.0`.
+  Updated dependency `react-dom` to `19.3.0`.
+  Updated dependency `react-refresh` to `^0.19.0`.
+- 9120c46: Updated dependency `glob` to `^14.0.0`.
+- Updated dependencies
+  - @backstage/cli-node@0.3.6
+  - @backstage/errors@1.4.0
+  - @backstage/module-federation-common@0.1.7
+  - @backstage/cli-common@0.3.3
+  - @backstage/config@1.3.11
+  - @backstage/config-loader@1.11.5
+
+## 0.1.10-next.2
+
+### Patch Changes
+
+- ed81712: Fixed `backstage-cli package start` and `backstage-cli repo start` so the `--require` flag can be repeated again. `repo start` also forwards every `--require` from a backend package's `start` script, instead of only the last one.
+- ed81712: Added `--import` flag to `backstage-cli repo start` and `backstage-cli package start`. This flag can be specified multiple times and is forwarded to the underlying node process.
+- ed8f1ef: Updated dependency `@module-federation/sdk` to `~2.9.0`.
+  Updated dependency `@module-federation/enhanced` to `~2.9.0`.
+  Updated dependency `@module-federation/runtime` to `~2.9.0`.
+  Updated dependency `@module-federation/runtime-core` to `~2.9.0`.
+- 20e14f5: Updated dependency `@types/react-dom` to `19.3.0`.
+  Updated dependency `react` to `19.3.0`.
+  Updated dependency `react-dom` to `19.3.0`.
+  Updated dependency `react-refresh` to `^0.19.0`.
+- 9120c46: Updated dependency `glob` to `^14.0.0`.
+- Updated dependencies
+  - @backstage/cli-node@0.3.6-next.2
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/module-federation-common@0.1.7-next.0
+  - @backstage/cli-common@0.3.3-next.0
+  - @backstage/config@1.3.11-next.0
+  - @backstage/config-loader@1.11.5-next.0
+
 ## 0.1.10-next.1
 
 ### Patch Changes

@@ -235,9 +235,15 @@ export class DefaultHttpAuthService implements HttpAuthService {
       credentials = await this.credentials(res.req, { allow: ['user'] });
     }
 
-    const existingExpiresAt = await this.#existingCookieExpiration(res.req);
-    if (existingExpiresAt && !willExpireSoon(existingExpiresAt)) {
-      return { expiresAt: existingExpiresAt };
+    const existingCredentials = await this.#existingCookieCredentials(res.req);
+    if (
+      existingCredentials &&
+      existingCredentials.principal.userEntityRef ===
+        credentials.principal.userEntityRef &&
+      existingCredentials.expiresAt &&
+      !willExpireSoon(existingCredentials.expiresAt)
+    ) {
+      return { expiresAt: existingCredentials.expiresAt };
     }
 
     const { token, expiresAt } = await this.#auth.getLimitedUserToken(
@@ -282,7 +288,9 @@ export class DefaultHttpAuthService implements HttpAuthService {
     };
   }
 
-  async #existingCookieExpiration(req: Request): Promise<Date | undefined> {
+  async #existingCookieCredentials(
+    req: Request,
+  ): Promise<BackstageCredentials<BackstageUserPrincipal> | undefined> {
     const existingCookie = getCookieFromRequest(req);
     if (!existingCookie) {
       return undefined;
@@ -299,7 +307,7 @@ export class DefaultHttpAuthService implements HttpAuthService {
         return undefined;
       }
 
-      return existingCredentials.expiresAt;
+      return existingCredentials;
     } catch (error) {
       if (error.name === 'AuthenticationError') {
         return undefined;

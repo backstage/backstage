@@ -15,6 +15,7 @@
  */
 
 import { resolvePackagePath } from '@backstage/backend-plugin-api';
+import { ForwardedError } from '@backstage/errors';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import { resolve } from 'node:path';
@@ -30,6 +31,7 @@ import {
   getPathToCurrentOpenApiSpec,
   toGeneratorAdditionalProperties,
 } from '../../../../../lib/openapi/helpers';
+import { writeManifest } from '../../../../../lib/openapi/manifest';
 
 async function generate(
   outputDirectory: string,
@@ -89,20 +91,12 @@ async function generate(
 
   await fs.writeFile(
     resolve(parentDirectory, 'index.ts'),
-    `//
-    export * from './generated';`,
+    `//\nexport * from './generated';\n`,
   );
 
   await exec(`yarn backstage-cli package lint --fix ${parentDirectory}`, [], {
     signal: abortSignal?.signal,
   });
-
-  const prettier = targetPaths.resolveRoot('node_modules/.bin/prettier');
-  if (await fs.pathExists(prettier)) {
-    await exec(`${prettier} --write ${parentDirectory}`, [], {
-      signal: abortSignal?.signal,
-    });
-  }
 
   // Deduplicate imports in generated files
   const generatedFiles = await fs.readdir(resolvedOutputDirectory);
@@ -123,6 +117,13 @@ async function generate(
     recursive: true,
     force: true,
   });
+
+  await writeManifest({
+    kind: 'client',
+    generatedDir: resolvedOutputDirectory,
+    specPath: resolvedOpenapiPath,
+    additionalProperties,
+  });
 }
 
 export async function command(
@@ -140,7 +141,7 @@ export async function command(
     );
   } catch (err) {
     if (err.name === 'AbortError') {
-      console.debug('Server generation aborted.');
+      console.debug('Client generation aborted.');
       return;
     }
     if (isWatch) {
@@ -148,9 +149,8 @@ export async function command(
       console.group();
       console.log(chalk.red(err.message));
       console.groupEnd();
-    } else {
-      console.log(chalk.red(`Client generation failed.`));
-      console.log(chalk.red(err.message));
+      return;
     }
+    throw new ForwardedError('OpenAPI client generation failed', err);
   }
 }

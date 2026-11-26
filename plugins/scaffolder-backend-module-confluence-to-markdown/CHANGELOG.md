@@ -1,5 +1,37 @@
 # @backstage/plugin-scaffolder-backend-module-confluence-to-markdown
 
+## 0.3.29-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.1-next.0
+  - @backstage/integration@2.2.1-next.0
+  - @backstage/plugin-scaffolder-node@1.0.1-next.0
+
+## 0.3.28
+
+### Patch Changes
+
+- 076f478: Fixed the Confluence to Markdown action leaking a file handle for every attachment it downloaded. A download that failed partway through also left the scaffolder step hanging. It now fails with the underlying error.
+- Updated dependencies
+  - @backstage/integration@2.2.0
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/config@1.3.11
+  - @backstage/plugin-scaffolder-node@1.0.0
+
+## 0.3.28-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/integration@2.1.4-next.0
+  - @backstage/plugin-scaffolder-node@1.0.0-next.2
+  - @backstage/config@1.3.11-next.0
+
 ## 0.3.28-next.0
 
 ### Patch Changes

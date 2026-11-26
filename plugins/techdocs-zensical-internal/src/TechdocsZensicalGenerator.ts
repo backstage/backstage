@@ -45,6 +45,7 @@ type ZensicalGeneratorConfig = {
   legacyCopyReadmeMdToIndexMd?: boolean;
   dangerouslyAllowAdditionalKeys?: string[];
   dangerouslyAllowAdditionalPlugins?: string[];
+  dangerouslyAllowAdditionalExtensions?: string[];
 };
 import { ForwardedError } from '@backstage/errors';
 import { LoggerService } from '@backstage/backend-plugin-api';
@@ -128,6 +129,7 @@ export class TechdocsZensicalGenerator implements GeneratorBase {
       childLogger,
       this.options.dangerouslyAllowAdditionalKeys,
       this.options.dangerouslyAllowAdditionalPlugins,
+      this.options.dangerouslyAllowAdditionalExtensions,
     );
 
     const zensicalConfigPath = await patchZensicalConfig(
@@ -243,6 +245,9 @@ function readZensicalGeneratorConfig(config: Config): ZensicalGeneratorConfig {
     ),
     dangerouslyAllowAdditionalPlugins: config.getOptionalStringArray(
       'techdocs.generator.mkdocs.dangerouslyAllowAdditionalPlugins',
+    ),
+    dangerouslyAllowAdditionalExtensions: config.getOptionalStringArray(
+      'techdocs.generator.mkdocs.dangerouslyAllowAdditionalExtensions',
     ),
     legacyCopyReadmeMdToIndexMd: config.getOptionalBoolean(
       'techdocs.generator.mkdocs.legacyCopyReadmeMdToIndexMd',

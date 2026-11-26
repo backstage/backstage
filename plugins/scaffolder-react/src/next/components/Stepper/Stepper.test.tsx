@@ -23,7 +23,9 @@ import { useEffect } from 'react';
 import { FieldExtensionComponentProps } from '../../../extensions';
 import { LayoutTemplate } from '../../../layouts';
 import { SecretsContextProvider } from '../../../secrets';
+import { ReviewStepProps } from '../../../components/types';
 import { TemplateParameterSchema } from '../../../types';
+import { ReviewState } from '../ReviewState';
 import { Stepper } from './Stepper';
 
 describe('Stepper', () => {
@@ -2890,6 +2892,78 @@ describe('Stepper', () => {
       expect(screen.queryByText('DEPENDENCY_SECRET')).not.toBeInTheDocument();
       expect(screen.queryByText('NESTED_SECRET')).not.toBeInTheDocument();
       expect(screen.getByText('user')).toBeInTheDocument();
+    });
+
+    it('masks fields on review that a hidden step marks as a password', async () => {
+      const manifest: TemplateParameterSchema = {
+        title: 'Hidden step masking',
+        steps: [
+          {
+            title: 'Visible',
+            schema: { properties: { token: { type: 'string' } } },
+          },
+          {
+            title: 'Hidden',
+            when: false,
+            schema: {
+              properties: {
+                token: { type: 'string', 'ui:widget': 'password' },
+              },
+            },
+          },
+        ],
+      };
+      const initialState = { token: 'HIDDEN_STEP_SECRET' };
+
+      const { unmount } = await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper
+            manifest={manifest}
+            extensions={[]}
+            onCreate={jest.fn()}
+            initialState={initialState}
+          />
+        </SecretsContextProvider>,
+      );
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      });
+      expect(screen.queryByText('HIDDEN_STEP_SECRET')).not.toBeInTheDocument();
+      expect(screen.getByText('******')).toBeInTheDocument();
+      unmount();
+
+      // A custom review step gets everything it needs to keep the same masks
+      let reviewProps: ReviewStepProps | undefined;
+      const CustomReviewStep = (props: ReviewStepProps) => {
+        reviewProps = props;
+        return (
+          <ReviewState
+            formState={props.formData}
+            schemaFormState={props.schemaFormState}
+            schemas={props.steps}
+            maskSchemas={props.allSteps}
+          />
+        );
+      };
+      await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper
+            manifest={manifest}
+            extensions={[]}
+            onCreate={jest.fn()}
+            initialState={initialState}
+            components={{ ReviewStepComponent: CustomReviewStep }}
+          />
+        </SecretsContextProvider>,
+      );
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      });
+      expect(reviewProps?.steps).toHaveLength(1);
+      expect(reviewProps?.allSteps).toHaveLength(2);
+      expect(reviewProps?.schemaFormState).toEqual(initialState);
+      expect(screen.queryByText('HIDDEN_STEP_SECRET')).not.toBeInTheDocument();
+      expect(screen.getByText('******')).toBeInTheDocument();
     });
 
     it('should show steps with boolean when: true', async () => {

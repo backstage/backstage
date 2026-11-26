@@ -1,0 +1,352 @@
+/*
+ * Copyright 2026 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { act, render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import { mockApis } from '@backstage/frontend-test-utils';
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useNavigationType,
+  useParams,
+  useResolvedPath,
+} from 'react-router-dom';
+import { RootHistoryRouter } from './RootHistoryRouter';
+import { createAppHistory } from './AppHistory';
+import { createMemoryHistoryBackend } from './HistoryBackend';
+
+/**
+ * Reads everything the root projection is responsible for supplying: the
+ * location it publishes, the route context it publishes (deliberately
+ * empty — app chrome is not mounted under any page route), and the href a
+ * `Link` ends up with.
+ */
+function ChromeProbe() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  return (
+    <div>
+      <span data-testid="pathname">{location.pathname}</span>
+      <span data-testid="search">{location.search}</span>
+      <span data-testid="hash">{location.hash}</span>
+      <span data-testid="key">{location.key}</span>
+      <span data-testid="navigation-type">{useNavigationType()}</span>
+      <span data-testid="params">{JSON.stringify(useParams())}</span>
+      <span data-testid="resolved">{useResolvedPath('./create').pathname}</span>
+      <Link to="/catalog">Catalog</Link>
+      <button type="button" onClick={() => navigate('/pushed')}>
+        Push
+      </button>
+      <button
+        type="button"
+        onClick={() => navigate('/replaced', { replace: true })}
+      >
+        Replace
+      </button>
+      <button type="button" onClick={() => navigate(-1)}>
+        Back
+      </button>
+    </div>
+  );
+}
+
+describe('RootHistoryRouter', () => {
+  it('should publish the app history location, follow it, and supply a neutral route context', () => {
+    const history = mockApis.appHistory({
+      initialLocation: '/catalog/entity/foo?q=test#section',
+    });
+
+    render(
+      <RootHistoryRouter history={history}>
+        <ChromeProbe />
+      </RootHistoryRouter>,
+    );
+
+    expect(screen.getByTestId('pathname')).toHaveTextContent(
+      '/catalog/entity/foo',
+    );
+    expect(screen.getByTestId('search')).toHaveTextContent('?q=test');
+    expect(screen.getByTestId('hash')).toHaveTextContent('#section');
+
+    // App chrome is not mounted under any page route, so the route context is
+    // deliberately empty: there is no route for a relative target to be
+    // relative to, and it resolves from the app root instead.
+    expect(screen.getByTestId('params')).toHaveTextContent('{}');
+    expect(screen.getByTestId('resolved')).toHaveTextContent('/create');
+
+    act(() => {
+      history.navigate('/settings');
+    });
+
+    expect(screen.getByTestId('pathname')).toHaveTextContent('/settings');
+    expect(screen.getByTestId('search')).toBeEmptyDOMElement();
+    expect(screen.getByTestId('hash')).toBeEmptyDOMElement();
+  });
+
+  it.each([false, true])(
+    'keeps silent URL writes out of rerenders (Navigation API: %s)',
+    hasNavigationApi => {
+      const originalUrl = window.location.href;
+      const navigation = Object.assign(new EventTarget(), {
+        currentEntry: { key: 'initial', index: 0 },
+      });
+      if (hasNavigationApi) {
+        Object.defineProperty(window, 'navigation', {
+          configurable: true,
+          value: navigation,
+        });
+      }
+      window.history.replaceState(null, '', '/catalog?filter=owned');
+      const history = createAppHistory();
+      const view = render(
+        <RootHistoryRouter history={history}>
+          <ChromeProbe />
+        </RootHistoryRouter>,
+      );
+      try {
+        const snapshot = history.getSnapshot();
+        window.history.replaceState(null, '', '/catalog?filter=all');
+        act(() =>
+          navigation.dispatchEvent(
+            Object.assign(new Event('currententrychange'), {
+              navigationType: 'replace',
+            }),
+          ),
+        );
+        view.rerender(
+          <RootHistoryRouter history={history}>
+            <ChromeProbe />
+          </RootHistoryRouter>,
+        );
+        expect(window.location.search).toBe('?filter=all');
+        expect(screen.getByTestId('search')).toHaveTextContent('?filter=owned');
+        expect(history.getSnapshot()).toBe(snapshot);
+
+        act(() =>
+          history.navigate('/catalog?filter=starred', { replace: true }),
+        );
+        expect(screen.getByTestId('search')).toHaveTextContent(
+          '?filter=starred',
+        );
+        expect(history.getSnapshot()).not.toBe(snapshot);
+      } finally {
+        view.unmount();
+        history.dispose();
+        delete (window as unknown as { navigation?: unknown }).navigation;
+        window.history.replaceState(null, '', originalUrl);
+      }
+    },
+  );
+
+  it('follows context-free pushes and page or hash replacements', () => {
+    const originalUrl = window.location.href;
+    const originalNavigation = Object.getOwnPropertyDescriptor(
+      window,
+      'navigation',
+    );
+    window.history.replaceState(null, '', '/docs/first?filter=owned');
+    const navigation = Object.assign(new EventTarget(), {
+      currentEntry: { key: 'initial', index: 0 },
+    });
+    Object.defineProperty(window, 'navigation', {
+      configurable: true,
+      value: navigation,
+    });
+    const history = createAppHistory();
+    const pushState = window.history.pushState.bind(window.history);
+    const replaceState = window.history.replaceState.bind(window.history);
+    const pushSpy = jest
+      .spyOn(window.history, 'pushState')
+      .mockImplementation((state, title, url) => {
+        pushState(state, title, url);
+        navigation.currentEntry = { key: 'pushed', index: 1 };
+        navigation.dispatchEvent(
+          Object.assign(new Event('currententrychange'), {
+            navigationType: 'push',
+          }),
+        );
+      });
+    const replaceSpy = jest
+      .spyOn(window.history, 'replaceState')
+      .mockImplementation((state, title, url) => {
+        replaceState(state, title, url);
+        navigation.dispatchEvent(
+          Object.assign(new Event('currententrychange'), {
+            navigationType: 'replace',
+          }),
+        );
+      });
+    const notifications = jest.fn();
+    history.subscribe(notifications);
+    const view = render(
+      <RootHistoryRouter history={history}>
+        <ChromeProbe />
+      </RootHistoryRouter>,
+    );
+    try {
+      // An add-on outside React can navigate using only the browser History API.
+      act(() => window.history.pushState(null, '', '/docs/second'));
+      expect(screen.getByTestId('pathname')).toHaveTextContent('/docs/second');
+      expect(history.getSnapshot().action).toBe('PUSH');
+      expect(history.getSnapshot().entry).toEqual({ key: 'pushed', index: 1 });
+
+      act(() =>
+        window.history.replaceState(null, '', '/docs/third?filter=all'),
+      );
+      expect(screen.getByTestId('pathname')).toHaveTextContent('/docs/third');
+      expect(screen.getByTestId('search')).toHaveTextContent('?filter=all');
+      expect(history.getSnapshot().action).toBe('REPLACE');
+      const snapshot = history.getSnapshot();
+
+      act(() =>
+        window.history.replaceState(null, '', '/docs/third?filter=owned'),
+      );
+      view.rerender(
+        <RootHistoryRouter history={history}>
+          <ChromeProbe />
+        </RootHistoryRouter>,
+      );
+      expect(history.getSnapshot()).toBe(snapshot);
+      expect(screen.getByTestId('search')).toHaveTextContent('?filter=all');
+      expect(notifications).toHaveBeenCalledTimes(2);
+
+      act(() =>
+        window.history.replaceState(
+          null,
+          '',
+          '/docs/third?filter=owned#section',
+        ),
+      );
+      expect(screen.getByTestId('hash')).toHaveTextContent('#section');
+      expect(screen.getByTestId('search')).toHaveTextContent('?filter=owned');
+      expect(history.getSnapshot().action).toBe('REPLACE');
+
+      act(() =>
+        history.navigate('/docs/third?filter=framework', { replace: true }),
+      );
+      expect(screen.getByTestId('search')).toHaveTextContent(
+        '?filter=framework',
+      );
+      expect(notifications).toHaveBeenCalledTimes(4);
+    } finally {
+      view.unmount();
+      history.dispose();
+      pushSpy.mockRestore();
+      replaceSpy.mockRestore();
+      if (originalNavigation) {
+        Object.defineProperty(window, 'navigation', originalNavigation);
+      } else {
+        delete (window as unknown as { navigation?: unknown }).navigation;
+      }
+      window.history.replaceState(null, '', originalUrl);
+    }
+  });
+
+  it('should delegate navigation and hrefs to the app history without touching window.history', () => {
+    const pushSpy = jest.spyOn(window.history, 'pushState');
+    const replaceSpy = jest.spyOn(window.history, 'replaceState');
+    const goSpy = jest.spyOn(window.history, 'go');
+    const history = mockApis.appHistory({
+      initialLocation: '/catalog',
+      basename: '/backstage',
+    });
+
+    render(
+      <RootHistoryRouter history={history}>
+        <ChromeProbe />
+      </RootHistoryRouter>,
+    );
+
+    // The deploy basename comes from the app history, not from this component.
+    expect(screen.getByRole('link', { name: 'Catalog' })).toHaveAttribute(
+      'href',
+      '/backstage/catalog',
+    );
+
+    act(() => {
+      screen.getByRole('button', { name: 'Push' }).click();
+    });
+    act(() => {
+      screen.getByRole('button', { name: 'Replace' }).click();
+    });
+
+    expect(history.navigateCalls).toEqual([
+      { to: '/pushed', options: { state: undefined, replace: false } },
+      { to: '/replaced', options: { state: undefined, replace: true } },
+    ]);
+    expect(screen.getByTestId('pathname')).toHaveTextContent('/replaced');
+
+    // Numeric navigation goes through the same app history authority rather
+    // than reaching around it to window.history.
+    act(() => {
+      screen.getByRole('button', { name: 'Back' }).click();
+    });
+
+    expect(history.navigateCalls.at(-1)).toEqual({ to: -1 });
+    expect(screen.getByTestId('pathname')).toHaveTextContent('/catalog');
+    expect(pushSpy).not.toHaveBeenCalled();
+    expect(replaceSpy).not.toHaveBeenCalled();
+    expect(goSpy).not.toHaveBeenCalled();
+
+    pushSpy.mockRestore();
+    replaceSpy.mockRestore();
+    goSpy.mockRestore();
+  });
+
+  it('should refresh location keys on replace and restore them on traversal', () => {
+    const history = createAppHistory({
+      history: createMemoryHistoryBackend({ initialEntries: ['/start'] }),
+    });
+
+    const view = render(
+      <RootHistoryRouter history={history}>
+        <ChromeProbe />
+      </RootHistoryRouter>,
+    );
+
+    const initialKey = screen.getByTestId('key').textContent;
+    expect(initialKey).not.toBe('default');
+    expect(screen.getByTestId('navigation-type')).toHaveTextContent('POP');
+
+    act(() => screen.getByRole('button', { name: 'Push' }).click());
+    const pushedKey = screen.getByTestId('key').textContent;
+    expect(pushedKey).not.toBe(initialKey);
+    expect(screen.getByTestId('navigation-type')).toHaveTextContent('PUSH');
+
+    act(() => screen.getByRole('button', { name: 'Replace' }).click());
+    const replacedKey = screen.getByTestId('key').textContent;
+    expect(replacedKey).not.toBe(pushedKey);
+    expect(screen.getByTestId('navigation-type')).toHaveTextContent('REPLACE');
+
+    view.unmount();
+    render(
+      <RootHistoryRouter history={history}>
+        <ChromeProbe />
+      </RootHistoryRouter>,
+    );
+    expect(screen.getByTestId('key').textContent).toBe(replacedKey);
+
+    act(() => screen.getByRole('button', { name: 'Back' }).click());
+    expect(screen.getByTestId('key').textContent).toBe(initialKey);
+    expect(screen.getByTestId('navigation-type')).toHaveTextContent('POP');
+
+    act(() => history.navigate(1));
+    expect(screen.getByTestId('key').textContent).toBe(replacedKey);
+
+    history.dispose();
+  });
+});

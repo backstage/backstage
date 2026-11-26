@@ -27,6 +27,7 @@ Commands:
 Usage: techdocs-cli generate|build [options]
 
 Options:
+  --dangerouslyAllowAdditionalExtensions [additionalExtensions...]
   --dangerouslyAllowAdditionalKeys [additionalKeys...]
   --defaultPlugin [defaultPlugins...]
   --disableExternalFonts

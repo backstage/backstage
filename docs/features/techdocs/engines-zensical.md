@@ -93,8 +93,9 @@ These generator settings also apply to Zensical builds:
 
 - `techdocs.generator.pullImage` and `pullOptions`
 - `techdocs.generator.mkdocs.legacyCopyReadmeMdToIndexMd`
-- `techdocs.generator.mkdocs.dangerouslyAllowAdditionalKeys` and
-  `dangerouslyAllowAdditionalPlugins`
+- `techdocs.generator.mkdocs.dangerouslyAllowAdditionalKeys`,
+  `dangerouslyAllowAdditionalPlugins` and
+  `dangerouslyAllowAdditionalExtensions`
 
 These only affect MkDocs, and Zensical builds ignore them:
 `omitTechdocsCorePlugin`, `defaultPlugins` and `disableExternalFonts`.
@@ -102,9 +103,11 @@ These only affect MkDocs, and Zensical builds ignore them:
 :::caution Shared allowlist
 
 Zensical builds sanitize `mkdocs.yml` with the same allowlist as MkDocs. The
-`dangerouslyAllowAdditionalKeys` and `dangerouslyAllowAdditionalPlugins`
-settings live under `techdocs.generator.mkdocs` but apply to both engines, so
-loosening the allowlist for one loosens it for the other.
+`dangerouslyAllowAdditionalKeys`,
+`dangerouslyAllowAdditionalPlugins` and
+`dangerouslyAllowAdditionalExtensions` settings live under
+`techdocs.generator.mkdocs` but apply to both engines, so loosening the
+allowlist for one loosens it for the other.
 
 :::
 

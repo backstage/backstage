@@ -147,6 +147,7 @@ const config: Config = {
       src: 'https://widget.kapa.ai/kapa-widget.bundle.js',
       'data-website-id': '4f3b7b51-4ea6-4a5b-aede-44fbe128c0f2',
       'data-project-name': 'Backstage',
+      'data-view-mode': 'sidebar',
       'data-project-color': '#36baa2',
       'data-project-logo': 'https://backstage.io/img/favicon.svg',
       'data-launcher-button-image': 'https://backstage.io/img/favicon.svg',
@@ -346,8 +347,90 @@ const config: Config = {
         fromExtensions: [],
         redirects: [
           {
+            from: '/docs/tutorials/migrate-to-mui5',
+            to: '/docs/conf/user-interface#material-ui-v5-compatibility',
+          },
+          ...(useVersionedDocs
+            ? [
+                {
+                  from: '/docs/next/tutorials/migrate-to-mui5',
+                  to: '/docs/next/conf/user-interface#material-ui-v5-compatibility',
+                },
+              ]
+            : []),
+          {
             from: '/docs',
             to: '/docs/landing-page/doc-landing-page',
+          },
+          // Annotation and status keys look like URLs (e.g. backstage.io/orphan) and
+          // get auto-linked in many tools, so send them to their docs
+          {
+            from: '/managed-by-location',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiomanaged-by-location',
+          },
+          {
+            from: '/managed-by-origin-location',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiomanaged-by-origin-location',
+          },
+          {
+            from: '/orphan',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageioorphan',
+          },
+          {
+            from: '/techdocs-ref',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiotechdocs-ref',
+          },
+          {
+            from: '/techdocs-entity',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiotechdocs-entity',
+          },
+          {
+            from: '/techdocs-entity-path',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiotechdocs-entity-path',
+          },
+          {
+            from: '/view-url',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageioview-url-backstageioedit-url',
+          },
+          {
+            from: '/edit-url',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageioview-url-backstageioedit-url',
+          },
+          {
+            from: '/source-location',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiosource-location',
+          },
+          {
+            from: '/source-template',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiosource-template',
+          },
+          {
+            from: '/ldap-rdn',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageioldap-rdn-backstageioldap-uuid-backstageioldap-dn',
+          },
+          {
+            from: '/ldap-uuid',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageioldap-rdn-backstageioldap-uuid-backstageioldap-dn',
+          },
+          {
+            from: '/ldap-dn',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageioldap-rdn-backstageioldap-uuid-backstageioldap-dn',
+          },
+          {
+            from: '/code-coverage',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiocode-coverage',
+          },
+          {
+            from: '/github-actions-id',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiogithub-actions-id',
+          },
+          {
+            from: '/definition-at-location',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiodefinition-at-location',
+          },
+          {
+            from: '/catalog-processing',
+            to: '/docs/features/software-catalog/well-known-statuses#backstageiocatalog-processing',
           },
           {
             from: '/docs/features/software-catalog/software-catalog-overview',

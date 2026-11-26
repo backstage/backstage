@@ -1,5 +1,41 @@
 # @backstage/plugin-catalog-node
 
+## 3.0.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.12.1-next.0
+  - @backstage/backend-plugin-api@1.12.1-next.0
+  - @backstage/plugin-permission-node@0.11.7-next.0
+
+## 3.0.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.4
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/catalog-model@1.10.3
+  - @backstage/plugin-catalog-common@1.2.2
+  - @backstage/plugin-permission-common@0.9.13
+  - @backstage/plugin-permission-node@0.11.6
+
+## 3.0.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/backend-test-utils@1.12.0-next.2
+  - @backstage/plugin-permission-node@0.11.6-next.1
+  - @backstage/catalog-client@1.16.4-next.1
+  - @backstage/catalog-model@1.10.3-next.0
+  - @backstage/plugin-permission-common@0.9.13-next.0
+  - @backstage/plugin-catalog-common@1.2.2-next.0
+
 ## 2.2.7-next.1
 
 ### Patch Changes

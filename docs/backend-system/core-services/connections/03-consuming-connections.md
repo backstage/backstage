@@ -33,7 +33,7 @@ through your backend's environment:
 ```yaml title="app-config.yaml"
 connections:
   - type: github
-    host: github.com
+    baseUrl: https://github.com/
     auth:
       - method: token
         token: ${GITHUB_TOKEN}
@@ -75,7 +75,7 @@ export const examplePlugin = createBackendPlugin({
           query: { url: 'https://github.com/backstage/backstage' },
           authMethods: ['app', 'token'],
         });
-        logger.info(`Resolved GitHub connection for ${connection.host}`);
+        logger.info(`Resolved GitHub connection for ${connection.baseUrl}`);
       },
     });
   },
@@ -110,7 +110,7 @@ credential types.
 ## Look up a host-based connection
 
 Host-based types accept a query containing a URL. The service parses the URL
-and selects the connection with a matching `host`:
+and selects the connection whose `baseUrl` has a matching host:
 
 ```ts
 const connection = await connections.find({
@@ -121,7 +121,7 @@ const connection = await connections.find({
   authMethods: ['app', 'token'],
 });
 
-connection.host; // string
+connection.baseUrl; // string
 connection.auth.method; // 'app' | 'token'
 ```
 
@@ -170,12 +170,12 @@ const connection = await connections.find({
 switch (connection.auth.method) {
   case 'token':
     return createClientWithToken({
-      host: connection.host,
+      baseUrl: connection.baseUrl,
       token: connection.auth.token,
     });
   case 'app':
     return createClientWithGitHubApp({
-      host: connection.host,
+      baseUrl: connection.baseUrl,
       appId: connection.auth.appId,
       privateKey: connection.auth.privateKey,
       clientId: connection.auth.clientId,

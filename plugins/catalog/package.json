@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog",
-  "version": "2.0.11-next.1",
+  "version": "2.1.1-next.0",
   "description": "The Backstage plugin for browsing the Backstage catalog",
   "backstage": {
     "role": "frontend-plugin",
@@ -81,7 +81,6 @@
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
-    "@mui/utils": "^5.14.15",
     "@remixicon/react": "^4.6.0",
     "classnames": "^2.3.1",
     "csv-stringify": "^5.6.5",
@@ -97,6 +96,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
+    "@backstage/frontend-adapter-react-router-v6": "workspace:^",
     "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/test-utils": "workspace:^",
@@ -112,9 +112,9 @@
     "swr": "^2.2.5"
   },
   "peerDependencies": {
-    "@types/react": "^17.0.0 || ^18.0.0",
-    "react": "^17.0.0 || ^18.0.0",
-    "react-dom": "^17.0.0 || ^18.0.0",
+    "@types/react": "^18.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
     "react-router-dom": "^6.30.2"
   },
   "peerDependenciesMeta": {

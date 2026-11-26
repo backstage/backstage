@@ -66,8 +66,33 @@ Further documentation:
 ## Configuration
 
 To use the entity provider, you'll need a [Bitbucket Cloud integration set up](locations.md).
-Very likely a `username` and `appPassword` will be required
-(you are restricted to public repositories and a very low rate limit otherwise).
+
+The entity provider uses the
+[workspace code search API](https://developer.atlassian.com/cloud/bitbucket/rest/api-group-workspaces/#api-workspaces-workspace-codesearch-post)
+of Bitbucket Cloud when the integration credential can call it. That API needs
+a credential that identifies a user, for example a `username` (your Atlassian
+account email) and an API `token` with the scopes `read:repository:bitbucket`
+and `read:workspace:bitbucket`. An API token is the faster choice for a large
+workspace, because one search covers the workspace.
+
+Bitbucket Cloud answers `403` for credentials that do not identify a user.
+That includes an OAuth consumer (`clientId` and `clientSecret`), an app
+password, and an API key. An API token without the `read:workspace:bitbucket`
+scope also answers `403`. Adding that scope restores workspace code search.
+It answers `404` when code search is not enabled for the workspace. Discovery
+then lists the matching repositories and checks the catalog path with the
+source API, which accepts the same credentials as the rest of the integration.
+An absolute catalog path such as `/catalog-info.yaml` is one request per
+repository. A wildcard path walks from the longest directory prefix with no
+`*` or `?`. For example, `/services/*/catalog-info.yaml` lists `services` and
+skips unrelated directories. A relative path, and an absolute path with a
+wildcard in the first segment such as `/catalog-*.yaml`, still walks from the
+repository root. Relative and wildcard `catalogPath` values are expensive in
+source API fallback mode on a large workspace: each repository is walked
+separately, so thousands of repositories can make discovery slow or receive
+`429` responses. Prefer an absolute catalog path, or an API token that
+includes `read:workspace:bitbucket`, when the workspace is large. A prefix
+that is missing, or a file at that prefix, adds no locations.
 
 Additionally, you need to configure your entity provider instance(s):
 
@@ -100,8 +125,8 @@ It is possible but certainly not recommended to skip the provider ID level.
   Default: `/catalog-info.yaml`.
   Path where to look for `catalog-info.yaml` files.
   When started with `/`, it is an absolute path from the repo root.
-  It supports values as allowed by the `path` filter/modifier
-  [at Bitbucket Cloud's code search](https://confluence.atlassian.com/bitbucket/code-search-in-bitbucket-873876782.html#Search-Pathmodifier).
+  Otherwise, it matches the file at the repo root and in any folder.
+  In the path, `*` matches any characters, including `/`, and `?` matches one character.
 - **`filters`** _(optional)_:
   - **`projectKey`** _(optional)_:
     Regular expression used to filter results based on the project key.

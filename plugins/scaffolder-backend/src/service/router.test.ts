@@ -2012,6 +2012,53 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
       expect(subscriber!.closed).toBe(true);
     });
+
+    it('should not subscribe when the client disconnects before the stream is opened', async () => {
+      const { unwrappedRouter: router, taskBroker } = await createTestRouter();
+
+      let onGetCalled: () => void;
+      const getCalled = new Promise<void>(resolve => {
+        onGetCalled = resolve;
+      });
+      let releaseTask: () => void;
+      const taskReleased = new Promise<void>(resolve => {
+        releaseTask = resolve;
+      });
+      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockImplementation(
+        async () => {
+          onGetCalled();
+          await taskReleased;
+          return {
+            id: 'a-random-id',
+            spec: {} as any,
+            status: 'completed',
+            createdAt: '',
+            secrets: {
+              __initiatorCredentials: JSON.stringify(credentials),
+            },
+            createdBy: '',
+          };
+        },
+      );
+
+      const req = request(router)
+        .get('/v2/tasks/a-random-id/eventstream')
+        .set('accept', 'text/event-stream');
+      const finished = req.catch(() => {
+        // ignore 'aborted' error
+      });
+
+      // disconnect while the handler is still waiting for the task
+      await getCalled;
+      req.abort();
+      await finished;
+      await new Promise(resolve => setTimeout(resolve, 50));
+
+      releaseTask!();
+      await new Promise(resolve => setTimeout(resolve, 50));
+
+      expect(taskBroker.event$).not.toHaveBeenCalled();
+    });
   });
 
   describe('GET /v2/tasks/:taskId/events', () => {
