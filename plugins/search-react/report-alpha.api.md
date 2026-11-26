@@ -60,7 +60,7 @@ export type SearchFilterExtensionComponentProps = {
   className: string;
 };
 
-// @alpha (undocumented)
+// @public
 export const SearchFilterResultTypeBlueprint: ExtensionBlueprint<{
   kind: 'search-filter-result-type';
   params: SearchFilterResultTypeBlueprintParams;
@@ -89,7 +89,7 @@ export const SearchFilterResultTypeBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-// @alpha (undocumented)
+// @public
 export interface SearchFilterResultTypeBlueprintParams {
   icon: JSX.Element;
   name: string;

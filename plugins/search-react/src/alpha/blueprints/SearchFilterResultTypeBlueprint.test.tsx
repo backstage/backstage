@@ -18,7 +18,7 @@ import {
   PageBlueprint,
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
-import { SearchFilterResultTypeBlueprint } from './SearchFilterResultTypeBlueprint';
+import { SearchFilterResultTypeBlueprint } from '../..';
 import { searchResultTypeDataRef } from './types';
 import {
   createExtensionTester,
