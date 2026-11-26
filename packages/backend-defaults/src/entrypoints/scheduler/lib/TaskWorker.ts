@@ -27,13 +27,12 @@ import {
   TaskApiTasksResponse,
 } from './types';
 import {
-  delegateAbortController,
+  abortTask,
+  getTaskAbortCause,
   nowPlus,
   sleep,
   dbTime,
   serializeError,
-  getTaskAbortCause,
-  TaskAbortError,
 } from './util';
 import { SchedulerServiceTaskFunction } from '@backstage/backend-plugin-api';
 import { TaskStatePoller } from './TaskStatePoller';
@@ -282,22 +281,20 @@ export class TaskWorker {
     // Abort the task execution either if the worker is stopped, or if the
     // task timeout is hit, or if the task ticket was lost (e.g. due to
     // cancellation from another host)
-    const taskAbortController = delegateAbortController(
-      signal,
-      () =>
-        new TaskAbortError(
-          'shutdown',
-          `Task "${this.taskId}" was aborted because its worker stopped`,
-        ),
-    );
+    const taskAbortController = new AbortController();
+    const onWorkerStopped = () => abortTask(taskAbortController, 'shutdown');
+    if (signal.aborted) {
+      onWorkerStopped();
+    } else {
+      signal.addEventListener('abort', onWorkerStopped, { once: true });
+    }
     const timeoutHandle = setTimeout(() => {
-      taskAbortController.abort(
-        new TaskAbortError(
-          'timeout',
-          `Task "${this.taskId}" timed out after ${taskSettings.timeoutAfterDuration}`,
-        ),
-      );
+      abortTask(taskAbortController, 'timeout');
     }, Duration.fromISO(taskSettings.timeoutAfterDuration).as('milliseconds'));
+    const timeoutError = () =>
+      new Error(
+        `Task "${this.taskId}" timed out after ${taskSettings.timeoutAfterDuration}`,
+      );
     let livenessHandle: ReturnType<typeof setTimeout> | undefined;
     const scheduleLivenessCheck = () => {
       livenessHandle = setTimeout(async () => {
@@ -323,9 +320,9 @@ export class TaskWorker {
         await this.tryReleaseTask(ticket, taskSettings);
         return { result: 'aborted' };
       } else if (abortCause === 'timeout') {
-        const reason = taskAbortController.signal.reason as TaskAbortError;
-        this.logger.warn(reason.message);
-        await this.tryReleaseTask(ticket, taskSettings, reason);
+        const error = timeoutError();
+        this.logger.warn(error.message);
+        await this.tryReleaseTask(ticket, taskSettings, error);
         return { result: 'failed' };
       } else if (abortCause === 'ticket-lost') {
         // Already logged by the liveness check, and the run belongs to
@@ -341,13 +338,14 @@ export class TaskWorker {
       };
       clearTimeout(timeoutHandle);
       clearTimeout(livenessHandle);
+      signal.removeEventListener('abort', onWorkerStopped);
     }
 
-    // The task may also return normally after being aborted
+    // The task may also return normally after timing out
     if (getTaskAbortCause(taskAbortController.signal) === 'timeout') {
-      const reason = taskAbortController.signal.reason as TaskAbortError;
-      this.logger.warn(reason.message);
-      await this.tryReleaseTask(ticket, taskSettings, reason);
+      const error = timeoutError();
+      this.logger.warn(error.message);
+      await this.tryReleaseTask(ticket, taskSettings, error);
       return { result: 'failed' };
     }
 
@@ -456,12 +454,7 @@ export class TaskWorker {
         this.logger.info(
           `Task ticket for "${this.taskId}" is no longer valid; aborting execution`,
         );
-        taskAbortController.abort(
-          new TaskAbortError(
-            'ticket-lost',
-            `Task ticket for "${this.taskId}" is no longer valid`,
-          ),
-        );
+        abortTask(taskAbortController, 'ticket-lost');
       }
     } catch (e) {
       this.logger.warn(

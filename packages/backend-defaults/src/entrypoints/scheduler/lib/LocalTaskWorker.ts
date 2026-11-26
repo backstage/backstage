@@ -21,11 +21,11 @@ import { CronTime } from 'cron';
 import { DateTime, Duration } from 'luxon';
 import { TaskSettingsV2, TaskApiTasksResponse } from './types';
 import {
+  abortTask,
   delegateAbortController,
   getTaskAbortCause,
   serializeError,
   sleep,
-  TaskAbortError,
 } from './util';
 
 /**
@@ -151,22 +151,17 @@ export class LocalTaskWorker {
   ): Promise<void> {
     // Abort the task execution either if the worker is stopped, or if the
     // task timeout is hit
-    this.taskAbortController = delegateAbortController(
-      signal,
-      () =>
-        new TaskAbortError(
-          'shutdown',
-          `Task "${this.taskId}" was aborted because its worker stopped`,
-        ),
-    );
+    const taskAbortController = new AbortController();
+    this.taskAbortController = taskAbortController;
+    const onWorkerStopped = () => abortTask(taskAbortController, 'shutdown');
+    if (signal.aborted) {
+      onWorkerStopped();
+    } else {
+      signal.addEventListener('abort', onWorkerStopped, { once: true });
+    }
     const timeoutDuration = Duration.fromISO(settings.timeoutAfterDuration);
     const timeoutHandle = setTimeout(() => {
-      this.taskAbortController?.abort(
-        new TaskAbortError(
-          'timeout',
-          `Task "${this.taskId}" timed out after ${settings.timeoutAfterDuration}`,
-        ),
-      );
+      abortTask(taskAbortController, 'timeout');
     }, timeoutDuration.as('milliseconds'));
 
     this.#taskState = {
@@ -186,20 +181,22 @@ export class LocalTaskWorker {
       this.#taskState.lastRunError = undefined;
     } catch (e) {
       this.#taskState.lastRunEndedAt = DateTime.utc().toISO()!;
-      const abortCause = getTaskAbortCause(this.taskAbortController.signal);
+      const abortCause = getTaskAbortCause(taskAbortController.signal);
       if (abortCause === 'shutdown') {
         this.#taskState.lastRunError = undefined;
       } else if (abortCause === 'timeout') {
-        this.logger.warn(this.taskAbortController.signal.reason.message);
-        this.#taskState.lastRunError = serializeError(
-          this.taskAbortController.signal.reason,
+        const error = new Error(
+          `Task "${this.taskId}" timed out after ${settings.timeoutAfterDuration}`,
         );
+        this.logger.warn(error.message);
+        this.#taskState.lastRunError = serializeError(error);
       } else {
         this.#taskState.lastRunError = serializeError(e);
       }
     }
 
     // release resources
+    signal.removeEventListener('abort', onWorkerStopped);
     clearTimeout(timeoutHandle);
     this.taskAbortController.abort();
     this.taskAbortController = undefined;

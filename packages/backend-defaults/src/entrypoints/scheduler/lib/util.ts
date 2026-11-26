@@ -111,21 +111,16 @@ export async function sleep(
  * reaches aborted state.
  *
  * @param parent - The "parent" signal that can trigger the delegate
- * @param reason - Optionally creates the abort reason to use when the parent
- *   aborts, instead of the default one
  */
-export function delegateAbortController(
-  parent?: AbortSignal,
-  reason?: () => unknown,
-): AbortController {
+export function delegateAbortController(parent?: AbortSignal): AbortController {
   const delegate = new AbortController();
 
   if (parent) {
     if (parent.aborted) {
-      delegate.abort(reason?.());
+      delegate.abort();
     } else {
       const onParentAborted = () => {
-        delegate.abort(reason?.());
+        delegate.abort();
       };
 
       const onChildAborted = () => {
@@ -159,19 +154,20 @@ export function serializeError(error: Error): string {
  */
 export type TaskAbortCause = 'shutdown' | 'timeout' | 'ticket-lost';
 
-/**
- * The abort reason that the scheduler sets on a task run's signal. It is named
- * `AbortError` so that `signal.throwIfAborted()` in task functions throws an
- * error that looks like any other abort.
- */
-export class TaskAbortError extends Error {
-  readonly abortCause: TaskAbortCause;
+// Kept by the scheduler itself rather than passed as an abort reason, so that
+// task functions keep seeing standard abort errors.
+const taskAbortCauses = new WeakMap<AbortSignal, TaskAbortCause>();
 
-  constructor(abortCause: TaskAbortCause, message: string) {
-    super(message);
-    this.name = 'AbortError';
-    this.abortCause = abortCause;
+/**
+ * Aborts a task run and records why. Does nothing if it was already aborted,
+ * so the first cause wins.
+ */
+export function abortTask(controller: AbortController, cause: TaskAbortCause) {
+  if (controller.signal.aborted) {
+    return;
   }
+  taskAbortCauses.set(controller.signal, cause);
+  controller.abort();
 }
 
 /**
@@ -180,7 +176,5 @@ export class TaskAbortError extends Error {
 export function getTaskAbortCause(
   signal: AbortSignal,
 ): TaskAbortCause | undefined {
-  return signal.aborted && signal.reason instanceof TaskAbortError
-    ? signal.reason.abortCause
-    : undefined;
+  return taskAbortCauses.get(signal);
 }
