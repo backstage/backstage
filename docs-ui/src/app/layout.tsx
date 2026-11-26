@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { version as packageVersion } from '../../../packages/ui/package.json';
 import { Sidebar } from '@/components/Sidebar/Sidebar';
 import { Toolbar } from '@/components/Toolbar';
 import { Providers } from './providers';
@@ -18,11 +17,31 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://ui.backstage.io'),
 };
 
-export default function RootLayout({
+async function getLatestPackageVersion(): Promise<string> {
+  try {
+    const response = await fetch('https://registry.npmjs.org/@backstage/ui', {
+      next: { revalidate: 3600 }, // Cache for 1 hour
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch package info');
+    }
+
+    const data = await response.json();
+    return data['dist-tags']?.latest;
+  } catch (error) {
+    console.error('Error fetching package version:', error);
+    return '0.0.0';
+  }
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const packageVersion = await getLatestPackageVersion();
+
   return (
     <html
       lang="en"
