@@ -22,6 +22,7 @@ import {
   getTaskAbortCause,
   nowPlus,
   sleep,
+  startTaskTimeout,
   validateId,
 } from './util';
 
@@ -32,6 +33,41 @@ class KnexBuilder {
 }
 
 describe('util', () => {
+  it('supports task timeouts longer than a single timer can wait', async () => {
+    jest.useFakeTimers();
+    try {
+      const controller = new AbortController();
+      const stop = startTaskTimeout(
+        controller,
+        Duration.fromObject({ days: 30 }),
+      );
+
+      await jest.advanceTimersByTimeAsync(
+        Duration.fromObject({ days: 29 }).as('milliseconds'),
+      );
+      expect(controller.signal.aborted).toBe(false);
+
+      await jest.advanceTimersByTimeAsync(
+        Duration.fromObject({ days: 2 }).as('milliseconds'),
+      );
+      expect(controller.signal.aborted).toBe(true);
+      expect(getTaskAbortCause(controller.signal)).toBe('timeout');
+
+      // Stopping it before it fires means the run is never aborted
+      const other = new AbortController();
+      const stopOther = startTaskTimeout(
+        other,
+        Duration.fromObject({ seconds: 1 }),
+      );
+      stopOther();
+      await jest.advanceTimersByTimeAsync(2000);
+      expect(other.signal.aborted).toBe(false);
+      stop();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
   it('keeps the first cause when a task run is aborted more than once', () => {
     const controller = new AbortController();
     expect(getTaskAbortCause(controller.signal)).toBeUndefined();

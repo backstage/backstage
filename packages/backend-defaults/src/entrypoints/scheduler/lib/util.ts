@@ -198,3 +198,23 @@ export function createTaskTimeoutError(
   }
   return error;
 }
+
+/**
+ * Aborts a task run with the `timeout` cause after the given duration. Unlike
+ * a plain timer, this supports durations longer than what a single Node.js
+ * timer can wait for.
+ *
+ * @returns A function that stops the timeout
+ */
+export function startTaskTimeout(
+  controller: AbortController,
+  duration: Duration,
+): () => void {
+  const stop = new AbortController();
+  sleep(duration, stop.signal).then(() => {
+    if (!stop.signal.aborted) {
+      abortTask(controller, 'timeout');
+    }
+  });
+  return () => stop.abort();
+}

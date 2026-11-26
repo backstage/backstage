@@ -32,6 +32,7 @@ import {
   getTaskAbortCause,
   nowPlus,
   sleep,
+  startTaskTimeout,
   dbTime,
   serializeError,
 } from './util';
@@ -289,9 +290,10 @@ export class TaskWorker {
     } else {
       signal.addEventListener('abort', onWorkerStopped, { once: true });
     }
-    const timeoutHandle = setTimeout(() => {
-      abortTask(taskAbortController, 'timeout');
-    }, Duration.fromISO(taskSettings.timeoutAfterDuration).as('milliseconds'));
+    const stopTimeout = startTaskTimeout(
+      taskAbortController,
+      Duration.fromISO(taskSettings.timeoutAfterDuration),
+    );
     const timeoutError = (cause?: unknown) =>
       createTaskTimeoutError(
         this.taskId,
@@ -342,7 +344,7 @@ export class TaskWorker {
       this.#workerState = {
         status: 'idle',
       };
-      clearTimeout(timeoutHandle);
+      stopTimeout();
       clearTimeout(livenessHandle);
       signal.removeEventListener('abort', onWorkerStopped);
     }

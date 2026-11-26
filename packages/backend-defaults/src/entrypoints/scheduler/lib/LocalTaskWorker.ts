@@ -27,6 +27,7 @@ import {
   getTaskAbortCause,
   serializeError,
   sleep,
+  startTaskTimeout,
 } from './util';
 
 /**
@@ -163,9 +164,7 @@ export class LocalTaskWorker {
       signal.addEventListener('abort', onWorkerStopped, { once: true });
     }
     const timeoutDuration = Duration.fromISO(settings.timeoutAfterDuration);
-    const timeoutHandle = setTimeout(() => {
-      abortTask(taskAbortController, 'timeout');
-    }, timeoutDuration.as('milliseconds'));
+    const stopTimeout = startTaskTimeout(taskAbortController, timeoutDuration);
 
     this.#taskState = {
       status: 'running',
@@ -213,7 +212,7 @@ export class LocalTaskWorker {
 
     // release resources
     signal.removeEventListener('abort', onWorkerStopped);
-    clearTimeout(timeoutHandle);
+    stopTimeout();
     this.taskAbortController.abort();
     this.taskAbortController = undefined;
   }
