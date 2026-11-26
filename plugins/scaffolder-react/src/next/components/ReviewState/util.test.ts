@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { isJsonObject, formatKey, findSchemaForKey } from './util';
+import {
+  isJsonObject,
+  formatKey,
+  findSchemaForKey,
+  escapeJsonPointerSegment,
+} from './util';
 import { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
 
 describe('isJsonObject', () => {
@@ -78,6 +83,22 @@ describe('formatKey', () => {
   it('should remove special characters', () => {
     expect(formatKey('parent/child@!#$%^&*()')).toBe('Parent > Child');
   });
+
+  it('should unescape JSON pointer segments', () => {
+    expect(formatKey('api~1token')).toBe('Api Token');
+    expect(formatKey('a~01b')).toBe('A 1 B');
+    expect(formatKey('nest/aws~1key')).toBe('Nest > Aws Key');
+    expect(formatKey('a%2520b')).toBe('A 20 B');
+  });
+});
+
+describe('escapeJsonPointerSegment', () => {
+  it('escapes segments per RFC 6901 and percent-encodes them', () => {
+    expect(escapeJsonPointerSegment('api/token')).toBe('api~1token');
+    expect(escapeJsonPointerSegment('a~1b')).toBe('a~01b');
+    expect(escapeJsonPointerSegment('a%20b')).toBe('a%2520b');
+    expect(escapeJsonPointerSegment('simple')).toBe('simple');
+  });
 });
 
 describe('findSchemaForKey', () => {
@@ -137,6 +158,19 @@ describe('findSchemaForKey', () => {
       title: 'Schema 3',
       uiSchema: {},
     },
+    {
+      mergedSchema: {
+        type: 'object',
+        properties: {
+          'slash/key': {
+            type: 'string',
+          },
+        },
+      },
+      schema: {},
+      title: 'Schema 4',
+      uiSchema: {},
+    },
   ];
 
   const formState = {
@@ -169,5 +203,10 @@ describe('findSchemaForKey', () => {
   it('should return the schema for an object key', () => {
     const result = findSchemaForKey('hello', schemas, formState);
     expect(result).toBe(schemas[1]);
+  });
+
+  it('should return the schema for a key containing a slash', () => {
+    const result = findSchemaForKey('slash/key', schemas, formState);
+    expect(result).toBe(schemas[3]);
   });
 });

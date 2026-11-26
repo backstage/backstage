@@ -23,12 +23,36 @@ export function isJsonObject(value?: JsonValue): value is JsonObject {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-// Helper function to format a key into a human-readable string
+/**
+ * Escapes a property name for use as a segment in a JSON Pointer, as required
+ * by RFC 6901 (`~` becomes `~0`, `/` becomes `~1`). The segment is also
+ * percent-encoded since the pointers are resolved in URI fragment identifier
+ * representation (`#/...`), which URI-decodes each segment before matching it
+ * to a property name.
+ */
+export function escapeJsonPointerSegment(segment: string): string {
+  return encodeURIComponent(segment.replace(/~/g, '~0').replace(/\//g, '~1'));
+}
+
+// Inverts escapeJsonPointerSegment so a pointer path can be humanized.
+// Segments that are not percent-encoded (e.g. raw keys from external callers)
+// are used as-is.
+function unescapeJsonPointerSegment(segment: string): string {
+  let decoded = segment;
+  try {
+    decoded = decodeURIComponent(segment);
+  } catch {
+    // not percent-encoded
+  }
+  return decoded.replace(/~1/g, '/').replace(/~0/g, '~');
+}
+
+// Helper function to format a JSON Pointer path into a human-readable string
 export function formatKey(key: string): string {
   const parts = key.split('/');
   return parts
     .filter(Boolean)
-    .map(part => startCase(part))
+    .map(part => startCase(unescapeJsonPointerSegment(part)))
     .join(' > ');
 }
 
@@ -63,7 +87,7 @@ export function findSchemaForKey(
 
     const draft = new JSONSchema(schema);
     const res = draft.getSchema({
-      pointer: `#/${key}`,
+      pointer: `#/${escapeJsonPointerSegment(key)}`,
       data,
     });
 
