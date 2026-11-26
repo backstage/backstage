@@ -26,6 +26,7 @@ import {
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { DefaultEventsService } from '@backstage/plugin-events-node';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { handlers } from '../__testUtils__/handlers';
 import * as mock from '../__testUtils__/mocks';
@@ -361,6 +362,41 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
     });
   });
 
+  it('encodes a branch returned by GitLab search in the discovered location', async () => {
+    const project = mock.projects_with_catalog_info_yaml.find(p =>
+      p.path_with_namespace.startsWith('group1/'),
+    );
+    if (!project) {
+      throw new Error('Expected a matching GitLab project fixture');
+    }
+    server.use(
+      http.get('https://example.com/api/v4/groups/group1/search', () =>
+        HttpResponse.json([
+          {
+            project_id: project.id,
+            ref: 'feature/1234',
+            path: 'catalog-info.yaml',
+          },
+        ]),
+      ),
+    );
+    const connection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(
+      new ConfigReader(mock.config_single_integration_with_search),
+      { logger, schedule: new PersistingTaskRunner() },
+    )[0];
+    await provider.connect(connection);
+    await provider.refresh(logger);
+
+    const mutation = (connection.applyMutation as jest.Mock).mock.calls[0][0];
+    expect(mutation.entities[0].entity.spec.target).toBe(
+      `${project.web_url}/-/blob/feature%2F1234/catalog-info.yaml`,
+    );
+  });
+
   // branch was set in the config
   it('should ingest catalog from specific branch only', async () => {
     const config = new ConfigReader(
@@ -390,6 +426,71 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
       ),
     });
   });
+
+  it.each([
+    ['feature/1234', 'feature%2F1234', 'feature/1234'],
+    ['feature%2F1234', 'feature%2F1234', 'feature/1234'],
+    ['feature%2f1234', 'feature%2F1234', 'feature/1234'],
+    ['main', 'main', 'main'],
+  ])(
+    'encodes the known branch %s in discovered blob locations',
+    async (branch, encodedBranch, rawBranch) => {
+      const refs: string[] = [];
+      server.use(
+        http.head(
+          'https://example.com/api/v4/projects/:id/repository/files/catalog-info.yaml',
+          ({ request }) => {
+            const ref = new URL(request.url).searchParams.get('ref');
+            refs.push(ref ?? '');
+            return new HttpResponse(null, {
+              status: ref === rawBranch ? 200 : 404,
+            });
+          },
+        ),
+      );
+      const config = new ConfigReader({
+        ...mock.config_single_integration_specific_branch,
+        catalog: {
+          providers: {
+            gitlab: {
+              'test-id': {
+                ...mock.config_single_integration_specific_branch.catalog
+                  .providers.gitlab['test-id'],
+                branch,
+              },
+            },
+          },
+        },
+      });
+      const connection: EntityProviderConnection = {
+        applyMutation: jest.fn(),
+        refresh: jest.fn(),
+      };
+      const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+        logger,
+        schedule: new PersistingTaskRunner(),
+      })[0];
+      await provider.connect(connection);
+      await provider.refresh(logger);
+
+      const mutation = (connection.applyMutation as jest.Mock).mock.calls[0][0];
+      expect(mutation.type).toBe('full');
+      expect(refs).toContain(rawBranch);
+      const target = `https://example.com/group1/test-repo1/-/blob/${encodedBranch}/catalog-info.yaml`;
+      expect(mutation.entities).toContainEqual(
+        expect.objectContaining({
+          entity: expect.objectContaining({
+            metadata: expect.objectContaining({
+              annotations: expect.objectContaining({
+                'backstage.io/managed-by-location': `url:${target}`,
+              }),
+            }),
+            spec: expect.objectContaining({ target }),
+          }),
+        }),
+      );
+    },
+  );
 
   // fallback branch was set in the config
   it('should ingest catalog from default or fallback branch', async () => {
@@ -541,6 +642,78 @@ describe('GitlabDiscoveryEntityProvider - events', () => {
       removed: [],
     });
   });
+
+  it.each(['feature/1234', 'feature%2F1234'])(
+    'uses the same blob location for push additions and refreshes with %s',
+    async branch => {
+      server.use(
+        http.head(
+          'https://example.com/api/v4/projects/:id/repository/files/catalog-info.yaml',
+          ({ request }) =>
+            new HttpResponse(null, {
+              status:
+                new URL(request.url).searchParams.get('ref') === 'feature/1234'
+                  ? 200
+                  : 404,
+            }),
+        ),
+      );
+      const config = new ConfigReader({
+        ...mock.config_single_integration,
+        catalog: {
+          providers: {
+            gitlab: {
+              'test-id': {
+                ...mock.config_single_integration.catalog.providers.gitlab[
+                  'test-id'
+                ],
+                branch,
+              },
+            },
+          },
+        },
+      });
+      const events = DefaultEventsService.create({ logger });
+      const connection: EntityProviderConnection = {
+        applyMutation: jest.fn(),
+        refresh: jest.fn(),
+      };
+      const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+        logger,
+        schedule: new PersistingTaskRunner(),
+        events,
+      })[0];
+      await provider.connect(connection);
+
+      const payload = mock.push_add_event.eventPayload as Record<
+        string,
+        unknown
+      >;
+      await events.publish({
+        ...mock.push_add_event,
+        eventPayload: { ...payload, ref: 'refs/heads/feature/1234' },
+      });
+      const mutation = (connection.applyMutation as jest.Mock).mock.calls[0][0];
+      expect(mutation.added[0].entity.spec.target).toBe(
+        'https://example.com/group1/test-repo1/-/blob/feature%2F1234/catalog-info.yaml',
+      );
+
+      const modified = mock.push_modif_event.eventPayload as Record<
+        string,
+        unknown
+      >;
+      await events.publish({
+        ...mock.push_modif_event,
+        eventPayload: { ...modified, ref: 'refs/heads/feature/1234' },
+      });
+      expect(connection.refresh).toHaveBeenCalledWith({
+        keys: [
+          'url:https://example.com/group1/test-repo1/-/tree/feature/1234/catalog-info.yaml',
+          'url:https://example.com/group1/test-repo1/-/blob/feature%2F1234/catalog-info.yaml',
+        ],
+      });
+    },
+  );
 
   it('should apply delta mutations on removed files from push event', async () => {
     const config = new ConfigReader(mock.config_single_integration);

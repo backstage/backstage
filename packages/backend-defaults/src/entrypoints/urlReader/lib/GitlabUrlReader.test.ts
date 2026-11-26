@@ -138,6 +138,15 @@ describe('GitlabUrlReader', () => {
         }),
       },
 
+      // The GitLab discovery provider knows the branch and escapes its slash.
+      {
+        url: 'https://gitlab.com/groupA/teams/teamA/repoA/-/blob/feature%2F1234/catalog-info.yaml',
+        config: createConfig(),
+        response: expect.objectContaining({
+          url: 'https://gitlab.com/api/v4/projects/groupA%2Fteams%2FteamA%2FrepoA/repository/files/catalog-info.yaml/raw?ref=feature%2F1234',
+        }),
+      },
+
       // Unscoped route
       {
         url: 'https://gitlab.example.com/a/b/blob/master/c.yaml',

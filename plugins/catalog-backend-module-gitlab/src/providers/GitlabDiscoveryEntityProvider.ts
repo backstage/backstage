@@ -403,14 +403,21 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     return res;
   }
 
+  /**
+   * Creates a catalog-file location from a known GitLab branch. Escaping the
+   * branch as one path segment lets the file reader distinguish a branch such
+   * as feature/1234 from the path to the catalog file. Already escaped slashes
+   * in the configured branch are kept stable.
+   */
   private createLocationSpecFromParams(
     projectURL: string,
     branch: string,
     catalogFile: string,
   ): LocationSpec {
+    const encodedBranch = encodeURIComponent(branch.replace(/%2f/gi, '/'));
     return {
       type: 'url',
-      target: `${projectURL}/-/blob/${branch}/${catalogFile}`,
+      target: `${projectURL}/-/blob/${encodedBranch}/${catalogFile}`,
       presence: 'optional',
     };
   }
@@ -462,10 +469,11 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     // the authoritative source for branch and location targets, so that a
     // forged event can only ever affect the project it claims, never retarget
     // the catalog at another location.
-    const targetBranch =
+    const targetBranch = (
       this.config.branch ??
       project.default_branch ??
-      this.config.fallbackBranch;
+      this.config.fallbackBranch
+    ).replace(/%2f/gi, '/');
 
     if (targetBranch && event.ref !== `refs/heads/${targetBranch}`) {
       this.logger.debug(
@@ -521,7 +529,13 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
           ),
           ...modified.map(
             filePath =>
-              `url:${project.web_url}/-/blob/${targetBranch}/${filePath}`,
+              `url:${
+                this.createLocationSpecFromParams(
+                  project.web_url,
+                  targetBranch,
+                  filePath,
+                ).target
+              }`,
           ),
         ],
       });
@@ -614,11 +628,9 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     );
 
     // Create a location spec for each matching file
-    const locationSpecs: LocationSpec[] = matchingFiles.map(file => ({
-      type: 'url',
-      target: `${project.web_url}/-/blob/${projectBranch}/${file}`,
-      presence: 'optional',
-    }));
+    const locationSpecs: LocationSpec[] = matchingFiles.map(file =>
+      this.createLocationSpecFromParams(project.web_url, projectBranch, file),
+    );
 
     return locationSpecs;
   }
@@ -705,7 +717,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
 
     const hasFile = await client.hasFile(
       project.id,
-      project_branch,
+      project_branch.replace(/%2f/gi, '/'),
       this.config.catalogFile,
     );
 
