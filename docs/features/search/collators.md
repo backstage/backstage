@@ -8,9 +8,9 @@ Backstage includes 2 [collators](./concepts.md#collators) out of the box for the
 
 ## Catalog
 
-The Catalog collator will index all the Entities in your Catalog. It is installed by default but if you need to add it manually here's how.
+The [Catalog](../../references/glossary.md#software-catalog) collator will index all the [Entities](../../references/glossary.md#entity) in your Catalog. It is installed by default but if you need to add it manually here's how.
 
-First we add the plugin into your backend app:
+First we add the [plugin](../../references/glossary.md#plugin) into your backend [app](../../references/glossary.md#app):
 
 ```bash title="From your Backstage root directory"
 yarn --cwd packages/backend add @backstage/plugin-search-backend-module-catalog
@@ -92,7 +92,7 @@ The filter configuration is implemented using the `EntityFilterQuery` syntax. Th
 
 ## TechDocs
 
-The TechDocs collator will index all the TechDocs in your Catalog. It is installed by default but if you need to add it manually here's how.
+The [TechDocs](../../references/glossary.md#techdocs) collator will index all the TechDocs in your Catalog. It is installed by default but if you need to add it manually here's how.
 
 First we add the plugin into your backend app:
 

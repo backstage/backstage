@@ -9,12 +9,12 @@ description: Backstage Search lets you find the right information you are lookin
 
 ## What is it?
 
-Backstage Search lets you find the right information you are looking for in the Backstage ecosystem.
+[Backstage Search](../../references/glossary.md#search) lets you find the right information you are looking for in the Backstage ecosystem.
 
 ## Features
 
-- A search that lets you bring your own search engine.
-- A search that lets you extend it by creating collators for easily indexing content from plugins and other sources.
+- A search that lets you bring your own [search engine](../../references/glossary.md#search-engine-backstage-search).
+- A search that lets you extend it by creating [collators](../../references/glossary.md#collator-search-plugin) for easily indexing content from [plugins](../../references/glossary.md#plugin) and other sources.
 - A search that lets you create composable search page experiences.
 - A search that lets you customize the look and feel of each search result.
 
@@ -33,7 +33,7 @@ The following sections show the plugins and search engines currently supported b
 
 | Plugin                                                                                                                                                                        | Support Status |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
-| Software Catalog                                                                                                                                                              | ✅             |
+| [Software Catalog](../../references/glossary.md#software-catalog)                                                                                                             | ✅             |
 | [TechDocs](./how-to-guides.md#how-to-customize-fields-in-the-software-catalog-or-techdocs-index)                                                                              | ✅             |
 | [Stack Overflow](https://github.com/backstage/backstage/blob/master/plugins/search-backend-module-stack-overflow-collator/README.md#index-stack-overflow-questions-to-search) | ✅             |
 

@@ -4,7 +4,7 @@ title: Writing Custom Collators
 description: How to create your own search collator for Backstage
 ---
 
-You can create your own collator to index any data source and make it
+You can create your own [collator](../../references/glossary.md#collator-search-plugin) to index any data source and make it
 searchable in Backstage. The recommended approach is to use the built-in
 template to scaffold a collator module, then implement your data fetching
 logic.
@@ -17,7 +17,7 @@ Run the following command from your Backstage root directory:
 yarn new --select search-collator-module
 ```
 
-You are prompted for a module ID, which is used to name the package and the
+You are prompted for a module ID, which is used to name the [package](../../references/glossary.md#package) and the
 generated collator class. For this example, enter `blog-posts`.
 
 The template creates a new package at
@@ -45,13 +45,13 @@ plugins/search-backend-module-blog-posts/
 ## Understanding the generated code
 
 The template generates two files worth noting: the backend module that wires the
-collator into the search system, and the collator factory that fetches and
-yields documents.
+collator into the [search](../../references/glossary.md#search) system, and the collator factory that fetches and
+yields [documents](../../references/glossary.md#document-search-plugin).
 
 ### The backend module
 
 The `src/module.ts` file creates a backend module that registers the collator
-with the search index. It reads an optional schedule from configuration and
+with the search [index](../../references/glossary.md#index-search-plugin). It reads an optional schedule from configuration and
 falls back to a default schedule of every 10 minutes:
 
 ```ts title="plugins/search-backend-module-blog-posts/src/module.ts"
@@ -342,7 +342,7 @@ search:
 
 Search results from a custom collator appear automatically using the default
 result list item. To customize how results are presented, create a frontend
-module that extends the search plugin with a custom result list item.
+module that extends the search [plugin](../../references/glossary.md#plugin) with a custom result list item.
 
 ### Scaffolding a frontend module
 

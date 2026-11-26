@@ -4,7 +4,7 @@ title: Search Concepts
 description: Documentation on Backstage Search Concepts
 ---
 
-Backstage Search lets you find the right information you are looking for in the
+[Backstage Search](../../references/glossary.md#search) lets you find the right information you are looking for in the
 Backstage ecosystem.
 
 To get started, you should get familiar with these core concepts:
@@ -21,7 +21,7 @@ To get started, you should get familiar with these core concepts:
 ### Search Engines
 
 Backstage Search isn't a search engine itself, rather, it provides an interface
-between your Backstage instance and a Search Engine of your choice. More
+between your Backstage instance and a [Search Engine](../../references/glossary.md#search-engine-backstage-search) of your choice. More
 concretely, a `SearchEngine` is an interface whose concrete implementations
 facilitate communication with different search engines (like Elasticsearch,
 Lunr, Solr, etc). This abstraction exists in order to support your
@@ -38,39 +38,39 @@ translation layer between an abstract search query (containing search terms,
 filters, and document types) into a concrete search query that is specific to a
 search engine.
 
-Search Engines come pre-packaged with simple translators that do rudimentary
+Search Engines come pre-packaged with simple [translators](../../references/glossary.md#query-translators-search-plugin) that do rudimentary
 transformations of search terms and filters, but you may want to provide your
 own to help tune search results in the context of your organization.
 
 ### Documents and Indices
 
-"Document" is an abstract concept representing something that can be found by
-searching for it. A document can represent a software entity, a TechDocs page,
+"[Document](../../references/glossary.md#document-search-plugin)" is an abstract concept representing something that can be found by
+searching for it. A document can represent a software [entity](../../references/glossary.md#entity), a [TechDocs](../../references/glossary.md#techdocs) page,
 etc. Documents are made up of metadata fields, at a minimum including a title,
 text, and location (as in a URL).
 
-An index is a collection of such documents of a given type.
+An [index](../../references/glossary.md#index-search-plugin) is a collection of such documents of a given type.
 
 ### Collators
 
-You need to be able to search something! Collators are the way to define what
+You need to be able to search something! [Collators](../../references/glossary.md#collator-search-plugin) are the way to define what
 can be searched. Specifically, they're readable object streams of documents that
 conform to a minimum set of fields (including a document title, location, and
 text), but which can contain any other fields as defined by the collator itself.
 One collator is responsible for defining and collecting documents of a type.
 
-Some plugins, like the Catalog Backend, provide so-called "default" collator
+Some [plugins](../../references/glossary.md#plugin), like the Catalog Backend, provide so-called "default" collator
 factories which you can use out-of-the-box to start searching across Backstage
 quickly.
 
 ### Decorators
 
 Sometimes you want to add extra information to a set of documents in your search
-index that the collator may not be aware of. For example, the Software Catalog
+index that the collator may not be aware of. For example, the [Software Catalog](../../references/glossary.md#software-catalog)
 knows about software entities, but it may not know about their usage or quality.
 
-Decorators are transform streams which sit between a collator (read stream) and
-an indexer (write stream) during the indexing process. It can be used to add
+[Decorators](../../references/glossary.md#decorator-search-plugin) are transform streams which sit between a collator (read stream) and
+an [indexer](../../references/glossary.md#indexer-search-plugin) (write stream) during the indexing process. It can be used to add
 extra fields to documents as they are being collated and indexed. This extra
 metadata could then be used to bias search results or otherwise improve the
 search experience in your Backstage instance.
@@ -94,7 +94,7 @@ Search pages are very custom things. Not every Backstage instance will want the
 same interface! In order to allow you to customize your search experience to
 your heart's content, the Search Plugin takes care of state management and other
 search logic for you, but most of the layout of a search page lives in a search
-page component defined in your Backstage App.
+page component defined in your Backstage [App](../../references/glossary.md#app).
 
 For an example of a simple search page, check
 [getting started](./getting-started.md#adding-search-to-the-frontend)
