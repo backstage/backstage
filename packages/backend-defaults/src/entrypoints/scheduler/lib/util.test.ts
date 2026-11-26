@@ -16,7 +16,14 @@
 
 import knexFactory, { Knex } from 'knex';
 import { Duration } from 'luxon';
-import { delegateAbortController, nowPlus, sleep, validateId } from './util';
+import {
+  abortTask,
+  delegateAbortController,
+  getTaskAbortCause,
+  nowPlus,
+  sleep,
+  validateId,
+} from './util';
 
 class KnexBuilder {
   public build(client: string): Knex {
@@ -25,6 +32,22 @@ class KnexBuilder {
 }
 
 describe('util', () => {
+  it('keeps the first cause when a task run is aborted more than once', () => {
+    const controller = new AbortController();
+    expect(getTaskAbortCause(controller.signal)).toBeUndefined();
+
+    abortTask(controller, 'timeout');
+    abortTask(controller, 'shutdown');
+    expect(controller.signal.aborted).toBe(true);
+    expect(getTaskAbortCause(controller.signal)).toBe('timeout');
+
+    // A run aborted by something other than the scheduler has no cause
+    const other = new AbortController();
+    other.abort();
+    abortTask(other, 'shutdown');
+    expect(getTaskAbortCause(other.signal)).toBeUndefined();
+  });
+
   describe('validateId', () => {
     it.each(['a', 'a_b', 'ab123c_2', 'a!', 'A', 'a-b', 'a.b', '_a', 'a_'])(
       'accepts valid inputs, %p',

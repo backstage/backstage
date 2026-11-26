@@ -249,7 +249,7 @@ export class TaskWorker {
     | { result: 'abort' }
     | { result: 'claim-lost' }
     | { result: 'failed' }
-    | { result: 'aborted' }
+    | { result: 'run-aborted' }
     | { result: 'completed' }
   > {
     const findResult = await this.poller.waitForTask(this.taskId, {
@@ -268,7 +268,7 @@ export class TaskWorker {
   ): Promise<
     | { result: 'claim-lost' }
     | { result: 'failed' }
-    | { result: 'aborted' }
+    | { result: 'run-aborted' }
     | { result: 'completed' }
   > {
     const ticket = uuid();
@@ -318,7 +318,7 @@ export class TaskWorker {
       if (abortCause === 'shutdown') {
         this.logger.debug(`Task "${this.taskId}" stopped on shutdown, ${e}`);
         await this.tryReleaseTask(ticket, taskSettings);
-        return { result: 'aborted' };
+        return { result: 'run-aborted' };
       } else if (abortCause === 'timeout') {
         const error = timeoutError();
         this.logger.warn(error.message);
@@ -327,7 +327,7 @@ export class TaskWorker {
       } else if (abortCause === 'ticket-lost') {
         // Already logged by the liveness check, and the run belongs to
         // another host now, so there is nothing to release.
-        return { result: 'aborted' };
+        return { result: 'run-aborted' };
       }
       this.logger.error(e);
       await this.tryReleaseTask(ticket, taskSettings, e);
@@ -353,11 +353,11 @@ export class TaskWorker {
     taskAbortController.abort(); // releases resources
     if (abortCause === 'ticket-lost') {
       // The run belongs to another host now, so there is nothing to release
-      return { result: 'aborted' };
+      return { result: 'run-aborted' };
     }
     await this.tryReleaseTask(ticket, taskSettings);
     return abortCause === 'shutdown'
-      ? { result: 'aborted' }
+      ? { result: 'run-aborted' }
       : { result: 'completed' };
   }
 

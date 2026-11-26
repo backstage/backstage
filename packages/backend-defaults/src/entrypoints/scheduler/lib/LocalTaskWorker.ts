@@ -197,6 +197,11 @@ export class LocalTaskWorker {
     } else if (thrown && !abortCause) {
       this.#taskState.lastRunError = serializeError(thrown.error);
     } else {
+      if (thrown) {
+        this.logger.debug(
+          `Task "${this.taskId}" stopped after being aborted (${abortCause}), ${thrown.error}`,
+        );
+      }
       this.#taskState.lastRunError = undefined;
     }
 
