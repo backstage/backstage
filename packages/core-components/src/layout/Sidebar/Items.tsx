@@ -230,11 +230,25 @@ const makeSidebarStyles = (sidebarConfig: SidebarConfig) =>
 // This is a workaround for this issue https://github.com/mui/material-ui/issues/15511
 // The styling of the `selected` elements doesn't work as expected when using a prop callback.
 // Don't use this pattern unless needed
+//
+// The style hooks are shared between all components that use an equal sidebar
+// config. Creating a separate hook for each component instance would attach a
+// separate style sheet for each of them.
+const sidebarStylesCache = new Map<
+  string,
+  ReturnType<typeof makeSidebarStyles>
+>();
+
 function useMemoStyles(sidebarConfig: SidebarConfig) {
-  const useStyles = useMemo(
-    () => makeSidebarStyles(sidebarConfig),
-    [sidebarConfig],
-  );
+  const useStyles = useMemo(() => {
+    const key = JSON.stringify(sidebarConfig);
+    let cached = sidebarStylesCache.get(key);
+    if (!cached) {
+      cached = makeSidebarStyles(sidebarConfig);
+      sidebarStylesCache.set(key, cached);
+    }
+    return cached;
+  }, [sidebarConfig]);
   return useStyles();
 }
 
