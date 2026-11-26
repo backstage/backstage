@@ -313,7 +313,8 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
         multiple
         filterSelectedOptions
         getOptionSelected={(option, value) =>
-          toEntityRef(option) === toEntityRef(value)
+          toEntityRef(option, defaultKind, defaultNamespace) ===
+          toEntityRef(value, defaultKind, defaultNamespace)
         }
         disabled={
           isDisabled ||
@@ -370,10 +371,23 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
 
 /**
  * Selected values are entity ref strings when restored from form data, but
- * entity objects when picked from the options, so compare by entity ref.
+ * entity objects when picked from the options, so compare by full entity ref.
  */
-function toEntityRef(value: string | Entity): string {
-  return typeof value === 'string' ? value : stringifyEntityRef(value);
+function toEntityRef(
+  value: string | Entity,
+  defaultKind?: string,
+  defaultNamespace?: string,
+): string {
+  if (typeof value !== 'string') {
+    return stringifyEntityRef(value);
+  }
+  try {
+    return stringifyEntityRef(
+      parseEntityRef(value, { defaultKind, defaultNamespace }),
+    );
+  } catch {
+    return value;
+  }
 }
 
 export const validateMultiEntityPickerValidation = (

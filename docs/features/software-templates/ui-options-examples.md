@@ -260,6 +260,22 @@ entity:
     defaultNamespace: payment
 ```
 
+### `autoSelect`
+
+Whether to automatically select the highlighted option when the input loses focus. Defaults to `true`.
+
+When set to `false`, users must explicitly select an option from the dropdown by clicking or pressing Enter. This prevents accidental selections when moving focus out of the field. This option only applies to the Material UI version of the field.
+
+```yaml
+entity:
+  title: Entity
+  type: array
+  description: Entities of the component
+  ui:field: MultiEntityPicker
+  ui:options:
+    autoSelect: false
+```
+
 ## `OwnerPicker`
 
 The input props that can be specified under `ui:options` for the `OwnerPicker` field extension.
