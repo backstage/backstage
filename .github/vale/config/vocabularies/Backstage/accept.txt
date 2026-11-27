@@ -35,6 +35,8 @@ backend's
 backoff
 backported
 backporting
+backdoor
+backdoors
 Basename
 Bazel
 BEPs
@@ -71,6 +73,7 @@ classname
 cleye
 cli
 CLIs
+ciphertext
 cloudbuild
 Cloudflare
 Cloudformation
@@ -432,6 +435,8 @@ repos
 requestors
 rerender
 rerenders
+resend
+resends
 resizable
 resolver's
 resourcequotas
@@ -617,6 +622,8 @@ VMware
 Vodafone
 VPCs
 VSCode
+Vercel
+Vercel's
 walkthrough
 walkthroughs
 Wayfair
