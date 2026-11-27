@@ -89,6 +89,7 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
   const isDisabled = uiSchema?.['ui:disabled'] ?? false;
   const allowArbitraryValues =
     uiSchema['ui:options']?.allowArbitraryValues ?? true;
+  const autoSelect = uiSchema['ui:options']?.autoSelect ?? true;
   const maxItems = props.schema.maxItems;
 
   const [noOfItemsSelected, setNoOfItemsSelected] = useState(0);
@@ -123,7 +124,7 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
 
   const onSelect = useCallback(
     (_: any, refs: (string | Entity)[], reason: AutocompleteChangeReason) => {
-      const values = refs
+      const refValues = refs
         .map(ref => {
           // If the ref is not a string, then it was a selected option in the picker
           if (typeof ref !== 'string') {
@@ -158,6 +159,7 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
           return undefined;
         })
         .filter(ref => ref !== undefined) as string[];
+      const values = Array.from(new Set(refValues));
 
       setNoOfItemsSelected(values.length);
       onChange(values);
@@ -310,6 +312,10 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
       <Autocomplete
         multiple
         filterSelectedOptions
+        getOptionSelected={(option, value) =>
+          toEntityRef(option, defaultKind, defaultNamespace) ===
+          toEntityRef(value, defaultKind, defaultNamespace)
+        }
         disabled={
           isDisabled ||
           (required &&
@@ -332,7 +338,7 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
         getOptionDisabled={_options =>
           maxItems ? noOfItemsSelected >= maxItems : false
         }
-        autoSelect
+        autoSelect={autoSelect}
         freeSolo={allowArbitraryValues}
         renderInput={params => (
           <TextField
@@ -362,6 +368,27 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
     </ScaffolderField>
   );
 };
+
+/**
+ * Selected values are entity ref strings when restored from form data, but
+ * entity objects when picked from the options, so compare by full entity ref.
+ */
+function toEntityRef(
+  value: string | Entity,
+  defaultKind?: string,
+  defaultNamespace?: string,
+): string {
+  if (typeof value !== 'string') {
+    return stringifyEntityRef(value);
+  }
+  try {
+    return stringifyEntityRef(
+      parseEntityRef(value, { defaultKind, defaultNamespace }),
+    );
+  } catch {
+    return value;
+  }
+}
 
 export const validateMultiEntityPickerValidation = (
   values: string[],

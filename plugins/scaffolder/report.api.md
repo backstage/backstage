@@ -207,6 +207,7 @@ export function makeFieldSchemaFromZod<
 export const MultiEntityPickerFieldExtension: FieldExtensionComponent_2<
   string[],
   {
+    autoSelect?: boolean | undefined;
     defaultKind?: string | undefined;
     defaultNamespace?: string | false | undefined;
     catalogFilter?:
