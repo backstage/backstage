@@ -96,7 +96,7 @@ const _default: OverridableFrontendPlugin<
         title: string | undefined;
         height: number | undefined;
         filter: string | FilterPredicate | undefined;
-        type: 'content' | 'info' | undefined;
+        type: 'info' | 'content' | undefined;
       };
       configInput: {
         kinds?: string[] | undefined;
@@ -112,7 +112,7 @@ const _default: OverridableFrontendPlugin<
         title?: string | undefined;
         height?: number | undefined;
         filter?: string | FilterPredicate | undefined;
-        type?: 'content' | 'info' | undefined;
+        type?: 'info' | 'content' | undefined;
       };
       output:
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>

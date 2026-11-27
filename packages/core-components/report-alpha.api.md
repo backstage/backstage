@@ -37,11 +37,11 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'signIn.guestProvider.subtitle': 'Enter as a Guest User.\n You will not have a verified identity, meaning some features might be unavailable.';
     readonly skipToContent: 'Skip to content';
     readonly 'copyTextButton.tooltipText': 'Text copied to clipboard';
+    readonly 'simpleStepper.back': 'Back';
     readonly 'simpleStepper.finish': 'Finish';
     readonly 'simpleStepper.reset': 'Reset';
     readonly 'simpleStepper.next': 'Next';
     readonly 'simpleStepper.skip': 'Skip';
-    readonly 'simpleStepper.back': 'Back';
     readonly 'errorPage.title': 'Looks like someone dropped the mic!';
     readonly 'errorPage.subtitle': 'ERROR {{status}}: {{statusMessage}}';
     readonly 'errorPage.goBack': 'Go back';

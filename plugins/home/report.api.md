@@ -200,9 +200,9 @@ export const homeTranslationRef: TranslationRef<
     readonly 'starredEntityListItem.removeFavoriteEntityTitle': 'Remove entity from favorites';
     readonly 'visitList.disabled.title': 'Visit tracking is not enabled.';
     readonly 'visitList.disabled.description': 'Enable visit tracking in your app-config.yaml to see your most visited and recently visited pages here.';
+    readonly 'visitList.few.title': 'The more pages you visit, the more pages will appear here.';
     readonly 'visitList.empty.title': 'There are no visits to show yet.';
     readonly 'visitList.empty.description': 'Once you start using Backstage, your visits will appear here as a quick link to carry on where you left off.';
-    readonly 'visitList.few.title': 'The more pages you visit, the more pages will appear here.';
     readonly 'quickStart.title': 'Onboarding';
     readonly 'quickStart.description': 'Get started with Backstage';
     readonly 'quickStart.learnMoreLinkTitle': 'Learn more';

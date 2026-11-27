@@ -222,11 +222,11 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
   inputs: {};
   config: {
     filter: string | FilterPredicate | undefined;
-    type: 'content' | 'info' | undefined;
+    type: 'info' | 'content' | undefined;
   };
   configInput: {
     filter?: string | FilterPredicate | undefined;
-    type?: 'content' | 'info' | undefined;
+    type?: 'info' | 'content' | undefined;
   };
   dataRefs: {
     filterFunction: ConfigurableExtensionDataRef<

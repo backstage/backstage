@@ -2634,8 +2634,8 @@ __metadata:
     lodash: "npm:^4.17.21"
     minimist: "npm:^1.2.5"
     msw: "npm:^3.0.4"
-    ts-json-schema-generator: "npm:^2.9.0"
-    typescript: "npm:^5.9.3"
+    ts-json-schema-generator: "npm:^2.10.0"
+    typescript: "npm:^6.0.0"
     yaml: "npm:^2.0.0"
     zen-observable: "npm:^0.10.0"
   languageName: unknown
@@ -29597,7 +29597,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^14.0.0":
+"glob@npm:^14.0.0, glob@npm:^14.0.2":
   version: 14.0.6
   resolution: "glob@npm:14.0.6"
   dependencies:
@@ -41560,7 +41560,7 @@ __metadata:
     storybook: "npm:^10.4.0"
     ts-morph: "npm:^24.0.0"
     typedoc: "npm:^0.28.0"
-    typescript: "npm:~5.9.0"
+    typescript: "npm:~6.0.0"
     vite: "npm:^7.1.5"
     yaml: "npm:^2.7.0"
     zod: "npm:^3.25.76 || ^4.0.0"
@@ -44627,21 +44627,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-json-schema-generator@npm:^2.9.0":
-  version: 2.9.0
-  resolution: "ts-json-schema-generator@npm:2.9.0"
+"ts-json-schema-generator@npm:^2.10.0":
+  version: 2.10.0
+  resolution: "ts-json-schema-generator@npm:2.10.0"
   dependencies:
     "@types/json-schema": "npm:^7.0.15"
     commander: "npm:^14.0.3"
-    glob: "npm:^13.0.6"
+    glob: "npm:^14.0.2"
     json5: "npm:^2.2.3"
     normalize-path: "npm:^3.0.0"
     safe-stable-stringify: "npm:^2.5.0"
     tslib: "npm:^2.8.1"
-    typescript: "npm:^5.9.3"
+    typescript: "npm:>=5.9 <7"
   bin:
     ts-json-schema-generator: bin/ts-json-schema-generator.js
-  checksum: 10/50a18cb6a1171e495af16a4fe8165000d0155ef693cec9345bacb8a5b6cc559dcc730443ebdc025590cd29ffd2019564267a8222c7f6389bdf5558856fbe479b
+  checksum: 10/33ba3e34da464574649c840e14e51495f42a2800d3af2a480d801383592e914acbbf6e569668dc5c25cd695b5a02b3e5190f76d19958d0b22a0a6329b35e71ee
   languageName: node
   linkType: hard
 
@@ -44974,7 +44974,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^5.7.3, typescript@npm:^5.8.3, typescript@npm:^5.9.3, typescript@npm:~5.9.0":
+"typescript@npm:>=5.9 <7, typescript@npm:^6.0.0, typescript@npm:~6.0.0":
+  version: 6.0.3
+  resolution: "typescript@npm:6.0.3"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 10/0ef2357a4cffd916b52b683a021cdab0f81eea4e9aa35f2d254581c9a5106da02224e3392e1b0ed42b7a48f80c966e5f52b8e1a27941fa0523c1705a9c2e0330
+  languageName: node
+  linkType: hard
+
+"typescript@npm:^5.7.3, typescript@npm:^5.8.3":
   version: 5.9.3
   resolution: "typescript@npm:5.9.3"
   bin:
@@ -44994,7 +45004,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A^5.7.3#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.8.3#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.9.3#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A~5.9.0#optional!builtin<compat/typescript>":
+"typescript@patch:typescript@npm%3A>=5.9 <7#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^6.0.0#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A~6.0.0#optional!builtin<compat/typescript>":
+  version: 6.0.3
+  resolution: "typescript@patch:typescript@npm%3A6.0.3#optional!builtin<compat/typescript>::version=6.0.3&hash=5786d5"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 10/22b67a18dafedf9b1468b64ca20d9aa02ea61d449b65413d8aa6552aeb63f52ef369e86beb25b6b4c91a803d9726ee5c196f391a9b64201263263410a4223ee6
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@npm%3A^5.7.3#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.8.3#optional!builtin<compat/typescript>":
   version: 5.9.3
   resolution: "typescript@patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"
   bin:

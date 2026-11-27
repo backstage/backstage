@@ -26,6 +26,7 @@ export const createBitbucketPipelinesRunAction: (options: {
             | {
                 type?: string | undefined;
                 source?: string | undefined;
+                destination?: string | undefined;
                 selector?:
                   | {
                       type: string;
@@ -44,7 +45,6 @@ export const createBitbucketPipelinesRunAction: (options: {
                     }
                   | undefined;
                 ref_name?: string | undefined;
-                destination?: string | undefined;
                 ref_type?: string | undefined;
                 destination_commit?:
                   | {
