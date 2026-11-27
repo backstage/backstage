@@ -52,7 +52,8 @@ export type MicrosoftGraphProviderConfig = {
   tenantId: string;
   /**
    * The OAuth client ID to use for authenticating requests.
-   * If specified, ClientSecret must also be specified
+   * If specified, exactly one of clientSecret, clientCertificate or
+   * clientCertificatePath must also be specified
    */
   clientId?: string;
   /**
@@ -60,6 +61,17 @@ export type MicrosoftGraphProviderConfig = {
    * If specified, ClientId must also be specified
    */
   clientSecret?: string;
+  /**
+   * The PEM-encoded client certificate, including its private key, to use
+   * for authenticating requests. If specified, ClientId must also be specified
+   */
+  clientCertificate?: string;
+  /**
+   * The path to a PEM-encoded client certificate file, including its private
+   * key, to use for authenticating requests. If specified, ClientId must also
+   * be specified
+   */
+  clientCertificatePath?: string;
   /**
    * The filter to apply to extract users. Disabled users
    * (`accountEnabled === false`) are always filtered out client-side
@@ -168,6 +180,41 @@ export type MicrosoftGraphProviderConfig = {
   schedule?: SchedulerServiceTaskScheduleDefinition;
 };
 
+function validateClientCredentials(options: {
+  clientId?: string;
+  clientSecret?: string;
+  clientCertificate?: string;
+  clientCertificatePath?: string;
+}) {
+  const { clientId, clientSecret, clientCertificate, clientCertificatePath } =
+    options;
+  const configured = [
+    clientSecret && 'clientSecret',
+    clientCertificate && 'clientCertificate',
+    clientCertificatePath && 'clientCertificatePath',
+  ].filter(Boolean);
+
+  if (configured.length > 1) {
+    throw new Error(
+      `Only one of clientSecret, clientCertificate or clientCertificatePath can be specified, got ${configured.join(
+        ', ',
+      )}.`,
+    );
+  }
+
+  if (clientId && configured.length === 0) {
+    throw new Error(
+      `One of clientSecret, clientCertificate or clientCertificatePath must be provided when clientId is defined.`,
+    );
+  }
+
+  if (!clientId && configured.length > 0) {
+    throw new Error(
+      `clientId must be provided when ${configured[0]} is defined.`,
+    );
+  }
+}
+
 /**
  * Parses configuration.
  *
@@ -192,6 +239,11 @@ export function readMicrosoftGraphConfig(
     const tenantId = providerConfig.getString('tenantId');
     const clientId = providerConfig.getOptionalString('clientId');
     const clientSecret = providerConfig.getOptionalString('clientSecret');
+    const clientCertificate =
+      providerConfig.getOptionalString('clientCertificate');
+    const clientCertificatePath = providerConfig.getOptionalString(
+      'clientCertificatePath',
+    );
 
     const userExpand = providerConfig.getOptionalString('userExpand');
     const userFilter = providerConfig.getOptionalString('userFilter');
@@ -227,17 +279,12 @@ export function readMicrosoftGraphConfig(
       throw new Error(`queryMode must be one of: basic, advanced`);
     }
 
-    if (clientId && !clientSecret) {
-      throw new Error(
-        `clientSecret must be provided when clientId is defined.`,
-      );
-    }
-
-    if (clientSecret && !clientId) {
-      throw new Error(
-        `clientId must be provided when clientSecret is defined.`,
-      );
-    }
+    validateClientCredentials({
+      clientId,
+      clientSecret,
+      clientCertificate,
+      clientCertificatePath,
+    });
 
     providers.push({
       id: target,
@@ -246,6 +293,8 @@ export function readMicrosoftGraphConfig(
       tenantId,
       clientId,
       clientSecret,
+      clientCertificate,
+      clientCertificatePath,
       userExpand,
       userFilter,
       userSelect,
@@ -312,6 +361,10 @@ export function readProviderConfig(
   const tenantId = config.getString('tenantId');
   const clientId = config.getOptionalString('clientId');
   const clientSecret = config.getOptionalString('clientSecret');
+  const clientCertificate = config.getOptionalString('clientCertificate');
+  const clientCertificatePath = config.getOptionalString(
+    'clientCertificatePath',
+  );
 
   const userExpand = config.getOptionalString('user.expand');
   const userFilter = config.getOptionalString('user.filter');
@@ -361,13 +414,12 @@ export function readProviderConfig(
     );
   }
 
-  if (clientId && !clientSecret) {
-    throw new Error(`clientSecret must be provided when clientId is defined.`);
-  }
-
-  if (clientSecret && !clientId) {
-    throw new Error(`clientId must be provided when clientSecret is defined.`);
-  }
+  validateClientCredentials({
+    clientId,
+    clientSecret,
+    clientCertificate,
+    clientCertificatePath,
+  });
 
   const schedule = config.has('schedule')
     ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
@@ -381,6 +433,8 @@ export function readProviderConfig(
     authority,
     clientId,
     clientSecret,
+    clientCertificate,
+    clientCertificatePath,
     tenantId,
     userExpand,
     userFilter,

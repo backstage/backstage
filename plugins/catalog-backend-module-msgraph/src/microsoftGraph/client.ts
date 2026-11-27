@@ -17,6 +17,7 @@
 import {
   TokenCredential,
   DefaultAzureCredential,
+  ClientCertificateCredential,
   ClientSecretCredential,
 } from '@azure/identity';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
@@ -89,15 +90,31 @@ export class MicrosoftGraphClient {
       tenantId: config.tenantId,
     };
 
-    const credential =
-      config.clientId && config.clientSecret
-        ? new ClientSecretCredential(
-            config.tenantId,
-            config.clientId,
-            config.clientSecret,
-            options,
-          )
-        : new DefaultAzureCredential(options);
+    let credential: TokenCredential;
+    if (config.clientId && config.clientSecret) {
+      credential = new ClientSecretCredential(
+        config.tenantId,
+        config.clientId,
+        config.clientSecret,
+        options,
+      );
+    } else if (config.clientId && config.clientCertificate) {
+      credential = new ClientCertificateCredential(
+        config.tenantId,
+        config.clientId,
+        { certificate: config.clientCertificate },
+        options,
+      );
+    } else if (config.clientId && config.clientCertificatePath) {
+      credential = new ClientCertificateCredential(
+        config.tenantId,
+        config.clientId,
+        { certificatePath: config.clientCertificatePath },
+        options,
+      );
+    } else {
+      credential = new DefaultAzureCredential(options);
+    }
 
     return new MicrosoftGraphClient(config.target, credential);
   }

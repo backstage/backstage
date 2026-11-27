@@ -36,6 +36,11 @@ catalog:
         # the App registration in the Microsoft Azure Portal.
         clientId: ${AZURE_CLIENT_ID}
         clientSecret: ${AZURE_CLIENT_SECRET}
+        # Alternatively, authenticate the App registration with a certificate
+        # instead of a client secret: set exactly one of clientSecret,
+        # clientCertificate (PEM including the private key) or
+        # clientCertificatePath (path to such a PEM file).
+        # clientCertificatePath: /path/to/cert.pem
         # Optional mode for querying which defaults to "basic".
         # By default, the Microsoft Graph API only provides the basic feature set
         # for querying. Certain features are limited to advanced querying capabilities.
