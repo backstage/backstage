@@ -20,6 +20,7 @@ import {
   mockServices,
 } from '@backstage/backend-test-utils';
 import { Knex } from 'knex';
+import { AsyncLocalStorage } from 'node:async_hooks';
 import {
   DatabaseUserSettingsStore,
   RawDbUserSettingsRow,
@@ -120,6 +121,57 @@ describe.each(databases.eachSupportedId())(
             ],
           }),
         ).resolves.toEqual([null]);
+      });
+
+      it('should run queued queries in the async context of their own caller', async () => {
+        const asyncStorage = new AsyncLocalStorage<string>();
+        const storesByBucket = new Map<string, Set<string | undefined>>();
+        const onQuery = (data: { bindings?: unknown[] }) => {
+          const bucket = data.bindings?.find(
+            b => typeof b === 'string' && b.startsWith('ctx-bucket-'),
+          ) as string | undefined;
+          if (bucket) {
+            const stores = storesByBucket.get(bucket) ?? new Set();
+            stores.add(asyncStorage.getStore());
+            storesByBucket.set(bucket, stores);
+          }
+        };
+        knex.on('query', onQuery);
+
+        try {
+          // The first caller takes all 10 slots of the shared limiter
+          const first = asyncStorage.run('first', () =>
+            storage.multiget({
+              userEntityRef: 'user-1',
+              items: Array.from(Array(10)).map((_, i) => ({
+                bucket: `ctx-bucket-first-${i}`,
+                key: 'key',
+              })),
+            }),
+          );
+          // The second caller is queued, and needs several key chunks
+          const second = asyncStorage.run('second', () =>
+            storage.multiget({
+              userEntityRef: 'user-1',
+              items: Array.from(Array(250)).map((_, i) => ({
+                bucket: 'ctx-bucket-second',
+                key: `key-${i}`,
+              })),
+            }),
+          );
+          await Promise.all([first, second]);
+        } finally {
+          knex.removeListener('query', onQuery);
+        }
+
+        for (let i = 0; i < 10; i++) {
+          expect(storesByBucket.get(`ctx-bucket-first-${i}`)).toEqual(
+            new Set(['first']),
+          );
+        }
+        expect(storesByBucket.get('ctx-bucket-second')).toEqual(
+          new Set(['second']),
+        );
       });
 
       it('should handle large inputs and return existing values', async () => {

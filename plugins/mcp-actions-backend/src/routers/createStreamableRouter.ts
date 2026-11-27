@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { AsyncLocalStorage } from 'node:async_hooks';
 import PromiseRouter from 'express-promise-router';
 import { Router } from 'express';
 import { performance } from 'node:perf_hooks';
@@ -99,21 +100,26 @@ export const createStreamableRouter = ({
 
       await connectionEvent.success();
 
-      res.on('close', async () => {
-        transport.close();
-        server.close();
+      // The close event is emitted from the socket, so bind the handler to
+      // the async context of this request.
+      res.on(
+        'close',
+        AsyncLocalStorage.bind(async () => {
+          transport.close();
+          server.close();
 
-        const durationSeconds = (performance.now() - sessionStart) / 1000;
+          const durationSeconds = (performance.now() - sessionStart) / 1000;
 
-        sessionDuration.record(durationSeconds, baseAttributes);
+          sessionDuration.record(durationSeconds, baseAttributes);
 
-        const e = await auditor.createEvent({
-          eventId: 'connection',
-          request: req,
-          meta: { transport: 'streamable', actionType: 'closed' },
-        });
-        await e.success();
-      });
+          const e = await auditor.createEvent({
+            eventId: 'connection',
+            request: req,
+            meta: { transport: 'streamable', actionType: 'closed' },
+          });
+          await e.success();
+        }),
+      );
     } catch (error) {
       const err = toError(error);
       const errorType = err.name;

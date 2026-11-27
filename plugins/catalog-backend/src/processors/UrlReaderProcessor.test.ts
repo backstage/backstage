@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { AsyncLocalStorage } from 'node:async_hooks';
 import {
   mockServices,
   registerMswTestHooks,
@@ -215,5 +216,46 @@ describe('UrlReaderProcessor', () => {
     );
 
     expect(reader.search).toHaveBeenCalledTimes(1);
+  });
+
+  it('reads files in the async context of the caller even when queued', async () => {
+    const logger = mockServices.logger.mock();
+    const storage = new AsyncLocalStorage<string>();
+    const seen: Array<{ caller: string; store?: string }> = [];
+
+    const reader = mockServices.urlReader.mock({
+      search: jest.fn().mockImplementation(async () => {
+        const caller = storage.getStore()!;
+        return {
+          files: Array.from({ length: 6 }, (_, index) => ({
+            url: `https://github.com/a/b/blob/x/${caller}-${index}.yaml`,
+            content: async () => {
+              seen.push({ caller, store: storage.getStore() });
+              await new Promise(resolve => setTimeout(resolve, 5));
+              return Buffer.from('');
+            },
+          })),
+        };
+      }),
+    });
+
+    const processor = new UrlReaderProcessor({ reader, logger });
+
+    await Promise.all(
+      ['a', 'b'].map(caller =>
+        storage.run(caller, () =>
+          processor.readLocation(
+            { type: 'url', target: 'https://github.com/a/b/blob/x/*.yaml' },
+            false,
+            jest.fn(),
+            defaultEntityDataParser,
+            mockCache,
+          ),
+        ),
+      ),
+    );
+
+    expect(seen).toHaveLength(12);
+    expect(seen.filter(s => s.caller !== s.store)).toEqual([]);
   });
 });

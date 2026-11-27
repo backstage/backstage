@@ -21,6 +21,7 @@ import {
   PreparerBuilder,
   PublisherBase,
 } from '@backstage/plugin-techdocs-node';
+import { AsyncLocalStorage } from 'node:async_hooks';
 import { PassThrough } from 'node:stream';
 import * as winston from 'winston';
 import { TechDocsCache } from '../cache';
@@ -196,6 +197,51 @@ describe('DocsSynchronizer', () => {
       // Then still only 10 builds should have been triggered.
       await new Promise<void>(resolve => resolve());
       expect(DocsBuilder.prototype.build).toHaveBeenCalledTimes(10);
+    });
+
+    it('should run queued builds in the async context of their own caller', async () => {
+      const asyncStorage = new AsyncLocalStorage<string>();
+      const releases: Array<() => void> = [];
+      const seenStores: Array<string | undefined> = [];
+      let onEleventhBuild: () => void = () => {};
+      const eleventhBuild = new Promise<void>(resolve => {
+        onEleventhBuild = resolve;
+      });
+      MockedDocsBuilder.prototype.build.mockImplementation(() => {
+        seenStores.push(asyncStorage.getStore());
+        if (seenStores.length === 11) {
+          onEleventhBuild();
+        }
+        return new Promise<boolean>(resolve =>
+          releases.push(() => resolve(false)),
+        );
+      });
+      (shouldCheckForUpdate as jest.Mock).mockReturnValue(true);
+      const entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: { uid: '0', name: 'test', namespace: 'default' },
+      };
+      const sync = () =>
+        docsSynchronizer.doSync({
+          responseHandler: mockResponseHandler,
+          entity,
+          preparers,
+          generators,
+        });
+
+      // Fill all 10 build slots from one caller, then queue one from another
+      for (let i = 0; i < 10; i++) {
+        asyncStorage.run('first', sync);
+      }
+      asyncStorage.run('second', sync);
+      await new Promise<void>(resolve => resolve());
+      expect(seenStores).toEqual(Array(10).fill('first'));
+
+      // Freeing a slot from the first caller starts the queued build
+      releases[0]();
+      await eleventhBuild;
+      expect(seenStores).toEqual([...Array(10).fill('first'), 'second']);
     });
 
     it('should not check for an update too often', async () => {

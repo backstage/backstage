@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { AsyncLocalStorage } from 'node:async_hooks';
 import {
   AuditorService,
   AuditorServiceEvent,
@@ -999,12 +1000,16 @@ export async function createRouter(
         });
 
         // When client closes connection we update the clients list
-        // avoiding the disconnected one
-        req.on('close', async () => {
-          subscription.unsubscribe();
-          logger.debug(`Event stream observing taskId '${taskId}' closed`);
-          await auditorEvent?.success();
-        });
+        // avoiding the disconnected one. The close event is emitted from the
+        // socket, so bind the handler to the async context of this request.
+        req.on(
+          'close',
+          AsyncLocalStorage.bind(async () => {
+            subscription.unsubscribe();
+            logger.debug(`Event stream observing taskId '${taskId}' closed`);
+            await auditorEvent?.success();
+          }),
+        );
       } catch (err) {
         await auditorEvent?.fail({ error: err });
         throw err;

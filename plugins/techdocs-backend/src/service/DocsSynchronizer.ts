@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { AsyncLocalStorage } from 'node:async_hooks';
 import {
   DEFAULT_NAMESPACE,
   Entity,
@@ -138,7 +139,11 @@ export class DocsSynchronizer {
           'The docs building process is taking a little bit longer to process this entity. Please bear with us.',
         );
       }, 10000);
-      const updated = await this.buildLimiter(() => docsBuilder.build());
+      // The shared limiter would otherwise start queued builds in the async
+      // context of whichever caller freed up the slot.
+      const updated = await this.buildLimiter(
+        AsyncLocalStorage.bind(() => docsBuilder.build()),
+      );
       clearInterval(interval);
 
       if (!updated) {
