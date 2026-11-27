@@ -16,6 +16,7 @@
 
 import {
   HTMLAttributes,
+  UIEvent,
   cloneElement,
   createContext,
   forwardRef,
@@ -35,9 +36,13 @@ const renderRow = (props: ListChildComponentProps) => {
 const OuterElementContext = createContext<HTMLDivProps>({});
 
 const OuterElementType = forwardRef<HTMLDivElement, HTMLDivProps>(
-  (props, ref) => {
-    const outerProps = useContext(OuterElementContext);
-    return <div ref={ref} {...props} {...outerProps} />;
+  ({ onScroll: reactWindowOnScroll, ...props }, ref) => {
+    const { onScroll, ...outerProps } = useContext(OuterElementContext);
+    const handleScroll = (event: UIEvent<HTMLDivElement>) => {
+      reactWindowOnScroll?.(event);
+      onScroll?.(event);
+    };
+    return <div ref={ref} onScroll={handleScroll} {...props} {...outerProps} />;
   },
 );
 
