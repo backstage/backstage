@@ -43,6 +43,8 @@ import { pluginHeaderActionsApiRef } from '../apis/definitions/PluginHeaderActio
 import { optionalStringSchema } from '../schema/optionalStringSchema';
 import { appHistoryApiRef, type AppHistoryApi } from '../routing/AppHistoryApi';
 import type { AppLocation } from '../routing/AppLocation';
+import { configApiRef } from '../apis';
+import { Helmet } from 'react-helmet';
 
 /**
  * One sub-page of a page, as the page itself sees it: a tab to show in the
@@ -83,17 +85,24 @@ function resolveTitleLink(
 /** Parent-owned selection from the same matched branch as the app route. */
 function PageContent(props: {
   subPages?: readonly PageSubPage[];
+  selectedSubPage?: PageSubPage;
+  selectedMatch?: RouteResolutionMatch;
   pageMount?: RouteResolutionMatch;
   matches?: readonly RouteResolutionMatch[];
   history?: AppHistoryApi;
   location?: AppLocation;
   children?: ReactNode;
 }) {
-  const { subPages, pageMount, matches, history, location, children } = props;
-  const selectedMatch = matches?.find(match =>
-    subPages?.some(page => page.node === match.node),
-  );
-  const selected = subPages?.find(page => page.node === selectedMatch?.node);
+  const {
+    subPages,
+    selectedSubPage,
+    selectedMatch,
+    pageMount,
+    matches,
+    history,
+    location,
+    children,
+  } = props;
   const firstPath = subPages?.[0]?.path;
   useEffect(() => {
     if (
@@ -112,11 +121,11 @@ function PageContent(props: {
       }
     }
   }, [matches, firstPath, pageMount, location, history]);
-  return selected && selectedMatch ? (
+  return selectedSubPage && selectedMatch ? (
     <BreadcrumbEntry
-      entry={{ label: selected.label, href: selectedMatch.basePath }}
+      entry={{ label: selectedSubPage.label, href: selectedMatch.basePath }}
     >
-      {selected.element}
+      {selectedSubPage.element}
     </BreadcrumbEntry>
   ) : (
     <>{children}</>
@@ -162,6 +171,10 @@ function PluginPageShell(props: {
   const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
   const history = useApiHolder().get(appHistoryApiRef);
   const location = useAppHistoryLocation(history);
+  const configApi = useApi(configApiRef);
+  const appTitle = configApi.getOptionalString('app.title') || 'Backstage';
+  const titleTemplate = `${titles?.[0] ?? title} | %s | ${appTitle}`;
+  const defaultTitle = `${titles?.[0] ?? title} | ${appTitle}`;
   const mount =
     location &&
     routeResolutionApi
@@ -170,6 +183,12 @@ function PluginPageShell(props: {
   const matches =
     location &&
     routeResolutionApi.resolvePath({ pathname: location.pathname }).matches;
+  const selectedMatch = matches?.find(match =>
+    translatedSubPages?.some(page => page.node === match.node),
+  );
+  const selectedSubPage = translatedSubPages?.find(
+    page => page.node === selectedMatch?.node,
+  );
   const tabs =
     mount &&
     translatedSubPages?.map(({ path, label, icon: tabIcon }) => ({
@@ -185,26 +204,35 @@ function PluginPageShell(props: {
     return <Progress />;
   }
   return (
-    <PageLayout
-      title={titles[0] ?? title}
-      icon={icon}
-      noHeader={noHeader}
-      tabs={tabs}
-      titleLink={titleLink}
-      headerActions={headerActions}
-    >
-      <ExtensionBoundary node={node}>
-        <PageContent
-          subPages={translatedSubPages}
-          pageMount={mount}
-          matches={matches}
-          history={history}
-          location={location}
-        >
-          {children}
-        </PageContent>
-      </ExtensionBoundary>
-    </PageLayout>
+    <>
+      <Helmet
+        titleTemplate={titleTemplate}
+        defaultTitle={defaultTitle}
+        title={selectedSubPage?.label}
+      />
+      <PageLayout
+        title={titles[0] ?? title}
+        icon={icon}
+        noHeader={noHeader}
+        tabs={tabs}
+        titleLink={titleLink}
+        headerActions={headerActions}
+      >
+        <ExtensionBoundary node={node}>
+          <PageContent
+            subPages={translatedSubPages}
+            selectedSubPage={selectedSubPage}
+            selectedMatch={selectedMatch}
+            pageMount={mount}
+            matches={matches}
+            history={history}
+            location={location}
+          >
+            {children}
+          </PageContent>
+        </ExtensionBoundary>
+      </PageLayout>
+    </>
   );
 }
 

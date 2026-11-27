@@ -764,4 +764,96 @@ describe('PageBlueprint', () => {
     expect(await screen.findByTestId('plain-page')).toBeInTheDocument();
     expect(appHistory.getSnapshot().location.pathname).toBe('/plain/deeper');
   });
+
+  it('should set the title template for a sub-page on initial load', async () => {
+    const parentPage = PageBlueprint.make({
+      name: 'parent-page',
+      params: {
+        path: '/parent',
+        title: 'Parent',
+      },
+    });
+    const subPage = SubPageBlueprint.make({
+      name: 'sub-page',
+      attachTo: { id: 'page:parent-page', input: 'pages' },
+      params: {
+        loader: () =>
+          Promise.resolve(
+            <div data-testid="sub-page-content">Sub-page content</div>,
+          ),
+        path: 'sub-page',
+        title: 'Sub-page',
+      },
+    });
+    const tester = createExtensionTester(parentPage).add(subPage);
+
+    const { findByTestId } = renderInTestApp(tester.reactElement(), {
+      mountPath: '/parent',
+      initialRouteEntries: ['/parent/sub-page'],
+    });
+
+    await findByTestId('sub-page-content');
+
+    await waitFor(() =>
+      expect(document.title).toBe('Parent | Sub-page | Backstage'),
+    );
+  });
+
+  it('should update the title when navigating between pages and sub-pages', async () => {
+    const parentPage = PageBlueprint.make({
+      params: {
+        path: '/parent',
+        title: 'Parent',
+      },
+    });
+    const firstSubPage = SubPageBlueprint.make({
+      name: 'first-sub-page',
+      params: {
+        loader: async () => <div data-testid="first-sub-page">First</div>,
+        path: 'first',
+        title: 'First',
+      },
+    });
+    const secondSubPage = SubPageBlueprint.make({
+      name: 'second-sub-page',
+      params: {
+        loader: async () => <div data-testid="second-sub-page">Second</div>,
+        path: 'second',
+        title: 'Second',
+      },
+    });
+    const plainPage = PageBlueprint.make({
+      name: 'plain-page',
+      params: {
+        path: '/plain',
+        title: 'Plain',
+        loader: async () => <div data-testid="plain-page">Plain</div>,
+      },
+    });
+
+    const { apis } = renderTestApp({
+      extensions: [parentPage, firstSubPage, secondSubPage, plainPage],
+      initialRouteEntries: ['/parent/first'],
+    });
+    const appHistory = apis.get(coreApis.appHistory)!;
+
+    expect(await screen.findByTestId('first-sub-page')).toBeInTheDocument();
+    await waitFor(() =>
+      expect(document.title).toBe('Parent | First | Backstage'),
+    );
+
+    await act(async () => {
+      appHistory.navigate('/parent/second');
+    });
+    expect(await screen.findByTestId('second-sub-page')).toBeInTheDocument();
+    await waitFor(() =>
+      expect(document.title).toBe('Parent | Second | Backstage'),
+    );
+
+    await act(async () => {
+      appHistory.navigate('/plain');
+    });
+    expect(await screen.findByTestId('plain-page')).toBeInTheDocument();
+    await waitFor(() => expect(document.title).toBe('Plain | Backstage'));
+  });
 });

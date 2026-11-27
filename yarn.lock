@@ -3259,6 +3259,7 @@ __metadata:
     history: "npm:^5.3.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
+    react-helmet: "npm:6.1.0"
     react-router-dom: "npm:^6.30.2"
     zod: "npm:^4.0.0"
   peerDependencies:
