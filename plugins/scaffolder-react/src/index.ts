@@ -23,3 +23,14 @@ export * from './hooks';
 export * from './layouts';
 export * from './utils';
 export { scaffolderReactTranslationRef } from './translation';
+export {
+  ScaffolderTemplateFilterBlueprint,
+  type ScaffolderTemplateFilter,
+  type ScaffolderTemplateFilterBlueprintParams,
+  type ScaffolderTemplateFilterHook,
+} from './next/blueprints/ScaffolderTemplateFilterBlueprint';
+export {
+  ScaffolderTemplateOutputsBlueprint,
+  type ScaffolderTemplateOutputsBlueprintParams,
+  type ScaffolderTemplateOutputsComponent,
+} from './next/blueprints/ScaffolderTemplateOutputsBlueprint';

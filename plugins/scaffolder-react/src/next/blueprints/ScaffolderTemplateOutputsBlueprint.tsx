@@ -21,7 +21,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 
 /**
- * @alpha
+ * @public
  */
 export type ScaffolderTemplateOutputsComponent = ComponentType<{
   output?: ScaffolderTaskOutput;
@@ -45,7 +45,7 @@ export const scaffolderTemplateOutputTemplateRefsRef = createExtensionDataRef<
 });
 
 /**
- * @alpha
+ * @public
  */
 export interface ScaffolderTemplateOutputsBlueprintParams {
   component: ScaffolderTemplateOutputsComponent;
@@ -53,9 +53,10 @@ export interface ScaffolderTemplateOutputsBlueprintParams {
 }
 
 /**
- * @alpha
+ * Registers a custom task output renderer for the specified templates.
+ * @public
  */
-export const scaffolderTemplateOutputsBlueprint = createExtensionBlueprint({
+export const ScaffolderTemplateOutputsBlueprint = createExtensionBlueprint({
   kind: 'scaffolder-template-outputs',
   attachTo: {
     id: 'sub-page:scaffolder/tasks',

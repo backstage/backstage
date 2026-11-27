@@ -340,12 +340,12 @@ export const scaffolderReactTranslationRef: TranslationRef<
   }
 >;
 
-// @alpha
+// @public
 export type ScaffolderTemplateFilter = (
   template: TemplateEntityV1beta3,
 ) => boolean;
 
-// @alpha
+// @public
 export const ScaffolderTemplateFilterBlueprint: ExtensionBlueprint<{
   kind: 'scaffolder-template-filter';
   params: ScaffolderTemplateFilterBlueprintParams;
@@ -366,15 +366,15 @@ export const ScaffolderTemplateFilterBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-// @alpha
+// @public
 export interface ScaffolderTemplateFilterBlueprintParams {
   useTemplateFilter: ScaffolderTemplateFilterHook;
 }
 
-// @alpha
+// @public
 export type ScaffolderTemplateFilterHook = () => ScaffolderTemplateFilter;
 
-// @alpha (undocumented)
+// @public
 export const scaffolderTemplateOutputsBlueprint: ExtensionBlueprint<{
   kind: 'scaffolder-template-outputs';
   params: ScaffolderTemplateOutputsBlueprintParams;
@@ -406,7 +406,7 @@ export const scaffolderTemplateOutputsBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-// @alpha (undocumented)
+// @public (undocumented)
 export interface ScaffolderTemplateOutputsBlueprintParams {
   // (undocumented)
   component: ScaffolderTemplateOutputsComponent;
@@ -414,7 +414,7 @@ export interface ScaffolderTemplateOutputsBlueprintParams {
   templateRefs: string[];
 }
 
-// @alpha (undocumented)
+// @public (undocumented)
 export type ScaffolderTemplateOutputsComponent = ComponentType<{
   output?: ScaffolderTaskOutput_2;
 }>;

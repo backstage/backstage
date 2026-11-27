@@ -33,14 +33,13 @@ import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import {
   FormFieldBlueprint,
   formFieldsApiRef,
-  ScaffolderTemplateFilterBlueprint,
-  scaffolderTemplateOutputsComponentRef,
-  scaffolderTemplateOutputTemplateRefsRef,
 } from '@backstage/plugin-scaffolder-react/alpha';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { HomePageWidgetBlueprint } from '@backstage/plugin-home-react/alpha';
 import {
   scaffolderApiRef,
+  ScaffolderTemplateFilterBlueprint,
+  ScaffolderTemplateOutputsBlueprint,
   TemplateGroupFilter,
 } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderClient } from '../api';
@@ -125,8 +124,8 @@ export const scaffolderTasksSubPage = SubPageBlueprint.makeWithOverrides({
   inputs: {
     templateOutputsComponents: createExtensionInput(
       [
-        scaffolderTemplateOutputsComponentRef,
-        scaffolderTemplateOutputTemplateRefsRef,
+        ScaffolderTemplateOutputsBlueprint.dataRefs.component,
+        ScaffolderTemplateOutputsBlueprint.dataRefs.templateRefs,
       ],
       { optional: true },
     ),
@@ -138,8 +137,12 @@ export const scaffolderTasksSubPage = SubPageBlueprint.makeWithOverrides({
       loader: async () => {
         const templateOutputsComponents = inputs.templateOutputsComponents?.map(
           input => ({
-            component: input.get(scaffolderTemplateOutputsComponentRef),
-            templateRefs: input.get(scaffolderTemplateOutputTemplateRefsRef),
+            component: input.get(
+              ScaffolderTemplateOutputsBlueprint.dataRefs.component,
+            ),
+            templateRefs: input.get(
+              ScaffolderTemplateOutputsBlueprint.dataRefs.templateRefs,
+            ),
           }),
         );
         return import('./components/TasksSubPage').then(m => (

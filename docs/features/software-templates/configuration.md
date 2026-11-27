@@ -316,7 +316,7 @@ users whose ownership claims match the template's `ownedBy` relation:
 import { useCallback } from 'react';
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import { useEntityOwnership } from '@backstage/plugin-catalog-react';
-import { ScaffolderTemplateFilterBlueprint } from '@backstage/plugin-scaffolder-react/alpha';
+import { ScaffolderTemplateFilterBlueprint } from '@backstage/plugin-scaffolder-react';
 
 const ownerFilter = ScaffolderTemplateFilterBlueprint.make({
   name: 'owner-filter',
@@ -348,6 +348,15 @@ page.
 
 This filter only changes which cards are displayed. Use the permission
 framework when templates or their actions need access control.
+
+### Customizing task outputs
+
+Use `ScaffolderTemplateOutputsBlueprint` from
+`@backstage/plugin-scaffolder-react` to render task outputs for specific templates.
+Pass the template entity references in `templateRefs` and a React component that
+receives the task's `output` prop. Install the extension in a frontend module
+for the `scaffolder` plugin. Tasks without a matching registration use the
+default output renderer.
 
 ### Replacing the default `TemplateCard`
 
