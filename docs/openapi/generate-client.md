@@ -32,3 +32,20 @@ Generated code is not formatted with Prettier, so it stays exactly as the genera
 2. You should not need to import anything from subfolders of the `src/schema/openapi/generated` parent folder, everything you should require will be accessible from the `src/schema/openapi/generated/index.ts` file. Of note,
 3. `DefaultApiClient` - this is the client that you can use to access your specific spec.
 4. Any request or response types - these will be available from the index and should match the names in your spec.
+
+### Request cancellation
+
+Every generated client method accepts an optional `signal` in its request options. Pass a caller-owned `AbortSignal` to cancel an individual request without affecting other calls made through the same client:
+
+```ts
+const controller = new AbortController();
+const request = client.getEntityByUid(
+  { path: { uid } },
+  { token, signal: controller.signal },
+);
+
+controller.abort();
+await request;
+```
+
+With the default fetch transport, `controller.abort()` causes the request to reject with an `AbortError`. A caller that needs a timeout can pass a new `AbortSignal.timeout(10_000)` for each call.

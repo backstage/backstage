@@ -7433,6 +7433,7 @@ __metadata:
     "@stoplight/spectral-runtime": "npm:^1.1.2"
     "@stoplight/types": "npm:^14.0.0"
     "@types/is-glob": "npm:^4.0.2"
+    "@types/mustache": "npm:^4.2.6"
     "@types/node": "npm:^24.0.0"
     "@types/prettier": "npm:^2.0.0"
     chalk: "npm:^4.0.0"
@@ -7452,6 +7453,7 @@ __metadata:
     knip: "npm:^5.42.0"
     lodash: "npm:^4.17.21"
     minimatch: "npm:^11.0.1"
+    mustache: "npm:^4.2.0"
     openapi-types: "npm:^12.0.0"
     p-limit: "npm:^3.0.2"
     tar: "npm:^7.5.21"
@@ -19518,6 +19520,13 @@ __metadata:
   dependencies:
     "@types/express": "npm:*"
   checksum: 10/87ddd5b39fd572b1d98f84908738eed9fef53fc20628bff066d43b3bcf70481f51010a997554ed65c97121e7b8fe44b59a24cd68ccf59c3d7c64bbffb8c5a127
+  languageName: node
+  linkType: hard
+
+"@types/mustache@npm:^4.2.6":
+  version: 4.2.6
+  resolution: "@types/mustache@npm:4.2.6"
+  checksum: 10/56a9b979a9984d4f8b370ccdf04b54ae07f055b9e7326a526cf86b2fac73b04576cc71c83edaceaaf80038817520cbe2405f73623200a8ce03dcdd1e578e5016
   languageName: node
   linkType: hard
 
@@ -35785,6 +35794,15 @@ __metadata:
     array-union: "npm:^3.0.1"
     minimatch: "npm:^10.2.2"
   checksum: 10/716d785b7a24fb86fba490cbb2fbe9f753f09ea22557559cd76ae0809b8a0570911c81dd0e540a1137afa0fa692a3ab8ea51fbf9f3633c5c85b033565d334a78
+  languageName: node
+  linkType: hard
+
+"mustache@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "mustache@npm:4.2.0"
+  bin:
+    mustache: bin/mustache
+  checksum: 10/6e668bd5803255ab0779c3983b9412b5c4f4f90e822230e0e8f414f5449ed7a137eed29430e835aa689886f663385cfe05f808eb34b16e1f3a95525889b05cd3
   languageName: node
   linkType: hard
 
