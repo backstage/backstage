@@ -2072,6 +2072,8 @@ __metadata:
     "@types/cross-spawn": "npm:^6.0.2"
     "@types/node": "npm:^24.0.0"
     cross-spawn: "npm:^7.0.3"
+    minimatch: "npm:^11.0.1"
+    yaml: "npm:^2.0.0"
   languageName: unknown
   linkType: soft
 
@@ -2216,6 +2218,7 @@ __metadata:
     util: "npm:^0.12.3"
     webpack: "npm:~5.111.0"
     webpack-dev-server: "npm:^5.0.0"
+    yaml: "npm:^2.0.0"
     yml-loader: "npm:^2.1.0"
     yn: "npm:^4.0.0"
     zod: "npm:^3.25.76 || ^4.0.0"

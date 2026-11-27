@@ -23,10 +23,17 @@ import * as url from 'node:url';
 import debounce from 'lodash/debounce';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { ForwardedError } from '@backstage/errors';
+import { isChildPath } from '@backstage/cli-common';
 
 export interface DynamicPluginScannerOptions {
   config: Config;
+  /** The root of the Backstage installation, which `rootDirectory` is relative to */
   backstageRoot: string;
+  /**
+   * The root of the workspace, where the modules that are shared with dynamic
+   * plugins are installed. Defaults to `backstageRoot`.
+   */
+  workspaceRoot?: string;
   logger: LoggerService;
   preferAlpha?: boolean;
 }
@@ -45,17 +52,20 @@ export class PluginScanner {
   private readonly config: Config;
   private readonly logger: LoggerService;
   private readonly backstageRoot: string;
+  private readonly workspaceRoot: string;
   private readonly preferAlpha: boolean;
 
   private constructor(
     config: Config,
     logger: LoggerService,
     backstageRoot: string,
+    workspaceRoot: string,
     preferAlpha: boolean,
   ) {
     this.config = config;
     this.logger = logger;
     this.backstageRoot = backstageRoot;
+    this.workspaceRoot = workspaceRoot;
     this.preferAlpha = preferAlpha;
   }
 
@@ -64,6 +74,7 @@ export class PluginScanner {
       options.config,
       options.logger,
       options.backstageRoot,
+      options.workspaceRoot ?? options.backstageRoot,
       options.preferAlpha || false,
     );
     scanner.applyConfig();
@@ -109,14 +120,17 @@ export class PluginScanner {
       ? path.resolve(dynamicPlugins.rootDirectory)
       : path.resolve(this.backstageRoot, dynamicPlugins.rootDirectory);
 
+    // The shared modules are installed in the workspace root, which plugins
+    // inside of it reach through the normal node_modules lookup
     if (
-      !path
-        .dirname(dynamicPluginsRootPath)
-        .startsWith(path.resolve(this.backstageRoot))
+      !isChildPath(
+        path.resolve(this.workspaceRoot),
+        path.dirname(dynamicPluginsRootPath),
+      )
     ) {
       const nodePath = process.env.NODE_PATH;
       const backstageNodeModules = path.resolve(
-        this.backstageRoot,
+        this.workspaceRoot,
         'node_modules',
       );
       if (
