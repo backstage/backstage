@@ -43,7 +43,7 @@ jobs:
         with:
           template-path: .github/ISSUE_TEMPLATE/.common.yaml
       - name: Add advanced issue labels
-        uses: redhat-plumbers-in-action/advanced-issue-labeler@v3.0.0
+        uses: redhat-plumbers-in-action/advanced-issue-labeler@v3.2.4
         with:
           issue-form: ${{ steps.issue-parser.outputs.jsonString }}
           token: ${{ secrets.GITHUB_TOKEN }}
