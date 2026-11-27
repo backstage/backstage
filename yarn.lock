@@ -2634,7 +2634,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     minimist: "npm:^1.2.5"
     msw: "npm:^3.0.4"
-    ts-json-schema-generator: "npm:^2.9.0"
+    ts-json-schema-generator: "npm:^2.10.0"
     typescript: "npm:^5.9.3"
     yaml: "npm:^2.0.0"
     zen-observable: "npm:^0.10.0"
@@ -29597,7 +29597,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^14.0.0":
+"glob@npm:^14.0.0, glob@npm:^14.0.2":
   version: 14.0.6
   resolution: "glob@npm:14.0.6"
   dependencies:
@@ -44627,21 +44627,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-json-schema-generator@npm:^2.9.0":
-  version: 2.9.0
-  resolution: "ts-json-schema-generator@npm:2.9.0"
+"ts-json-schema-generator@npm:^2.10.0":
+  version: 2.10.0
+  resolution: "ts-json-schema-generator@npm:2.10.0"
   dependencies:
     "@types/json-schema": "npm:^7.0.15"
     commander: "npm:^14.0.3"
-    glob: "npm:^13.0.6"
+    glob: "npm:^14.0.2"
     json5: "npm:^2.2.3"
     normalize-path: "npm:^3.0.0"
     safe-stable-stringify: "npm:^2.5.0"
     tslib: "npm:^2.8.1"
-    typescript: "npm:^5.9.3"
+    typescript: "npm:>=5.9 <7"
   bin:
     ts-json-schema-generator: bin/ts-json-schema-generator.js
-  checksum: 10/50a18cb6a1171e495af16a4fe8165000d0155ef693cec9345bacb8a5b6cc559dcc730443ebdc025590cd29ffd2019564267a8222c7f6389bdf5558856fbe479b
+  checksum: 10/33ba3e34da464574649c840e14e51495f42a2800d3af2a480d801383592e914acbbf6e569668dc5c25cd695b5a02b3e5190f76d19958d0b22a0a6329b35e71ee
   languageName: node
   linkType: hard
 
