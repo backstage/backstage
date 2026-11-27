@@ -18,10 +18,14 @@ import ansiRegexMaker from 'ansi-regex';
 
 const ansiRegex = ansiRegexMaker();
 const newlineRegex = /\n\r?/g;
+// Matches a style escape code and captures its parameters, e.g. "1;31"
+// eslint-disable-next-line no-control-regex
+const styleCodeRegex = /^\x1b\[([\d;]*)m$/;
 
 // A mapping of how each escape code changes the modifiers
 const codeModifiers = Object.fromEntries(
   Object.entries({
+    0: () => ({}),
     1: m => ({ ...m, bold: true }),
     3: m => ({ ...m, italic: true }),
     4: m => ({ ...m, underline: true }),
@@ -212,6 +216,33 @@ export class AnsiProcessor {
     code: string,
     modifiers: ChunkModifiers,
   ): ChunkModifiers => {
-    return codeModifiers[code]?.(modifiers) ?? modifiers;
+    const match = code.match(styleCodeRegex);
+    if (!match) {
+      return modifiers;
+    }
+
+    // A code with several parameters, like ESC[1;31m, is applied as if each
+    // parameter was its own code. An empty parameter means 0 (reset).
+    const params = match[1].split(';').map(p => (p === '' ? 0 : Number(p)));
+
+    let currentModifiers = modifiers;
+    for (let i = 0; i < params.length; i++) {
+      // 38, 48 and 58 set an extended foreground, background or underline
+      // color, followed by either 5;n or 2;r;g;b. Those colors are not
+      // supported, but their arguments must be skipped so that they are not
+      // read as other codes.
+      if (params[i] === 38 || params[i] === 48 || params[i] === 58) {
+        if (params[i + 1] === 5) {
+          i += 2;
+        } else if (params[i + 1] === 2) {
+          i += 4;
+        }
+        continue;
+      }
+      currentModifiers =
+        codeModifiers[`\x1b[${params[i]}m`]?.(currentModifiers) ??
+        currentModifiers;
+    }
+    return currentModifiers;
   };
 }
