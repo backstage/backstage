@@ -249,6 +249,39 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
       ]);
     });
 
+    it('should return the stored id when a scoped broadcast replaces an existing one', async () => {
+      const first = await sendNotification({
+        recipients: {
+          type: 'broadcast',
+        },
+        payload: {
+          title: 'first',
+          scope: 'test-scope',
+        },
+      });
+      expect(first.status).toEqual(200);
+
+      const second = await sendNotification({
+        recipients: {
+          type: 'broadcast',
+        },
+        payload: {
+          title: 'second',
+          scope: 'test-scope',
+        },
+      });
+      expect(second.status).toEqual(200);
+      expect(second.body).toHaveLength(1);
+      expect(second.body[0].id).toEqual(first.body[0].id);
+      expect(second.body[0].payload.title).toEqual('second');
+
+      const client = await database.getClient();
+      const broadcasts = await client('broadcast').select();
+      expect(broadcasts).toHaveLength(1);
+      expect(broadcasts[0].id).toEqual(first.body[0].id);
+      expect(broadcasts[0].title).toEqual('second');
+    });
+
     it('should send to user entity', async () => {
       const response = await sendNotification({
         recipients: {
