@@ -1260,7 +1260,7 @@ describe('OidcService', () => {
       });
 
       describe('createAuthorizationSession with CIMD', () => {
-it('should match redirect URI paths case-sensitively', async () => {
+        it('should match redirect URI paths case-sensitively', async () => {
           const { service } = await createOidcService({
             databaseId,
             config: {
