@@ -35,6 +35,7 @@ import {
   attachComponentData,
   IconComponent,
   useApi,
+  useApiHolder,
   useElementFilter,
   useRouteRef,
   useRouteRefParams,
@@ -43,8 +44,11 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import {
   catalogApiRef,
   EntityDisplayName,
+  type EntityPresentationApi,
   EntityRefLink,
   EntityRefLinks,
+  entityPresentationApiRef,
+  entityPresentationSnapshot,
   entityRouteRef,
   FavoriteEntity,
   getEntityRelations,
@@ -109,16 +113,25 @@ function headerProps(
   paramNamespace: string | undefined,
   paramName: string | undefined,
   entity: Entity | undefined,
+  presentationApi?: EntityPresentationApi,
 ): { headerTitle: string; headerType: string } {
   const kind = paramKind ?? entity?.kind ?? '';
   const namespace = paramNamespace ?? entity?.metadata.namespace ?? '';
-  const name =
-    entity?.metadata.title ?? paramName ?? entity?.metadata.name ?? '';
+  const name = entity
+    ? entityPresentationSnapshot(entity, undefined, presentationApi)
+        .primaryTitle
+    : paramName ?? '';
+
+  // The presentation API's primaryTitle falls back to the short ref (e.g.
+  // 'team-a/my-service') when the entity has no title or display name, which
+  // already includes the namespace, so only append it when missing.
+  const showNamespace =
+    namespace &&
+    namespace !== DEFAULT_NAMESPACE &&
+    !name.startsWith(`${namespace}/`);
 
   return {
-    headerTitle: `${name}${
-      namespace && namespace !== DEFAULT_NAMESPACE ? ` in ${namespace}` : ''
-    }`,
+    headerTitle: `${name}${showNamespace ? ` in ${namespace}` : ''}`,
     headerType: (() => {
       let t = kind.toLowerCase();
       if (entity && entity.spec && 'type' in entity.spec) {
@@ -282,11 +295,13 @@ export const EntityLayout = (props: EntityLayoutProps) => {
     [entity],
   );
 
+  const presentationApi = useApiHolder().get(entityPresentationApiRef);
   const { headerTitle, headerType } = headerProps(
     kind,
     namespace,
     name,
     entity,
+    presentationApi,
   );
 
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
