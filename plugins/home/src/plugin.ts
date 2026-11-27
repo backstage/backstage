@@ -142,7 +142,7 @@ export const HomePageRandomJoke = homePlugin.provide(
           defaultCategory: {
             title: 'Category',
             type: 'string',
-            enum: ['any', 'programming', 'dad'],
+            enum: ['any', 'programming'],
             default: 'any',
           },
         },
