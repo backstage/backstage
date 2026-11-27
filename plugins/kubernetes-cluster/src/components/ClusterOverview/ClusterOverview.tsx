@@ -17,20 +17,11 @@ import { useCallback, useEffect } from 'react';
 import { InfoCard, StructuredMetadataTable } from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { useCluster } from './useCluster';
-import Skeleton from '@material-ui/lab/Skeleton';
-import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
+import { Skeleton } from '@backstage/ui';
 import { useKubernetesClusterError } from '../KubernetesClusterErrorContext/KubernetesClusterErrorContext';
-
-const useStyles = makeStyles((_theme: Theme) =>
-  createStyles({
-    root: {
-      height: '100%',
-    },
-  }),
-);
+import styles from './ClusterOverview.module.css';
 
 export const ClusterOverview = () => {
-  const classes = useStyles();
   const { entity } = useEntity();
   const { value, loading, error } = useCluster({
     clusterName: entity.metadata.name,
@@ -44,10 +35,10 @@ export const ClusterOverview = () => {
   }, [error, setErrorCallback]);
 
   return (
-    <InfoCard title="Cluster Overview" className={classes.root}>
+    <InfoCard title="Cluster Overview" className={styles.root}>
       {!value && loading && (
         <>
-          <Skeleton height="35rem" />
+          <Skeleton width="100%" height="35rem" />
         </>
       )}
       {value && (

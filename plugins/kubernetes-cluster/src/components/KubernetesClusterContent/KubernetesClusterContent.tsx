@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 import { ApiResources } from '../ApiResources/ApiResources';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import { Grid, Text } from '@backstage/ui';
 import { Nodes } from '../Nodes/Nodes';
 import { ClusterOverview } from '../ClusterOverview';
 import {
@@ -32,24 +31,26 @@ const ContentGrid = () => {
   const { error } = useKubernetesClusterError();
   return (
     <>
-      <Grid container>
+      <Grid.Root columns="12" gap="4">
         {error && (
-          <Grid item xs={12}>
+          <Grid.Item colSpan="12">
             <WarningPanel title="Error loading Kubernetes Cluster Plugin">
-              <Typography>{error}</Typography>
+              <Text as="p" variant="body-large">
+                {error}
+              </Text>
             </WarningPanel>
-          </Grid>
+          </Grid.Item>
         )}
-        <Grid item xs={6}>
+        <Grid.Item colSpan="6">
           <ClusterOverview />
-        </Grid>
-        <Grid item xs={6}>
+        </Grid.Item>
+        <Grid.Item colSpan="6">
           <ApiResources />
-        </Grid>
-        <Grid item xs={12}>
+        </Grid.Item>
+        <Grid.Item colSpan="12">
           <Nodes />
-        </Grid>
-      </Grid>
+        </Grid.Item>
+      </Grid.Root>
     </>
   );
 };
