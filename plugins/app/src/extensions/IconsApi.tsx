@@ -21,17 +21,58 @@ import {
   iconsApiRef,
 } from '@backstage/frontend-plugin-api';
 import { IconBundleBlueprint } from '@backstage/plugin-app-react';
+import { lazy, Suspense } from 'react';
 import { DefaultIconsApi } from '../apis/DefaultIconsApi';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { icons as defaultIconComponents } from '../../../../packages/app-defaults/src/defaults/icons';
+
+export const defaultIconKeys = [
+  'brokenImage',
+  'catalog',
+  'scaffolder',
+  'techdocs',
+  'search',
+  'chat',
+  'dashboard',
+  'docs',
+  'email',
+  'github',
+  'group',
+  'help',
+  'kind:api',
+  'kind:component',
+  'kind:domain',
+  'kind:group',
+  'kind:location',
+  'kind:system',
+  'kind:user',
+  'kind:resource',
+  'kind:template',
+  'user',
+  'warning',
+  'star',
+  'unstarred',
+  'externalLink',
+];
+
+const loadDefaultIcons = () =>
+  // eslint-disable-next-line @backstage/no-relative-monorepo-imports
+  import('../../../../packages/app-defaults/src/defaults/icons');
 
 // The shared defaults are components for the old frontend system. Passing
 // elements keeps DefaultIconsApi's deprecation warning for icon bundles only.
 const defaultIcons: { [key in string]: IconElement } = Object.fromEntries(
-  Object.entries(defaultIconComponents).map(([key, Icon]) => [
-    key,
-    <Icon fontSize="inherit" />,
-  ]),
+  defaultIconKeys.map(key => {
+    const Icon = lazy(async () => ({
+      default: (await loadDefaultIcons()).icons[
+        key as keyof Awaited<ReturnType<typeof loadDefaultIcons>>['icons']
+      ],
+    }));
+    return [
+      key,
+      <Suspense fallback={null}>
+        <Icon fontSize="inherit" />
+      </Suspense>,
+    ];
+  }),
 );
 
 /**
