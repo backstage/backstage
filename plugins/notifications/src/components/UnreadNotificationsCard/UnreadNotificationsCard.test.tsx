@@ -15,7 +15,7 @@
  */
 
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import { Notification } from '@backstage/plugin-notifications-common';
 import { NotificationsApi, notificationsApiRef } from '../../api';
 import { UnreadNotificationsCard } from './UnreadNotificationsCard';
@@ -167,6 +167,32 @@ describe('UnreadNotificationsCard', () => {
       read: false,
       sort: 'created',
       sortOrder: 'desc',
+    });
+  });
+
+  it('toggles created sort order from the Notification column header', async () => {
+    await renderInTestApp(
+      <TestApiProvider apis={[[notificationsApiRef, notificationsApi]]}>
+        <UnreadNotificationsCard />
+      </TestApiProvider>,
+    );
+
+    await screen.findByText('Important notification');
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Sorted by newest first' }),
+    );
+
+    // Header unmounts while the resorted request is in flight; wait for it to return.
+    expect(
+      await screen.findByRole('button', { name: 'Sorted by oldest first' }),
+    ).toBeInTheDocument();
+
+    expect(notificationsApi.getNotifications).toHaveBeenCalledWith({
+      limit: 5,
+      read: false,
+      sort: 'created',
+      sortOrder: 'asc',
     });
   });
 });
