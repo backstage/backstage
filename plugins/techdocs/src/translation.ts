@@ -86,9 +86,9 @@ export const techdocsTranslationRef = createTranslationRef({
         emptyDataSourceMessage: 'No records to display',
       },
       actions: {
-        copyDocsUrl: 'Click to copy documentation link to clipboard',
-        addToFavorites: 'Add to favorites',
-        removeFromFavorites: 'Remove from favorites',
+        copyDocsUrl: 'Copy link to {{entityName}} documentation',
+        addToFavorites: 'Add {{entityName}} to favorites',
+        removeFromFavorites: 'Remove {{entityName}} from favorites',
       },
       emptyState: {
         title: 'No documents to show',
