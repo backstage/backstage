@@ -25,11 +25,12 @@ There are two kinds of preparers available -
 
 Generating is the second step after preparing the markdown source files. This
 step either runs the TechDocs container (defined below) or runs `mkdocs` CLI to
-generate static HTML files and its assets. Optionally, the generator can also
+generate static HTML files and its assets. Optionally, TechDocs can also
 preserve the original source Markdown files alongside the generated HTML by
 copying them into a `_sources/` directory in the output. This is controlled by
-the `techdocs.generator.preserveSources` configuration option or the `--include-sources` CLI flag.
-See [Source Storage](./configuration.md#source-storage) for details.
+the `techdocs.generator.preserveSources` configuration option or the
+`--include-sources` CLI flag. See [Source storage](./configuration.md#source-storage)
+for details.
 
 ### TechDocs Publisher
 

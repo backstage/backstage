@@ -241,7 +241,8 @@ When running `techdocs-cli generate` directly, the same behavior is available vi
 (Optional) Preserves source Markdown files alongside the generated HTML
 output. When enabled, the documentation source directory is copied into a
 `_sources/` directory in TechDocs storage and served through the existing
-static docs API.
+static docs API. This works with every documentation engine that reads
+`mkdocs.yml`, including MkDocs and Zensical.
 
 This is useful for Model Context Protocol (MCP) tools and other AI
 integrations that consume documentation. Markdown uses fewer tokens and
@@ -254,92 +255,114 @@ language models.
 techdocs:
   generator:
     preserveSources:
-      enabled: true # default: false
-      excludes: # optional, patterns to exclude from _sources/
+      mode: enabled # disabled (default), allowed, or enabled
+      excludes: # optional, glob patterns to exclude from _sources/
         - '*.png'
         - '*.jpg'
-        - '*.gif'
-        - '*.svg'
-      additionalFiles: # optional, files from the repo root to include
+      additionalFiles: # optional, files from the repository to include
         - README.md
         - CONTRIBUTING.md
 ```
 
-A set of built-in excludes is always applied regardless of configuration:
-`.git/`, `node_modules/`, `__pycache__/`, `.venv/`, and `*.pyc`.
-Adopter-provided `excludes` extend the built-in list.
+#### Choosing who can enable source storage
 
-:::caution Why `mkdocs.yml` is not included by default
+The `mode` option decides which entities get their sources stored, and
+whether the `backstage.io/techdocs-source-storage` entity annotation has any
+effect:
 
-Source storage is designed to be build-tool agnostic — it captures
-documentation content, not build configuration. The `mkdocs.yml` file
-can also contain plugin configurations, environment variable
-references, or custom hook paths that may expose internal details
-about your infrastructure.
+- `disabled` (default): sources are never stored. The annotation is ignored.
+- `allowed`: sources are stored only for entities that opt in with
+  `backstage.io/techdocs-source-storage: enabled`.
+- `enabled`: sources are stored for all entities, except those that opt out
+  with `backstage.io/techdocs-source-storage: disabled`.
 
-If your use case requires storing `mkdocs.yml` alongside the source
-files, you can add it to `additionalFiles`:
+See
+[Well-known Annotations](../software-catalog/well-known-annotations.md#backstageiotechdocs-source-storage)
+for details on the annotation.
+
+When you change any `preserveSources` setting, TechDocs rebuilds the affected
+sites the next time they are requested, even if their documentation hasn't
+changed. Turning source storage off removes the stored `_sources/` directory.
+
+#### What gets stored
+
+Source storage never contains files that the generated site leaves out. The
+following files are always excluded:
+
+- Hidden files and directories whose names start with a dot, such as `.env` or
+  `.git/`.
+- The `templates/` directory at the root of the docs directory.
+- Files matched by the `exclude_docs` and `draft_docs` options in
+  `mkdocs.yml`.
+- `node_modules/`, `__pycache__/`, and `*.pyc` files.
+- Symbolic links.
+
+Use `excludes` to leave out more files. Patterns are
+[glob patterns](https://github.com/isaacs/minimatch#readme) matched against
+paths relative to the root of the documentation repository. A pattern without
+a slash, such as `*.png` or `build`, matches a file or directory name at any
+depth. A leading slash anchors a pattern to the root, so `/README.md` matches
+only the root `README.md`.
+
+:::note
+
+If `docs_dir` in `mkdocs.yml` is the repository root (for example
+`docs_dir: .`), sources are not stored and a warning is logged. The root can
+contain files that are not documentation, so move your Markdown into a
+subdirectory to use source storage.
+
+:::
+
+#### Additional files
+
+Use `additionalFiles` to store files from outside the docs directory. Paths
+are relative to the repository root, and files keep their relative path in
+`_sources/`. Only regular files are supported, and excluded files are skipped.
+By default, `README.md` is included if it exists.
+
+Setting `additionalFiles` replaces the default list. To turn off the default
+`README.md` without adding other files, add `/README.md` to `excludes`:
 
 ```yaml
 techdocs:
   generator:
     preserveSources:
-      enabled: true
+      mode: enabled
+      excludes:
+        - /README.md
+```
+
+:::caution Why `mkdocs.yml` is not included by default
+
+Source storage is designed to capture documentation content, not build
+configuration. The `mkdocs.yml` file can contain plugin configurations,
+environment variable references, or custom hook paths that may expose
+internal details about your infrastructure.
+
+If your use case requires storing `mkdocs.yml` alongside the source files,
+add it to `additionalFiles`:
+
+```yaml
+techdocs:
+  generator:
+    preserveSources:
+      mode: enabled
       additionalFiles:
         - README.md
         - mkdocs.yml
 ```
 
-This applies to any file added through `additionalFiles` — by
-including files explicitly, you accept responsibility for reviewing
-their contents and ensuring they do not expose sensitive information.
+This applies to any file added through `additionalFiles`. By including files
+explicitly, you accept responsibility for reviewing their contents and
+ensuring they do not expose sensitive information.
 
 :::
 
-Use `additionalFiles` to include files from the input directory root
-alongside the docs directory. By default, `README.md` is included
-automatically if it exists in the input directory root. To include
-other files, list them explicitly:
-
-```yaml
-techdocs:
-  generator:
-    preserveSources:
-      enabled: true
-      additionalFiles:
-        - README.md
-        - CONTRIBUTING.md
-        - CHANGELOG.md
-```
-
-Additional files are copied into the `_sources/` root using their base
-filename only. If two entries share the same filename (e.g. `README.md`
-and `docs/README.md`), the last one wins.
-
-Setting `additionalFiles` replaces the default list. To disable the
-default `README.md` inclusion without adding other files, add
-`README.md` to the `excludes` list instead:
-
-```yaml
-techdocs:
-  generator:
-    preserveSources:
-      enabled: true
-      excludes:
-        - README.md
-```
-
-Individual entities can override the global default using the
-`backstage.io/techdocs-source-storage` annotation with a value of `enabled`
-or `disabled`. See
-[Well-known Annotations](../software-catalog/well-known-annotations.md#backstageiotechdocs-source-storage)
-for details.
-
-When using the TechDocs CLI, use the `--include-sources` and
-`--source-excludes` flags instead. See the
+When using the TechDocs CLI, use the `--include-sources`,
+`--source-excludes`, and `--source-additional-files` flags instead. See the
 [CLI documentation](./cli.md) for details.
 
-**Structure for tool authors**
+#### Structure for tool authors
 
 When source storage is enabled, the `_sources/` directory in TechDocs
 storage has the following structure:
@@ -361,6 +384,9 @@ files:
 ```json
 {
   "generatedAt": 1722700000000,
+  "engine": "mkdocs",
+  "docsDir": "docs",
+  "etag": "3a7bd3e2360a3d29eea436fcfb7e44c735d117c4",
   "files": [
     "README.md",
     "docs/getting-started.md",
@@ -370,10 +396,14 @@ files:
 }
 ```
 
-- `generatedAt` — Unix timestamp (milliseconds) of when the sources
-  were stored.
-- `files` — sorted list of all source file paths relative to
-  `_sources/`, using forward slashes.
+- `generatedAt`: Unix timestamp, in milliseconds, of when the sources were
+  stored.
+- `engine`: the documentation engine that generated the site, when known.
+- `docsDir`: the docs directory, relative to the repository root.
+- `etag`: the etag of the documentation source, such as a commit SHA, when
+  known.
+- `files`: sorted list of all source file paths relative to `_sources/`,
+  using forward slashes.
 
 MCP servers and other tools can fetch `manifest.json` through the
 existing static docs API to discover available sources without

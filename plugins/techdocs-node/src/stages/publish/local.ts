@@ -159,7 +159,20 @@ export class LocalPublish implements PublisherBase {
 
     try {
       await validateNoExternalSymlinks(directory, directory);
+      const existingFiles = await getFileTreeRecursively(publishDir);
       await fs.copy(directory, publishDir);
+      // Remove files left over from a previous build, the same way the
+      // remote storage publishers do, so that removed pages and directories
+      // such as _sources/ stop being served.
+      const newFiles = new Set(
+        (await getFileTreeRecursively(directory)).map(f =>
+          path.relative(directory, f),
+        ),
+      );
+      const staleFiles = existingFiles.filter(
+        f => !newFiles.has(path.relative(publishDir, f)),
+      );
+      await Promise.all(staleFiles.map(f => fs.remove(f)));
       this.logger.info(`Published site stored at ${publishDir}`);
     } catch (error) {
       this.logger.debug(

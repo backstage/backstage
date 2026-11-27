@@ -139,10 +139,15 @@ metadata:
 ```
 
 Controls whether the original Markdown source files are preserved alongside the
-generated HTML in TechDocs storage. Accepts `enabled` or `disabled`. When this
-annotation is absent, the entity falls back to the global
-`techdocs.generator.preserveSources.enabled` configuration setting (which
-defaults to `false`).
+generated HTML in TechDocs storage. Accepts `enabled` or `disabled`.
+
+The `techdocs.generator.preserveSources.mode` configuration setting decides
+whether this annotation has any effect:
+
+- `disabled` (default): sources are never stored, and the annotation is ignored.
+- `allowed`: sources are stored only for entities with the `enabled` value.
+- `enabled`: sources are stored for all entities, except those with the
+  `disabled` value.
 
 See the [TechDocs Source Storage configuration](../techdocs/configuration.md#source-storage)
 for more details.

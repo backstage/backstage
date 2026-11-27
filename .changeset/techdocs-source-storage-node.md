@@ -2,4 +2,4 @@
 '@backstage/plugin-techdocs-node': minor
 ---
 
-Added source storage support to the TechDocs generator. When `preserveSources` is set in `GeneratorRunOptions`, the generator copies `mkdocs.yml` and the documentation source directory into a `_sources/` folder in the output alongside the generated HTML. Files matching built-in exclude patterns (`.git/`, `node_modules/`, etc.) are filtered out, and additional patterns can be provided via `sourceExcludes`.
+Added `preserveTechDocsSources`, which copies the documentation sources of a generated TechDocs site into a `_sources/` folder alongside the generated HTML, together with a `manifest.json` index. It works with any documentation engine that reads `mkdocs.yml`. By default it stores the docs directory and `README.md`, and leaves out files the generated site excludes, such as hidden files and pages matched by `exclude_docs` or `draft_docs`.

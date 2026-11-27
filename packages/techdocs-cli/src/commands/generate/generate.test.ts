@@ -15,7 +15,10 @@
  */
 
 import { resolve } from 'node:path';
-import { Generators } from '@backstage/plugin-techdocs-node';
+import {
+  Generators,
+  preserveTechDocsSources,
+} from '@backstage/plugin-techdocs-node';
 
 const mockRun = jest.fn();
 
@@ -52,81 +55,51 @@ describe('generate', () => {
     fsExtra.ensureDir.mockResolvedValue(undefined);
   });
 
-  it('should pass preserveSources when --include-sources is set', async () => {
-    await generate({
+  it('stores sources only when --include-sources is set', async () => {
+    const baseOpts = {
       sourceDir: '.',
       outputDir: './site',
       etag: 'test-etag',
       docker: false,
       verbose: false,
+    };
+
+    await generate({
+      ...baseOpts,
+      includeSources: false,
+      sourceExcludes: ['*.png'],
+    });
+    expect(preserveTechDocsSources).not.toHaveBeenCalled();
+    expect(mockRun).toHaveBeenCalledWith(
+      expect.not.objectContaining({ preserveSources: expect.anything() }),
+    );
+
+    await generate({
+      ...baseOpts,
       includeSources: true,
       sourceExcludes: [],
+      sourceAdditionalFiles: [],
     });
-
-    expect(mockRun).toHaveBeenCalledWith(
+    expect(preserveTechDocsSources).toHaveBeenLastCalledWith(
       expect.objectContaining({
         inputDir: resolve('.'),
         outputDir: resolve('./site'),
-        preserveSources: true,
-        sourceExcludes: undefined,
+        excludes: undefined,
+        additionalFiles: undefined,
+        etag: 'test-etag',
       }),
     );
-  });
 
-  it('should not set preserveSources when --include-sources is not set', async () => {
     await generate({
-      sourceDir: '.',
-      outputDir: './site',
-      etag: 'test-etag',
-      docker: false,
-      verbose: false,
-      includeSources: false,
-      sourceExcludes: [],
-    });
-
-    expect(mockRun).toHaveBeenCalledWith(
-      expect.objectContaining({
-        preserveSources: false,
-        sourceExcludes: undefined,
-      }),
-    );
-  });
-
-  it('should pass sourceExcludes from --source-excludes flag', async () => {
-    await generate({
-      sourceDir: '.',
-      outputDir: './site',
-      etag: 'test-etag',
-      docker: false,
-      verbose: false,
+      ...baseOpts,
       includeSources: true,
       sourceExcludes: ['*.png', '*.jpg'],
-    });
-
-    expect(mockRun).toHaveBeenCalledWith(
-      expect.objectContaining({
-        preserveSources: true,
-        sourceExcludes: ['*.png', '*.jpg'],
-      }),
-    );
-  });
-
-  it('should pass sourceAdditionalFiles from --source-additional-files flag', async () => {
-    await generate({
-      sourceDir: '.',
-      outputDir: './site',
-      etag: 'test-etag',
-      docker: false,
-      verbose: false,
-      includeSources: true,
-      sourceExcludes: [],
       sourceAdditionalFiles: ['README.md', 'CONTRIBUTING.md'],
     });
-
-    expect(mockRun).toHaveBeenCalledWith(
+    expect(preserveTechDocsSources).toHaveBeenLastCalledWith(
       expect.objectContaining({
-        preserveSources: true,
-        sourceAdditionalFiles: ['README.md', 'CONTRIBUTING.md'],
+        excludes: ['*.png', '*.jpg'],
+        additionalFiles: ['README.md', 'CONTRIBUTING.md'],
       }),
     );
   });

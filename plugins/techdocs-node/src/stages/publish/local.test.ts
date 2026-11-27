@@ -85,6 +85,31 @@ describe('local publisher', () => {
       expect(await publisher.hasDocsBeenGenerated(lowerMockEntity)).toBe(true);
     });
 
+    it('should remove files left over from a previous build', async () => {
+      const publisher = LocalPublish.fromConfig(
+        new ConfigReader({}),
+        logger,
+        testDiscovery,
+      );
+      const mockEntity = createMockEntity();
+
+      mockDir.setContent({
+        'index.html': 'v1',
+        'old.html': 'old',
+        _sources: { 'manifest.json': '{}', docs: { 'index.md': '# v1' } },
+      });
+      await publisher.publish({ entity: mockEntity, directory: mockDir.path });
+
+      mockDir.setContent({ 'index.html': 'v2' });
+      await publisher.publish({ entity: mockEntity, directory: mockDir.path });
+
+      expect(
+        mockPublishDir.content({
+          path: 'default/testkind/test-component-name',
+        }),
+      ).toEqual({ 'index.html': 'v2', _sources: { docs: {} } });
+    });
+
     it('should respect legacy casing', async () => {
       const mockConfig = new ConfigReader({
         techdocs: {

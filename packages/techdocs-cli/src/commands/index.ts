@@ -106,12 +106,12 @@ export function registerCommands(program: Command) {
     )
     .option(
       '--source-excludes <PATTERNS...>',
-      'Patterns to exclude from _sources/. Supports exact names (e.g. "build") and extension patterns (e.g. "*.png" "*.jpg"). Only applies when --include-sources is set.',
+      'Glob patterns to exclude from _sources/, relative to the source directory (e.g. "*.png" "build" "/README.md"). Only applies when --include-sources is set.',
       [],
     )
     .option(
       '--source-additional-files <FILES...>',
-      'Additional files from the source root to include in _sources/ (e.g. "README.md" "CONTRIBUTING.md"). Only applies when --include-sources is set.',
+      'Files, relative to the source directory, to include in _sources/ instead of the default README.md (e.g. "README.md" "CONTRIBUTING.md"). Only applies when --include-sources is set.',
       [],
     )
     .alias('build')
