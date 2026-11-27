@@ -365,7 +365,7 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
 
       // Checkpointed like the commit and the merge request below: on a task that is
       // started over, the branch created by the previous attempt would make the checks
-      // throw. The callback has to return a truthy value, only those are replayed.
+      // throw.
       await ctx.checkpoint({
         key: `ensure.branch.${repoID}.${branchName}`,
         fn: async () => {
