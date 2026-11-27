@@ -38,3 +38,5 @@ catalog:
 ```
 
 We will attempt to load each plugin's OpenAPI spec hosted at `${pluginRoute}/openapi.json`. These are automatically added if you are using `@backstage/backend-openapi-utils`'s `createValidatedOpenApiRouter`.
+
+For the conventions plugins contributing specs are expected to follow (per-operation `security`, consistent `securitySchemes` names, OpenAPI version), see [Contributing to the aggregated Backstage API](../../docs/openapi/aggregator-conventions.md).
