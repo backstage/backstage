@@ -15,7 +15,7 @@
  */
 
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import {
   MockEntityListContextProvider,
   catalogApiMock,
@@ -25,6 +25,7 @@ import { EntityOwnerPicker } from './EntityOwnerPicker';
 import { ApiProvider } from '@backstage/core-app-api';
 import {
   MockErrorApi,
+  mockApis as mockApiUtils,
   renderInTestApp,
   TestApiRegistry,
 } from '@backstage/test-utils';
@@ -33,7 +34,7 @@ import {
   defaultEntityPresentation,
   entityPresentationApiRef,
 } from '../..';
-import { errorApiRef } from '@backstage/core-plugin-api';
+import { analyticsApiRef, errorApiRef } from '@backstage/core-plugin-api';
 import { QueryEntitiesCursorRequest } from '@backstage/catalog-client';
 
 const ownerEntitiesBatch1: Entity[] = [
@@ -675,5 +676,57 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
 
     expect(mockCatalogApi.getEntityFacets).toHaveBeenCalledTimes(1);
     expect(mockCatalogApi.getEntitiesByRefs).not.toHaveBeenCalled();
+  });
+
+  it('captures a filter analytics event when an owner is selected and not on initial render or deselection', async () => {
+    const analyticsApi = mockApiUtils.analytics();
+    mockCatalogApi.getEntityFacets.mockResolvedValue({
+      facets: {
+        'relations.ownedBy': [
+          { count: 1, value: 'group:default/some-owner' },
+          { count: 1, value: 'group:default/another-owner' },
+        ],
+      },
+    });
+    const testApis = TestApiRegistry.from(
+      [catalogApiRef, mockCatalogApi],
+      [errorApiRef, mockErrorApi],
+      [analyticsApiRef, analyticsApi],
+    );
+
+    await renderInTestApp(
+      <ApiProvider apis={testApis}>
+        <MockEntityListContextProvider
+          value={{ queryParameters: { owners: ['some-owner'] } }}
+        >
+          <EntityOwnerPicker mode="owners-only" />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    expect(analyticsApi.captureEvent).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByTestId('owner-picker-expand'));
+    await waitFor(() =>
+      expect(screen.getByText('another-owner')).toBeInTheDocument(),
+    );
+
+    fireEvent.click(screen.getByText('another-owner'));
+
+    expect(analyticsApi.captureEvent).toHaveBeenCalledTimes(1);
+    expect(analyticsApi.captureEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: 'filter',
+        subject: 'group:default/another-owner',
+        attributes: { filter: 'owners' },
+      }),
+    );
+
+    fireEvent.click(
+      within(screen.getByTestId('owner-picker-listbox')).getByText(
+        'another-owner',
+      ),
+    );
+    expect(analyticsApi.captureEvent).toHaveBeenCalledTimes(1);
   });
 });
