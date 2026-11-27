@@ -19,7 +19,7 @@ import { Knex } from 'knex';
 import { DB_MIGRATIONS_TABLE } from './tables';
 
 export const migrationsDir = resolvePackagePath(
-  '@backstage/backend-defaults',
+  import.meta.url,
   'migrations/scheduler',
 );
 

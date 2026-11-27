@@ -58,7 +58,7 @@ async function generate(
   await exec(
     'node',
     [
-      resolvePackagePath('@openapitools/openapi-generator-cli', 'main.js'),
+      require.resolve('@openapitools/openapi-generator-cli/main.js'),
       'generate',
       '-i',
       resolvedOpenapiPath,
@@ -68,7 +68,7 @@ async function generate(
       'typescript',
       '-c',
       resolvePackagePath(
-        '@backstage/repo-tools',
+        import.meta.url,
         'templates/typescript-backstage-client.yaml',
       ),
       '--generator-key',
@@ -80,7 +80,7 @@ async function generate(
     {
       signal: abortSignal?.signal,
       maxBuffer: Number.MAX_VALUE,
-      cwd: resolvePackagePath('@backstage/repo-tools'),
+      cwd: resolvePackagePath(import.meta.url),
       env: {
         ...process.env,
       },
