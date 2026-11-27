@@ -22,6 +22,9 @@ import {
   Generators,
   ParsedLocationAnnotation,
   getMkdocsYml,
+  preserveTechDocsSources,
+  TECHDOCS_SOURCES_DIR,
+  TECHDOCS_SOURCES_MANIFEST,
   TECHDOCS_ENGINE_CATALOG_ANNOTATION_KEY,
 } from '@backstage/plugin-techdocs-node';
 import { ConfigReader } from '@backstage/config';
@@ -44,6 +47,9 @@ const GENERATED_SITE_ETAG_EXCLUDED_FILES = [
   // mkdocs writes build-date lastmod entries into sitemap.xml, so the hash
   // changes daily even when the documentation content is identical.
   'sitemap.xml',
+  // The sources manifest records when it was written, so it differs between
+  // otherwise identical runs; the stored source files are still hashed.
+  `${TECHDOCS_SOURCES_DIR}/${TECHDOCS_SOURCES_MANIFEST}`,
 ];
 
 export default async function generate(opts: OptionValues) {
@@ -165,6 +171,19 @@ export default async function generate(opts: OptionValues) {
     siteOptions: { name: opts.siteName },
     runAsDefaultUser: opts.runAsDefaultUser,
   });
+
+  if (opts.includeSources) {
+    await preserveTechDocsSources({
+      inputDir: sourceDir,
+      outputDir,
+      logger,
+      excludes: opts.sourceExcludes?.length ? opts.sourceExcludes : undefined,
+      additionalFiles: opts.sourceAdditionalFiles?.length
+        ? opts.sourceAdditionalFiles
+        : undefined,
+      etag,
+    });
+  }
 
   if (!hasExplicitEtag) {
     const generatedSiteEtag = await computeDirectoryEtag(outputDir, {

@@ -27,8 +27,10 @@ import {
   getLocationForEntity,
   PreparerBase,
   PreparerBuilder,
+  preserveTechDocsSources,
   PublisherBase,
 } from '@backstage/plugin-techdocs-node';
+import { createHash } from 'node:crypto';
 import fs from 'fs-extra';
 import os from 'node:os';
 import path from 'node:path';
@@ -36,6 +38,8 @@ import { Writable } from 'node:stream';
 import { Logger } from 'winston';
 import { BuildMetadataStorage } from './BuildMetadataStorage';
 import { TechDocsCache } from '../cache';
+
+const SOURCE_STORAGE_ANNOTATION = 'backstage.io/techdocs-source-storage';
 
 type DocsBuilderArguments = {
   preparers: PreparerBuilder;
@@ -83,6 +87,61 @@ export class DocsBuilder {
   }
 
   /**
+   * Resolves whether sources should be stored for this entity. The global
+   * mode has the final say: entities can only opt in when the mode is
+   * `allowed`, and only opt out when it is `enabled`.
+   */
+  private resolveSourceStorage(): {
+    enabled: boolean;
+    excludes?: string[];
+    additionalFiles?: string[];
+    fingerprint?: string;
+  } {
+    const mode =
+      this.config.getOptionalString(
+        'techdocs.generator.preserveSources.mode',
+      ) ?? 'disabled';
+    if (!['disabled', 'allowed', 'enabled'].includes(mode)) {
+      throw new Error(
+        `Invalid techdocs.generator.preserveSources.mode '${mode}', expected 'disabled', 'allowed' or 'enabled'`,
+      );
+    }
+    const annotation =
+      this.entity.metadata.annotations?.[SOURCE_STORAGE_ANNOTATION];
+    if (annotation && annotation !== 'enabled' && annotation !== 'disabled') {
+      this.logger.warn(
+        `Ignoring unrecognized ${SOURCE_STORAGE_ANNOTATION} annotation value '${annotation}', expected 'enabled' or 'disabled'`,
+      );
+    }
+
+    let enabled = false;
+    if (mode === 'enabled') {
+      enabled = annotation !== 'disabled';
+    } else if (mode === 'allowed') {
+      enabled = annotation === 'enabled';
+    } else if (annotation === 'enabled') {
+      this.logger.debug(
+        `Ignoring ${SOURCE_STORAGE_ANNOTATION} annotation because techdocs.generator.preserveSources.mode is 'disabled'`,
+      );
+    }
+    if (!enabled) {
+      return { enabled };
+    }
+
+    const excludes = this.config.getOptionalStringArray(
+      'techdocs.generator.preserveSources.excludes',
+    );
+    const additionalFiles = this.config.getOptionalStringArray(
+      'techdocs.generator.preserveSources.additionalFiles',
+    );
+    const fingerprint = createHash('sha256')
+      .update(JSON.stringify({ excludes, additionalFiles }))
+      .digest('hex')
+      .slice(0, 16);
+    return { enabled, excludes, additionalFiles, fingerprint };
+  }
+
+  /**
    * Build the docs and return whether they have been newly generated or have been cached
    * @returns true, if the docs have been built. false, if the cached docs are still up-to-date.
    */
@@ -105,16 +164,27 @@ export class DocsBuilder {
 
     // If available, use the etag stored in techdocs_metadata.json to
     // check if docs are outdated and need to be regenerated.
+    const sourceStorage = this.resolveSourceStorage();
     let storedEtag: string | undefined;
     if (await this.publisher.hasDocsBeenGenerated(this.entity)) {
       try {
-        storedEtag = (
-          await this.publisher.fetchTechDocsMetadata({
-            namespace: this.entity.metadata.namespace ?? DEFAULT_NAMESPACE,
-            kind: this.entity.kind,
-            name: this.entity.metadata.name,
-          })
-        ).etag;
+        const metadata = await this.publisher.fetchTechDocsMetadata({
+          namespace: this.entity.metadata.namespace ?? DEFAULT_NAMESPACE,
+          kind: this.entity.kind,
+          name: this.entity.metadata.name,
+        });
+        storedEtag = metadata.etag;
+        // The stored site is only up to date if it was built with the same
+        // source storage settings. Otherwise, skip the etag check so that
+        // sources get added or removed even when the docs are unchanged.
+        const storedFingerprint = (metadata as { source_storage?: string })
+          .source_storage;
+        if (storedFingerprint !== sourceStorage.fingerprint) {
+          this.logger.info(
+            'Source storage settings changed since the last build, rebuilding docs',
+          );
+          storedEtag = undefined;
+        }
       } catch (err) {
         // Proceed with a fresh build
         this.logger.warn(
@@ -192,6 +262,21 @@ export class DocsBuilder {
           name: this.entity.metadata.title ?? this.entity.metadata.name,
         },
       });
+
+      if (sourceStorage.enabled) {
+        await preserveTechDocsSources({
+          inputDir: preparedDir,
+          outputDir,
+          logger: this.logger,
+          excludes: sourceStorage.excludes,
+          additionalFiles: sourceStorage.additionalFiles,
+          etag: newEtag,
+        });
+        const metadataPath = path.join(outputDir, 'techdocs_metadata.json');
+        const metadata = await fs.readJson(metadataPath);
+        metadata.source_storage = sourceStorage.fingerprint;
+        await fs.writeJson(metadataPath, metadata);
+      }
 
       /**
        * Publish

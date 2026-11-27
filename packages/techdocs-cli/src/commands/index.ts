@@ -99,6 +99,21 @@ export function registerCommands(program: Command) {
       '--engine <ENGINE>',
       'Documentation engine to use. Overrides the backstage.io/techdocs-engine annotation in catalog-info.yaml; defaults to mkdocs.',
     )
+    .option(
+      '--include-sources',
+      'Include source Markdown files in the generated output under _sources/.',
+      false,
+    )
+    .option(
+      '--source-excludes <PATTERNS...>',
+      'Glob patterns to exclude from _sources/, relative to the source directory (e.g. "*.png" "build" "/README.md"). Only applies when --include-sources is set.',
+      [],
+    )
+    .option(
+      '--source-additional-files <FILES...>',
+      'Files, relative to the source directory, to include in _sources/ instead of the default README.md (e.g. "README.md" "CONTRIBUTING.md"). Only applies when --include-sources is set.',
+      [],
+    )
     .alias('build')
     .action(lazy(() => import('./generate/generate'), 'default'));
 

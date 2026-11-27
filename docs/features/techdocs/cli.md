@@ -215,8 +215,22 @@ Options:
   --dangerouslyAllowAdditionalExtensions [additionalExtensions...]  Markdown extensions to allow in mkdocs.yml beyond the built-in permitted set, without stripping them. Same as the techdocs.generator.mkdocs.dangerouslyAllowAdditionalExtensions backend config option, which techdocs-cli generate does not currently read from a config file. (default: [])
   --runAsDefaultUser                                                Bypass setting the container user as the same user and group id as host for Linux and MacOS (default: false)
   --engine <ENGINE>                                                 Documentation engine to use. Overrides the backstage.io/techdocs-engine annotation in catalog-info.yaml; defaults to mkdocs.
+  --include-sources                                                 Include source Markdown files in the generated output under _sources/. (default: false)
+  --source-excludes <PATTERNS...>                                   Glob patterns to exclude from _sources/, relative to the source directory (e.g. "*.png" "build" "/README.md"). Only applies when --include-sources is set. (default: [])
+  --source-additional-files <FILES...>                              Files, relative to the source directory, to include in _sources/ instead of the default README.md (e.g. "README.md" "CONTRIBUTING.md"). Only applies when --include-sources is set. (default: [])
   -h, --help                                                        display help for command
 ```
+
+When `--include-sources` is set, the documentation source directory is copied
+into a `_sources/` folder in the output, alongside the generated HTML. This is
+useful for MCP tools and other AI integrations that consume documentation
+content. Files that the generated site leaves out, such as hidden files and pages
+matched by `exclude_docs`, are not stored. Use `--source-excludes` to leave out
+more files, for example large images. By default, `README.md` is included if it
+exists in the source directory. Use `--source-additional-files` to include a
+different set of files, or pass `/README.md` to `--source-excludes` to turn off
+the default. See [Source storage](./configuration.md#source-storage) for
+details.
 
 ### Deprecated options
 

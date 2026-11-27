@@ -16,6 +16,12 @@
 export { TechdocsGenerator } from './techdocs';
 export { Generators } from './generators';
 export { getMkdocsYml } from './helpers';
+export {
+  preserveTechDocsSources,
+  TECHDOCS_SOURCES_DIR,
+  TECHDOCS_SOURCES_MANIFEST,
+} from './sources';
+export type { PreserveTechDocsSourcesOptions } from './sources';
 export type {
   GeneratorBase,
   GeneratorOptions,

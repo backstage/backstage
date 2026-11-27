@@ -193,6 +193,22 @@ export class Preparers implements PreparerBuilder {
 }
 
 // @public
+export function preserveTechDocsSources(
+  options: PreserveTechDocsSourcesOptions,
+): Promise<void>;
+
+// @public
+export type PreserveTechDocsSourcesOptions = {
+  inputDir: string;
+  outputDir: string;
+  logger: LoggerService;
+  excludes?: string[];
+  additionalFiles?: string[];
+  engine?: string;
+  etag?: string;
+};
+
+// @public
 export class Publisher implements PublisherBuilder {
   static fromConfig(
     config: Config,
@@ -270,6 +286,12 @@ export type SupportedGeneratorKey = 'techdocs' | string;
 // @public
 export const TECHDOCS_ENGINE_CATALOG_ANNOTATION_KEY =
   'backstage.io/techdocs-engine';
+
+// @public
+export const TECHDOCS_SOURCES_DIR = '_sources';
+
+// @public
+export const TECHDOCS_SOURCES_MANIFEST = 'manifest.json';
 
 // @public
 export interface TechdocsBuildsExtensionPoint {

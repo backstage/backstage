@@ -85,6 +85,49 @@ describe('local publisher', () => {
       expect(await publisher.hasDocsBeenGenerated(lowerMockEntity)).toBe(true);
     });
 
+    it('should remove files left over from a previous build, one publish at a time', async () => {
+      const publisher = LocalPublish.fromConfig(
+        new ConfigReader({}),
+        logger,
+        testDiscovery,
+      );
+      const mockEntity = createMockEntity();
+
+      mockDir.setContent({
+        'index.html': 'v1',
+        'old.html': 'old',
+        _sources: { 'manifest.json': '{}', docs: { 'index.md': '# v1' } },
+      });
+      await publisher.publish({ entity: mockEntity, directory: mockDir.path });
+
+      mockDir.setContent({ 'index.html': 'v2' });
+      await publisher.publish({ entity: mockEntity, directory: mockDir.path });
+
+      expect(
+        mockPublishDir.content({
+          path: 'default/testkind/test-component-name',
+        }),
+      ).toEqual({ 'index.html': 'v2', _sources: { docs: {} } });
+
+      // Overlapping publishes run one after the other, so whichever finishes
+      // last is stored in full and neither deletes files the other copied.
+      const otherDir = createMockDirectory();
+      mockDir.setContent({ 'index.html': 'v3', 'a.html': 'a' });
+      otherDir.setContent({ 'index.html': 'v4', 'b.html': 'b' });
+      await Promise.all([
+        publisher.publish({ entity: mockEntity, directory: mockDir.path }),
+        publisher.publish({ entity: mockEntity, directory: otherDir.path }),
+      ]);
+      expect([
+        { 'index.html': 'v3', 'a.html': 'a', _sources: { docs: {} } },
+        { 'index.html': 'v4', 'b.html': 'b', _sources: { docs: {} } },
+      ]).toContainEqual(
+        mockPublishDir.content({
+          path: 'default/testkind/test-component-name',
+        }),
+      );
+    });
+
     it('should respect legacy casing', async () => {
       const mockConfig = new ConfigReader({
         techdocs: {

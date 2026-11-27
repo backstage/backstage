@@ -63,6 +63,42 @@ export interface Config {
       defaultEngine?: string;
 
       /**
+       * Preserve source Markdown files alongside the generated HTML output.
+       * When enabled, source files are stored under a `_sources/` directory
+       * in TechDocs storage and served through the existing static docs API.
+       */
+      preserveSources?: {
+        /**
+         * Controls which entities get their sources stored. Defaults to
+         * "disabled".
+         *
+         * - "disabled": never store sources, regardless of entity annotations.
+         * - "allowed": store sources only for entities that opt in with the
+         *   `backstage.io/techdocs-source-storage: enabled` annotation.
+         * - "enabled": store sources for all entities, except those that opt
+         *   out with the `backstage.io/techdocs-source-storage: disabled`
+         *   annotation.
+         */
+        mode?: 'disabled' | 'allowed' | 'enabled';
+
+        /**
+         * Glob patterns for files to exclude from source storage, matched
+         * against paths relative to the documentation root. Patterns without
+         * a slash match a file or directory name at any depth (e.g. "*.png"
+         * or "build"), and a leading slash anchors a pattern to the root
+         * (e.g. "/README.md"). These are added to the built-in excludes.
+         */
+        excludes?: string[];
+
+        /**
+         * Files, relative to the documentation root, to store alongside the
+         * docs directory. Files keep their relative path. Defaults to
+         * README.md. Setting this replaces the default list.
+         */
+        additionalFiles?: string[];
+      };
+
+      /**
        * Override behavior for mkdocs.yml-based builds. Unless noted otherwise,
        * these settings apply to the MkDocs engine only.
        */
