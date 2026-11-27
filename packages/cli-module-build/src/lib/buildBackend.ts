@@ -18,9 +18,10 @@ import os from 'node:os';
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
 import * as tar from 'tar';
-import { createDistWorkspace } from './packager';
+import { createDistWorkspace, getDefaultWorkspaceFiles } from './packager';
 import { buildPackage, Output } from './builder';
 import { PackageGraph } from '@backstage/cli-node';
+import { detectPackageManager } from '@backstage/cli-node/alpha';
 
 const BUNDLE_FILE = 'bundle.tar.gz';
 const SKELETON_FILE = 'skeleton.tar.gz';
@@ -35,6 +36,10 @@ interface BuildBackendOptions {
 export async function buildBackend(options: BuildBackendOptions) {
   const { targetDir, skipBuildDependencies, configPaths, minify } = options;
   const pkg = await fs.readJson(resolvePath(targetDir, 'package.json'));
+
+  // The dist workspace is installed from the lockfile, so a missing one
+  // fails the build before anything is built
+  await getDefaultWorkspaceFiles(await detectPackageManager());
 
   // We build the target package without generating type declarations.
   await buildPackage({
