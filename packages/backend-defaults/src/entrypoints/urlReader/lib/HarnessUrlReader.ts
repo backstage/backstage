@@ -116,6 +116,12 @@ export class HarnessUrlReader implements UrlReaderService {
       throw new Error(`Unknown json: ${jsonResponse}`);
     }
 
+    // Drain the body that we are about to discard, since the underlying
+    // connection is otherwise never released if the body is large. The
+    // error listener keeps a connection that drops mid-drain from surfacing
+    // as an uncaught exception.
+    response.body.on('error', () => {}).resume();
+
     const message = `${url} x ${blobUrl}, ${response.status} ${response.statusText}`;
     if (response.status === 404) {
       throw new NotFoundError(message);
@@ -266,6 +272,12 @@ export class HarnessUrlReader implements UrlReaderService {
 
     const response = await this.fetchUrl(commitUri);
     if (!response.ok) {
+      // Drain the body that we are about to discard, since the underlying
+      // connection is otherwise never released if the body is large. The
+      // error listener keeps a connection that drops mid-drain from surfacing
+      // as an uncaught exception.
+      response.body.on('error', () => {}).resume();
+
       const message = `Failed to retrieve latest commit information from ${commitUri}, ${response.status} ${response.statusText}`;
       if (response.status === 404) {
         throw new NotFoundError(message);

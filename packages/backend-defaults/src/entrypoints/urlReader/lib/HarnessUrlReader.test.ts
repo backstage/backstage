@@ -26,7 +26,10 @@ import getRawBody from 'raw-body';
 import { HarnessUrlReader } from './HarnessUrlReader';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import fs from 'fs-extra';
+import { createServer, globalAgent } from 'node:https';
+import { AddressInfo } from 'node:net';
 import path from 'node:path';
+import selfsigned from 'selfsigned';
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
@@ -636,5 +639,72 @@ describe('HarnessUrlReader', () => {
         ),
       ).rejects.toThrow('Unsupported search pattern URL');
     });
+  });
+});
+
+// Runs against a real server rather than MSW, since the mocked responses
+// don't hold on to any underlying connection. The reader only talks HTTPS, so
+// the server uses a throwaway certificate that the global agent is told to
+// trust for the duration of the test.
+describe('HarnessUrlReader connections', () => {
+  it('should release the connection when a request fails with a large response body', async () => {
+    const { cert, private: key } = selfsigned.generate(
+      [{ name: 'commonName', value: 'localhost' }],
+      {
+        keySize: 2048,
+        extensions: [
+          {
+            name: 'subjectAltName',
+            altNames: [{ type: 2, value: 'localhost' }],
+          },
+        ],
+      },
+    );
+    const server = createServer({ cert, key }, (_req, res) => {
+      res.writeHead(503, { 'content-type': 'text/html' });
+      // Must be larger than the socket and stream buffers combined, since a
+      // smaller body completes without being read and never shows the leak.
+      res.end(Buffer.alloc(1_000_000, 'x'));
+    });
+    await new Promise<void>(resolve => server.listen(0, resolve));
+    const { port } = server.address() as AddressInfo;
+    const host = `localhost:${port}`;
+
+    const reader = new HarnessUrlReader(
+      new HarnessIntegration(
+        readHarnessConfig(new ConfigReader({ host, token: 'p' })),
+      ),
+      { treeResponseFactory },
+    );
+
+    // Sockets that are still busy with a request, as opposed to having been
+    // closed or returned to the pool of free sockets.
+    const busySocketCount = () =>
+      Object.entries(globalAgent.sockets)
+        .filter(([name]) => name.startsWith(`${host}:`))
+        .reduce((count, [, sockets]) => count + (sockets?.length ?? 0), 0);
+
+    const originalCa = globalAgent.options.ca;
+    globalAgent.options.ca = cert;
+    try {
+      const repoUrl = `https://${host}/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~`;
+      for (let i = 0; i < 5; i++) {
+        await expect(
+          reader.readUrl(`${repoUrl}/file-${i}.yaml`),
+        ).rejects.toThrow('503 Service Unavailable');
+      }
+      await expect(reader.readTree(`${repoUrl}/`)).rejects.toThrow(
+        '503 Service Unavailable',
+      );
+
+      for (let i = 0; i < 100 && busySocketCount() > 0; i++) {
+        await new Promise(resolve => setTimeout(resolve, 20));
+      }
+      expect(busySocketCount()).toBe(0);
+    } finally {
+      globalAgent.options.ca = originalCa;
+      server.closeAllConnections();
+      await new Promise(resolve => server.close(resolve));
+    }
   });
 });

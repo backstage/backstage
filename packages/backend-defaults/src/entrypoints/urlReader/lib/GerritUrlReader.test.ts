@@ -29,6 +29,8 @@ import { JsonObject } from '@backstage/types';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import fs from 'fs-extra';
+import { createServer, globalAgent } from 'node:http';
+import { AddressInfo } from 'node:net';
 import path from 'node:path';
 import { UrlReaderPredicateTuple } from './types';
 import { DefaultReadTreeResponseFactory } from './tree';
@@ -553,5 +555,64 @@ describe.skip('GerritUrlReader', () => {
 
       await expect(gerritProcessor.search(searchUrl)).rejects.toThrow(Error);
     });
+  });
+});
+
+// Runs against a real HTTP server rather than MSW, since the mocked responses
+// don't hold on to any underlying connection.
+describe('GerritUrlReader connections', () => {
+  it('should release the connection when a request fails with a large response body', async () => {
+    const server = createServer((_req, res) => {
+      res.writeHead(503, { 'content-type': 'text/html' });
+      // Must be larger than the socket and stream buffers combined, since a
+      // smaller body completes without being read and never shows the leak.
+      res.end(Buffer.alloc(1_000_000, 'x'));
+    });
+    await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));
+    const { port } = server.address() as AddressInfo;
+    const baseUrl = `http://127.0.0.1:${port}`;
+
+    const reader = new GerritUrlReader(
+      new GerritIntegration(
+        readGerritIntegrationConfig(
+          new ConfigReader({
+            host: new URL(baseUrl).host,
+            baseUrl,
+            gitilesBaseUrl: `${baseUrl}/gitiles`,
+          }),
+        ),
+      ),
+      { treeResponseFactory },
+    );
+
+    // Sockets that are still busy with a request, as opposed to having been
+    // closed or returned to the pool of free sockets.
+    const busySocketCount = () =>
+      globalAgent.sockets[globalAgent.getName({ host: '127.0.0.1', port })]
+        ?.length ?? 0;
+
+    try {
+      for (let i = 0; i < 5; i++) {
+        await expect(
+          reader.readUrl(
+            `${baseUrl}/gitiles/web/project/+/refs/heads/master/file-${i}.yaml`,
+          ),
+        ).rejects.toThrow('503 Service Unavailable');
+      }
+      // A commit SHA skips the branch lookup and goes straight to the archive.
+      await expect(
+        reader.readTree(
+          `${baseUrl}/gitiles/web/project/+/2846e8dc327ae2f60249983b1c3b96f42f205bae/`,
+        ),
+      ).rejects.toThrow('503 Service Unavailable');
+
+      for (let i = 0; i < 100 && busySocketCount() > 0; i++) {
+        await new Promise(resolve => setTimeout(resolve, 20));
+      }
+      expect(busySocketCount()).toBe(0);
+    } finally {
+      server.closeAllConnections();
+      await new Promise(resolve => server.close(resolve));
+    }
   });
 });

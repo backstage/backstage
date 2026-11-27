@@ -137,6 +137,13 @@ export class GerritUrlReader implements UrlReaderService {
         },
       };
     }
+
+    // Drain the body that we are about to discard, since the underlying
+    // connection is otherwise never released if the body is large. The
+    // error listener keeps a connection that drops mid-drain from surfacing
+    // as an uncaught exception.
+    response.body.on('error', () => {}).resume();
+
     if (response.status === 404) {
       throw new NotFoundError(`File ${url} not found.`);
     }
@@ -218,11 +225,17 @@ export class GerritUrlReader implements UrlReaderService {
       signal: options?.signal as any,
     });
 
-    if (archiveResponse.status === 404) {
-      throw new NotFoundError(`Not found: ${archiveUrl}`);
-    }
-
     if (!archiveResponse.ok) {
+      // Drain the body that we are about to discard, since the underlying
+      // connection is otherwise never released if the body is large. The
+      // error listener keeps a connection that drops mid-drain from surfacing
+      // as an uncaught exception.
+      archiveResponse.body.on('error', () => {}).resume();
+
+      if (archiveResponse.status === 404) {
+        throw new NotFoundError(`Not found: ${archiveUrl}`);
+      }
+
       throw new Error(
         `${url} could not be read as ${archiveUrl}, ${archiveResponse.status} ${archiveResponse.statusText}`,
       );
