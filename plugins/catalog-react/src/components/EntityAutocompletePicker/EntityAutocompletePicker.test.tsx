@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import {
   catalogApiMock,
   MockEntityListContextProvider,
 } from '@backstage/plugin-catalog-react/testUtils';
 import { EntityAutocompletePicker } from './EntityAutocompletePicker';
-import { TestApiProvider } from '@backstage/test-utils';
+import { mockApis, TestApiProvider } from '@backstage/test-utils';
+import { analyticsApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '../../api';
 import { DefaultEntityFilters, useEntityList } from '../../hooks';
 import { Entity } from '@backstage/catalog-model';
@@ -415,6 +422,83 @@ describe('<EntityAutocompletePicker/>', () => {
         },
       }),
     );
+  });
+
+  it('captures a filter event when the user selects an option', async () => {
+    const catalogApi = catalogApiMock({
+      entities: entitiesWithOptions(defaultOptions),
+    });
+    const analyticsApi = mockApis.analytics();
+    render(
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, catalogApi],
+          [analyticsApiRef, analyticsApi],
+        ]}
+      >
+        <MockEntityListContextProvider value={{}}>
+          <EntityAutocompletePicker<EntityFilters>
+            label="Options"
+            path="spec.options"
+            name="options"
+            Filter={EntityOptionFilter}
+            initialSelectedOptions={['option1']}
+          />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
+    );
+    await waitFor(() =>
+      expect(screen.getByText('Options')).toBeInTheDocument(),
+    );
+    // initial selection is not a user action
+    expect(analyticsApi.captureEvent).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByTestId('options-picker-expand'));
+    fireEvent.click(screen.getByText('option2'));
+
+    expect(analyticsApi.captureEvent).toHaveBeenCalledTimes(1);
+    expect(analyticsApi.captureEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: 'filter',
+        subject: 'option2',
+        attributes: { filter: 'options' },
+      }),
+    );
+
+    // deselecting does not capture another event
+    fireEvent.click(within(screen.getByRole('listbox')).getByText('option2'));
+    expect(analyticsApi.captureEvent).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not capture a filter event for a selection from the URL', async () => {
+    const catalogApi = catalogApiMock({
+      entities: entitiesWithOptions(defaultOptions),
+    });
+    const analyticsApi = mockApis.analytics();
+    render(
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, catalogApi],
+          [analyticsApiRef, analyticsApi],
+        ]}
+      >
+        <MockEntityListContextProvider<EntityFilters>
+          value={{ queryParameters: { options: ['option3'] } }}
+        >
+          <EntityAutocompletePicker<EntityFilters>
+            label="Options"
+            path="spec.options"
+            name="options"
+            Filter={EntityOptionFilter}
+          />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
+    );
+    await waitFor(() =>
+      expect(screen.getByText('option3')).toBeInTheDocument(),
+    );
+
+    expect(analyticsApi.captureEvent).not.toHaveBeenCalled();
   });
 
   it("doesn't render when hidden", async () => {
