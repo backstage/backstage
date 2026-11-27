@@ -133,6 +133,15 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'missingAnnotationEmptyState.annotationYaml': 'Add the annotation to your {{entityKind}} YAML as shown in the highlighted example below:';
     readonly 'missingAnnotationEmptyState.generateDescription_one': 'The annotation {{annotations}} is missing. You need to add the annotation to your {{entityKind}} if you want to enable this tool.';
     readonly 'missingAnnotationEmptyState.generateDescription_other': 'The annotations {{annotations}} are missing. You need to add the annotations to your {{entityKind}} if you want to enable this tool.';
+    readonly 'catalogExportButton.errorMessage': 'Failed to export catalog: {{errorMessage}}';
+    readonly 'catalogExportButton.cancelButtonTitle': 'Cancel';
+    readonly 'catalogExportButton.triggerButtonTitle': 'Export selection';
+    readonly 'catalogExportButton.dialogTitle': 'Export catalog selection';
+    readonly 'catalogExportButton.formatLabel': 'Format';
+    readonly 'catalogExportButton.columnsLabel': 'Columns';
+    readonly 'catalogExportButton.confirmButtonTitle': 'Confirm';
+    readonly 'catalogExportButton.exportingButtonTitle': 'Exporting…';
+    readonly 'catalogExportButton.successMessage': 'Catalog exported successfully';
   }
 >;
 

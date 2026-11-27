@@ -24,6 +24,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { z } from 'zod/v4';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import type { CatalogExportSettings } from '@backstage/plugin-catalog-react';
 import {
   defaultEntityContentGroupDefinitions,
   EntityContentBlueprint,
@@ -35,7 +36,6 @@ import {
 import CategoryIcon from '@material-ui/icons/Category';
 import { rootRouteRef } from '../routes';
 import { buildFilterFn } from './filter/FilterWrapper';
-import type { CatalogExportSettings } from '../components/CatalogExportButton';
 
 const catalogExportConfigDataRef = createExtensionDataRef<{
   exporters?: CatalogExportSettings['exporters'];

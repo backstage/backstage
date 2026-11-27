@@ -4,5 +4,5 @@
 
 | Name                | Location           | Severity |
 | :------------------ | :----------------- | :------- |
-| react-test-renderer | package.json:108:6 | error    |
+| react-test-renderer | package.json:112:6 | error    |
 

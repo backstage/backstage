@@ -13,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+export { CatalogExportButton } from './CatalogExportButton';
 export type {
+  CatalogExportButtonProps,
   CatalogExportSettings,
   CatalogExporterConfig,
 } from './CatalogExportButton';
+export { CatalogExportType } from './CatalogExportType';
 export type { CatalogExportSettingsColumn } from './file-download/serializeEntities';
 export type { CatalogExporter } from './file-download/useStreamingExport';

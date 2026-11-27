@@ -22,7 +22,7 @@ export type {
   CatalogExporterConfig,
   CatalogExporter,
   CatalogExportSettingsColumn,
-} from '../components/CatalogExportButton';
+} from '../deprecated';
 export { NfsDefaultCatalogPage as CatalogIndexPage } from '../components/CatalogPage';
 export type { DefaultCatalogPageProps as CatalogIndexPageProps } from '../components/CatalogPage';
 export type {
