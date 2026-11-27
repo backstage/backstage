@@ -58,7 +58,7 @@ export const devToolsPlugin: BackstagePlugin<
 // @public (undocumented)
 export const ExternalDependenciesContent: () => JSX_2.Element;
 
-// @public (undocumented)
+// @public
 export const InfoContent: () => JSX_2.Element;
 
 // @public (undocumented)

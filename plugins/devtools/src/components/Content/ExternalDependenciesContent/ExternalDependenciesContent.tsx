@@ -14,120 +14,119 @@
  * limitations under the License.
  */
 
+import { Progress } from '@backstage/frontend-plugin-api';
+import { Alert, Cell, CellText, Flex, Text } from '@backstage/ui';
 import {
-  StatusError,
-  StatusOK,
-  StatusWarning,
-} from '@backstage/core-components';
+  RiCheckboxCircleLine,
+  RiErrorWarningLine,
+  RiQuestionLine,
+} from '@remixicon/react';
 import { ExternalDependency } from '@backstage/plugin-devtools-common';
-
-import {
-  Table,
-  useTable,
-  CellText,
-  SearchField,
-  Flex,
-  Text,
-  type ColumnConfig,
-} from '@backstage/ui';
 import { useExternalDependencies } from '../../../hooks';
-
-type ExternalDependencyRow = ExternalDependency & { id: string };
-
-const getStatusIcon = (result: Partial<ExternalDependency> | undefined) => {
-  switch (result?.status) {
-    case 'Healthy':
-      return <StatusOK />;
-    case 'Unhealthy':
-      return <StatusError />;
-    case undefined:
-    default:
-      return <StatusWarning />;
-  }
-};
+import styles from '../Content.module.css';
+import { DevToolsTable } from '../DevToolsTable';
 
 export const getExternalDependencyStatus = (
   result: Partial<ExternalDependency> | undefined,
-): string => {
-  switch (result?.status) {
-    case 'Healthy':
-    case 'Unhealthy':
-      return result.status;
-    case undefined:
-    default:
-      return 'Unknown';
-  }
-};
-
-const columns: ColumnConfig<ExternalDependencyRow>[] = [
-  {
-    id: 'name',
-    label: 'Name',
-    isRowHeader: true,
-    cell: item => <CellText title={item.name} />,
-  },
-  {
-    id: 'target',
-    label: 'Target',
-    cell: item => <CellText title={item.target} />,
-  },
-  {
-    id: 'type',
-    label: 'Type',
-    cell: item => <CellText title={item.type} />,
-  },
-  {
-    id: 'status',
-    label: 'Status',
-    cell: item => (
-      <CellText
-        title={getExternalDependencyStatus(item)}
-        description={item.error}
-        leadingIcon={getStatusIcon(item)}
+) => {
+  let icon = (
+    <RiQuestionLine
+      size={16}
+      aria-hidden
+      style={{ color: 'var(--bui-fg-warning)' }}
+    />
+  );
+  let status = 'Unknown';
+  if (result?.status === 'Healthy') {
+    icon = (
+      <RiCheckboxCircleLine
+        size={16}
+        aria-hidden
+        style={{ color: 'var(--bui-fg-positive)' }}
       />
-    ),
-  },
-];
+    );
+    status = result.status;
+  } else if (result?.status === 'Unhealthy') {
+    icon = (
+      <RiErrorWarningLine
+        size={16}
+        aria-hidden
+        style={{ color: 'var(--bui-fg-negative)' }}
+      />
+    );
+    status = result.status;
+  }
+  return (
+    <Flex align="center" gap="2">
+      {icon}
+      <Text variant="body-small" weight="bold">
+        {status}
+      </Text>
+    </Flex>
+  );
+};
 
 /** @public */
 export const ExternalDependenciesContent = () => {
   const { externalDependencies, loading, error } = useExternalDependencies();
-  const { tableProps, search } = useTable({
-    mode: 'complete',
-    data: (externalDependencies ?? []).map(dep => ({ ...dep, id: dep.name })),
-    paginationOptions: { pageSize: 20, pageSizeOptions: [20, 50, 100] },
-    searchFn: (data, query) => {
-      const q = query.toLowerCase();
-      return data.filter(
-        item =>
-          item.name.toLowerCase().includes(q) ||
-          item.target.toLowerCase().includes(q) ||
-          item.type.toLowerCase().includes(q) ||
-          item.status.toLowerCase().includes(q),
-      );
-    },
-  });
-
+  if (loading) return <Progress />;
+  if (error)
+    return <Alert status="danger" icon title={error.message} role="alert" />;
   return (
-    <>
-      <Flex justify="between" align="center" style={{ marginBottom: 8 }}>
-        <Text variant="title-small" as="h3">
-          Status
-        </Text>
-        <SearchField
-          aria-label="Search"
-          placeholder="Filter"
-          style={{ maxWidth: 280 }}
-          {...search}
-        />
-      </Flex>
-      <Table
-        columnConfig={columns}
-        {...tableProps}
-        isPending={loading}
-        error={error}
-        emptyState={<Text>No external dependencies found</Text>}
-      />
-    </>
+    <DevToolsTable
+      title="External dependencies"
+      data={(externalDependencies ?? []).map(item => ({
+        ...item,
+        id: item.name,
+      }))}
+      emptyState={<Text color="secondary">No external dependencies found</Text>}
+      pageSize={20}
+      pageSizeOptions={[20, 50, 100]}
+      columns={[
+        {
+          id: 'name',
+          label: 'Name',
+          minWidth: 180,
+          isSortable: true,
+          isRowHeader: true,
+          cell: item => <CellText title={item.name} />,
+        },
+        {
+          id: 'target',
+          label: 'Target',
+          minWidth: 240,
+          isSortable: true,
+          cell: item => (
+            <Cell>
+              <code className={styles.code}>{item.target}</code>
+            </Cell>
+          ),
+        },
+        {
+          id: 'type',
+          label: 'Type',
+          width: 130,
+          isSortable: true,
+          cell: item => <CellText title={item.type} />,
+        },
+        {
+          id: 'status',
+          label: 'Status',
+          minWidth: 220,
+          cell: item => (
+            <Cell>
+              <Flex direction="column" gap="1">
+                {getExternalDependencyStatus(item)}
+                {item.error && (
+                  <Text variant="body-small" color="secondary">
+                    {item.error}
+                  </Text>
+                )}
+              </Flex>
+            </Cell>
+          ),
+        },
+      ]}
+    />
   );
 };

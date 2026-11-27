@@ -14,9 +14,19 @@
  * limitations under the License.
  */
 
-import type { ReactElement } from 'react';
-import { Progress } from '@backstage/core-components';
-import { Alert, Box, Button, Card, CardBody, Flex, Text } from '@backstage/ui';
+import { useState, type ReactElement } from 'react';
+import { useApi } from '@backstage/core-plugin-api';
+import { Progress, toastApiRef } from '@backstage/frontend-plugin-api';
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardHeader,
+  CardBody,
+  Flex,
+  Text,
+} from '@backstage/ui';
 import { useInfo } from '../../../hooks';
 import { InfoDependenciesTable } from './InfoDependenciesTable';
 import {
@@ -26,20 +36,7 @@ import {
   RiNodejsLine,
 } from '@remixicon/react';
 import { BackstageLogoIcon } from './BackstageLogoIcon';
-import { DevToolsInfo } from '@backstage/plugin-devtools-common';
-
-const copyToClipboard = ({ about }: { about: DevToolsInfo | undefined }) => {
-  if (about) {
-    let formatted = `OS: ${about.operatingSystem}\nResources: ${about.resourceUtilization}\nnode: ${about.nodeJsVersion}\nbackstage: ${about.backstageVersion}\nDependencies:\n`;
-    const deps = about.dependencies;
-    for (const key in deps) {
-      if (Object.prototype.hasOwnProperty.call(deps, key)) {
-        formatted = `${formatted}    ${deps[key].name}: ${deps[key].versions}\n`;
-      }
-    }
-    window.navigator.clipboard.writeText(formatted);
-  }
-};
+import styles from '../Content.module.css';
 
 const InfoCell = ({
   icon,
@@ -50,22 +47,31 @@ const InfoCell = ({
   label: string;
   value: string | undefined;
 }) => (
-  <Flex direction="row" align="center" gap="2">
-    {icon}
-    <Flex direction="column" gap="0.5">
-      <Text variant="body-medium" weight="bold">
+  <div className={styles.summaryItem}>
+    <Box className={styles.summaryIcon} aria-hidden="true">
+      {icon}
+    </Box>
+    <Flex direction="column" gap="1">
+      <Text variant="body-small" color="secondary">
         {label}
       </Text>
-      <Text variant="body-small" color="secondary">
-        {value}
+      <Text variant="body-medium" weight="bold" className={styles.summaryValue}>
+        {value || 'N/A'}
       </Text>
     </Flex>
-  </Flex>
+  </div>
 );
 
-/** @public */
+/**
+ * Displays runtime information and package dependencies. The copy action reports
+ * its result through the app's notifications.
+ *
+ * @public
+ */
 export const InfoContent = () => {
   const { about, loading, error } = useInfo();
+  const toastApi = useApi(toastApiRef);
+  const [copying, setCopying] = useState(false);
 
   if (loading) {
     return <Progress />;
@@ -73,53 +79,83 @@ export const InfoContent = () => {
     return <Alert status="danger" icon title={error.message} role="alert" />;
   }
   return (
-    <Box>
-      <Box mb="2">
-        <Card>
-          <CardBody>
-            <Flex
-              direction={{ initial: 'column', md: 'row' }}
-              align={{ initial: 'stretch', md: 'center' }}
-              justify="between"
-              gap="4"
+    <Box className={styles.stack}>
+      <Card className={styles.panel}>
+        <CardHeader>
+          <Flex
+            align="center"
+            justify="between"
+            gap="3"
+            className={styles.toolbar}
+          >
+            <Text as="h2" variant="title-small">
+              System information
+            </Text>
+            <Button
+              variant="secondary"
+              isDisabled={!about}
+              isPending={copying}
+              onPress={async () => {
+                if (!about) return;
+                setCopying(true);
+                try {
+                  await window.navigator.clipboard.writeText(
+                    [
+                      `OS: ${about.operatingSystem}`,
+                      `Resources: ${about.resourceUtilization}`,
+                      `node: ${about.nodeJsVersion}`,
+                      `backstage: ${about.backstageVersion}`,
+                      'Dependencies:',
+                      ...about.dependencies.map(
+                        dep => `    ${dep.name}: ${dep.versions}`,
+                      ),
+                      '',
+                    ].join('\n'),
+                  );
+                  toastApi.post({
+                    title: 'System information copied',
+                    status: 'success',
+                  });
+                } catch {
+                  toastApi.post({
+                    title: 'Could not copy system information',
+                    status: 'danger',
+                  });
+                } finally {
+                  setCopying(false);
+                }
+              }}
+              iconStart={<RiFileCopyLine size={16} />}
             >
-              <Flex
-                direction={{ initial: 'column', md: 'row' }}
-                align={{ initial: 'start', md: 'center' }}
-                gap={{ initial: '3', md: '6' }}
-              >
-                <InfoCell
-                  icon={<RiComputerLine />}
-                  label="Operating System"
-                  value={about?.operatingSystem}
-                />
-                <InfoCell
-                  icon={<RiCpuLine />}
-                  label="Resource utilization"
-                  value={about?.resourceUtilization}
-                />
-                <InfoCell
-                  icon={<RiNodejsLine />}
-                  label="NodeJS Version"
-                  value={about?.nodeJsVersion}
-                />
-                <InfoCell
-                  icon={<BackstageLogoIcon />}
-                  label="Backstage Version"
-                  value={about?.backstageVersion}
-                />
-              </Flex>
-              <Button
-                variant="secondary"
-                onPress={() => copyToClipboard({ about })}
-                iconStart={<RiFileCopyLine />}
-              >
-                Copy Info to Clipboard
-              </Button>
-            </Flex>
-          </CardBody>
-        </Card>
-      </Box>
+              Copy info
+            </Button>
+          </Flex>
+        </CardHeader>
+        <CardBody>
+          <div className={styles.summaryGrid}>
+            <InfoCell
+              icon={<RiComputerLine size={20} />}
+              label="Operating system"
+              value={about?.operatingSystem}
+            />
+            <InfoCell
+              icon={<RiCpuLine size={20} />}
+              label="Resources"
+              value={about?.resourceUtilization}
+            />
+            <InfoCell
+              icon={<RiNodejsLine size={20} />}
+              label="Node.js"
+              value={about?.nodeJsVersion}
+            />
+            <InfoCell
+              icon={<BackstageLogoIcon width={20} height={20} />}
+              label="Backstage"
+              value={about?.backstageVersion}
+            />
+          </div>
+        </CardBody>
+      </Card>
       <InfoDependenciesTable infoDependencies={about?.dependencies} />
     </Box>
   );

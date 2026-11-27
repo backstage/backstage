@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { fireEvent, screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { ExternalDependenciesContent } from './ExternalDependenciesContent';
 import { useExternalDependencies } from '../../../hooks';
@@ -52,14 +53,23 @@ describe('ExternalDependenciesContent', () => {
       ],
     });
 
-    const { findByText } = await renderInTestApp(
-      <ExternalDependenciesContent />,
-    );
+    await renderInTestApp(<ExternalDependenciesContent />);
 
-    expect(await findByText('GitHub')).toBeInTheDocument();
-    expect(await findByText('https://api.github.com')).toBeInTheDocument();
-    expect(await findByText('Postgres')).toBeInTheDocument();
-    expect(await findByText('connection refused')).toBeInTheDocument();
+    expect(await screen.findByText('GitHub')).toBeInTheDocument();
+    expect(
+      await screen.findByText('https://api.github.com'),
+    ).toBeInTheDocument();
+    expect(await screen.findByText('Postgres')).toBeInTheDocument();
+    expect(await screen.findByText('connection refused')).toBeInTheDocument();
+    expect(screen.getByText('Healthy')).toBeInTheDocument();
+    expect(screen.getByText('Unhealthy')).toBeInTheDocument();
+
+    fireEvent.change(screen.getByRole('searchbox'), {
+      target: { value: 'unhealthy' },
+    });
+    expect(await screen.findByText('Postgres')).toBeInTheDocument();
+    expect(screen.queryByText('GitHub')).not.toBeInTheDocument();
+    expect(screen.getByText('connection refused')).toBeInTheDocument();
   });
 
   it('renders an empty state when there are no dependencies', async () => {
@@ -68,11 +78,11 @@ describe('ExternalDependenciesContent', () => {
       externalDependencies: [],
     });
 
-    const { getByText } = await renderInTestApp(
-      <ExternalDependenciesContent />,
-    );
+    await renderInTestApp(<ExternalDependenciesContent />);
 
-    expect(getByText('No external dependencies found')).toBeInTheDocument();
+    expect(
+      screen.getByText('No external dependencies found'),
+    ).toBeInTheDocument();
   });
 
   it('renders an error state', async () => {
@@ -81,10 +91,11 @@ describe('ExternalDependenciesContent', () => {
       error: new Error('failed to fetch'),
     });
 
-    const { queryByText } = await renderInTestApp(
-      <ExternalDependenciesContent />,
-    );
+    await renderInTestApp(<ExternalDependenciesContent />);
 
-    expect(queryByText('GitHub')).not.toBeInTheDocument();
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'failed to fetch',
+    );
+    expect(screen.queryByText('GitHub')).not.toBeInTheDocument();
   });
 });
