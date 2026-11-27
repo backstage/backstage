@@ -193,16 +193,27 @@ export default {
                 'auth/okta/provider',
                 'auth/oauth2-proxy/provider',
                 'auth/onelogin/provider',
+                'auth/openshift/provider',
                 'auth/vmware-cloud/provider',
               ],
             ),
-            'auth/identity-resolver',
-            'auth/oauth',
-            'auth/oidc',
-            'auth/add-auth-provider',
-            'auth/service-to-service-auth',
-            'auth/offline-access',
-            'auth/autologout',
+            sidebarElementWithIndex(
+              {
+                label: 'Guides',
+                description:
+                  'Resolve identities, set up OAuth and OIDC, and add providers.',
+                differentiator: 'auth/',
+              },
+              [
+                'auth/identity-resolver',
+                'auth/oauth',
+                'auth/oidc',
+                'auth/service-to-service-auth',
+                'auth/offline-access',
+                'auth/autologout',
+                'auth/add-auth-provider',
+              ],
+            ),
             'auth/troubleshooting',
           ],
         ),
@@ -217,9 +228,11 @@ export default {
             'features/kubernetes/configuration',
             'features/kubernetes/authentication',
             'features/kubernetes/authentication-strategies',
-            'features/kubernetes/troubleshooting',
+            'features/kubernetes/permissions',
+            'features/kubernetes/watch',
             'features/kubernetes/proxy',
             'features/kubernetes/audit-events',
+            'features/kubernetes/troubleshooting',
           ],
         ),
         sidebarElementWithIndex(
@@ -292,6 +305,7 @@ export default {
               items: ['features/search/custom-collators'],
             },
             'features/search/how-to-guides',
+            'features/search/declarative-integration',
           ],
         ),
         sidebarElementWithIndex(
@@ -301,58 +315,105 @@ export default {
           },
           [
             'features/software-catalog/software-catalog-overview',
-            'features/software-catalog/life-of-an-entity',
-            'features/software-catalog/configuration',
-            'features/software-catalog/system-model',
-            'features/software-catalog/descriptor-format',
-            'features/software-catalog/references',
-            'features/software-catalog/well-known-annotations',
-            'features/software-catalog/well-known-relations',
-            'features/software-catalog/well-known-statuses',
-            {
-              type: 'category',
-              label: 'Extending the model',
-              link: {
-                type: 'doc',
-                id: 'features/software-catalog/extending-the-model',
+            sidebarElementWithIndex(
+              {
+                label: 'Concepts',
+                description:
+                  'How the catalog models, stores and references entities.',
+                differentiator: 'software-catalog/',
               },
-              items: ['features/software-catalog/catalog-model-layers'],
-            },
-            {
-              type: 'category',
-              label: 'External integrations',
-              link: {
-                type: 'doc',
-                id: 'features/software-catalog/external-integrations/index',
-              },
-              items: [
-                'features/software-catalog/external-integrations/entity-providers',
-                'features/software-catalog/external-integrations/processors',
-                'features/software-catalog/external-integrations/incremental-entity-providers',
+              [
+                'features/software-catalog/life-of-an-entity',
+                'features/software-catalog/system-model',
+                'features/software-catalog/references',
               ],
-            },
-            'features/software-catalog/catalog-customization',
-            'features/software-catalog/entity-presentation',
-            'features/software-catalog/audit-events',
-            'features/software-catalog/unprocessed-entities',
-            {
-              type: 'category',
-              label: 'API',
-              link:
-                catalogSidebar.length > 0
-                  ? {
-                      type: 'generated-index',
-                      title: 'Catalog API',
-                      slug: '/category/catalog-api',
-                    }
-                  : {
-                      type: 'doc',
-                      id: 'openapi/generated-docs/404',
-                    },
-              items: catalogSidebar,
-            },
-            'features/software-catalog/creating-the-catalog-graph',
-            'features/software-catalog/faq',
+            ),
+            sidebarElementWithIndex(
+              {
+                label: 'Setup & Configuration',
+                description:
+                  'Configure and customize the catalog and how it presents entities.',
+                differentiator: 'software-catalog/',
+              },
+              [
+                'features/software-catalog/configuration',
+                'features/software-catalog/catalog-customization',
+                'features/software-catalog/entity-presentation',
+              ],
+            ),
+            sidebarElementWithIndex(
+              {
+                label: 'Extending',
+                description:
+                  'Extend the entity model and ingest entities from external sources.',
+                differentiator: 'software-catalog/',
+              },
+              [
+                {
+                  type: 'category',
+                  label: 'Extending the model',
+                  link: {
+                    type: 'doc',
+                    id: 'features/software-catalog/extending-the-model',
+                  },
+                  items: ['features/software-catalog/catalog-model-layers'],
+                },
+                {
+                  type: 'category',
+                  label: 'External integrations',
+                  link: {
+                    type: 'doc',
+                    id: 'features/software-catalog/external-integrations/index',
+                  },
+                  items: [
+                    'features/software-catalog/external-integrations/entity-providers',
+                    'features/software-catalog/external-integrations/processors',
+                    'features/software-catalog/external-integrations/incremental-entity-providers',
+                  ],
+                },
+              ],
+            ),
+            sidebarElementWithIndex(
+              {
+                label: 'Reference',
+                description:
+                  'Descriptor format, well-known values, audit events and the catalog API.',
+                differentiator: 'software-catalog/',
+              },
+              [
+                'features/software-catalog/descriptor-format',
+                'features/software-catalog/well-known-annotations',
+                'features/software-catalog/well-known-relations',
+                'features/software-catalog/well-known-statuses',
+                'features/software-catalog/audit-events',
+                {
+                  type: 'category',
+                  label: 'API',
+                  link:
+                    catalogSidebar.length > 0
+                      ? {
+                          type: 'generated-index',
+                          title: 'Catalog API',
+                          slug: '/category/catalog-api',
+                        }
+                      : { type: 'doc', id: 'openapi/generated-docs/404' },
+                  items: catalogSidebar,
+                },
+              ],
+            ),
+            sidebarElementWithIndex(
+              {
+                label: 'Help',
+                description:
+                  'Troubleshoot catalog problems and find answers to common questions.',
+                differentiator: 'software-catalog/',
+              },
+              [
+                'features/software-catalog/unprocessed-entities',
+                'features/software-catalog/creating-the-catalog-graph',
+                'features/software-catalog/faq',
+              ],
+            ),
           ],
         ),
         sidebarElementWithIndex(
@@ -362,37 +423,73 @@ export default {
           },
           [
             'features/software-templates/software-templates-index',
-            'features/software-templates/configuration',
-            'features/software-templates/adding-templates',
-            'features/software-templates/writing-templates',
-            'features/software-templates/input-examples',
-            'features/software-templates/ui-options-examples',
-            'features/software-templates/builtin-actions',
-            'features/software-templates/writing-custom-actions',
-            'features/software-templates/writing-tests-for-actions',
-            'features/software-templates/writing-custom-field-extensions',
-            'features/software-templates/writing-custom-step-layouts',
-            'features/software-templates/authorizing-scaffolder-template-details',
-            'features/software-templates/dry-run-testing',
-            'features/software-templates/experimental',
-            'features/software-templates/templating-extensions',
-            'features/software-templates/audit-events',
-            {
-              type: 'category',
-              label: 'API',
-              link:
-                scaffolderSidebar.length > 0
-                  ? {
-                      type: 'generated-index',
-                      title: 'Scaffolder API',
-                      slug: '/category/scaffolder-api',
-                    }
-                  : {
-                      type: 'doc',
-                      id: 'openapi/generated-docs/404',
-                    },
-              items: scaffolderSidebar,
-            },
+            sidebarElementWithIndex(
+              {
+                label: 'Setup & Configuration',
+                description:
+                  'Configure the scaffolder and add templates to your catalog.',
+                differentiator: 'software-templates/',
+              },
+              [
+                'features/software-templates/configuration',
+                'features/software-templates/adding-templates',
+              ],
+            ),
+            sidebarElementWithIndex(
+              {
+                label: 'Writing Templates',
+                description: 'Write templates, inputs and steps.',
+                differentiator: 'software-templates/',
+              },
+              [
+                'features/software-templates/writing-templates',
+                'features/software-templates/input-examples',
+                'features/software-templates/ui-options-examples',
+                'features/software-templates/templating-extensions',
+                'features/software-templates/dry-run-testing',
+              ],
+            ),
+            sidebarElementWithIndex(
+              {
+                label: 'Extending',
+                description:
+                  'Add custom actions, field extensions and step layouts.',
+                differentiator: 'software-templates/',
+              },
+              [
+                'features/software-templates/writing-custom-actions',
+                'features/software-templates/writing-tests-for-actions',
+                'features/software-templates/writing-custom-field-extensions',
+                'features/software-templates/writing-custom-step-layouts',
+              ],
+            ),
+            sidebarElementWithIndex(
+              {
+                label: 'Reference',
+                description:
+                  'Built-in actions, permissions, experimental features, audit events and the scaffolder API.',
+                differentiator: 'software-templates/',
+              },
+              [
+                'features/software-templates/builtin-actions',
+                'features/software-templates/authorizing-scaffolder-template-details',
+                'features/software-templates/experimental',
+                'features/software-templates/audit-events',
+                {
+                  type: 'category',
+                  label: 'API',
+                  link:
+                    scaffolderSidebar.length > 0
+                      ? {
+                          type: 'generated-index',
+                          title: 'Scaffolder API',
+                          slug: '/category/scaffolder-api',
+                        }
+                      : { type: 'doc', id: 'openapi/generated-docs/404' },
+                  items: scaffolderSidebar,
+                },
+              ],
+            ),
           ],
         ),
         sidebarElementWithIndex(
@@ -402,25 +499,61 @@ export default {
           },
           [
             'features/techdocs/techdocs-overview',
-            'features/techdocs/getting-started',
-            'features/techdocs/concepts',
-            'features/techdocs/addons',
-            'features/techdocs/architecture',
-            {
-              type: 'category',
-              label: 'Engines',
-              link: { type: 'doc', id: 'features/techdocs/engines' },
-              items: ['features/techdocs/engines-zensical'],
-            },
-            'features/techdocs/extensions',
-            'features/techdocs/creating-and-publishing',
-            'features/techdocs/configuration',
-            'features/techdocs/using-cloud-storage',
-            'features/techdocs/configuring-ci-cd',
-            'features/techdocs/cli',
-            'features/techdocs/how-to-guides',
-            'features/techdocs/troubleshooting',
-            'features/techdocs/faqs',
+            sidebarElementWithIndex(
+              {
+                label: 'Concepts',
+                description:
+                  'How TechDocs works and the engines that build your docs.',
+                differentiator: 'techdocs/',
+              },
+              [
+                'features/techdocs/concepts',
+                'features/techdocs/architecture',
+                {
+                  type: 'category',
+                  label: 'Engines',
+                  link: { type: 'doc', id: 'features/techdocs/engines' },
+                  items: ['features/techdocs/engines-zensical'],
+                },
+              ],
+            ),
+            sidebarElementWithIndex(
+              {
+                label: 'Setup & Configuration',
+                description:
+                  'Set up TechDocs, configure storage and publish your docs.',
+                differentiator: 'techdocs/',
+              },
+              [
+                'features/techdocs/getting-started',
+                'features/techdocs/configuration',
+                'features/techdocs/using-cloud-storage',
+                'features/techdocs/configuring-ci-cd',
+                'features/techdocs/creating-and-publishing',
+                'features/techdocs/cli',
+              ],
+            ),
+            sidebarElementWithIndex(
+              {
+                label: 'Extending',
+                description: 'Add addons and extensions to TechDocs.',
+                differentiator: 'techdocs/',
+              },
+              ['features/techdocs/addons', 'features/techdocs/extensions'],
+            ),
+            sidebarElementWithIndex(
+              {
+                label: 'Help',
+                description:
+                  'How-to guides, troubleshooting and frequently asked questions.',
+                differentiator: 'techdocs/',
+              },
+              [
+                'features/techdocs/how-to-guides',
+                'features/techdocs/troubleshooting',
+                'features/techdocs/faqs',
+              ],
+            ),
           ],
         ),
       ],
