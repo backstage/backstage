@@ -14,7 +14,18 @@
  * limitations under the License.
  */
 
-import { renderInTestApp } from '@backstage/test-utils';
+import {
+  EntityPresentationApi,
+  EntityRefPresentationSnapshot,
+  entityPresentationApiRef,
+} from '@backstage/plugin-catalog-react';
+import { identityApiRef } from '@backstage/core-plugin-api';
+import {
+  mockApis,
+  renderInTestApp,
+  TestApiRegistry,
+} from '@backstage/test-utils';
+import { ApiProvider } from '@backstage/core-app-api';
 import { WelcomeTitle } from './WelcomeTitle';
 
 describe('<WelcomeTitle>', () => {
@@ -25,20 +36,101 @@ describe('<WelcomeTitle>', () => {
       .spyOn(global.Date, 'now')
       .mockImplementation(() => new Date('1970-01-01T23:00:00').valueOf());
 
-    const { getByText } = await renderInTestApp(<WelcomeTitle />);
+    const apis = TestApiRegistry.from([
+      identityApiRef,
+      mockApis.identity({ userEntityRef: 'user:default/guest' }),
+    ]);
 
-    expect(getByText(/Get some rest, Guest/)).toBeInTheDocument();
+    const { getByText } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <WelcomeTitle />
+      </ApiProvider>,
+    );
+
+    expect(getByText(/Get some rest,/)).toHaveTextContent(
+      'Get some rest, guest!',
+    );
   });
-});
 
-test('should greet user with a single language', async () => {
-  jest
-    .spyOn(global.Date, 'now')
-    .mockImplementation(() => new Date('1970-01-01T10:00:00').valueOf());
+  test('should greet user with a single language', async () => {
+    jest
+      .spyOn(global.Date, 'now')
+      .mockImplementation(() => new Date('1970-01-01T10:00:00').valueOf());
 
-  const { getByText } = await renderInTestApp(
-    <WelcomeTitle language={['English']} />,
-  );
+    const apis = TestApiRegistry.from([
+      identityApiRef,
+      mockApis.identity({ userEntityRef: 'user:default/guest' }),
+    ]);
 
-  expect(getByText(/Good morning, Guest/)).toBeInTheDocument();
+    const { getByText } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <WelcomeTitle language={['English']} />
+      </ApiProvider>,
+    );
+
+    expect(getByText(/Good morning,/)).toHaveTextContent(
+      'Good morning, guest!',
+    );
+  });
+
+  test('should greet user with the title from the entity presentation API', async () => {
+    jest
+      .spyOn(global.Date, 'now')
+      .mockImplementation(() => new Date('1970-01-01T10:00:00').valueOf());
+
+    const mockPresentationApi: EntityPresentationApi = {
+      forEntity: entityOrRef => {
+        const name =
+          typeof entityOrRef === 'string'
+            ? entityOrRef.split('/').pop()!
+            : entityOrRef.metadata.name;
+        const snapshot: EntityRefPresentationSnapshot = {
+          entityRef: `user:default/${name}`,
+          primaryTitle: 'Ada Lovelace',
+        };
+        return { snapshot, promise: Promise.resolve(snapshot) };
+      },
+    };
+    const apis = TestApiRegistry.from(
+      [entityPresentationApiRef, mockPresentationApi],
+      [
+        identityApiRef,
+        mockApis.identity({ userEntityRef: 'user:default/ada' }),
+      ],
+    );
+
+    const { getByText } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <WelcomeTitle language={['English']} />
+      </ApiProvider>,
+    );
+
+    expect(getByText(/Good morning,/)).toHaveTextContent(
+      'Good morning, Ada Lovelace!',
+    );
+  });
+
+  test('should greet user with the profile display name when set', async () => {
+    jest
+      .spyOn(global.Date, 'now')
+      .mockImplementation(() => new Date('1970-01-01T10:00:00').valueOf());
+
+    const apis = TestApiRegistry.from([
+      identityApiRef,
+      mockApis.identity({
+        userEntityRef: 'user:default/jdoe',
+        displayName: 'Jane Doe',
+      }),
+    ]);
+
+    const { getByText } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <WelcomeTitle language={['English']} />
+      </ApiProvider>,
+    );
+
+    expect(getByText(/Good morning,/)).toHaveTextContent(
+      'Good morning, Jane Doe!',
+    );
+  });
 });
