@@ -32,3 +32,7 @@ npx skills add https://backstage.io
 ### Backend Tooling
 
 - `onboard-to-openapi-server`: Migrate an existing Backstage backend plugin's hand-written Express router to the typed OpenAPI tooling. Optionally covers typed client generation and migrating router tests to the OpenAPI test wrapper.
+
+### Upgrades
+
+- `keeping-backstage-updated`: Upgrade a Backstage repository to a newer Backstage release. Covers choosing a target release, running `versions:bump` and `versions:migrate`, applying create-app template changes, running codemod recipes, fixing breaking changes from release changelogs, and verifying the result.
