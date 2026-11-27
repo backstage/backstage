@@ -216,6 +216,10 @@ export const EntityPicker = (props: EntityPickerProps) => {
     formData && buiOptions.some(o => o.value === formData) ? formData : null;
 
   const lastCommittedRef = useRef(formData);
+  
+  const selectedOption = buiOptions.find(
+      option => option.value === formData,
+  );
 
   useEffect(() => {
     lastCommittedRef.current = formData;
@@ -227,7 +231,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
         const value = String(key);
         lastCommittedRef.current = value;
         onChange(value);
-      } else if (allowArbitraryValues && inputValue) {
+      } else if (allowArbitraryValues && inputValue && selectedOption?.value !== inputValue) {
         let entityRef = inputValue;
         try {
           entityRef = stringifyEntityRef(
@@ -244,30 +248,50 @@ export const EntityPicker = (props: EntityPickerProps) => {
       }
     },
     [onChange, allowArbitraryValues, inputValue, defaultKind, defaultNamespace],
-  );
+  );  
+  
+  const selectedKey =
+  formData && buiOptions.some(option => option.value === formData)
+    ? formData
+    : null;
 
+  const lastCommittedRef = useRef(formData);
+  
+  useEffect(() => {
+    lastCommittedRef.current = formData;
+  }, [formData]);
+  
   const handleBlur = useCallback(() => {
-    if (allowArbitraryValues && inputValue) {
-      let entityRef = inputValue;
-      try {
-        entityRef = stringifyEntityRef(
-          parseEntityRef(inputValue, { defaultKind, defaultNamespace }),
-        );
-      } catch {
-        // If the input isn't a valid entity ref, use it as-is
-      }
-      if (lastCommittedRef.current !== entityRef) {
-        lastCommittedRef.current = entityRef;
-        onChange(entityRef);
-      }
-    }
-  }, [
-    allowArbitraryValues,
-    inputValue,
-    defaultKind,
-    defaultNamespace,
-    onChange,
-  ]);
+  if (!allowArbitraryValues || !inputValue) {
+    return;
+  }
+
+  if (selectedOption?.label === inputValue) {
+    return;
+  }
+
+  let entityRef = inputValue;
+
+  try {
+    entityRef = stringifyEntityRef(
+      parseEntityRef(inputValue, { defaultKind, defaultNamespace }),
+    );
+  } catch {
+    // If the input isn't a valid entity ref, use it as-is.
+  }
+
+  if (lastCommittedRef.current !== entityRef) {
+    lastCommittedRef.current = entityRef;
+    onChange(entityRef);
+  }
+}, [
+  allowArbitraryValues,
+  inputValue,
+  selectedOption?.label,
+  defaultKind,
+  defaultNamespace,
+  onChange,
+]);
 
   // Auto-select when only one entity and required
   useEffect(() => {
