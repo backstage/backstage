@@ -18,7 +18,7 @@ import { useEffect } from 'react';
 import Box from '@material-ui/core/Box';
 import { useEntityTypeFilter } from '../../hooks/useEntityTypeFilter';
 
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { alertApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { Select } from '@backstage/core-components';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -37,6 +37,7 @@ export interface EntityTypePickerProps {
 export const EntityTypePicker = (props: EntityTypePickerProps) => {
   const { hidden, initialFilter } = props;
   const alertApi = useApi(alertApiRef);
+  const analytics = useAnalytics();
   const { error, availableTypes, selectedTypes, setSelectedTypes } =
     useEntityTypeFilter();
   const { t } = useTranslationRef(catalogReactTranslationRef);
@@ -71,9 +72,17 @@ export const EntityTypePicker = (props: EntityTypePickerProps) => {
         label={t('entityTypePicker.title')}
         items={items}
         selected={(items.length > 1 ? selectedTypes[0] : undefined) ?? 'all'}
-        onChange={value =>
-          setSelectedTypes(value === 'all' ? [] : [String(value)])
-        }
+        onChange={value => {
+          const type = String(value);
+          if (type === 'all') {
+            setSelectedTypes([]);
+            return;
+          }
+          setSelectedTypes([type]);
+          analytics.captureEvent('filter', type, {
+            attributes: { filter: 'type' },
+          });
+        }}
       />
     </Box>
   );
