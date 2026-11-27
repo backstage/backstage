@@ -99,6 +99,20 @@ alongside the entity's source code, the value of this annotation can point to an
 absolute URL, matching the location reference string format outlined above, for
 example: `url:https://github.com/backstage/backstage/tree/master`
 
+### backstage.io/techdocs-visibility
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    backstage.io/techdocs-visibility: restricted
+```
+
+When TechDocs permission checks are enabled, a permission policy can use this
+annotation to identify documentation that should be restricted. The annotation
+does not enforce access by itself; the permission policy determines how it is
+used. See [restricting access to TechDocs](../techdocs/how-to-guides.md#how-to-restrict-access-to-techdocs-using-permissions).
+
 ### backstage.io/techdocs-entity
 
 ```yaml

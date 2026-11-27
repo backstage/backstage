@@ -23,6 +23,8 @@ import {
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
+import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/alpha';
+import { techDocsEntityReadPermission } from '@backstage/plugin-techdocs-common';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { Readable } from 'node:stream';
@@ -100,6 +102,22 @@ describe('DefaultTechDocsCollatorFactory', () => {
     expect(factory.type).toBe('techdocs');
   });
 
+  it('gates documents on the techdocs permission only when opted in', () => {
+    expect(
+      DefaultTechDocsCollatorFactory.fromConfig(config, options)
+        .visibilityPermission,
+    ).toBe(catalogEntityReadPermission);
+
+    expect(
+      DefaultTechDocsCollatorFactory.fromConfig(
+        new ConfigReader({
+          techdocs: { experimentalTechdocsPermissions: true },
+        }),
+        options,
+      ).visibilityPermission,
+    ).toBe(techDocsEntityReadPermission);
+  });
+
   describe('getCollator', () => {
     let factory: DefaultTechDocsCollatorFactory;
     let collator: Readable;
@@ -108,6 +126,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
     registerMswTestHooks(worker);
 
     beforeEach(async () => {
+      jest.clearAllMocks();
       factory = DefaultTechDocsCollatorFactory.fromConfig(config, options);
       collator = await factory.getCollator();
 
