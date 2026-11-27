@@ -238,6 +238,123 @@ describe('GithubEntityProvider', () => {
     });
   });
 
+  it('encodes the default branch name in scheduled location URLs', async () => {
+    const config = createSingleProviderConfig({
+      providerConfig: {
+        catalogPath: 'custom/path/catalog-custom.yaml',
+      },
+    });
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+
+    const provider = GithubEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    const mockGetOrganizationRepositories = jest.spyOn(
+      helpers,
+      'getOrganizationRepositories',
+    );
+
+    mockGetOrganizationRepositories.mockReturnValue(
+      Promise.resolve({
+        repositories: [
+          {
+            name: 'test-repo',
+            url: 'https://github.com/test-org/test-repo',
+            repositoryTopics: { nodes: [] },
+            isArchived: false,
+            isFork: false,
+            defaultBranchRef: {
+              name: 'main#tag',
+            },
+            catalogInfoFile: {
+              __typename: 'Blob',
+              id: 'abc123',
+              text: 'some yaml',
+            },
+            visibility: 'public',
+          },
+        ],
+      }),
+    );
+
+    await provider.connect(entityProviderConnection);
+
+    const taskDef = schedule.getTasks()[0];
+    await (taskDef.fn as () => Promise<void>)();
+
+    const url = `https://github.com/test-org/test-repo/blob/main%23tag/custom/path/catalog-custom.yaml`;
+    const expectedEntities = createExpectedEntitiesForUrl(url);
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: expectedEntities,
+    });
+  });
+
+  it('skips repositories whose default branch name cannot be encoded', async () => {
+    const config = createSingleProviderConfig({
+      providerConfig: {
+        catalogPath: 'custom/path/catalog-custom.yaml',
+      },
+    });
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+
+    const provider = GithubEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    const mockGetOrganizationRepositories = jest.spyOn(
+      helpers,
+      'getOrganizationRepositories',
+    );
+
+    mockGetOrganizationRepositories.mockReturnValue(
+      Promise.resolve({
+        repositories: [
+          {
+            name: 'test-repo',
+            url: 'https://github.com/test-org/test-repo',
+            repositoryTopics: { nodes: [] },
+            isArchived: false,
+            isFork: false,
+            defaultBranchRef: {
+              name: '%2e%2e',
+            },
+            catalogInfoFile: {
+              __typename: 'Blob',
+              id: 'abc123',
+              text: 'some yaml',
+            },
+            visibility: 'public',
+          },
+        ],
+      }),
+    );
+
+    await provider.connect(entityProviderConnection);
+
+    const taskDef = schedule.getTasks()[0];
+    await (taskDef.fn as () => Promise<void>)();
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: [],
+    });
+  });
+
   it('apply full update on scheduled execution with topic exclusion', async () => {
     const config = new ConfigReader({
       catalog: {
@@ -677,13 +794,15 @@ describe('GithubEntityProvider', () => {
         catalogFile?: {
           action?: 'added' | 'removed' | 'modified';
           path?: string;
+          paths?: string[];
         };
         org?: string;
         ref?: string;
+        branch?: string;
       }): EventParams<PushEvent> => {
         const organization = options?.org ?? 'test-org';
         const repo = {
-          default_branch: 'main',
+          default_branch: options?.branch ?? 'main',
           master_branch: 'main',
           name: 'test-repo',
           organization,
@@ -698,9 +817,11 @@ describe('GithubEntityProvider', () => {
           modified: [] as string[],
           removed: [] as string[],
         };
-        catalogCommit[options?.catalogFile?.action ?? 'modified'] = [
+        const catalogFiles = options?.catalogFile?.paths ?? [
           options?.catalogFile?.path ?? 'catalog-info.yaml',
         ];
+        catalogCommit[options?.catalogFile?.action ?? 'modified'] =
+          catalogFiles;
 
         const event = {
           ref: options?.ref ?? 'refs/heads/main',
@@ -870,6 +991,194 @@ describe('GithubEntityProvider', () => {
           keys: [
             'url:https://github.com/test-org/test-repo/tree/main/catalog-info.yaml',
             'url:https://github.com/test-org/test-repo/blob/main/catalog-info.yaml',
+            'url:https://github.com/test-org/test-repo/tree/main/**/catalog-info.yaml',
+          ],
+        });
+        expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
+      });
+
+      it('does not emit locations for commit paths that escape the repository', async () => {
+        const config = createSingleProviderConfig({
+          providerConfig: {
+            catalogPath: '**/catalog-info.yaml',
+          },
+        });
+        const provider = createProviders(config)[0];
+
+        const entityProviderConnection: EntityProviderConnection = {
+          applyMutation: jest.fn(),
+          refresh: jest.fn(),
+        };
+        await provider.connect(entityProviderConnection);
+
+        const event = createPushEvent({
+          catalogFile: {
+            action: 'added',
+            paths: [
+              '%2e%2e/%2e%2e/%2e%2e/private/blob/main/catalog-info.yaml',
+              '../../other-repo/blob/main/catalog-info.yaml',
+              'dir/app\\..\\..\\..\\..\\private/catalog-info.yaml',
+              'services/backend/catalog-info.yaml',
+            ],
+          },
+        });
+
+        await provider.onEvent(event);
+
+        expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+        expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+          type: 'delta',
+          added: createExpectedEntitiesForUrl(
+            'https://github.com/test-org/test-repo/blob/main/services/backend/catalog-info.yaml',
+          ),
+          removed: [],
+        });
+      });
+
+      it('skips push events whose branch name cannot be encoded', async () => {
+        const config = createSingleProviderConfig({
+          providerConfig: {
+            catalogPath: '**/catalog-info.yaml',
+          },
+        });
+        const provider = createProviders(config)[0];
+
+        const entityProviderConnection: EntityProviderConnection = {
+          applyMutation: jest.fn(),
+          refresh: jest.fn(),
+        };
+        await provider.connect(entityProviderConnection);
+
+        const event = createPushEvent({
+          branch: '%2e%2e',
+          ref: 'refs/heads/%2e%2e',
+          catalogFile: {
+            action: 'added',
+            path: 'catalog-info.yaml',
+          },
+        });
+
+        await provider.onEvent(event);
+
+        expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
+        expect(entityProviderConnection.refresh).not.toHaveBeenCalled();
+      });
+
+      it('encodes special characters in the branch name of location URLs', async () => {
+        const config = createSingleProviderConfig({
+          providerConfig: {
+            catalogPath: '**/catalog-info.yaml',
+          },
+        });
+        const provider = createProviders(config)[0];
+
+        const entityProviderConnection: EntityProviderConnection = {
+          applyMutation: jest.fn(),
+          refresh: jest.fn(),
+        };
+        await provider.connect(entityProviderConnection);
+
+        const event = createPushEvent({
+          branch: 'main#tag',
+          ref: 'refs/heads/main#tag',
+          catalogFile: {
+            action: 'added',
+            path: 'catalog-info.yaml',
+          },
+        });
+
+        await provider.onEvent(event);
+
+        expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+        expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+          type: 'delta',
+          added: createExpectedEntitiesForUrl(
+            'https://github.com/test-org/test-repo/blob/main%23tag/catalog-info.yaml',
+          ),
+          removed: [],
+        });
+      });
+
+      it('applies delta update on added files with special characters in their paths', async () => {
+        const config = createSingleProviderConfig({
+          providerConfig: {
+            catalogPath: '**/catalog-info.yaml',
+          },
+        });
+        const provider = createProviders(config)[0];
+
+        const entityProviderConnection: EntityProviderConnection = {
+          applyMutation: jest.fn(),
+          refresh: jest.fn(),
+        };
+        await provider.connect(entityProviderConnection);
+
+        const event = createPushEvent({
+          catalogFile: {
+            action: 'added',
+            paths: [
+              'plain/catalog-info.yaml',
+              'with space/catalog-info.yaml',
+              'växla/catalog-info.yaml',
+              'a+b/catalog-info.yaml',
+              "it's (a) file;~dir/catalog-info.yaml",
+              'a[b]|c;d/catalog-info.yaml',
+              'x^y/catalog-info.yaml',
+            ],
+          },
+        });
+
+        await provider.onEvent(event);
+
+        const expectedUrls = [
+          'https://github.com/test-org/test-repo/blob/main/plain/catalog-info.yaml',
+          'https://github.com/test-org/test-repo/blob/main/with%20space/catalog-info.yaml',
+          'https://github.com/test-org/test-repo/blob/main/v%C3%A4xla/catalog-info.yaml',
+          'https://github.com/test-org/test-repo/blob/main/a+b/catalog-info.yaml',
+          "https://github.com/test-org/test-repo/blob/main/it's%20(a)%20file;~dir/catalog-info.yaml",
+          'https://github.com/test-org/test-repo/blob/main/a[b]|c;d/catalog-info.yaml',
+          'https://github.com/test-org/test-repo/blob/main/x%5Ey/catalog-info.yaml',
+        ];
+
+        expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+        expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+          type: 'delta',
+          added: expectedUrls.flatMap(url => createExpectedEntitiesForUrl(url)),
+          removed: [],
+        });
+      });
+
+      it('encodes file paths in refresh keys for modified files', async () => {
+        const config = createSingleProviderConfig({
+          providerConfig: {
+            catalogPath: '**/catalog-info.yaml',
+          },
+        });
+        const provider = createProviders(config)[0];
+
+        const entityProviderConnection: EntityProviderConnection = {
+          applyMutation: jest.fn(),
+          refresh: jest.fn(),
+        };
+        await provider.connect(entityProviderConnection);
+
+        const event = createPushEvent({
+          catalogFile: {
+            action: 'modified',
+            paths: [
+              '%2e%2e/%2e%2e/%2e%2e/private/blob/main/catalog-info.yaml',
+              'with space/catalog-info.yaml',
+            ],
+          },
+        });
+
+        await provider.onEvent(event);
+
+        expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(1);
+        expect(entityProviderConnection.refresh).toHaveBeenCalledWith({
+          keys: [
+            'url:https://github.com/test-org/test-repo/tree/main/with%20space/catalog-info.yaml',
+            'url:https://github.com/test-org/test-repo/blob/main/with%20space/catalog-info.yaml',
             'url:https://github.com/test-org/test-repo/tree/main/**/catalog-info.yaml',
           ],
         });

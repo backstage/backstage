@@ -243,6 +243,100 @@ describe('createAuth0Authenticator', () => {
     expect(result.fullProfile).toEqual(updatedProfile);
   });
 
+  it('should not share cached profiles between environments with different domains', async () => {
+    // A single authenticator instance is shared by all environments of the
+    // auth0 provider, each initialized with the domain of its own tenant
+    const authenticator = createAuth0Authenticator({ cache });
+    const ctxTenantA = authenticator.initialize({
+      callbackUrl: 'http://localhost/callback',
+      config: mockServices.rootConfig({
+        data: {
+          clientId: 'tenant-a-client-id',
+          clientSecret: 'tenant-a-client-secret',
+          domain: 'tenant-a.auth0.com',
+        },
+      }),
+    });
+    const ctxTenantB = authenticator.initialize({
+      callbackUrl: 'http://localhost/callback',
+      config: mockServices.rootConfig({
+        data: {
+          clientId: 'tenant-b-client-id',
+          clientSecret: 'tenant-b-client-secret',
+          domain: 'tenant-b.auth0.com',
+        },
+      }),
+    });
+
+    const profileTenantA = {
+      ...mockProfile,
+      id: 'tenant-a-user',
+      displayName: 'Tenant A User',
+    };
+    const profileTenantB = {
+      ...mockProfile,
+      id: 'tenant-b-user',
+      displayName: 'Tenant B User',
+    };
+
+    // Both tenants happen to issue the same textual subject
+    mockExecuteRefresh.mockResolvedValue({
+      accessToken: 'new-access-token',
+      refreshToken: 'my-refresh-token',
+      params: {
+        token_type: 'bearer',
+        scope: 'openid profile',
+        expires_in: 3600,
+        id_token: createTestIdToken('auth0|user-123'),
+      },
+    });
+
+    const refreshInput = {
+      refreshToken: 'refresh-token',
+      scope: 'openid profile',
+      req: {} as express.Request,
+    };
+
+    // A refresh in tenant A caches that tenant's profile
+    mockFetchProfile.mockResolvedValue(profileTenantA);
+    const resultTenantA = await authenticator.refresh(refreshInput, ctxTenantA);
+    expect(resultTenantA.fullProfile).toEqual(profileTenantA);
+    expect(mockFetchProfile).toHaveBeenCalledTimes(1);
+
+    // A refresh in tenant B with the same subject must not be served the
+    // profile cached by tenant A
+    mockFetchProfile.mockResolvedValue(profileTenantB);
+    const resultTenantB = await authenticator.refresh(refreshInput, ctxTenantB);
+    expect(mockFetchProfile).toHaveBeenCalledTimes(2);
+    expect(resultTenantB.fullProfile).toEqual(profileTenantB);
+
+    // The cache holds a separate, domain-scoped entry for each tenant
+    const setKeys = cache.set.mock.calls.map(([key]) => key);
+    expect(setKeys).toHaveLength(2);
+    expect(setKeys[0]).not.toBe(setKeys[1]);
+    expect(setKeys).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining('tenant-a.auth0.com'),
+        expect.stringContaining('tenant-b.auth0.com'),
+      ]),
+    );
+
+    // Subsequent refreshes in either tenant are served their own cached
+    // profile without fetching a new one
+    mockFetchProfile.mockClear();
+    const resultTenantASecond = await authenticator.refresh(
+      refreshInput,
+      ctxTenantA,
+    );
+    expect(resultTenantASecond.fullProfile).toEqual(profileTenantA);
+    const resultTenantBSecond = await authenticator.refresh(
+      refreshInput,
+      ctxTenantB,
+    );
+    expect(resultTenantBSecond.fullProfile).toEqual(profileTenantB);
+    expect(mockFetchProfile).not.toHaveBeenCalled();
+  });
+
   describe('start', () => {
     it('should pass prompt from config to helper.start', async () => {
       const configWithPrompt = mockServices.rootConfig({

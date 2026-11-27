@@ -290,5 +290,19 @@ describe('bitbucketServer core', () => {
       );
       expect(defaultBranch).toEqual('main');
     });
+
+    it('rejects path traversal encoded into the project', async () => {
+      const config: BitbucketServerIntegrationConfig = {
+        host: 'bitbucket.mycompany.net',
+        apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
+      };
+
+      await expect(
+        getBitbucketServerDefaultBranch(
+          'https://bitbucket.mycompany.net/projects/%252e%252e%252f%252e%252e%252fvictim/repos/mock/browse/README.md',
+          config,
+        ),
+      ).rejects.toThrow(/path traversal is not allowed/);
+    });
   });
 });

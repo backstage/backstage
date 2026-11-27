@@ -206,7 +206,20 @@ class GithubAppManager {
   }
 
   async getPublicInstallationToken(): Promise<{ accessToken: string }> {
-    const [installation] = await this.getCachedInstallations();
+    const installations = await this.getCachedInstallations();
+    const allowedOwners = this.allowedInstallationOwners;
+
+    // Only installations whose owner is within the allow list of this app
+    // may provide the public access fallback token; an app without an
+    // allow list allows all installations
+    const installation = allowedOwners
+      ? installations.find(
+          inst =>
+            inst.account &&
+            'login' in inst.account &&
+            allowedOwners.includes(inst.account.login?.toLowerCase()),
+        )
+      : installations[0];
 
     if (!installation) {
       throw new Error(`No installation found for public app`);
@@ -245,7 +258,22 @@ class GithubAppManager {
   }
 
   async getInstallations(): Promise<Installations> {
-    return lodash.cloneDeep(await this.getCachedInstallations());
+    const installations = await this.getCachedInstallations();
+    const allowedOwners = this.allowedInstallationOwners;
+    if (!allowedOwners) {
+      return lodash.cloneDeep(installations);
+    }
+
+    // Only installations whose owner is within the allow list of this app
+    // are exposed through installation enumeration
+    return lodash.cloneDeep(
+      installations.filter(
+        installation =>
+          installation.account &&
+          'login' in installation.account &&
+          allowedOwners.includes(installation.account.login?.toLowerCase()),
+      ),
+    );
   }
 
   private async getCachedInstallations(

@@ -18,9 +18,12 @@ import {
   resolveSafeChildPath,
   UrlReaderService,
 } from '@backstage/backend-plugin-api';
+import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { examples } from './plainFile.examples';
 import { assertScmUserCredentials } from './assertScmUserCredentials';
+import { containsGitDirectory } from './templateActionHandler';
+import { relative } from 'node:path';
 
 import {
   createTemplateAction,
@@ -72,6 +75,10 @@ export function createFetchPlainFileAction(options: {
         ctx.workspacePath,
         ctx.input.targetPath,
       );
+
+      if (containsGitDirectory(relative(ctx.workspacePath, outputPath))) {
+        throw new InputError('targetPath must not be within a .git directory');
+      }
 
       assertScmUserCredentials({
         integrations,

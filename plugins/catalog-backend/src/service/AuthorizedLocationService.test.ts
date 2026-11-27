@@ -16,6 +16,10 @@
 
 import { NotAllowedError, NotFoundError } from '@backstage/errors';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import {
+  catalogLocationCreatePermission,
+  catalogLocationDeletePermission,
+} from '@backstage/plugin-catalog-common/alpha';
 import { AuthorizedLocationService } from './AuthorizedLocationService';
 import { mockCredentials } from '@backstage/backend-test-utils';
 
@@ -127,12 +131,22 @@ describe('AuthorizedLocationService', () => {
 
   describe('updateLocation', () => {
     it('calls underlying service to update location on ALLOW', async () => {
-      mockAllow();
+      fakePermissionApi.authorize.mockResolvedValueOnce([
+        { result: AuthorizeResult.ALLOW },
+        { result: AuthorizeResult.ALLOW },
+      ]);
       const service = createService();
 
       const spec = { type: 'type', target: 'target' };
       await service.updateLocation('id', spec, mockOptions);
 
+      expect(fakePermissionApi.authorize).toHaveBeenCalledWith(
+        [
+          { permission: catalogLocationCreatePermission },
+          { permission: catalogLocationDeletePermission },
+        ],
+        { credentials: mockOptions.credentials },
+      );
       expect(fakeLocationService.updateLocation).toHaveBeenCalledWith(
         'id',
         spec,
@@ -151,6 +165,24 @@ describe('AuthorizedLocationService', () => {
           mockOptions,
         ),
       ).rejects.toThrow(NotAllowedError);
+    });
+
+    it('throws NotAllowedError when the delete permission is denied, even if create is allowed', async () => {
+      fakePermissionApi.authorize.mockResolvedValueOnce([
+        { result: AuthorizeResult.ALLOW },
+        { result: AuthorizeResult.DENY },
+      ]);
+      const service = createService();
+
+      await expect(() =>
+        service.updateLocation(
+          'id',
+          { type: 'type', target: 'target' },
+          mockOptions,
+        ),
+      ).rejects.toThrow(NotAllowedError);
+
+      expect(fakeLocationService.updateLocation).not.toHaveBeenCalled();
     });
   });
 

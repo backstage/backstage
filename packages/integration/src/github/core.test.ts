@@ -198,5 +198,54 @@ describe('github core', () => {
         ),
       ).toThrow(/path traversal/);
     });
+
+    it('rejects encoded traversal in the owner', () => {
+      const config: GithubIntegrationConfig = {
+        host: 'github.com',
+        apiBaseUrl: 'https://api.github.com',
+      };
+      expect(() =>
+        getGithubFileFetchUrl(
+          'https://github.com/owned%2Fpublic%2F..%2F..%2Fowned%2Fprivate%2Factions%2Fjobs%2F42%2Flogs%23/x/blob/main/readme.txt',
+          config,
+          tokenCredentials,
+        ),
+      ).toThrow(/path traversal/);
+    });
+
+    it('rejects fragment and query delimiters in the owner', () => {
+      // A decoded # or ? in the owner truncates the constructed URL at that
+      // point, directing the request at a different API path
+      const config: GithubIntegrationConfig = {
+        host: 'github.com',
+        apiBaseUrl: 'https://api.github.com',
+      };
+      expect(() =>
+        getGithubFileFetchUrl(
+          'https://github.com/owned%2Fprivate%2Factions%2Fjobs%2F42%2Flogs%23/x/blob/main/readme.txt',
+          config,
+          tokenCredentials,
+        ),
+      ).toThrow(/fragment and query delimiters/);
+      expect(() =>
+        getGithubFileFetchUrl(
+          'https://github.com/owned%2Fprivate%2Flogs%3F/x/blob/main/readme.txt',
+          config,
+          tokenCredentials,
+        ),
+      ).toThrow(/fragment and query delimiters/);
+
+      const rawConfig: GithubIntegrationConfig = {
+        host: 'github.com',
+        rawBaseUrl: 'https://raw.githubusercontent.com',
+      };
+      expect(() =>
+        getGithubFileFetchUrl(
+          'https://github.com/owned%2Fprivate%2Factions%2Fjobs%2F42%2Flogs%23/x/blob/main/readme.txt',
+          rawConfig,
+          tokenCredentials,
+        ),
+      ).toThrow(/fragment and query delimiters/);
+    });
   });
 });

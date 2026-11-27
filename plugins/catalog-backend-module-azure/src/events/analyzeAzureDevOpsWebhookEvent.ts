@@ -16,6 +16,7 @@
 
 import { InputError } from '@backstage/errors';
 import { CatalogScmEvent } from '@backstage/plugin-catalog-node/alpha';
+import { toCatalogLocationUrl } from '../lib/catalogLocationUrl';
 
 /**
  * Options for {@link analyzeAzureDevOpsWebhookEvent}.
@@ -164,9 +165,9 @@ function toLocationUrl(options: {
     return undefined;
   }
 
-  // Match the URL format produced by AzureDevOpsEntityProvider.createObjectUrl
-  // which uses encodeURI on the full URL string with path and version as raw
-  // query parameter values.
+  // Use the same URL construction as
+  // AzureDevOpsEntityProvider.createObjectUrl, so that the emitted URLs match
+  // the locations that the provider emits.
   //
   // The version parameter is intentionally omitted here because the entity
   // provider only includes it when the user explicitly configures a `branch`
@@ -174,8 +175,10 @@ function toLocationUrl(options: {
   // branch was configured, omitting version matches the default provider
   // behavior and avoids URL mismatches that would prevent SCM events from
   // triggering catalog refreshes.
-  const fullUrl = `${options.remoteUrl}?path=${options.path}`;
-  return encodeURI(fullUrl);
+  return toCatalogLocationUrl({
+    repoUrl: options.remoteUrl,
+    path: options.path,
+  });
 }
 
 function toCommitUrl(

@@ -31,6 +31,7 @@ import { readAzureDevOpsConfigs } from './config';
 import { AzureDevOpsConfig } from './types';
 import { randomUUID } from 'node:crypto';
 import { codeSearch, CodeSearchResultItem } from '../lib';
+import { toCatalogLocationUrl } from '../lib/catalogLocationUrl';
 import {
   SchedulerService,
   SchedulerServiceTaskRunner,
@@ -204,13 +205,12 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
   }
 
   private createObjectUrl(file: CodeSearchResultItem): string {
-    const baseUrl = `https://${this.config.host}/${this.config.organization}/${file.project.name}`;
+    const repoUrl = `https://${this.config.host}/${this.config.organization}/${file.project.name}/_git/${file.repository.name}`;
 
-    let fullUrl = `${baseUrl}/_git/${file.repository.name}?path=${file.path}`;
-    if (this.config.branch) {
-      fullUrl += `&version=GB${this.config.branch}`;
-    }
-
-    return encodeURI(fullUrl);
+    return toCatalogLocationUrl({
+      repoUrl,
+      path: file.path,
+      branch: this.config.branch,
+    });
   }
 }

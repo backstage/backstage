@@ -3901,6 +3901,319 @@ describe('NunjucksWorkflowRunner', () => {
       await expect(result).resolves.toBe(true);
       expect(fakeActionHandler).toHaveBeenCalledTimes(1);
     });
+
+    it.each([
+      ['path', ['example/team'], 'example/team', false],
+      ['path', ['ExAmPlE/TeAm'], 'example/team', false],
+      [
+        'path',
+        [{ name: 'Example Team', slug: 'example/team' }],
+        'example/team',
+        false,
+      ],
+      ['path', ['example/other'], 'example/team', true],
+      [
+        'path',
+        [{ name: 'Other', slug: 'example/other' }],
+        'example/team',
+        true,
+      ],
+      [
+        'path',
+        ['example/other', { name: 'Other', slug: 'example/other' }],
+        'example/team',
+        true,
+      ],
+      // The elements of the array are joined into one nested path, so an
+      // input that spells the path across multiple elements denotes the same
+      // identifiers as the single-element spelling of the full path.
+      ['path', ['protected', 'production'], 'protected/production', false],
+      [
+        'path',
+        ['protected', { name: 'Production', slug: 'production' }],
+        'protected/production',
+        false,
+      ],
+      ['path', ['protected/production'], 'protected/production', false],
+      [
+        'path',
+        [{ name: 'Protected Group', slug: 'protected/production' }],
+        'protected/production',
+        false,
+      ],
+      // Each parent group of the nested path is ensured by the action, so a
+      // policy on a parent group applies as well.
+      ['path', ['protected', 'production'], 'protected', false],
+      ['path', ['protected/production'], 'protected', false],
+      [
+        'path',
+        [{ name: 'Protected Group', slug: 'protected/production' }],
+        'protected',
+        false,
+      ],
+      ['path', ['other', 'production'], 'protected/production', true],
+      ['path', ['protected'], 'protected/production', true],
+      // Leading and trailing empty segments do not denote identifiers of
+      // their own; the action drops them when it joins the path.
+      ['path', ['', 'protected'], 'protected', false],
+      ['path', ['/protected'], 'protected', false],
+      ['path', ['protected', ''], 'protected', false],
+      ['path', ['', 'other'], 'protected', true],
+      // An input that spells a different nested path is not affected by the
+      // policy on the forbidden path.
+      ['path', ['example/other', 'example/team'], 'example/team', true],
+      [
+        'path',
+        ['example/other', { name: 'Example Team', slug: 'example/team' }],
+        'example/team',
+        true,
+      ],
+      // Identifiers in numeric form are re-checked against the other form of
+      // the identifiers that the policy refers to.
+      ['path', ['42'], 'example/team', false],
+      ['path', [{ name: 'Example Team', slug: '42' }], 'example/team', false],
+    ])(
+      'matches %s array input values, path=%o value=%s',
+      async (key, path, value, allowed) => {
+        actionRegistry.register(
+          createTemplateAction({
+            id: 'gitlab:group:ensureExists',
+            schema: {
+              input: {
+                path: z =>
+                  z
+                    .array(
+                      z
+                        .string()
+                        .or(z.object({ name: z.string(), slug: z.string() })),
+                    )
+                    .min(1),
+              },
+            },
+            handler: fakeActionHandler,
+          }),
+        );
+
+        mockedPermissionApi.authorizeConditional.mockResolvedValueOnce([
+          {
+            result: AuthorizeResult.CONDITIONAL,
+            pluginId: 'scaffolder',
+            resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+            conditions: {
+              not: {
+                allOf: [
+                  {
+                    resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+                    rule: 'HAS_ACTION_ID',
+                    params: { actionId: 'gitlab:group:ensureExists' },
+                  },
+                  {
+                    resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+                    rule: 'HAS_STRING_PROPERTY',
+                    params: {
+                      key,
+                      value,
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        ]);
+
+        const task = createMockTaskWithSpec({
+          steps: [
+            {
+              id: 'test',
+              name: 'Ensure GitLab group exists',
+              action: 'gitlab:group:ensureExists',
+              input: { path },
+            },
+          ],
+        });
+
+        const result = runner.execute(task).then(
+          () => true,
+          error => {
+            if (error?.name !== 'NotAllowedError') {
+              throw error;
+            }
+
+            return false;
+          },
+        );
+
+        await expect(result).resolves.toBe(allowed);
+        expect(fakeActionHandler).toHaveBeenCalledTimes(Number(allowed));
+      },
+    );
+
+    it('rejects an array identifier input that denotes no identifiers', async () => {
+      actionRegistry.register(
+        createTemplateAction({
+          id: 'gitlab:group:ensureExists',
+          schema: {
+            input: {
+              path: z =>
+                z.array(
+                  z
+                    .string()
+                    .or(z.object({ name: z.string(), slug: z.string() })),
+                ),
+            },
+          },
+          handler: fakeActionHandler,
+        }),
+      );
+
+      mockedPermissionApi.authorizeConditional.mockResolvedValueOnce([
+        {
+          result: AuthorizeResult.CONDITIONAL,
+          pluginId: 'scaffolder',
+          resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+          conditions: {
+            not: {
+              allOf: [
+                {
+                  resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+                  rule: 'HAS_ACTION_ID',
+                  params: { actionId: 'gitlab:group:ensureExists' },
+                },
+                {
+                  resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+                  rule: 'HAS_STRING_PROPERTY',
+                  params: {
+                    key: 'path',
+                    value: 'example/team',
+                  },
+                },
+              ],
+            },
+          },
+        },
+      ]);
+
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test',
+            name: 'Ensure GitLab group exists',
+            action: 'gitlab:group:ensureExists',
+            input: { path: [] },
+          },
+        ],
+      });
+
+      const result = runner.execute(task).then(
+        () => true,
+        error => {
+          if (error?.name !== 'NotAllowedError') {
+            throw error;
+          }
+          return false;
+        },
+      );
+
+      await expect(result).resolves.toBe(false);
+      expect(fakeActionHandler).not.toHaveBeenCalled();
+    });
+
+    it('accepts array identifiers under compatible policies', async () => {
+      actionRegistry.register(
+        createTemplateAction({
+          id: 'gitlab:group:ensureExists',
+          schema: {
+            input: {
+              path: z =>
+                z
+                  .array(
+                    z
+                      .string()
+                      .or(z.object({ name: z.string(), slug: z.string() })),
+                  )
+                  .min(1),
+            },
+          },
+          handler: fakeActionHandler,
+        }),
+      );
+
+      const conditions: PermissionCriteria<PermissionCondition> = {
+        anyOf: [
+          {
+            resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+            rule: 'HAS_STRING_PROPERTY',
+            params: { key: 'path', value: 'example' },
+          },
+          {
+            resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+            rule: 'HAS_STRING_PROPERTY',
+            params: { key: 'path', value: 'example/team' },
+          },
+          {
+            resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+            rule: 'HAS_STRING_PROPERTY',
+            params: { key: 'path', value: 'example/other' },
+          },
+        ],
+      };
+
+      for (const path of [
+        ['example/team'],
+        [{ name: 'Example Team', slug: 'example/team' }],
+      ]) {
+        mockedPermissionApi.authorizeConditional.mockResolvedValueOnce([
+          {
+            result: AuthorizeResult.CONDITIONAL,
+            pluginId: 'scaffolder',
+            resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+            conditions,
+          },
+        ]);
+
+        const task = createMockTaskWithSpec({
+          steps: [
+            {
+              id: 'test',
+              name: 'Ensure GitLab group exists',
+              action: 'gitlab:group:ensureExists',
+              input: { path },
+            },
+          ],
+        });
+
+        await runner.execute(task);
+      }
+
+      expect(fakeActionHandler).toHaveBeenCalledTimes(2);
+
+      // A policy that only allows some identifiers must not be satisfied by
+      // an input that also contains an identifier that it does not allow.
+      mockedPermissionApi.authorizeConditional.mockResolvedValueOnce([
+        {
+          result: AuthorizeResult.CONDITIONAL,
+          pluginId: 'scaffolder',
+          resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+          conditions,
+        },
+      ]);
+
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test',
+            name: 'Ensure GitLab group exists',
+            action: 'gitlab:group:ensureExists',
+            input: { path: ['example/team', 'example/private'] },
+          },
+        ],
+      });
+
+      await expect(runner.execute(task)).rejects.toThrow(
+        /Unauthorized action: gitlab:group:ensureExists. The action is not allowed/,
+      );
+      expect(fakeActionHandler).toHaveBeenCalledTimes(2);
+    });
   });
 
   describe('step status check functions (always/failure)', () => {

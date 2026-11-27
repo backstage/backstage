@@ -33,6 +33,11 @@ import {
   ServiceToken,
 } from './types';
 
+// Upper bound for how long an identity fetched for a given access token is
+// cached. Entries also never outlive the token itself; see the cache set in
+// authenticate().
+const IDENTITY_CACHE_TTL_SECONDS = 60;
+
 export class AuthHelper {
   static fromConfig(
     config: Config,
@@ -135,7 +140,12 @@ export class AuthHelper {
       );
     }
 
-    const cacheKey = `${CACHE_PREFIX}/${subject}`;
+    const claims = verifyResult.payload as CloudflareAccessClaims;
+
+    // The cache key includes the issued-at time of the token, so that a
+    // later sign-in with a new token never reuses an identity that was
+    // fetched for an earlier token
+    const cacheKey = `${CACHE_PREFIX}/${subject}/${claims.iat}`;
     const cfAccessResultStr = await this.cache?.get(cacheKey);
     if (typeof cfAccessResultStr === 'string') {
       const result = JSON.parse(cfAccessResultStr) as CloudflareAccessResult;
@@ -144,7 +154,6 @@ export class AuthHelper {
         token: jwt,
       };
     }
-    const claims = verifyResult.payload as CloudflareAccessClaims;
 
     // Builds a passport profile from JWT claims first
     try {
@@ -163,13 +172,25 @@ export class AuthHelper {
         cfIdentity = await this.getIdentityProfile(jwt);
       }
       // Stores a stringified JSON object in cfaccess provider cache only when
-      // we complete all steps
+      // we complete all steps. The entry is bounded both by the maximum cache
+      // TTL and by the expiry of the token, so that it can never outlive the
+      // token that the identity was fetched for.
+      const cacheTtlSeconds = Math.ceil(
+        Math.min(
+          IDENTITY_CACHE_TTL_SECONDS,
+          Math.max(0, claims.exp - Date.now() / 1000),
+        ),
+      );
       const cfAccessResult = {
         claims,
         cfIdentity,
         expiresInSeconds: claims.exp - claims.iat,
       };
-      this.cache?.set(cacheKey, JSON.stringify(cfAccessResult));
+      if (cacheTtlSeconds > 0) {
+        await this.cache?.set(cacheKey, JSON.stringify(cfAccessResult), {
+          ttl: { seconds: cacheTtlSeconds },
+        });
+      }
       return {
         ...cfAccessResult,
         token: jwt,

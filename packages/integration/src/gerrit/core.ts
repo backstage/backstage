@@ -19,6 +19,31 @@ import { GerritIntegrationConfig } from './config';
 const GERRIT_BODY_PREFIX = ")]}'";
 
 /**
+ * Builds the base path of a gitiles URL by removing the file path from the
+ * end of the parsed URL.
+ *
+ * @remarks
+ *
+ * The base path is derived from the parsed URL rather than by removing text
+ * from the raw URL string, so that the result is always on the same origin as
+ * the input URL, even when the file path text occurs elsewhere in the URL.
+ */
+function getGitilesBasePath(url: string, path: string): string {
+  const basePath = new URL(url);
+  basePath.username = '';
+  basePath.password = '';
+  basePath.search = '';
+  basePath.hash = '';
+  if (path) {
+    const pathname = lodash.trimEnd(basePath.pathname, '/');
+    if (pathname.endsWith(path)) {
+      basePath.pathname = pathname.slice(0, pathname.length - path.length);
+    }
+  }
+  return lodash.trimEnd(basePath.toString(), '/');
+}
+
+/**
  * Parses Gitiles urls and returns the following:
  *
  * - The project
@@ -79,7 +104,7 @@ export function parseGitilesUrlRef(
       ref,
       refType: 'head' as const,
       path: path || '/',
-      basePath: lodash.trimEnd(url.replace(path, ''), '/'),
+      basePath: getGitilesBasePath(url, path),
     };
   }
   // match <project>/+/<sha>/<path>
@@ -91,7 +116,7 @@ export function parseGitilesUrlRef(
       ref,
       refType: 'sha' as const,
       path: path || '/',
-      basePath: lodash.trimEnd(url.replace(path, ''), '/'),
+      basePath: getGitilesBasePath(url, path),
     };
   }
   const remainingPath = lodash.join(rest, '/');
@@ -118,7 +143,7 @@ export function parseGitilesUrlRef(
       ref,
       refType,
       path: path || '/',
-      basePath: lodash.trimEnd(url.replace(path, ''), '/'),
+      basePath: getGitilesBasePath(url, path),
     };
   }
   throw new Error(`Unable to parse gitiles : ${url}`);

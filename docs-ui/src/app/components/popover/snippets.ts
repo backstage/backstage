@@ -7,6 +7,15 @@ export const popoverUsageSnippet = `import { DialogTrigger, Popover, Button, Tex
   </Popover>
 </DialogTrigger>`;
 
+export const previewTriggerSnippet = `import { Button, Popover, PreviewTrigger, Text } from '@backstage/ui';
+
+<PreviewTrigger delay={500}>
+  <Button>Preview</Button>
+  <Popover placement="bottom" aria-label="Preview details">
+    <Text>Preview content</Text>
+  </Popover>
+</PreviewTrigger>`;
+
 export const defaultSnippet = `<DialogTrigger>
   <Button>Open Popover</Button>
   <Popover>
