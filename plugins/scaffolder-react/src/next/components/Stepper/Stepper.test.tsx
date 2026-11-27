@@ -1554,4 +1554,325 @@ describe('Stepper', () => {
       expect(queryByText('Conditional Step')).not.toBeInTheDocument();
     });
   });
+
+  describe('derived field defaults (ui:backstage.default)', () => {
+    beforeEach(() => {
+      window.history.replaceState({}, '', '/');
+    });
+
+    it('derives defaults across steps, updates until user edits, and works with custom fields emitting onChange on mount', async () => {
+      const onCreate = jest.fn();
+
+      // Mimics RepoUrlPicker, which initializes local state from formData and
+      // emits onChange(serialized) on mount.
+      const MockRepoUrlPicker = ({
+        formData,
+        onChange,
+      }: FieldExtensionComponentProps<string>) => {
+        useEffect(() => {
+          if (formData !== undefined) {
+            onChange(formData);
+          }
+        }, [formData, onChange]);
+
+        return (
+          <input
+            aria-label="Destination Repo"
+            value={formData ?? ''}
+            onChange={e => onChange(e.target.value)}
+          />
+        );
+      };
+
+      const manifest: TemplateParameterSchema = {
+        title: 'Derived Repo URL',
+        steps: [
+          {
+            title: 'Source',
+            schema: {
+              properties: {
+                sourceUrl: {
+                  type: 'string',
+                  title: 'Source URL',
+                },
+              },
+            },
+          },
+          {
+            title: 'Destination',
+            schema: {
+              required: ['repoUrl'],
+              properties: {
+                repoUrl: {
+                  type: 'string',
+                  title: 'Destination Repo',
+                  'ui:field': 'MockRepoUrlPicker',
+                  'ui:backstage': {
+                    default:
+                      "github.com?owner=example-org&repo=${{ parameters.sourceUrl.split('/') | last }}",
+                  },
+                },
+              },
+            },
+          },
+        ],
+      };
+
+      await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper
+            manifest={manifest}
+            extensions={[
+              { name: 'MockRepoUrlPicker', component: MockRepoUrlPicker },
+            ]}
+            onCreate={onCreate}
+          />
+        </SecretsContextProvider>,
+      );
+
+      await act(async () => {
+        fireEvent.change(screen.getByRole('textbox', { name: 'Source URL' }), {
+          target: { value: 'https://github.com/acme/service-one' },
+        });
+        fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      });
+
+      expect(
+        screen.getByRole('textbox', { name: 'Destination Repo' }),
+      ).toHaveValue('github.com?owner=example-org&repo=service-one');
+
+      // Going back and updating sourceUrl should update the unedited derived field
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+      });
+      await act(async () => {
+        fireEvent.change(screen.getByRole('textbox', { name: 'Source URL' }), {
+          target: { value: 'https://github.com/acme/service-two' },
+        });
+        fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      });
+
+      expect(
+        screen.getByRole('textbox', { name: 'Destination Repo' }),
+      ).toHaveValue('github.com?owner=example-org&repo=service-two');
+
+      // Once the user edits the derived field, later changes to sourceUrl must not overwrite it
+      await act(async () => {
+        fireEvent.change(
+          screen.getByRole('textbox', { name: 'Destination Repo' }),
+          {
+            target: { value: 'github.com?owner=example-org&repo=custom-name' },
+          },
+        );
+        fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+      });
+      await act(async () => {
+        fireEvent.change(screen.getByRole('textbox', { name: 'Source URL' }), {
+          target: { value: 'https://github.com/acme/service-three' },
+        });
+        fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      });
+
+      expect(
+        screen.getByRole('textbox', { name: 'Destination Repo' }),
+      ).toHaveValue('github.com?owner=example-org&repo=custom-name');
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      });
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+      });
+
+      expect(onCreate).toHaveBeenCalledWith({
+        sourceUrl: 'https://github.com/acme/service-three',
+        repoUrl: 'github.com?owner=example-org&repo=custom-name',
+      });
+    });
+
+    it('updates same-step and chained derived defaults, preserves cleared values, and falls back when expressions fail', async () => {
+      const onCreate = jest.fn();
+      const manifest: TemplateParameterSchema = {
+        title: 'Same-Step Derived Defaults',
+        steps: [
+          {
+            title: 'Details',
+            schema: {
+              properties: {
+                name: { type: 'string', title: 'Name' },
+                slug: {
+                  type: 'string',
+                  title: 'Slug',
+                  default: 'fallback-slug',
+                  'ui:backstage': {
+                    default:
+                      "${{ parameters.name | lower | replace(' ', '-') if parameters.name else undefined }}",
+                  },
+                },
+                packageName: {
+                  type: 'string',
+                  title: 'Package Name',
+                  'ui:backstage': {
+                    default:
+                      "${{ '@org/' + parameters.slug if parameters.slug else undefined }}",
+                  },
+                },
+                unsupportedFilter: {
+                  type: 'string',
+                  title: 'Unsupported Filter',
+                  'ui:backstage': {
+                    default: '${{ parameters.name | parseRepoUrl }}',
+                  },
+                },
+              },
+            },
+          },
+        ],
+      };
+
+      await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper manifest={manifest} extensions={[]} onCreate={onCreate} />
+        </SecretsContextProvider>,
+      );
+
+      // Static default applies while derived expression evaluates to undefined
+      expect(screen.getByRole('textbox', { name: 'Slug' })).toHaveValue(
+        'fallback-slug',
+      );
+      expect(
+        screen.getByRole('textbox', { name: 'Unsupported Filter' }),
+      ).toHaveValue('');
+
+      // Editing Name updates Slug and chained Package Name without marking them edited
+      await act(async () => {
+        fireEvent.change(screen.getByRole('textbox', { name: 'Name' }), {
+          target: { value: 'Hello World' },
+        });
+      });
+
+      expect(screen.getByRole('textbox', { name: 'Slug' })).toHaveValue(
+        'hello-world',
+      );
+      expect(screen.getByRole('textbox', { name: 'Package Name' })).toHaveValue(
+        '@org/hello-world',
+      );
+      expect(
+        screen.getByRole('textbox', { name: 'Unsupported Filter' }),
+      ).toHaveValue('');
+
+      // Clearing Slug marks it edited so changing Name does not snap it back
+      await act(async () => {
+        fireEvent.change(screen.getByRole('textbox', { name: 'Slug' }), {
+          target: { value: '' },
+        });
+      });
+      await act(async () => {
+        fireEvent.change(screen.getByRole('textbox', { name: 'Name' }), {
+          target: { value: 'New Name' },
+        });
+      });
+
+      expect(screen.getByRole('textbox', { name: 'Slug' })).toHaveValue('');
+      expect(screen.getByRole('textbox', { name: 'Package Name' })).toHaveValue(
+        '',
+      );
+    });
+
+    it('preserves prefilled initialState values and supports parseEntityRef, nested fields, and conditional steps', async () => {
+      const onCreate = jest.fn();
+      const manifest: TemplateParameterSchema = {
+        title: 'Initial State and Conditional Steps',
+        steps: [
+          {
+            title: 'Owner',
+            schema: {
+              properties: {
+                owner: { type: 'string', title: 'Owner' },
+                presetField: {
+                  type: 'string',
+                  title: 'Preset Field',
+                  'ui:backstage': {
+                    default:
+                      "${{ parameters.owner | parseEntityRef | pick('name') }}",
+                  },
+                },
+                teamName: {
+                  type: 'string',
+                  title: 'Team Name',
+                  'ui:backstage': {
+                    default:
+                      "${{ parameters.owner | parseEntityRef | pick('name') }}",
+                  },
+                },
+              },
+            },
+          },
+          {
+            title: 'Platform Options',
+            when: "${{ parameters.teamName === 'platform' }}",
+            schema: {
+              properties: {
+                nested: {
+                  type: 'object',
+                  properties: {
+                    namespace: {
+                      type: 'string',
+                      title: 'Namespace',
+                      'ui:backstage': {
+                        default: '${{ parameters.teamName }}-prod',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        ],
+      };
+
+      await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper
+            manifest={manifest}
+            extensions={[]}
+            onCreate={onCreate}
+            initialState={{
+              owner: 'group:default/platform',
+              presetField: 'keep-me',
+            }}
+          />
+        </SecretsContextProvider>,
+      );
+
+      expect(screen.getByRole('textbox', { name: 'Preset Field' })).toHaveValue(
+        'keep-me',
+      );
+      expect(screen.getByRole('textbox', { name: 'Team Name' })).toHaveValue(
+        'platform',
+      );
+      expect(screen.getByText('Platform Options')).toBeInTheDocument();
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      });
+      expect(screen.getByRole('textbox', { name: 'Namespace' })).toHaveValue(
+        'platform-prod',
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      });
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+      });
+
+      expect(onCreate).toHaveBeenCalledWith({
+        owner: 'group:default/platform',
+        presetField: 'keep-me',
+        teamName: 'platform',
+        nested: { namespace: 'platform-prod' },
+      });
+    });
+  });
 });

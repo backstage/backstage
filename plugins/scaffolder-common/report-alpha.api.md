@@ -22,6 +22,12 @@ export function filterHiddenStepValues(
 ): Record<string, JsonValue>;
 
 // @alpha
+export function renderDefaultValue(
+  expression: string | undefined,
+  formState: Record<string, JsonValue>,
+): JsonValue | undefined;
+
+// @alpha
 export function resolveParameterSteps(
   values: Record<string, JsonValue>,
   steps: ReadonlyArray<{

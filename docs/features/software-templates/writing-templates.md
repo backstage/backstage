@@ -518,6 +518,37 @@ When a step becomes hidden because its condition evaluates to false, any values 
 The `when` field controls the visibility of wizard steps in the frontend. It uses a different keyword from the `if` field on `spec.steps` to avoid colliding with the `if`/`then`/`else` keywords in JSON Schema.
 :::
 
+### Deriving field defaults from other parameters
+
+You can use `ui:backstage.default` on a parameter property to compute its default value from other form fields using Nunjitsu expressions against `parameters`:
+
+```yaml
+spec:
+  parameters:
+    - title: Source
+      properties:
+        sourceUrl:
+          title: Source URL
+          type: string
+    - title: Destination
+      properties:
+        repoUrl:
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedOwners:
+              - example-org
+          ui:backstage:
+            default: "github.com?owner=example-org&repo=${{ parameters.sourceUrl.split('/') | last }}"
+```
+
+Derived defaults update automatically as earlier or same-step fields change, until the user edits the target field directly. Once the user changes (or clears) the field, or when an initial value is already supplied via `initialState` or query parameters, later changes to the source field no longer overwrite it.
+
+If the expression fails to evaluate (for example, while a referenced parameter is still empty), the derived default resolves to `undefined` and falls back to any static JSON Schema `default` on the field.
+
+Expressions in `ui:backstage.default` are evaluated in the browser and support Nunjitsu's built-in filters as well as `parseEntityRef` and `pick`. Backend-only filters that depend on server configuration (such as `parseRepoUrl` and `projectSlug`) and custom backend templating extensions are not available in form default expressions.
+
 ### The Repository Picker
 
 In order to make working with repository providers easier, we've built a custom

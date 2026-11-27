@@ -216,6 +216,8 @@ export type FormValidation = {
 // @alpha
 export interface ParsedTemplateSchema {
   // (undocumented)
+  defaultExpressions?: TemplateDefaultExpression[];
+  // (undocumented)
   description?: string;
   // (undocumented)
   mergedSchema: JsonObject;
@@ -526,6 +528,14 @@ export interface TemplateCardProps {
 
 // @alpha
 export const TemplateCategoryPicker: () => JSX_2.Element | null;
+
+// @alpha
+export interface TemplateDefaultExpression {
+  // (undocumented)
+  expression: string;
+  // (undocumented)
+  path: string[];
+}
 
 // @alpha
 export const TemplateGroup: (props: TemplateGroupProps) => JSX_2.Element | null;

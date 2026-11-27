@@ -22,7 +22,6 @@ import {
   ReviewStepProps,
   TemplateParameterSchema,
 } from '@backstage/plugin-scaffolder-react';
-import { resolveParameterSteps } from '@backstage/plugin-scaffolder-common/alpha';
 import { JsonValue } from '@backstage/types';
 import { Button } from '@backstage/ui';
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -55,6 +54,14 @@ import {
   createAsyncValidators,
   type FormValidation,
 } from './createAsyncValidators';
+import {
+  collectChangedDefaultFields,
+  collectInitialEditedFields,
+  deleteValueAtPath,
+  getValueAtPath,
+  resolveStepsWithDefaults,
+  serializeFieldPath,
+} from './derivedDefaults';
 import { ErrorListTemplate } from './ErrorListTemplate';
 import * as FieldOverrides from './FieldOverrides';
 import { hasErrors } from './utils';
@@ -136,17 +143,14 @@ export const Stepper = (stepperProps: StepperProps) => {
   const [initialState] = useFormDataFromQuery(props.initialState);
   const [stepsState, setStepsState] =
     useState<Record<string, JsonValue>>(initialState);
+  const [editedDefaultFields, setEditedDefaultFields] = useState<Set<string>>(
+    () => collectInitialEditedFields(steps, initialState),
+  );
 
-  const { visibleSteps, filteredFormState } = useMemo(() => {
-    const resolved = resolveParameterSteps(
-      stepsState,
-      steps.map(step => ({ schema: step.mergedSchema, when: step.when })),
-    );
-    return {
-      visibleSteps: steps.filter((_, index) => resolved.visible[index]),
-      filteredFormState: resolved.values,
-    };
-  }, [steps, stepsState]);
+  const { visibleSteps, formState, filteredFormState } = useMemo(
+    () => resolveStepsWithDefaults(steps, stepsState, editedDefaultFields),
+    [steps, stepsState, editedDefaultFields],
+  );
 
   // If the active step is hidden, move on to the next visible step.
   const nextVisibleStep = visibleSteps.findIndex(
@@ -219,11 +223,37 @@ export const Stepper = (stepperProps: StepperProps) => {
 
   const handleChange = useCallback(
     (e: IChangeEvent) => {
+      const nextFormData = (e.formData ?? {}) as Record<string, JsonValue>;
+      const activeStepSchema = visibleSteps[activeStep]?.schema;
+      const nextEditedFields = collectChangedDefaultFields(
+        steps,
+        formState,
+        nextFormData,
+        activeStepSchema,
+        editedDefaultFields,
+      );
+      if (nextEditedFields.size > editedDefaultFields.size) {
+        setEditedDefaultFields(nextEditedFields);
+      }
       setStepsState(current => {
-        return { ...current, ...e.formData };
+        const merged: Record<string, JsonValue> = {
+          ...current,
+          ...nextFormData,
+        };
+        for (const { path } of visibleSteps[activeStep]?.defaultExpressions ??
+          []) {
+          if (
+            nextEditedFields.has(serializeFieldPath(path)) &&
+            getValueAtPath(nextFormData, path) === undefined &&
+            getValueAtPath(merged, path) !== undefined
+          ) {
+            deleteValueAtPath(merged, path);
+          }
+        }
+        return merged;
       });
     },
-    [setStepsState],
+    [activeStep, editedDefaultFields, formState, steps, visibleSteps],
   );
 
   const handleNext = useCallback(
@@ -250,9 +280,10 @@ export const Stepper = (stepperProps: StepperProps) => {
         analytics.captureEvent('click', `Next Step (${stepNum})`);
         // Move to the next step that is visible with the submitted values.
         const current = steps.indexOf(visibleSteps[activeStep]);
-        const { visible } = resolveParameterSteps(
+        const { visible } = resolveStepsWithDefaults(
+          steps,
           { ...stepsState, ...formData },
-          steps.map(step => ({ schema: step.mergedSchema, when: step.when })),
+          editedDefaultFields,
         );
         const next = visible.findIndex(
           (isVisible, index) => isVisible && index > current,
@@ -260,7 +291,15 @@ export const Stepper = (stepperProps: StepperProps) => {
         setActiveStepIndex(next === -1 ? steps.length : next);
       }
     },
-    [validation, analytics, activeStep, steps, visibleSteps, stepsState],
+    [
+      validation,
+      analytics,
+      activeStep,
+      steps,
+      visibleSteps,
+      stepsState,
+      editedDefaultFields,
+    ],
   );
 
   useEffect(() => {
@@ -335,8 +374,8 @@ export const Stepper = (stepperProps: StepperProps) => {
             key={steps.indexOf(visibleSteps[activeStep])}
             validator={validator}
             extraErrors={errors as unknown as ErrorSchema}
-            formData={stepsState}
-            formContext={{ ...propFormContext, formData: stepsState }}
+            formData={formState}
+            formContext={{ ...propFormContext, formData: formState }}
             schema={currentStep.schema}
             uiSchema={mergedUiSchema}
             onSubmit={handleNext}
@@ -371,7 +410,7 @@ export const Stepper = (stepperProps: StepperProps) => {
           <ReviewStepComponent
             disableButtons={isValidating}
             formData={filteredFormState}
-            schemaFormState={stepsState}
+            schemaFormState={formState}
             handleBack={handleBack}
             handleReset={() => {}}
             steps={visibleSteps}
@@ -382,7 +421,7 @@ export const Stepper = (stepperProps: StepperProps) => {
           <>
             <ReviewStateComponent
               formState={filteredFormState}
-              schemaFormState={stepsState}
+              schemaFormState={formState}
               schemas={visibleSteps}
               maskSchemas={steps}
             />

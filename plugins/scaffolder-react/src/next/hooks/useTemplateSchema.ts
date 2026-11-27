@@ -21,6 +21,16 @@ import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
 import { extractSchemaFromStep } from '../lib';
 
 /**
+ * A derived default expression extracted from a field's `ui:backstage.default`
+ * configuration.
+ * @alpha
+ */
+export interface TemplateDefaultExpression {
+  path: string[];
+  expression: string;
+}
+
+/**
  * This is the parsed template schema that is returned from the {@link useTemplateSchema} hook.
  * @alpha
  */
@@ -31,12 +41,102 @@ export interface ParsedTemplateSchema {
   title: string;
   description?: string;
   when?: string | boolean;
+  defaultExpressions?: TemplateDefaultExpression[];
+}
+
+function isJsonObject(value: unknown): value is JsonObject {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function findPropertySchema(
+  schema: JsonObject | undefined,
+  key: string,
+): JsonObject | undefined {
+  if (!schema) {
+    return undefined;
+  }
+  if (isJsonObject(schema.properties) && isJsonObject(schema.properties[key])) {
+    return schema.properties[key] as JsonObject;
+  }
+  for (const keyword of ['allOf', 'oneOf', 'anyOf']) {
+    const branches = schema[keyword];
+    if (Array.isArray(branches)) {
+      for (const branch of branches) {
+        if (isJsonObject(branch)) {
+          const found = findPropertySchema(branch, key);
+          if (found) {
+            return found;
+          }
+        }
+      }
+    }
+  }
+  for (const branch of [
+    schema.then,
+    schema.else,
+    ...Object.values(
+      isJsonObject(schema.dependencies) ? schema.dependencies : {},
+    ),
+  ]) {
+    if (isJsonObject(branch)) {
+      const found = findPropertySchema(branch, key);
+      if (found) {
+        return found;
+      }
+    }
+  }
+  return undefined;
+}
+
+function extractDefaultExpressions(
+  uiNode: UiSchema,
+  schemaNode: JsonObject | undefined,
+  isFeatureFlagActive: (flag: string) => boolean,
+  path: string[] = [],
+): TemplateDefaultExpression[] {
+  const result: TemplateDefaultExpression[] = [];
+
+  if (path.length > 0) {
+    const featureFlag = uiNode['ui:backstage']?.featureFlag;
+    if (typeof featureFlag === 'string' && !isFeatureFlagActive(featureFlag)) {
+      return result;
+    }
+
+    const defaultExpression = uiNode['ui:backstage']?.default;
+    if (typeof defaultExpression === 'string') {
+      result.push({ path, expression: defaultExpression });
+    }
+  }
+
+  const isArraySchema =
+    schemaNode?.type === 'array' || schemaNode?.items !== undefined;
+
+  for (const [key, value] of Object.entries(uiNode)) {
+    if (key.startsWith('ui:') || !isJsonObject(value)) {
+      continue;
+    }
+    if (key === 'items' && isArraySchema) {
+      continue;
+    }
+    const childSchema = findPropertySchema(schemaNode, key);
+    result.push(
+      ...extractDefaultExpressions(
+        value as UiSchema,
+        childSchema,
+        isFeatureFlagActive,
+        [...path, key],
+      ),
+    );
+  }
+
+  return result;
 }
 
 /**
  * This hook will parse the template schema and return the steps with the
  * parsed schema and uiSchema. Filtering out any steps or properties that
- * are not enabled with feature flags.
+ * are not enabled with feature flags, and extracting any `ui:backstage.default`
+ * expressions.
  * @alpha
  */
 export const useTemplateSchema = (
@@ -84,6 +184,15 @@ export const useTemplateSchema = (
             },
           ),
         );
+      }
+
+      const defaultExpressions = extractDefaultExpressions(
+        strippedSchema.uiSchema,
+        strippedSchema.schema,
+        flag => featureFlags.isActive(flag),
+      );
+      if (defaultExpressions.length > 0) {
+        strippedSchema.defaultExpressions = defaultExpressions;
       }
 
       return strippedSchema;

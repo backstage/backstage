@@ -17,6 +17,7 @@ export { useFormDataFromQuery } from './useFormDataFromQuery';
 export {
   useTemplateSchema,
   type ParsedTemplateSchema,
+  type TemplateDefaultExpression,
 } from './useTemplateSchema';
 export { useTemplateParameterSchema } from './useTemplateParameterSchema';
 export { useFilteredSchemaProperties } from './useFilteredSchemaProperties';
