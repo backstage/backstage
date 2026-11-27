@@ -372,6 +372,7 @@ export default {
             'features/software-templates/writing-tests-for-actions',
             'features/software-templates/writing-custom-field-extensions',
             'features/software-templates/writing-custom-step-layouts',
+            'features/software-templates/task-status-presentation',
             'features/software-templates/authorizing-scaffolder-template-details',
             'features/software-templates/dry-run-testing',
             'features/software-templates/experimental',

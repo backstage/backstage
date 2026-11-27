@@ -26,7 +26,7 @@ import {
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
 import useAsync from 'react-use/esm/useAsync';
-import { useState } from 'react';
+import { Component, ReactNode, useState } from 'react';
 import {
   scaffolderApiRef,
   ScaffolderTask,
@@ -44,12 +44,31 @@ import {
   rootRouteRef,
   templatingExtensionsRouteRef,
 } from '../../routes';
-import { ScaffolderPageContextMenu } from '@backstage/plugin-scaffolder-react/alpha';
+import {
+  ScaffolderTaskStatusComponent,
+  ScaffolderPageContextMenu,
+} from '@backstage/plugin-scaffolder-react/alpha';
 import { useNavigate } from 'react-router-dom';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../translation';
 
+class TaskStatusErrorBoundary extends Component<
+  { children: ReactNode; fallback: ReactNode },
+  { failed: boolean }
+> {
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+
+  state = { failed: false };
+
+  render() {
+    return this.state.failed ? this.props.fallback : this.props.children;
+  }
+}
+
 export interface MyTaskPageProps {
+  TaskStatusComponent?: ScaffolderTaskStatusComponent;
   initiallySelectedFilter?: 'owned' | 'all';
   contextMenu?: {
     editor?: boolean;
@@ -60,7 +79,7 @@ export interface MyTaskPageProps {
 }
 
 export const ListTaskPageContent = (props: MyTaskPageProps) => {
-  const { initiallySelectedFilter = 'owned' } = props;
+  const { initiallySelectedFilter = 'owned', TaskStatusComponent } = props;
   const { t } = useTranslationRef(scaffolderTranslationRef);
   const [limit, setLimit] = useState(5);
   const [page, setPage] = useState(0);
@@ -163,7 +182,18 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
             {
               title: t('listTaskPage.content.tableCell.status'),
               field: 'status',
-              render: row => <TaskStatusColumn status={row.status} />,
+              render: row => {
+                const nativeStatus = <TaskStatusColumn status={row.status} />;
+                return TaskStatusComponent ? (
+                  <TaskStatusErrorBoundary key={row.id} fallback={nativeStatus}>
+                    <TaskStatusComponent task={row}>
+                      {nativeStatus}
+                    </TaskStatusComponent>
+                  </TaskStatusErrorBoundary>
+                ) : (
+                  nativeStatus
+                );
+              },
             },
           ]}
         />
