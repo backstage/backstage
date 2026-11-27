@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { AsyncLocalStorage } from 'node:async_hooks';
 import { Entity } from '@backstage/catalog-model';
 import { toError } from '@backstage/errors';
 import limiterFactory, { Limit } from 'p-limit';
@@ -138,7 +139,9 @@ export class UrlReaderProcessor implements CatalogProcessor {
 
     const output = response.files.map(async file => ({
       url: file.url,
-      data: await this.#limiter(file.content),
+      // The shared limiter would otherwise start queued reads in the async
+      // context of whichever caller freed up the slot.
+      data: await this.#limiter(AsyncLocalStorage.bind(file.content)),
     }));
 
     return { response: await Promise.all(output), etag: response.etag };

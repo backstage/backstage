@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { AsyncLocalStorage } from 'node:async_hooks';
 import { createDeferred } from '@backstage/types';
 import { MetricsAPI } from '@opentelemetry/api';
 import { DefaultCatalogScmEventsService } from './DefaultCatalogScmEventsService';
@@ -119,5 +120,22 @@ describe('DefaultCatalogScmEventsService', () => {
     service.markEventActionTaken({ action: 'refresh' });
 
     expect(counterAdd).toHaveBeenCalledWith(1, { action: 'refresh' });
+  });
+
+  it('runs subscribers in their own async context rather than the publisher context', async () => {
+    const service = new DefaultCatalogScmEventsService(mockMetrics);
+    const storage = new AsyncLocalStorage<string>();
+    const seen: Array<string | undefined> = [];
+
+    storage.run('subscriber', () =>
+      service.subscribe({
+        onEvents: async () => {
+          seen.push(storage.getStore());
+        },
+      }),
+    );
+    await storage.run('publisher', () => service.publish([]));
+
+    expect(seen).toEqual(['subscriber']);
   });
 });

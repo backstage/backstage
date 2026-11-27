@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { AsyncLocalStorage } from 'node:async_hooks';
 import { AuditorService, LoggerService } from '@backstage/backend-plugin-api';
 import type { MetricsService } from '@backstage/backend-plugin-api/alpha';
 import { InputError, toError } from '@backstage/errors';
@@ -221,7 +222,9 @@ export class TaskWorker {
         });
         retryDelayMs = CLAIM_RETRY_INITIAL_DELAY_MS;
         void this.taskQueue
-          .add(() => this.runOneTask(task))
+          // The queue would otherwise start each task in the async context of
+          // whichever task finished before it.
+          .add(AsyncLocalStorage.bind(() => this.runOneTask(task)))
           .catch(error => {
             this.logger?.error(
               `Unexpected error while executing task ${task.taskId}`,

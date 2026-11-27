@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { AsyncLocalStorage } from 'node:async_hooks';
 import {
   DatabaseService,
   HttpRouterService,
@@ -43,27 +44,32 @@ export class DefaultSchedulerService {
     httpRouter: HttpRouterService;
     pluginMetadata: PluginMetadataService;
   }): SchedulerService {
-    const databaseFactory = once(async () => {
-      const knex = await options.database.getClient();
+    // The database setup, including the long-lived janitor loop, is started
+    // lazily by the first caller. Run it in the async context of the scheduler
+    // creation instead, so that it isn't tied to that caller.
+    const databaseFactory = once(
+      AsyncLocalStorage.bind(async () => {
+        const knex = await options.database.getClient();
 
-      if (!options.database.migrations?.skip) {
-        await migrateBackendTasks(knex);
-      }
+        if (!options.database.migrations?.skip) {
+          await migrateBackendTasks(knex);
+        }
 
-      if (process.env.NODE_ENV !== 'test') {
-        const abortController = new AbortController();
-        const janitor = new PluginTaskSchedulerJanitor({
-          knex,
-          waitBetweenRuns: Duration.fromObject({ minutes: 1 }),
-          logger: options.logger,
-        });
+        if (process.env.NODE_ENV !== 'test') {
+          const abortController = new AbortController();
+          const janitor = new PluginTaskSchedulerJanitor({
+            knex,
+            waitBetweenRuns: Duration.fromObject({ minutes: 1 }),
+            logger: options.logger,
+          });
 
-        options.rootLifecycle.addShutdownHook(() => abortController.abort());
-        janitor.start(abortController.signal);
-      }
+          options.rootLifecycle.addShutdownHook(() => abortController.abort());
+          janitor.start(abortController.signal);
+        }
 
-      return knex;
-    });
+        return knex;
+      }),
+    );
 
     const scheduler = new PluginTaskSchedulerImpl(
       options.pluginMetadata.getId(),

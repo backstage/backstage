@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { AsyncLocalStorage } from 'node:async_hooks';
 import {
   resolvePackagePath,
   DatabaseService,
@@ -124,26 +125,30 @@ export class DatabaseUserSettingsStore implements UserSettingsStore {
 
     await Promise.all(
       Array.from(bucketMap.entries()).map(([bucket, keySet]) =>
-        dbLimit(async (): Promise<void> => {
-          const keyMap = new Map<string, JsonValue>();
-          resultsMap.set(bucket, keyMap);
+        // The shared limiter would otherwise start queued work in the async
+        // context of whichever caller freed up the slot.
+        dbLimit(
+          AsyncLocalStorage.bind(async (): Promise<void> => {
+            const keyMap = new Map<string, JsonValue>();
+            resultsMap.set(bucket, keyMap);
 
-          const keyChunks = chunkKeys(Array.from(keySet), 100);
+            const keyChunks = chunkKeys(Array.from(keySet), 100);
 
-          for (const keys of keyChunks) {
-            const rows = await this.db<RawDbUserSettingsRow>('user_settings')
-              .where({
-                user_entity_ref: options.userEntityRef,
-                bucket,
-              })
-              .whereIn('key', keys)
-              .select(['bucket', 'key', 'value']);
+            for (const keys of keyChunks) {
+              const rows = await this.db<RawDbUserSettingsRow>('user_settings')
+                .where({
+                  user_entity_ref: options.userEntityRef,
+                  bucket,
+                })
+                .whereIn('key', keys)
+                .select(['bucket', 'key', 'value']);
 
-            for (const row of rows) {
-              keyMap.set(row.key, JSON.parse(row.value));
+              for (const row of rows) {
+                keyMap.set(row.key, JSON.parse(row.value));
+              }
             }
-          }
-        }),
+          }),
+        ),
       ),
     );
 

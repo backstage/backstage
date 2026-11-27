@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { AsyncLocalStorage } from 'node:async_hooks';
 import {
   AuthService,
   DiscoveryService,
@@ -104,7 +105,9 @@ export class LocalEventBus {
 
       this.#subscribers.get(topic)!.push({
         id: options.id,
-        onEvent: options.onEvent,
+        // Run the handler in the async context of the subscriber rather than
+        // that of whoever happens to publish the event.
+        onEvent: AsyncLocalStorage.bind(options.onEvent),
       });
     });
   }

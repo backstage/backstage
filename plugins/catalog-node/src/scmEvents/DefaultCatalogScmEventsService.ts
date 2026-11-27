@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { AsyncLocalStorage } from 'node:async_hooks';
 import { Counter, MetricsAPI } from '@opentelemetry/api';
 import {
   CatalogScmEvent,
@@ -36,13 +37,16 @@ import {
  * with the catalog-backend plugin or not.
  */
 export class DefaultCatalogScmEventsService implements CatalogScmEventsService {
-  readonly #subscribers: Set<CatalogScmEventsServiceSubscriber>;
+  readonly #subscribers: Map<
+    CatalogScmEventsServiceSubscriber,
+    <R>(fn: () => R) => R
+  >;
   readonly #metrics: {
     actions: Counter<{ action: string }>;
   };
 
   constructor(metrics: MetricsAPI) {
-    this.#subscribers = new Set();
+    this.#subscribers = new Map();
 
     const meter = metrics.getMeter('default');
     this.#metrics = {
@@ -57,7 +61,9 @@ export class DefaultCatalogScmEventsService implements CatalogScmEventsService {
   subscribe(subscriber: CatalogScmEventsServiceSubscriber): {
     unsubscribe: () => void;
   } {
-    this.#subscribers.add(subscriber);
+    // Run the subscriber in its own async context rather than that of whoever
+    // happens to publish the events.
+    this.#subscribers.set(subscriber, AsyncLocalStorage.snapshot());
     return {
       unsubscribe: () => {
         this.#subscribers.delete(subscriber);
@@ -67,9 +73,9 @@ export class DefaultCatalogScmEventsService implements CatalogScmEventsService {
 
   async publish(events: CatalogScmEvent[]): Promise<void> {
     await Promise.all(
-      Array.from(this.#subscribers).map(async subscriber => {
+      Array.from(this.#subscribers).map(async ([subscriber, runInContext]) => {
         try {
-          await subscriber.onEvents(events);
+          await runInContext(() => subscriber.onEvents(events));
         } catch (error) {
           // The subscribers are expected to handle errors themselves.
         }
