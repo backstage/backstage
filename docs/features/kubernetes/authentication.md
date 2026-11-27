@@ -234,30 +234,40 @@ flow and the Kubernetes backend.
 
 #### Alternative configuration
 
-When relying on the `catalog` cluster locator methods, the `kubernetes.io/microsoft-entra-id-scope` annotation has to be added to the `kubernetes-cluster` resource.
+When relying on the `catalog` cluster locator method, add the `kubernetes.io/microsoft-entra-id-scope` annotation to the `kubernetes-cluster` resource, and list the same scope with the cluster hostname under `allowedScopes`.
 
 ```yaml
 kubernetes:
   clusterLocatorMethods:
     - type: 'catalog'
   auth:
-    environment: development
-    development:
-      production:
-        clientId: ${KUBERNETES_AZURE_CLIENT_ID}
-        clientSecret: ${KUBERNETES_AZURE_CLIENT_SECRET}
-        tenantId: ${KUBERNETES_AZURE_TENANT_ID}
+    environment: production
+    providers:
+      microsoft:
+        production:
+          clientId: ${KUBERNETES_AZURE_CLIENT_ID}
+          clientSecret: ${KUBERNETES_AZURE_CLIENT_SECRET}
+          tenantId: ${KUBERNETES_AZURE_TENANT_ID}
+          allowedScopes:
+            - scope: api://my-k8s-app-id/.default
+              clusterUrls:
+                - k8s.example.com
 ```
 
 ```yaml
 apiVersion: backstage.io/v1alpha1
 kind: Resource
 metadata:
+  name: on-prem-cluster0
   namespace: default
   annotations:
+    kubernetes.io/api-server: https://k8s.example.com
+    kubernetes.io/api-server-certificate-authority: <base64-encoded CA bundle in PEM format>
     kubernetes.io/auth-provider: microsoft
     kubernetes.io/microsoft-entra-id-scope: api://my-k8s-app-id/.default
-  name: on-prem-cluster0
+spec:
+  type: kubernetes-cluster
+  owner: user:guest
 ```
 
 #### Scope resolution
