@@ -16,7 +16,15 @@
 
 import knexFactory, { Knex } from 'knex';
 import { Duration } from 'luxon';
-import { delegateAbortController, nowPlus, sleep, validateId } from './util';
+import {
+  abortTask,
+  delegateAbortController,
+  getTaskAbortCause,
+  nowPlus,
+  sleep,
+  startTaskTimeout,
+  validateId,
+} from './util';
 
 class KnexBuilder {
   public build(client: string): Knex {
@@ -25,6 +33,57 @@ class KnexBuilder {
 }
 
 describe('util', () => {
+  it('supports task timeouts longer than a single timer can wait', async () => {
+    jest.useFakeTimers();
+    try {
+      const controller = new AbortController();
+      const stop = startTaskTimeout(
+        controller,
+        Duration.fromObject({ days: 30 }),
+      );
+
+      await jest.advanceTimersByTimeAsync(
+        Duration.fromObject({ days: 29 }).as('milliseconds'),
+      );
+      expect(controller.signal.aborted).toBe(false);
+
+      await jest.advanceTimersByTimeAsync(
+        Duration.fromObject({ days: 2 }).as('milliseconds'),
+      );
+      expect(controller.signal.aborted).toBe(true);
+      expect(getTaskAbortCause(controller.signal)).toBe('timeout');
+
+      // Stopping it before it fires means the run is never aborted
+      const other = new AbortController();
+      const stopOther = startTaskTimeout(
+        other,
+        Duration.fromObject({ seconds: 1 }),
+      );
+      stopOther();
+      await jest.advanceTimersByTimeAsync(2000);
+      expect(other.signal.aborted).toBe(false);
+      stop();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  it('keeps the first cause when a task run is aborted more than once', () => {
+    const controller = new AbortController();
+    expect(getTaskAbortCause(controller.signal)).toBeUndefined();
+
+    abortTask(controller, 'timeout');
+    abortTask(controller, 'shutdown');
+    expect(controller.signal.aborted).toBe(true);
+    expect(getTaskAbortCause(controller.signal)).toBe('timeout');
+
+    // A run aborted by something other than the scheduler has no cause
+    const other = new AbortController();
+    other.abort();
+    abortTask(other, 'shutdown');
+    expect(getTaskAbortCause(other.signal)).toBeUndefined();
+  });
+
   describe('validateId', () => {
     it.each(['a', 'a_b', 'ab123c_2', 'a!', 'A', 'a-b', 'a.b', '_a', 'a_'])(
       'accepts valid inputs, %p',

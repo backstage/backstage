@@ -142,3 +142,79 @@ export function serializeError(error: Error): string {
     }),
   );
 }
+
+/**
+ * Why the scheduler aborted a task run.
+ *
+ * - `shutdown`: the worker stopped, for example because the backend is
+ *   shutting down or the task was deregistered
+ * - `timeout`: the run exceeded its configured timeout
+ * - `ticket-lost`: another host took over the run, for example after it was
+ *   cancelled
+ */
+export type TaskAbortCause = 'shutdown' | 'timeout' | 'ticket-lost';
+
+// Kept by the scheduler itself rather than passed as an abort reason, so that
+// task functions keep seeing standard abort errors.
+const taskAbortCauses = new WeakMap<AbortSignal, TaskAbortCause>();
+
+/**
+ * Aborts a task run and records why. Does nothing if it was already aborted,
+ * so the first cause wins.
+ */
+export function abortTask(controller: AbortController, cause: TaskAbortCause) {
+  if (controller.signal.aborted) {
+    return;
+  }
+  taskAbortCauses.set(controller.signal, cause);
+  controller.abort();
+}
+
+/**
+ * Returns why the scheduler aborted the given task run signal, if it did.
+ */
+export function getTaskAbortCause(
+  signal: AbortSignal,
+): TaskAbortCause | undefined {
+  return taskAbortCauses.get(signal);
+}
+
+/**
+ * Creates the error that is recorded for a task run that timed out, keeping
+ * what the task threw, if anything, as its cause.
+ */
+export function createTaskTimeoutError(
+  taskId: string,
+  timeoutAfterDuration: string,
+  cause?: unknown,
+): Error {
+  const error = new Error(
+    `Task "${taskId}" timed out after ${timeoutAfterDuration}`,
+  );
+  if (cause !== undefined) {
+    // Assigned rather than passed to the constructor, so that it's enumerable
+    // and included when the error is serialized
+    Object.assign(error, { cause });
+  }
+  return error;
+}
+
+/**
+ * Aborts a task run with the `timeout` cause after the given duration. Unlike
+ * a plain timer, this supports durations longer than what a single Node.js
+ * timer can wait for.
+ *
+ * @returns A function that stops the timeout
+ */
+export function startTaskTimeout(
+  controller: AbortController,
+  duration: Duration,
+): () => void {
+  const stop = new AbortController();
+  sleep(duration, stop.signal).then(() => {
+    if (!stop.signal.aborted) {
+      abortTask(controller, 'timeout');
+    }
+  });
+  return () => stop.abort();
+}

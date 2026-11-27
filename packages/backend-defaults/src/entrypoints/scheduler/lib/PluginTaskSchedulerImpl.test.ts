@@ -28,6 +28,7 @@ import {
 } from './PluginTaskSchedulerImpl';
 import { createDeferred } from '@backstage/types';
 import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
+import { abortTask, TaskAbortCause } from './util';
 
 jest.setTimeout(60_000);
 
@@ -480,5 +481,72 @@ describe('parseDuration', () => {
     expect(parseDuration(Duration.fromMillis(5000))).toEqual('PT5S');
     expect(parseDuration({ cron: '1 * * * *' })).toEqual('1 * * * *');
     expect(parseDuration({ trigger: 'manual' })).toEqual('manual');
+  });
+});
+
+describe('PluginTaskSchedulerImpl metrics', () => {
+  it('labels run results based on why the scheduler aborted the run', async () => {
+    const metrics = metricsServiceMock.mock();
+    const manager = new PluginTaskSchedulerImpl(
+      'myplugin',
+      async () => {
+        throw new Error('not used');
+      },
+      mockServices.logger.mock(),
+      metrics,
+      {
+        addShutdownHook: jest.fn(),
+        addBeforeShutdownHook: jest.fn(),
+        addStartupHook: jest.fn(),
+      },
+    );
+    const counter = jest.mocked(metrics.createCounter).mock.results[0].value;
+    const duration = jest.mocked(metrics.createHistogram).mock.results[0].value;
+    const lastCompleted = jest.mocked(metrics.createGauge).mock.results[1]
+      .value;
+
+    const run = async (
+      cause: TaskAbortCause | undefined,
+      outcome: 'throws' | 'returns',
+    ) => {
+      counter.add.mockClear();
+      duration.record.mockClear();
+      lastCompleted.record.mockClear();
+      const controller = new AbortController();
+      if (cause) {
+        abortTask(controller, cause);
+      }
+      const fn = (manager as any).instrumentedFunction(
+        {
+          id: 'task',
+          fn: async () => {
+            if (outcome === 'throws') {
+              throw new Error('boom');
+            }
+          },
+        },
+        'global',
+      );
+      await fn(controller.signal).catch(() => {});
+      const result = counter.add.mock.calls[1][1].result;
+      expect(duration.record).toHaveBeenCalledWith(
+        expect.any(Number),
+        expect.objectContaining({ result }),
+      );
+      expect(lastCompleted.record).toHaveBeenCalledWith(
+        expect.any(Number),
+        expect.objectContaining({ result }),
+      );
+      return result;
+    };
+
+    await expect(run(undefined, 'returns')).resolves.toBe('completed');
+    await expect(run(undefined, 'throws')).resolves.toBe('failed');
+    await expect(run('timeout', 'returns')).resolves.toBe('failed');
+    await expect(run('timeout', 'throws')).resolves.toBe('failed');
+    await expect(run('shutdown', 'returns')).resolves.toBe('completed');
+    await expect(run('shutdown', 'throws')).resolves.toBe('aborted');
+    await expect(run('ticket-lost', 'returns')).resolves.toBe('aborted');
+    await expect(run('ticket-lost', 'throws')).resolves.toBe('aborted');
   });
 });

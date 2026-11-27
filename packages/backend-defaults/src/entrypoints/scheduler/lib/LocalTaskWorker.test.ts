@@ -115,7 +115,10 @@ describe('LocalTaskWorker', () => {
     let receivedSignal: AbortSignal | undefined;
     const fn = jest.fn(async (signal: AbortSignal) => {
       receivedSignal = signal;
-      await new Promise(r => setTimeout(r, 5000));
+      await new Promise(r =>
+        signal.addEventListener('abort', r, { once: true }),
+      );
+      signal.throwIfAborted();
     });
     const controller = new AbortController();
 
@@ -136,6 +139,16 @@ describe('LocalTaskWorker', () => {
     expect(receivedSignal?.aborted).toBe(false);
     worker.cancel();
     expect(receivedSignal?.aborted).toBe(true);
+
+    // A cancelled run is recorded as cancelled, not with what the task threw
+    await waitFor(() => {
+      expect(worker.taskState()).toEqual(
+        expect.objectContaining({
+          lastRunEndedAt: expect.any(String),
+          lastRunError: expect.stringContaining('Task was cancelled'),
+        }),
+      );
+    });
 
     controller.abort();
   });
@@ -181,6 +194,42 @@ describe('LocalTaskWorker', () => {
     );
 
     expect(() => worker.cancel()).toThrow(ConflictError);
+    controller.abort();
+  });
+
+  it('reports a timeout even when the task returns normally after it', async () => {
+    const warn = jest.spyOn(logger, 'warn');
+    const controller = new AbortController();
+    const worker = new LocalTaskWorker(
+      'timeout-task',
+      signal =>
+        new Promise<void>(resolve =>
+          signal.addEventListener('abort', () => resolve(), { once: true }),
+        ),
+      logger,
+    );
+    worker.start(
+      {
+        version: 2,
+        initialDelayDuration: undefined,
+        cadence: 'PT10S',
+        timeoutAfterDuration: 'PT0.1S',
+      },
+      { signal: controller.signal },
+    );
+
+    await waitFor(() => {
+      expect(worker.taskState()).toEqual(
+        expect.objectContaining({
+          lastRunError: expect.stringContaining(
+            'Task \\"timeout-task\\" timed out after PT0.1S',
+          ),
+        }),
+      );
+    });
+    expect(warn).toHaveBeenCalledWith(
+      'Task "timeout-task" timed out after PT0.1S',
+    );
     controller.abort();
   });
 

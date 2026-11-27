@@ -39,7 +39,12 @@ import { LocalTaskWorker } from './LocalTaskWorker';
 import { TaskStatePoller } from './TaskStatePoller';
 import { TaskWorker } from './TaskWorker';
 import { TaskSettingsV2, TaskApiTasksResponse } from './types';
-import { delegateAbortController, TRACER_ID, validateId } from './util';
+import {
+  delegateAbortController,
+  getTaskAbortCause,
+  TRACER_ID,
+  validateId,
+} from './util';
 
 const tracer = trace.getTracer(TRACER_ID);
 
@@ -260,7 +265,13 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
             span.setAttributes(labels);
             await task.fn(abort);
           } catch (error) {
-            if (error instanceof Error) {
+            // Errors after a shutdown or cancellation aren't task failures
+            const abortCause = getTaskAbortCause(abort);
+            if (
+              error instanceof Error &&
+              abortCause !== 'shutdown' &&
+              abortCause !== 'ticket-lost'
+            ) {
               span.recordException(error);
             }
             throw error;
@@ -273,6 +284,18 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
         labels.result = 'failed';
         throw ex;
       } finally {
+        // Timeouts are always failures, and runs handed over to another host
+        // are always aborted. A shutdown only aborts runs that stopped because
+        // of it; a task that returned normally still completed its work.
+        const abortCause = getTaskAbortCause(abort);
+        if (abortCause === 'timeout') {
+          labels.result = 'failed';
+        } else if (
+          abortCause === 'ticket-lost' ||
+          (abortCause === 'shutdown' && labels.result === 'failed')
+        ) {
+          labels.result = 'aborted';
+        }
         const delta = process.hrtime(startTime);
         const endTime = delta[0] + delta[1] / 1e9;
         this.counter.add(1, labels);

@@ -20,7 +20,15 @@ import { ConflictError } from '@backstage/errors';
 import { CronTime } from 'cron';
 import { DateTime, Duration } from 'luxon';
 import { TaskSettingsV2, TaskApiTasksResponse } from './types';
-import { delegateAbortController, serializeError, sleep } from './util';
+import {
+  abortTask,
+  createTaskTimeoutError,
+  delegateAbortController,
+  getTaskAbortCause,
+  serializeError,
+  sleep,
+  startTaskTimeout,
+} from './util';
 
 /**
  * Implements tasks that run locally without cross-host collaboration.
@@ -101,7 +109,9 @@ export class LocalTaskWorker {
     if (!this.taskAbortController) {
       throw new ConflictError(`Task ${this.taskId} is not running`);
     }
-    this.taskAbortController.abort();
+    // Matches the distributed worker, where cancelling a run invalidates its
+    // ticket
+    abortTask(this.taskAbortController, 'ticket-lost');
   }
 
   taskState(): TaskApiTasksResponse['taskState'] {
@@ -145,11 +155,16 @@ export class LocalTaskWorker {
   ): Promise<void> {
     // Abort the task execution either if the worker is stopped, or if the
     // task timeout is hit
-    this.taskAbortController = delegateAbortController(signal);
+    const taskAbortController = new AbortController();
+    this.taskAbortController = taskAbortController;
+    const onWorkerStopped = () => abortTask(taskAbortController, 'shutdown');
+    if (signal.aborted) {
+      onWorkerStopped();
+    } else {
+      signal.addEventListener('abort', onWorkerStopped, { once: true });
+    }
     const timeoutDuration = Duration.fromISO(settings.timeoutAfterDuration);
-    const timeoutHandle = setTimeout(() => {
-      this.taskAbortController?.abort();
-    }, timeoutDuration.as('milliseconds'));
+    const stopTimeout = startTaskTimeout(taskAbortController, timeoutDuration);
 
     this.#taskState = {
       status: 'running',
@@ -162,17 +177,50 @@ export class LocalTaskWorker {
       status: 'running',
     };
 
+    let thrown: { error: Error } | undefined;
     try {
       await this.fn(this.taskAbortController.signal);
-      this.#taskState.lastRunEndedAt = DateTime.utc().toISO()!;
+    } catch (error) {
+      thrown = { error: error as Error };
+    }
+
+    // Whether the task threw or returned normally, a run that the scheduler
+    // aborted is reported based on why it was aborted.
+    this.#taskState.lastRunEndedAt = DateTime.utc().toISO()!;
+    const abortCause = getTaskAbortCause(taskAbortController.signal);
+    if (abortCause === 'timeout') {
+      // Keep what the task threw, in case it wasn't caused by the timeout
+      const error = createTaskTimeoutError(
+        this.taskId,
+        settings.timeoutAfterDuration,
+        thrown?.error,
+      );
+      this.logger.warn(error.message);
+      this.#taskState.lastRunError = serializeError(error);
+    } else if (thrown && !abortCause) {
+      this.#taskState.lastRunError = serializeError(thrown.error);
+    } else if (abortCause === 'ticket-lost') {
+      // Matches what the distributed worker records when a run is cancelled
+      if (thrown) {
+        this.logger.debug(
+          `Task "${this.taskId}" stopped after being cancelled, ${thrown.error}`,
+        );
+      }
+      this.#taskState.lastRunError = serializeError(
+        new Error('Task was cancelled'),
+      );
+    } else {
+      if (thrown) {
+        this.logger.debug(
+          `Task "${this.taskId}" stopped after being shut down, ${thrown.error}`,
+        );
+      }
       this.#taskState.lastRunError = undefined;
-    } catch (e) {
-      this.#taskState.lastRunEndedAt = DateTime.utc().toISO()!;
-      this.#taskState.lastRunError = serializeError(e);
     }
 
     // release resources
-    clearTimeout(timeoutHandle);
+    signal.removeEventListener('abort', onWorkerStopped);
+    stopTimeout();
     this.taskAbortController.abort();
     this.taskAbortController = undefined;
   }
