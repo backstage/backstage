@@ -18,12 +18,14 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useState } from 'react';
 import Snackbar from '@material-ui/core/Snackbar';
 import Button from '@material-ui/core/Button';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { techdocsTranslationRef } from '../../../translation';
 
 type TechDocsRedirectNotificationProps = {
   handleButtonClick: () => void;
   message: string;
+  // Already-translated label. This component is rendered into its own React
+  // root (see `renderReactElement`), outside the app's API context, so it must
+  // not resolve APIs such as translations itself.
+  buttonLabel: string;
   autoHideDuration: number;
 };
 
@@ -37,11 +39,11 @@ const useStyles = makeStyles(theme => ({
 export const TechDocsRedirectNotification = ({
   message,
   handleButtonClick,
+  buttonLabel,
   autoHideDuration,
 }: TechDocsRedirectNotificationProps) => {
   const classes = useStyles();
   const [open, setOpen] = useState(true);
-  const { t } = useTranslationRef(techdocsTranslationRef);
 
   const handleClose = () => setOpen(false);
 
@@ -62,7 +64,7 @@ export const TechDocsRedirectNotification = ({
             handleButtonClick();
           }}
         >
-          {t('redirectNotification.redirectNow')}
+          {buttonLabel}
         </Button>
       }
     />
