@@ -15,6 +15,7 @@
  */
 
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
 import {
   catalogApiRef,
   starredEntitiesApiRef,
@@ -96,6 +97,63 @@ describe('StarredEntitiesContent', () => {
       '/catalog/default/component/mock-starred-entity-2',
     );
   });
+
+  it.each([false, true])(
+    'should sort starred entities by their displayed name (groupByKind: %s)',
+    async groupByKind => {
+      const mockedApi = new MockStarredEntitiesApi();
+      mockedApi.toggleStarred('user:default/aaron');
+      mockedApi.toggleStarred('user:default/mike');
+      mockedApi.toggleStarred('user:default/zack');
+
+      const mockCatalogApi = catalogApiMock.mock({
+        getEntitiesByRefs: jest.fn().mockResolvedValue({
+          items: [
+            {
+              apiVersion: '1',
+              kind: 'User',
+              metadata: { name: 'aaron' },
+              spec: { profile: { displayName: 'Zoe Zimmerman' } },
+            },
+            {
+              apiVersion: '1',
+              kind: 'User',
+              metadata: { name: 'mike', title: 'Mike Miller' },
+            },
+            {
+              apiVersion: '1',
+              kind: 'User',
+              metadata: { name: 'zack' },
+              spec: { profile: { displayName: 'Adam Anderson' } },
+            },
+          ],
+        }),
+      });
+
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, mockCatalogApi],
+            [starredEntitiesApiRef, mockedApi],
+          ]}
+        >
+          <Content groupByKind={groupByKind} />
+        </TestApiProvider>,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name': entityRouteRef,
+          },
+        },
+      );
+
+      await screen.findByText('Adam Anderson');
+      expect(
+        screen
+          .getAllByText(/^(Adam Anderson|Mike Miller|Zoe Zimmerman)$/)
+          .map(element => element.textContent),
+      ).toEqual(['Adam Anderson', 'Mike Miller', 'Zoe Zimmerman']);
+    },
+  );
 
   it('should display call to action message if no entities are starred', async () => {
     const mockedApi = new MockStarredEntitiesApi();
