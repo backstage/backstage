@@ -13,9 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { customizeValidator } from '@rjsf/validator-ajv8';
 import { hasErrors } from './utils';
+import { FormValidation } from './createAsyncValidators';
 
 describe('hasErrors', () => {
+  it('recognizes schema errors on the root object as well as individual fields', () => {
+    const { errorSchema } = customizeValidator().validateFormData(
+      { mode: 'blocked' },
+      {
+        not: { properties: { mode: { const: 'blocked' } }, required: ['mode'] },
+      },
+    );
+    expect(hasErrors(errorSchema as FormValidation)).toBe(true);
+    expect(hasErrors({ __errors: [] } as unknown as FormValidation)).toBe(
+      false,
+    );
+  });
+
   it('should return false for empty _errors', () => {
     expect(
       hasErrors({
