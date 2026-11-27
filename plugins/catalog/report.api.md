@@ -200,6 +200,7 @@ export const CatalogTable: {
     createTagsColumn(): TableColumn<CatalogTableRow>;
     createTitleColumn(options?: {
       hidden?: boolean;
+      entityPresentationApi?: EntityPresentationApi;
     }): TableColumn<CatalogTableRow>;
     createLabelColumn(
       key: string,
@@ -210,7 +211,12 @@ export const CatalogTable: {
     ): TableColumn<CatalogTableRow>;
     createNamespaceColumn(): TableColumn<CatalogTableRow>;
   }>;
-  defaultColumnsFunc: CatalogTableColumnsFunc;
+  defaultColumnsFunc: (
+    input: EntityListContextProps,
+    options?: {
+      entityPresentationApi?: EntityPresentationApi;
+    },
+  ) => TableColumn<CatalogTableRow>[];
 };
 
 // @public
