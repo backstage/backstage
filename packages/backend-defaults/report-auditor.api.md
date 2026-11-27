@@ -9,13 +9,14 @@ import type { AuditorServiceEvent } from '@backstage/backend-plugin-api';
 import type { AuditorServiceEventSeverityLevel } from '@backstage/backend-plugin-api';
 import type { AuthService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
-import type { Format } from 'logform';
 import type { HttpAuthService } from '@backstage/backend-plugin-api';
 import type { JsonObject } from '@backstage/types';
+import { LoggerFormat } from '@backstage/backend-defaults/rootLogger';
+import { LoggerTransport } from '@backstage/backend-defaults/rootLogger';
 import type { PluginMetadataService } from '@backstage/backend-plugin-api';
 import type { Request as Request_2 } from 'express';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
-import * as winston from 'winston';
+import { WinstonLoggerOptions } from '@backstage/backend-defaults/rootLogger';
 
 // @public
 export type AuditorEvent = {
@@ -89,10 +90,10 @@ export class DefaultAuditorService implements AuditorService {
 }
 
 // @public
-export class WinstonRootAuditorService {
+export class DefaultRootAuditorService {
   static create(
-    options?: WinstonRootAuditorServiceOptions,
-  ): WinstonRootAuditorService;
+    options?: DefaultRootAuditorServiceOptions,
+  ): DefaultRootAuditorService;
   // (undocumented)
   forPlugin(deps: {
     auth: AuthService;
@@ -103,11 +104,23 @@ export class WinstonRootAuditorService {
 }
 
 // @public
-export type WinstonRootAuditorServiceOptions = {
+export type DefaultRootAuditorServiceOptions = {
   meta?: JsonObject;
-  format?: Format;
-  transports?: winston.transport[];
+  format?: LoggerFormat;
+  transports?: LoggerTransport[];
 };
+
+// @public @deprecated (undocumented)
+export const WinstonRootAuditorService: typeof DefaultRootAuditorService;
+
+// @public @deprecated (undocumented)
+export type WinstonRootAuditorService = DefaultRootAuditorService;
+
+// @public @deprecated (undocumented)
+export type WinstonRootAuditorServiceOptions = Omit<
+  WinstonLoggerOptions,
+  'level'
+>;
 
 // (No @packageDocumentation comment for this package)
 ```

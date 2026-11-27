@@ -189,3 +189,47 @@ By default, these severity levels are mapped to the following log levels:
 - `critical`: `info`
 
 As a result, medium, high, and critical events are logged as info-level events by default, while low-level events are treated as debug.
+
+## Separate audit log output
+
+By default, audit events use the backend logger. To configure a separate output,
+use `DefaultRootAuditorService` from `@backstage/backend-defaults/auditor` in a
+custom auditor service factory:
+
+```ts
+import {
+  coreServices,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
+import { DefaultRootAuditorService } from '@backstage/backend-defaults/auditor';
+
+backend.add(
+  createServiceFactory({
+    service: coreServices.auditor,
+    deps: {
+      auth: coreServices.auth,
+      config: coreServices.rootConfig,
+      httpAuth: coreServices.httpAuth,
+      plugin: coreServices.pluginMetadata,
+    },
+    createRootContext() {
+      return DefaultRootAuditorService.create({
+        meta: { deployment: 'production' },
+      });
+    },
+    factory(deps, auditor) {
+      return auditor.forPlugin(deps);
+    },
+  }),
+);
+```
+
+The separate output uses JSON with timestamps and the `isAuditEvent` field.
+You can provide a custom `format` or `transports`, including Winston 3 formats
+and transports, in the options passed to `create`. Install any dependencies
+needed by your custom formats and transports in your backend package.
+
+`WinstonRootAuditorService` is a deprecated alias for
+`DefaultRootAuditorService`. The deprecated `WinstonRootAuditorServiceOptions`
+type retains Winston transport members for existing code that inspects or wraps
+transports. Use `DefaultRootAuditorServiceOptions` for new implementations.
