@@ -537,6 +537,70 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
 }>;
 
 // @public
+export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
+  kind: 'entity-content-layout';
+  params: {
+    filter?: string | FilterPredicate | ((entity: Entity) => boolean);
+    loader: () => Promise<(props: EntityContentLayoutProps) => JSX_2.Element>;
+  };
+  output:
+    | ExtensionDataRef<
+        (entity: Entity) => boolean,
+        'catalog.entity-filter-function',
+        {
+          optional: true;
+        }
+      >
+    | ExtensionDataRef<
+        string,
+        'catalog.entity-filter-expression',
+        {
+          optional: true;
+        }
+      >
+    | ExtensionDataRef<
+        (props: EntityContentLayoutProps) => React.JSX.Element,
+        'catalog.entity-content-layout.component',
+        {}
+      >;
+  inputs: {};
+  config: {
+    type: string | undefined;
+    filter: string | FilterPredicate | undefined;
+  };
+  configInput: {
+    type?: string | undefined;
+    filter?: string | FilterPredicate | undefined;
+  };
+  dataRefs: {
+    filterFunction: ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
+      {}
+    >;
+    filterExpression: ConfigurableExtensionDataRef<
+      string,
+      'catalog.entity-filter-expression',
+      {}
+    >;
+    component: ConfigurableExtensionDataRef<
+      (props: EntityContentLayoutProps) => React.JSX.Element,
+      'catalog.entity-content-layout.component',
+      {}
+    >;
+  };
+}>;
+
+// @public
+export interface EntityContentLayoutProps {
+  // (undocumented)
+  cards: Array<{
+    type?: EntityCardType;
+    element: JSX_2.Element;
+  }>;
+}
+
+// @public
 export const EntityDisplayName: (props: EntityDisplayNameProps) => JSX.Element;
 
 // @public
@@ -567,6 +631,70 @@ export type EntityFilter = {
   filterEntity?: (entity: Entity) => boolean;
   toQueryValue?: () => string | string[];
 };
+
+// @public
+export const EntityHeaderLayoutBlueprint: ExtensionBlueprint<{
+  kind: 'entity-header-layout';
+  params: {
+    filter?: FilterPredicate | ((entity: Entity) => boolean);
+    loader: () => Promise<(props: EntityHeaderLayoutProps) => JSX_2.Element>;
+  };
+  output:
+    | ExtensionDataRef<
+        (entity: Entity) => boolean,
+        'catalog.entity-filter-function',
+        {
+          optional: true;
+        }
+      >
+    | ExtensionDataRef<
+        (props: EntityHeaderLayoutProps) => JSX_2.Element,
+        'catalog.entity-header-layout.component',
+        {}
+      >;
+  inputs: {};
+  config: {
+    filter: FilterPredicate | undefined;
+  };
+  configInput: {
+    filter?: FilterPredicate | undefined;
+  };
+  dataRefs: {
+    filterFunction: ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
+      {}
+    >;
+    component: ConfigurableExtensionDataRef<
+      (props: EntityHeaderLayoutProps) => JSX_2.Element,
+      'catalog.entity-header-layout.component',
+      {}
+    >;
+  };
+}>;
+
+// @public
+export interface EntityHeaderLayoutProps {
+  // (undocumented)
+  activeTabId?: string;
+  // (undocumented)
+  tabs: Array<
+    | {
+        id: string;
+        label: string;
+        href: string;
+      }
+    | {
+        id: string;
+        label: string;
+        items: Array<{
+          id: string;
+          label: string;
+          href: string;
+        }>;
+      }
+  >;
+}
 
 // @public (undocumented)
 export function EntityInfoCard(props: EntityInfoCardProps): JSX_3.Element;

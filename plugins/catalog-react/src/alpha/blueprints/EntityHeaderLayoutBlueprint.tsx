@@ -28,7 +28,10 @@ import {
 import { JSX } from 'react';
 import { entityFilterFunctionDataRef } from './extensionData';
 
-/** @alpha */
+/**
+ * Tabs and active selection available to an entity header layout.
+ * @public
+ */
 export interface EntityHeaderLayoutProps {
   tabs: Array<
     | {
@@ -55,7 +58,10 @@ const entityHeaderLayoutComponentDataRef = createExtensionDataRef<
   id: 'catalog.entity-header-layout.component',
 });
 
-/** @alpha */
+/**
+ * Registers a header layout for the Catalog entity page.
+ * @public
+ */
 export const EntityHeaderLayoutBlueprint = createExtensionBlueprint({
   kind: 'entity-header-layout',
   attachTo: { id: 'page:catalog/entity', input: 'headerLayouts' },

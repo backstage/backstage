@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-react': minor
 ---
 
-Custom entity tabs can now use the stable `EntityContentBlueprint` export from `@backstage/plugin-catalog-react`. Existing `/alpha` imports continue to work.
+Use the stable `EntityContentBlueprint`, `EntityContentLayoutBlueprint`, and `EntityHeaderLayoutBlueprint` exports from `@backstage/plugin-catalog-react` to contribute entity tabs and customize the overview and header layouts. Existing `/alpha` imports continue to work.

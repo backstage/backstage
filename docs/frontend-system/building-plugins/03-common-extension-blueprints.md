@@ -112,6 +112,18 @@ app:
 
 Avoid using `convertLegacyEntityContentExtension` from `@backstage/core-compat-api` to convert legacy entity content extensions to the new system. Instead, use the `EntityContentBlueprint` directly. The legacy converter is only intended to help adapt 3rd party plugins that you don't control, and doesn't produce as good results as using the blueprint directly.
 
+### EntityContentLayout
+
+Import `EntityContentLayoutBlueprint` from `@backstage/plugin-catalog-react`
+to install an entity overview layout. Its component receives the matching cards
+as elements with optional card types.
+
+### EntityHeaderLayout
+
+Import `EntityHeaderLayoutBlueprint` from `@backstage/plugin-catalog-react`
+to install an entity header layout. Its component receives the available tabs
+and the active tab ID.
+
 ### EntityContextMenuItem - [Example](https://github.com/backstage/backstage/blob/5d0d2c547c7a67a60c4097334bd2c2ca11fbd6b3/plugins/catalog/src/alpha/contextMenuItems.tsx#L54-L151)
 
 Creates menu items inside the entity context menu. Exported as `EntityContextMenuItemBlueprint`.

@@ -26,8 +26,16 @@ export { catalogApiRef } from './api';
 export * from './apis';
 export * from './components';
 export { EntityCardBlueprint } from './alpha/blueprints/EntityCardBlueprint';
-export * from './hooks';
 export { EntityContentBlueprint } from './alpha/blueprints/EntityContentBlueprint';
+export {
+  EntityContentLayoutBlueprint,
+  type EntityContentLayoutProps,
+} from './alpha/blueprints/EntityContentLayoutBlueprint';
+export {
+  EntityHeaderLayoutBlueprint,
+  type EntityHeaderLayoutProps,
+} from './alpha/blueprints/EntityHeaderLayoutBlueprint';
+export * from './hooks';
 export * from './filters';
 export type { EntityRouteParamsOptions } from './routes';
 export { entityRouteParams, entityRouteRef } from './routes';

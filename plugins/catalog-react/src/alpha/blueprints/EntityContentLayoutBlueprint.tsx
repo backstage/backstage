@@ -33,7 +33,10 @@ import { z } from 'zod/v4';
 import { resolveEntityFilterData } from './resolveEntityFilterData';
 import { Entity } from '@backstage/catalog-model';
 
-/** @alpha */
+/**
+ * Cards available to the selected entity overview layout.
+ * @public
+ */
 export interface EntityContentLayoutProps {
   cards: Array<{
     type?: EntityCardType;
@@ -47,7 +50,10 @@ const entityCardLayoutComponentDataRef = createExtensionDataRef<
   id: 'catalog.entity-content-layout.component',
 });
 
-/** @alpha */
+/**
+ * Registers a layout that arranges the cards on a Catalog entity overview.
+ * @public
+ */
 export const EntityContentLayoutBlueprint = createExtensionBlueprint({
   kind: 'entity-content-layout',
   attachTo: { id: 'entity-content:catalog/overview', input: 'layouts' },

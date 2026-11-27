@@ -399,7 +399,7 @@ export type EntityContentGroupDefinitions = Record<
   }
 >;
 
-// @alpha (undocumented)
+// @public
 export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
   kind: 'entity-content-layout';
   params: {
@@ -454,7 +454,7 @@ export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-// @alpha (undocumented)
+// @public
 export interface EntityContentLayoutProps {
   // (undocumented)
   cards: Array<{
@@ -606,7 +606,7 @@ export const EntityHeaderBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-// @alpha (undocumented)
+// @public
 export const EntityHeaderLayoutBlueprint: ExtensionBlueprint<{
   kind: 'entity-header-layout';
   params: {
@@ -647,7 +647,7 @@ export const EntityHeaderLayoutBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-// @alpha (undocumented)
+// @public
 export interface EntityHeaderLayoutProps {
   // (undocumented)
   activeTabId?: string;
