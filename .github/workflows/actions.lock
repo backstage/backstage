@@ -104,7 +104,7 @@ workflows:
         - 'actions/checkout@v7'
         - 'actions/upload-artifact@v7'
         - 'github/codeql-action@v4'
-        - 'ossf/scorecard-action@v2.4.4'
+        - 'ossf/scorecard-action@v2.6.0'
         - 'step-security/harden-runner@v2'
     '.github/workflows/sync_bui-docs.yml':
         - 'actions/checkout@v7'
@@ -385,9 +385,9 @@ dependencies:
         commit: 'sha1-ec328af66588ab8f77cdeb2c264f14aba45bbf59'
         owner_id: 277401
         repo_id: 223494945
-    'ossf/scorecard-action@v2.4.4':
-        ref: 'v2.4.4'
-        commit: 'sha1-2d1146689b8cda280b9bc96326124645441f03bc'
+    'ossf/scorecard-action@v2.6.0':
+        ref: 'v2.6.0'
+        commit: 'sha1-23f22cd43608bae7a1f1fa2603d7314dee9538a5'
         owner_id: 67707773
         repo_id: 421101922
     'peter-evans/create-or-update-comment@v5':
