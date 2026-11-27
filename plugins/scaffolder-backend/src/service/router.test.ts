@@ -18,6 +18,7 @@ import { DatabaseManager } from '@backstage/backend-defaults/database';
 import { ConfigReader } from '@backstage/config';
 import { ConflictError } from '@backstage/errors';
 import express from 'express';
+import { AsyncLocalStorage } from 'node:async_hooks';
 import request from 'supertest';
 import ObservableImpl from 'zen-observable';
 
@@ -1939,6 +1940,65 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         taskId: 'a-random-id',
       });
       expect(subscriber!.closed).toBe(true);
+    });
+
+    it('should clean up a closed stream in the async context of its request', async () => {
+      const { unwrappedRouter, taskBroker } = await createTestRouter();
+      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+        id: 'a-random-id',
+        spec: {} as any,
+        status: 'processing',
+        createdAt: '',
+        secrets: {
+          __initiatorCredentials: JSON.stringify(credentials),
+        },
+        createdBy: '',
+      });
+
+      const als = new AsyncLocalStorage<string>();
+      let onCleanup: (store: string | undefined) => void = () => {};
+      const cleanupStore = new Promise<string | undefined>(resolve => {
+        onCleanup = resolve;
+      });
+      (
+        taskBroker.event$ as jest.Mocked<TaskBroker>['event$']
+      ).mockImplementation(() => {
+        return new ObservableImpl(observer => {
+          setImmediate(() =>
+            observer.next({
+              events: [
+                {
+                  id: 0,
+                  taskId: 'a-random-id',
+                  type: 'log',
+                  createdAt: '',
+                  body: { message: 'My log message' },
+                },
+              ],
+            }),
+          );
+          return () => onCleanup(als.getStore());
+        });
+      });
+
+      const app = express()
+        .use((_req, _res, next) => als.run('request', next))
+        .use(unwrappedRouter);
+
+      const req = request(app)
+        .get('/v2/tasks/a-random-id/eventstream')
+        .set('accept', 'text/event-stream')
+        .parse((res, _) => {
+          // Disconnect as soon as the first event arrives
+          (res as unknown as NodeJS.ReadableStream).once('data', () =>
+            req.abort(),
+          );
+        });
+      req.catch(() => {
+        // ignore 'aborted' error
+      });
+
+      await expect(cleanupStore).resolves.toBe('request');
     });
 
     it('should return log messages with after query', async () => {
