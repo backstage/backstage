@@ -296,6 +296,8 @@ describe('tasks', () => {
       await templatingTask(templateDir, destinationDir, context);
       expect(fs.existsSync('templatedApp/package.json')).toBe(true);
       expect(fs.existsSync('templatedApp/.dockerignore')).toBe(true);
+      expect(fs.existsSync('templatedApp/.github/workflows/ci.yml')).toBe(true);
+      expect(fs.existsSync('templatedApp/dot-github')).toBe(false);
       await expect(fs.readJson('templatedApp/backstage.json')).resolves.toEqual(
         {
           version: '1.2.3',
@@ -334,6 +336,12 @@ describe('tasks', () => {
         });
       },
     );
+
+    it('should not contain a .github directory in the template source', () => {
+      const templateDir = resolvePath(__dirname, '../../templates/default-app');
+      const files = fs.readdirSync(templateDir);
+      expect(files).not.toContain('.github');
+    });
   });
 
   describe('readGitConfig', () => {
