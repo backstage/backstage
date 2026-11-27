@@ -336,7 +336,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       const taskId = `${this.getProviderName()}:refresh`;
       return taskRunner.run({
         id: taskId,
-        fn: async () => {
+        fn: async signal => {
           const logger = this.logger.child({
             class: GitlabOrgDiscoveryEntityProvider.prototype.constructor.name,
             taskId,
@@ -344,7 +344,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
           });
 
           try {
-            await this.refresh(logger);
+            await this.refresh(logger, signal);
           } catch (error) {
             logger.error(
               `${this.getProviderName()} refresh failed, ${error}`,
@@ -356,7 +356,10 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     };
   }
 
-  private async refresh(logger: LoggerService): Promise<void> {
+  private async refresh(
+    logger: LoggerService,
+    signal?: AbortSignal,
+  ): Promise<void> {
     if (!this.connection) {
       throw new Error(
         `Gitlab discovery connection not initialized for ${this.getProviderName()}`,
@@ -451,6 +454,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     for (const users of allUsers) {
       // Iterate through paginated users
       for await (const user of users) {
+        signal?.throwIfAborted();
         // Skip if user already processed and do not count it as scanned
         if (user.id in idMappedUser) {
           continue; // Skip if user already processed
@@ -468,6 +472,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     }
 
     for await (const group of groups) {
+      signal?.throwIfAborted();
       groupRes.scanned++;
       if (!this.shouldProcessGroup(group)) {
         logger.debug(`Skipped group: ${group.full_path}`);
@@ -528,6 +533,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       `Scanned ${groupRes.scanned} groups and processed ${groupEntities.length} groups`,
     );
 
+    signal?.throwIfAborted();
     await this.connection.applyMutation({
       type: 'full',
       entities: [...userEntities, ...groupEntities].map(entity => ({
