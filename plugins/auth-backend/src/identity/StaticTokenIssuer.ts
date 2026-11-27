@@ -41,6 +41,10 @@ export type Options = {
    * A list of claims to omit from issued tokens and only store in the user info database
    */
   omitClaimsFromToken?: string[];
+  /**
+   * Whether to include the issuer in the signed user identity proof, see `auth.experimentalUserIdentityProofIssuer`
+   */
+  includeIssuerInProof?: boolean;
 };
 
 /**
@@ -53,6 +57,7 @@ export class StaticTokenIssuer implements TokenIssuer {
   private readonly keyStore: StaticKeyStore;
   private readonly sessionExpirationSeconds: number;
   private readonly omitClaimsFromToken?: string[];
+  private readonly includeIssuerInProof?: boolean;
 
   public constructor(options: Options, keyStore: StaticKeyStore) {
     this.issuer = options.issuer;
@@ -60,6 +65,7 @@ export class StaticTokenIssuer implements TokenIssuer {
     this.sessionExpirationSeconds = options.sessionExpirationSeconds;
     this.keyStore = keyStore;
     this.omitClaimsFromToken = options.omitClaimsFromToken;
+    this.includeIssuerInProof = options.includeIssuerInProof;
   }
 
   public async issueToken(
@@ -74,6 +80,7 @@ export class StaticTokenIssuer implements TokenIssuer {
       logger: this.logger,
       omitClaimsFromToken: this.omitClaimsFromToken,
       params,
+      includeIssuerInProof: this.includeIssuerInProof,
     });
   }
 

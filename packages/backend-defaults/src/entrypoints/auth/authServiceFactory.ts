@@ -104,6 +104,10 @@ export const authServiceFactory = createServiceFactory({
         keySource,
         keyDuration,
         discovery,
+        includeIssuer:
+          config.getOptionalBoolean(
+            'backend.auth.experimentalPluginTokenIssuer',
+          ) ?? false,
       }),
     );
 

@@ -289,6 +289,16 @@ export interface Config {
        */
       dangerouslyDisableDefaultAuthPolicy?: boolean;
 
+      /**
+       * Include an issuer claim in plugin-to-plugin tokens, set to the
+       * external base URL of the issuing plugin. Defaults to `false`.
+       *
+       * This flag is temporary and will be removed in a future release, at
+       * which point plugin-to-plugin tokens will always include an issuer
+       * claim.
+       */
+      experimentalPluginTokenIssuer?: boolean;
+
       /** Controls how to store keys for plugin-to-plugin auth */
       pluginKeyStore?:
         | { type: 'database' }

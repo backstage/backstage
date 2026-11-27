@@ -120,6 +120,10 @@ export async function createRouter(
       ? ['ent']
       : [];
 
+  const includeIssuerInProof =
+    config.getOptionalBoolean('auth.experimentalUserIdentityProofIssuer') ??
+    false;
+
   let tokenIssuer: TokenIssuer;
   if (keyStore instanceof StaticKeyStore) {
     tokenIssuer = new StaticTokenIssuer(
@@ -128,6 +132,7 @@ export async function createRouter(
         issuer: authUrl,
         sessionExpirationSeconds: backstageTokenExpiration,
         omitClaimsFromToken,
+        includeIssuerInProof,
       },
       keyStore as StaticKeyStore,
     );
@@ -141,6 +146,7 @@ export async function createRouter(
         tokenFactoryAlgorithm ??
         config.getOptionalString('auth.identityTokenAlgorithm'),
       omitClaimsFromToken,
+      includeIssuerInProof,
     });
   }
 

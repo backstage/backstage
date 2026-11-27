@@ -34,6 +34,10 @@ type Options = {
   discovery: DiscoveryService;
   logger: LoggerService;
   /**
+   * Whether to include the issuer claim in issued tokens, see `backend.auth.experimentalPluginTokenIssuer`
+   */
+  includeIssuer?: boolean;
+  /**
    * JWS "alg" (Algorithm) Header Parameter value. Defaults to ES256.
    * Must match one of the algorithms defined for IdentityClient.
    * When setting a different algorithm, check if the `key` field
@@ -74,6 +78,7 @@ export class DefaultPluginTokenHandler implements PluginTokenHandler {
       options.algorithm ?? 'ES256',
       Math.round(durationToMilliseconds(options.keyDuration) / 1000),
       options.discovery,
+      options.includeIssuer ?? false,
     );
   }
 
@@ -83,6 +88,7 @@ export class DefaultPluginTokenHandler implements PluginTokenHandler {
   private readonly algorithm: string;
   private readonly keyDurationSeconds: number;
   private readonly discovery: DiscoveryService;
+  private readonly includeIssuer: boolean;
 
   private constructor(
     logger: LoggerService,
@@ -91,6 +97,7 @@ export class DefaultPluginTokenHandler implements PluginTokenHandler {
     algorithm: string,
     keyDurationSeconds: number,
     discovery: DiscoveryService,
+    includeIssuer: boolean,
   ) {
     this.logger = logger;
     this.ownPluginId = ownPluginId;
@@ -98,6 +105,7 @@ export class DefaultPluginTokenHandler implements PluginTokenHandler {
     this.algorithm = algorithm;
     this.keyDurationSeconds = keyDurationSeconds;
     this.discovery = discovery;
+    this.includeIssuer = includeIssuer;
   }
 
   async verifyToken(
@@ -159,7 +167,18 @@ export class DefaultPluginTokenHandler implements PluginTokenHandler {
         )
       : ourExp;
 
-    const claims = { sub, aud, iat, exp, obo: onBehalfOf?.limitedUserToken };
+    const iss = this.includeIssuer
+      ? await this.discovery.getExternalBaseUrl(pluginId)
+      : undefined;
+
+    const claims = {
+      iss,
+      sub,
+      aud,
+      iat,
+      exp,
+      obo: onBehalfOf?.limitedUserToken,
+    };
     const token = await new SignJWT(claims)
       .setProtectedHeader({
         typ: tokenTypes.plugin.typParam,

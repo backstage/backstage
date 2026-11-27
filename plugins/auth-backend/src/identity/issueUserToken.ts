@@ -36,6 +36,7 @@ export async function issueUserToken({
   logger,
   omitClaimsFromToken,
   params,
+  includeIssuerInProof,
 }: {
   issuer: string;
   key: JWK;
@@ -43,6 +44,7 @@ export async function issueUserToken({
   logger: LoggerService;
   omitClaimsFromToken?: string[];
   params: TokenParams & { claims: { ent: string[] } };
+  includeIssuerInProof?: boolean;
 }): Promise<BackstageSignInResult> {
   const { sub, ent, ...additionalClaims } = params.claims;
   const aud = tokenTypes.user.audClaim;
@@ -72,7 +74,9 @@ export async function issueUserToken({
       alg: key.alg,
       kid: key.kid,
     },
-    payload: { sub, iat, exp },
+    payload: includeIssuerInProof
+      ? { sub, iat, exp, iss: issuer }
+      : { sub, iat, exp },
     key: signingKey,
   });
 
@@ -136,6 +140,11 @@ interface BackstageUserIdentityProofPayload {
    * Standard issue time in epoch seconds
    */
   iat: number;
+
+  /**
+   * The issuer of the token, only included if enabled through `auth.experimentalUserIdentityProofIssuer`
+   */
+  iss?: string;
 }
 
 /**
@@ -168,6 +177,7 @@ async function createUserIdentityClaim(options: {
     sub: options.payload.sub,
     iat: options.payload.iat,
     exp: options.payload.exp,
+    ...(options.payload.iss ? { iss: options.payload.iss } : {}),
   };
 
   const jws = await new GeneralSign(

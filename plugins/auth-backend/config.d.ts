@@ -20,6 +20,21 @@ export interface Config {
   /** Configuration options for the auth plugin */
   auth?: {
     /**
+     * Include an issuer claim in the user identity proof embedded in user
+     * tokens, which carries over to the limited user tokens that backends
+     * send along with on-behalf-of requests. Defaults to `false`.
+     *
+     * Only enable this once every backend in the deployment has been
+     * upgraded to a version that supports it, otherwise on-behalf-of
+     * requests from backends running older versions will fail.
+     *
+     * This flag is temporary and will be removed in a future release, at
+     * which point the user identity proof will always include an issuer
+     * claim.
+     */
+    experimentalUserIdentityProofIssuer?: boolean;
+
+    /**
      * The 'environment' attribute
      * @visibility frontend
      */
