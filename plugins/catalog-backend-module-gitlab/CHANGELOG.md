@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.8.12-next.1
+
+### Patch Changes
+
+- 42d01b4: Added a `skipReposMarkedForDeletion` option to the GitLab discovery provider (and the legacy `GitLabDiscoveryProcessor`). When set to `true`, projects that GitLab has marked for deletion (i.e. that report a non-empty `marked_for_deletion_on` value) are skipped during discovery. Defaults to `false`, so existing catalogs are unaffected.
+
+  Enabling this option causes the discovery API call to omit `simple=true`, since the deletion marker is not returned in the simple GitLab project response.
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.19.2-next.1
+  - @backstage/integration@2.4.0-next.1
+  - @backstage/backend-plugin-api@1.12.1-next.1
+
 ## 0.8.12-next.0
 
 ### Patch Changes

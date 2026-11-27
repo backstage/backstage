@@ -1,5 +1,14 @@
 # @backstage/repo-tools
 
+## 0.19.4-next.1
+
+### Patch Changes
+
+- 4eb8f95: Fixed `--exclude` package filtering so passing multiple exclude patterns (for example comma-separated or repeated `--exclude` flags in `api-reports`) excludes packages matching any of the patterns instead of none.
+- a694f64: Clarified the `repo schema openapi lint` error message for query parameters to state that `allowReserved: true` is required.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.1-next.1
+
 ## 0.19.4-next.0
 
 ### Patch Changes

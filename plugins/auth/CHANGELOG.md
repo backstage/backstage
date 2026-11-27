@@ -1,5 +1,12 @@
 # @backstage/plugin-auth
 
+## 0.1.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.20.1-next.0
+
 ## 0.1.14
 
 ### Patch Changes

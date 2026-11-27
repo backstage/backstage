@@ -1,5 +1,16 @@
 # @backstage/plugin-api-docs
 
+## 0.14.10-next.1
+
+### Patch Changes
+
+- 6aa16db: The API definition card now shows its error message with Backstage UI, and the API type title no longer uses Material UI. The package no longer depends on `@material-ui/lab`.
+- Updated dependencies
+  - @backstage/core-components@0.18.17-next.1
+  - @backstage/plugin-catalog@2.1.1-next.1
+  - @backstage/plugin-catalog-react@4.0.1-next.1
+  - @backstage/ui@0.20.1-next.0
+
 ## 0.14.10-next.0
 
 ### Patch Changes

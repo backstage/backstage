@@ -1,5 +1,11 @@
 # @backstage/frontend-app-api
 
+## 1.0.2-next.0
+
+### Patch Changes
+
+- Bumped version to account for a patch release.
+
 ## 1.0.1-next.0
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog
 
+## 2.1.1-next.1
+
+### Patch Changes
+
+- 4bb0d5f: Removed the unnecessary Material UI v5 utility dependency from legacy catalog table action labels, preserving their accessibility using Material UI v4.
+- Updated dependencies
+  - @backstage/core-components@0.18.17-next.1
+  - @backstage/plugin-catalog-react@4.0.1-next.1
+  - @backstage/ui@0.20.1-next.0
+  - @backstage/plugin-scaffolder-common@2.4.1-next.1
+  - @backstage/integration-react@1.3.1-next.1
+
 ## 2.1.1-next.0
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @backstage/backend-plugin-api
 
+## 1.12.1-next.1
+
+### Patch Changes
+
+- 82a5c6f: Simplified the `SchedulerServiceTaskFunction` type to a single signature that receives an abort signal. Task functions that ignore the signal are still accepted.
+
 ## 1.12.1-next.0
 
 ### Patch Changes

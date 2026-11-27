@@ -1,5 +1,24 @@
 # @backstage/plugin-scaffolder-backend
 
+## 4.3.2-next.1
+
+### Patch Changes
+
+- 5bf43af: Fixed matching of action input values in scaffolder permission policies, including identifiers that are provided as arrays of values, such as the path of the `gitlab:group:ensureExists` action. Conditional policies now apply to every identifier that the array denotes, including the parent groups that `gitlab:group:ensureExists` ensures along the way, so allow-list policies for that action need to allow those parent groups as well. Inputs that denote no identifiers at all, such as an empty array, are now rejected.
+- 5b78dd2: Scaffolder template, fetch and rename actions no longer place their output inside a `.git` directory of the task workspace, matched case-insensitively, so repository metadata there is always provided by the scaffolder's own git operations.
+- bc1cc91: The `get-scaffolder-task-logs` action no longer fails its own output validation for a task that went through task recovery. The `recovered` event carries no `message`, so the field is now optional in the action's output schema.
+- Updated dependencies
+  - @backstage/integration@2.4.0-next.1
+  - @backstage/plugin-scaffolder-common@2.4.1-next.1
+  - @backstage/plugin-scaffolder-node@1.0.2-next.1
+  - @backstage/backend-plugin-api@1.12.1-next.1
+
+## 4.3.2-next.0
+
+### Patch Changes
+
+- Bumped version to account for a patch release.
+
 ## 4.3.1-next.0
 
 ### Patch Changes

@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-react
 
+## 4.0.1-next.1
+
+### Patch Changes
+
+- 4bb0d5f: Migrated entity peek-ahead previews to Backstage UI, removing their Material UI v5 dependency. Previews retain delayed opening on hover and support keyboard navigation into their content. Email actions now link directly to the mail client.
+
+  **BREAKING PRODUCERS**: Removed the unused `entityPeekAheadPopover.entityCardActionsAriaLabel` and `entityPeekAheadPopover.emailCardAction.subTitle` translation keys. Remove these entries from custom translations; the details action uses `entityPeekAheadPopover.entityCardActionsTitle`, and email link destinations are no longer translated.
+
+- Updated dependencies
+  - @backstage/core-components@0.18.17-next.1
+  - @backstage/ui@0.20.1-next.0
+  - @backstage/integration-react@1.3.1-next.1
+
 ## 4.0.1-next.0
 
 ### Patch Changes

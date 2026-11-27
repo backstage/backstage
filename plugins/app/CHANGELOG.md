@@ -1,5 +1,21 @@
 # @backstage/plugin-app
 
+## 0.6.2-next.1
+
+### Patch Changes
+
+- c046db6: The legacy React Aria router bridge now leaves absolute and protocol-relative link URLs to the browser instead of passing them to React Router's `navigate`. React Aria client-navigates same-origin absolute URLs, and since React Router 6.30.5 those resolved to broken in-app paths such as `/https:/example.com/page`.
+- Updated dependencies
+  - @backstage/core-components@0.18.17-next.1
+  - @backstage/ui@0.20.1-next.0
+  - @backstage/integration-react@1.3.1-next.1
+
+## 0.6.2-next.0
+
+### Patch Changes
+
+- Bumped version to account for a patch release.
+
 ## 0.6.1-next.0
 
 ### Patch Changes
