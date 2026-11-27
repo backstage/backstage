@@ -4,8 +4,8 @@ title: Search Engines
 description: Choosing and configuring your search engine for Backstage
 ---
 
-Backstage supports 3 search engines by default, an in-memory engine called [Lunr](#lunr), [Postgres](#postgres)
-and [Elasticsearch/OpenSearch](#elasticsearch-and-opensearch).
+Backstage supports 4 search engines by default, an in-memory engine called [Lunr](#lunr), [Postgres](#postgres),
+[Elasticsearch](#elasticsearch) and [OpenSearch](#opensearch).
 
 ## Lunr
 
@@ -102,18 +102,18 @@ search:
 
 The Postgres documentation on [Highlighting Results](https://www.postgresql.org/docs/current/textsearch-controls.html#TEXTSEARCH-HEADLINE) has more details.
 
-## Elasticsearch and OpenSearch
+## Elasticsearch
 
-Backstage supports Elasticsearch and OpenSearch search engine connections,
-indexing and querying out of the box. Available configuration options enable
-usage of either AWS or Elastic.co hosted solutions, or a custom self-hosted solution.
+Backstage supports Elasticsearch connections, indexing and querying out of the
+box. Available configuration options enable usage of either Elastic.co hosted
+solutions or a custom self-hosted solution. OpenSearch has its own module and
+configuration; see [OpenSearch](#opensearch).
 
 ### Supported versions
 
 | Search Engine | Supported Versions |
 | ------------- | ------------------ |
 | Elasticsearch | >= 8.19            |
-| OpenSearch    | 1.x, 2.x           |
 
 :::note
 Elasticsearch 7.x is no longer supported. See the [v1.55.0 release notes](../../releases/v1.55.0.md#breaking-elasticsearch-8-upgrade) for migration details.
@@ -150,25 +150,16 @@ Elasticsearch needs some additional configuration before it is ready to use
 within your instance. The configuration options are documented in the
 [configuration schema definition file.](https://github.com/backstage/backstage/blob/master/plugins/search-backend-module-elasticsearch/config.d.ts)
 
-When the `aws` or `opensearch` provider is configured, the OpenSearch client is
-used instead of the Elasticsearch client.
+:::note
+
+The `opensearch` and `aws` providers previously configured under
+`search.elasticsearch` are deprecated. They keep working during the migration
+period, but new OpenSearch deployments should use the dedicated
+[OpenSearch module](#opensearch) and `search.opensearch` configuration.
+
+:::
 
 ### Example configurations
-
-#### AWS
-
-Using AWS hosted Elasticsearch the only configuration option needed is the URL
-to the Elasticsearch service. The implementation assumes that environment
-variables for AWS access key id and secret access key are defined in accordance
-to the
-[default AWS credential chain.](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-credentials-node.html).
-
-```yaml
-search:
-  elasticsearch:
-    provider: aws
-    node: https://my-backstage-search-asdfqwerty.eu-west-1.es.amazonaws.com
-```
 
 #### Elastic.co
 
@@ -184,20 +175,6 @@ search:
     cloudId: backstage-elastic:asdfqwertyasdfqwertyasdfqwertyasdfqwerty==
     auth:
       username: elastic
-      password: changeme
-```
-
-#### OpenSearch
-
-OpenSearch can be self hosted for example with the [official docker image](https://hub.docker.com/r/opensearchproject/opensearch). The configuration requires only the node and authentication.
-
-```yaml
-search:
-  elasticsearch:
-    provider: opensearch
-    node: http://0.0.0.0:9200
-    auth:
-      username: opensearch
       password: changeme
 ```
 
@@ -379,3 +356,252 @@ The `getAuthHeaders` method is called before each request, allowing for just-in-
 Custom authentication is supported for the `elastic`, `opensearch`, and default providers. The `aws` provider uses AWS SigV4 request signing and does not support custom auth providers.
 
 :::
+
+## OpenSearch
+
+The dedicated OpenSearch module connects Backstage to self-hosted OpenSearch
+clusters and Amazon OpenSearch Service. It uses the
+`@opensearch-project/opensearch` client and reads its configuration from
+`search.opensearch`, independently of the Elasticsearch module.
+
+### Supported versions
+
+| Search Engine | Supported Versions |
+| ------------- | ------------------ |
+| OpenSearch    | 1.x, 2.x           |
+
+:::note
+
+OpenSearch 3.x has not been validated by this module or its test suite, so no
+compatibility with 3.x is claimed. The module uses the OpenSearch client from
+the same version line that is used by the Elasticsearch module.
+
+:::
+
+### Setup
+
+Add the module to your backend:
+
+```bash title="From your Backstage root directory"
+yarn --cwd packages/backend add @backstage/plugin-search-backend-module-opensearch
+```
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+
+// Other plugins...
+
+// search plugin
+backend.add(import('@backstage/plugin-search-backend'));
+
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-search-backend-module-opensearch'));
+/* highlight-add-end */
+
+backend.start();
+```
+
+The available options are documented in the
+[configuration schema definition file.](https://github.com/backstage/backstage/blob/master/plugins/search-backend-module-opensearch/config.d.ts)
+
+### Basic configuration
+
+For a self-hosted cluster, set the node URL and authentication. The `default`
+provider is used when `provider` is omitted.
+
+```yaml
+search:
+  opensearch:
+    node: http://localhost:9200
+    auth:
+      username: opensearch
+      password: changeme
+```
+
+An API key can be used instead of a username and password. It is sent as an
+`ApiKey` authorization header.
+
+```yaml
+search:
+  opensearch:
+    node: http://localhost:9200
+    auth:
+      apiKey: base64EncodedKey
+```
+
+TLS verification can be adjusted for clusters with private certificate
+authorities:
+
+```yaml
+search:
+  opensearch:
+    node: https://opensearch.internal:9200
+    clientOptions:
+      ssl:
+        rejectUnauthorized: false
+```
+
+### Amazon OpenSearch Service
+
+The `aws` provider signs requests using AWS Signature Version 4 (SigV4). It
+uses the default Amazon Web Services credential chain, so no credentials are
+stored in `app-config.yaml`.
+
+```yaml
+search:
+  opensearch:
+    provider: aws
+    node: https://search-backstage-abc123.eu-west-1.es.amazonaws.com
+```
+
+For Amazon OpenSearch Serverless, set `service: aoss`. The `region` option is
+only needed when it cannot be derived from the node URL.
+
+```yaml
+search:
+  opensearch:
+    provider: aws
+    node: https://backstage.eu-west-1.aoss.amazonaws.com
+    service: aoss
+```
+
+Custom authentication providers are not used by the `aws` provider because it
+signs every request itself.
+
+### Providers
+
+The `default` and `aws` providers are built into the module. Set
+`search.opensearch.provider` to select one. The value `opensearch` is accepted
+as an alias for `default` to make migration from the Elasticsearch module
+easier. Other managed OpenSearch services can be supported without changing
+this module by registering a provider through
+`opensearchProviderExtensionPoint`:
+
+```ts title="packages/backend/src/modules/opensearchProvider.ts"
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { opensearchProviderExtensionPoint } from '@backstage/plugin-search-backend-module-opensearch';
+
+export default createBackendModule({
+  pluginId: 'search',
+  moduleId: 'opensearch-managed-provider',
+  register(env) {
+    env.registerInit({
+      deps: {
+        opensearchProviders: opensearchProviderExtensionPoint,
+      },
+      async init({ opensearchProviders }) {
+        opensearchProviders.addProvider({
+          id: 'my-provider',
+          async createClientOptions({ config }) {
+            return {
+              node: config.getString('node'),
+              headers: { Authorization: await getToken() },
+            };
+          },
+        });
+      },
+    });
+  },
+});
+```
+
+Select the provider with `search.opensearch.provider: my-provider` and register
+the module in your backend. A provider can also replace a built-in id so that
+connection or authentication behavior for `default` or `aws` can be
+customized. Registering the same custom id twice is an error.
+
+For tokens that rotate, `opensearchAuthExtensionPoint` supplies headers before
+each request and takes precedence over static `auth` configuration:
+
+```ts title="packages/backend/src/modules/opensearchAuth.ts"
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { opensearchAuthExtensionPoint } from '@backstage/plugin-search-backend-module-opensearch';
+
+export default createBackendModule({
+  pluginId: 'search',
+  moduleId: 'opensearch-custom-auth',
+  register(env) {
+    env.registerInit({
+      deps: {
+        opensearchAuth: opensearchAuthExtensionPoint,
+      },
+      async init({ opensearchAuth }) {
+        opensearchAuth.setAuthProvider({
+          async getAuthHeaders() {
+            const token = await myTokenService.getToken();
+            return { Authorization: `Bearer ${token}` };
+          },
+        });
+      },
+    });
+  },
+});
+```
+
+### Indexing and query options
+
+Batch size, batch key field, index prefix, highlighting and query fuzziness
+follow the same semantics as the Elasticsearch engine.
+
+```yaml
+search:
+  opensearch:
+    node: http://localhost:9200
+    batchSize: 100
+    batchKeyField: document_id
+    indexPrefix: custom-prefix-
+    highlightOptions:
+      fragmentSize: 1000
+      numFragments: 1
+      fragmentDelimiter: ' ... '
+    queryOptions:
+      fuzziness: AUTO
+      prefixLength: 3
+```
+
+Each indexing run writes to a fresh index and moves the search alias to it.
+The previous index is retained for one more run so that in-flight queries can
+complete, and is deleted after the next successful run. Allow for two indices
+per document type, and temporarily three while an indexing run is in progress.
+
+### Migration from the Elasticsearch module
+
+Existing OpenSearch configurations continue to work during the migration
+period. When `search.elasticsearch.provider` is `opensearch` or `aws`, the
+Elasticsearch module logs a single warning pointing to this module. No
+removal version is announced here; follow future release notes for that.
+
+To migrate, install and register the OpenSearch module, then move the
+OpenSearch configuration under `search.opensearch`:
+
+```yaml title="Before"
+search:
+  elasticsearch:
+    provider: opensearch
+    node: http://localhost:9200
+    auth:
+      username: opensearch
+      password: changeme
+```
+
+```yaml title="After"
+search:
+  opensearch:
+    node: http://localhost:9200
+    auth:
+      username: opensearch
+      password: changeme
+```
+
+The same mapping applies to the AWS provider:
+
+| Elasticsearch module setting                | OpenSearch module setting                          |
+| ------------------------------------------- | -------------------------------------------------- |
+| `search.elasticsearch.provider: opensearch` | `search.opensearch.provider: default` (or omit it) |
+| `search.elasticsearch.provider: aws`        | `search.opensearch.provider: aws`                  |
+| Other `search.elasticsearch.*` options      | Same key under `search.opensearch`                 |
+
+Keep only the Elasticsearch module registered while using legacy
+OpenSearch configuration. Once migrated, you can remove it if you no longer
+need Elasticsearch. Registering both modules with configuration for both will
+fail because the search backend accepts a single search engine.

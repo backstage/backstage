@@ -1064,6 +1064,24 @@ describe('ElasticSearchSearchEngine', () => {
       ).not.toThrow();
     });
 
+    it('does not emit an OpenSearch deprecation warning for Elasticsearch-only configuration', async () => {
+      const logger = mockServices.logger.mock();
+      const config = new ConfigReader({
+        search: {
+          elasticsearch: {
+            node: 'http://test-node',
+            auth: { apiKey: 'test-key' },
+          },
+        },
+      });
+
+      await ElasticSearchSearchEngine.fromConfig({ logger, config });
+
+      expect(logger.warn).not.toHaveBeenCalledWith(
+        expect.stringContaining('is deprecated'),
+      );
+    });
+
     it('should accept an authProvider and not require auth config', async () => {
       const config = new ConfigReader({
         search: {
