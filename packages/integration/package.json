@@ -63,10 +63,10 @@
     "p-throttle": "^4.1.1"
   },
   "devDependencies": {
-    "@types/git-url-parse": "^9.0.0",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/config-loader": "workspace:^",
+    "@types/git-url-parse": "^9.0.0",
     "msw": "^2.0.0"
   },
   "configSchema": "config.d.ts"
