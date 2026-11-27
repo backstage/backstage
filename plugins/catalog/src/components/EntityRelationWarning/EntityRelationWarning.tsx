@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { Entity, parseEntityRef } from '@backstage/catalog-model';
 import {
   CatalogApi,
   catalogApiRef,
@@ -47,6 +47,19 @@ async function getRelationWarnings(entity: Entity, catalogApi: CatalogApi) {
   return entityRefRelations.filter(
     (_, index) => relatedEntities.items[index] === undefined,
   );
+}
+
+// Summarizes the targets by kind only. The targets may be entities that the
+// user isn't allowed to read, so their names must not be shown.
+function summarizeByKind(entityRefs: string[]): string {
+  const counts = new Map<string, number>();
+  for (const ref of entityRefs) {
+    const kind = parseEntityRef(ref).kind.toLowerCase();
+    counts.set(kind, (counts.get(kind) ?? 0) + 1);
+  }
+  return Array.from(counts)
+    .map(([kind, count]) => `${kind}: ${count}`)
+    .join(', ');
 }
 
 /**
@@ -98,10 +111,10 @@ export function EntityRelationWarning() {
     <Alert
       status="warning"
       icon
-      style={{ whiteSpace: 'pre-line' }}
       description={
         <>
-          {t('entityRelationWarningDescription')} {value.join(', ')}
+          {t('entityRelationWarningDescription')}
+          {summarizeByKind(value)}
         </>
       }
     />
