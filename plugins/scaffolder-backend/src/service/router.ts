@@ -342,7 +342,7 @@ export async function createRouter(
           },
         ),
         timeout: { minutes: 15 },
-        fn: async () => {
+        fn: async signal => {
           const { tasks } = await databaseTaskStore.listStaleTasks({
             timeoutS: Duration.fromObject(
               readDuration(config, 'scaffolder.taskTimeout', {
@@ -352,6 +352,7 @@ export async function createRouter(
           });
 
           for (const task of tasks) {
+            signal.throwIfAborted();
             await databaseTaskStore.shutdownTask(task);
             logger.info(`Successfully closed stale task ${task.taskId}`);
           }
