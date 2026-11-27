@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/verify_microsite.yml'
       - 'microsite/**'
+      - 'scripts/plugin-directory/**'
       - 'beps/**'
       - 'mkdocs.yml'
       - 'mkdocs-ci.yml'
@@ -276,6 +277,10 @@ jobs:
 
       - name: typecheck
         run: yarn typecheck
+        working-directory: microsite
+
+      - name: test plugin directory audit
+        run: node --require @backstage/cli/config/nodeTransform.cjs --test 'scripts/plugin-directory-audit/**/*.test.ts'
         working-directory: microsite
 
       - name: verify yarn dependency duplicates

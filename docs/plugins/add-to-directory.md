@@ -4,49 +4,112 @@ title: Add to Directory
 description: Documentation on Adding Plugin to Plugin Directory
 ---
 
-:::caution[Legacy Documentation]
+:::caution Legacy Documentation
 
-This section is part of the legacy plugins documentation. The process for adding plugins to the directory described here is still current.
+This section is part of the legacy plugins documentation. The process for
+adding plugins to the directory described here is still current.
 
 :::
 
-## Adding a Plugin to the Directory
+## Add a plugin to the directory
 
-To add a new plugin to the [plugin directory](https://backstage.io/plugins) create a file with the following pattern `<plugin-name>.yaml` where `<plugin-name>` is the name of your plugin. This file will go in [`microsite/data/plugins`](https://github.com/backstage/backstage/tree/master/microsite/data/plugins) with your plugin's information. Example:
+To add a plugin to the [plugin directory](https://backstage.io/plugins), create
+a manifest in
+[`microsite/data/plugins`](https://github.com/backstage/backstage/tree/master/microsite/data/plugins).
 
-```yaml
----
-title: Your Plugin
-author: Your Name
-authorUrl: # A link to information about the author E.g. Company url, github user profile, etc
-category: Monitoring # A single category e.g. CI, Machine Learning, Services, Monitoring
-description: A brief description of the plugin. # Max 170 characters
-documentation: # A link to your documentation E.g. Your github README
-iconUrl: # Used as the src attribute for your logo.
-# You can provide an external url or add your logo under static/img and provide a path
-# relative to static/ e.g. /img/my-logo.png
-npmPackageName: # Your npm package name E.g. '@backstage/plugin-<etc>' quotes are required
-addedDate: # The date plugin added to directory E.g. '2022-10-01' quotes are required
+### Create the manifest
+
+1. Name the file `<plugin-slug>.yaml`. New filenames must use lowercase
+   kebab-case, for example `example-monitoring.yaml`. Do not add a `slug` key to
+   the manifest.
+
+1. Add the required contributor-owned fields:
+
+   ```yaml
+   ---
+   title: Example Monitoring
+   author: Example Inc.
+   authorUrl: https://example.com
+   category: Monitoring
+   description: Shows service health and deployment activity.
+   documentation: https://example.com/docs/backstage
+   npmPackageName: '@example/backstage-plugin-monitoring'
+   addedDate: '2026-08-03'
+   status: active
+   ```
+
+   Set `status` to `active` for a new entry. The audit owns later changes to
+   `status`.
+
+1. Add any optional contributor-owned fields:
+
+   | Field          | Type         | Description                                                                                                                                                                                 |
+   | -------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+   | `iconUrl`      | string       | An external URL or a path relative to `microsite/static`, such as `/img/example.svg`. The default is `/img/logo-gradient-on-dark.svg`. Use only an icon that you have the right to publish. |
+   | `order`        | number       | The sort priority used by the directory.                                                                                                                                                    |
+   | `capabilities` | string array | The plugin capabilities from the fixed vocabulary in [Declare capabilities](#declare-capabilities).                                                                                         |
+
+1. Do not add or edit the audit-owned `staleSince` or `snapshot` keys. A new
+   entry may omit `snapshot`. The audit populates it after the manifest is
+   accepted. The audit also maintains `status` after its initial `active`
+   value. See [Plugin Directory Audit](./plugin-directory-audit.md) for the
+   generated field contract.
+
+### Declare capabilities
+
+Each `capabilities` entry must be one of these values:
+
+- `entity-card`
+- `entity-content`
+- `standalone-page`
+- `home-page`
+- `search-result`
+- `techdocs-addon`
+- `catalog-processor`
+- `catalog-provider`
+- `scaffolder-actions`
+- `search-collator`
+- `backend-module`
+- `permissions`
+- `signals`
+
+Unknown values fail manifest validation.
+
+### Validation rules
+
+The verifier rejects a manifest in these cases:
+
+- **Unknown keys.** Every manifest object is strict, so a misspelled or extra
+  key fails validation instead of being ignored.
+- **Empty strings.** Required text fields, such as `title`, `description` and
+  `npmPackageName`, must not be empty.
+- **Invalid filenames.** The filename must be lowercase kebab-case with a
+  `.yaml` extension, for example `example-monitoring.yaml`. The only exceptions
+  are the legacy filenames `digital.ai-deploy.yaml`, `digital.ai-release.yaml`
+  and `sds_workspace.yaml`. Do not add to this list.
+- **Invalid dates.** `addedDate` must be a calendar date in `YYYY-MM-DD` form.
+  You can write it with or without quotes, so `addedDate: 2026-08-03` and
+  `addedDate: '2026-08-03'` are equivalent.
+
+The verifier checks every manifest and reports all of the problems in one run.
+
+### Validate the manifest
+
+From the repository root, install dependencies and validate every manifest:
+
+```shell
+yarn install
+node --require @backstage/cli/config/nodeTransform.cjs scripts/plugin-directory/verify.ts
 ```
 
-:::tip
+The verifier reports the filename and field path for every invalid manifest. The
+same command runs in continuous integration (CI).
 
-You can validate your YAML file is correct by running the following from the root of the repo:
+## Submission tips
 
-1. First run `yarn install`
-2. Then run `node ./scripts/verify-plugin-directory.js`
-
-If there are any errors they will be listed and you will need to correct them. We run this same check as part of the CI.
-
-:::
-
-## Submission Tips
-
-Here are a few tips to help speed up the review process when you submit your plugin:
-
-- For any icon that you use make sure you have the proper rights to use it. If you don't have an icon then it will default to `iconUrl: '/img/logo-gradient-on-dark.svg'`.
-- Make sure that your package had been published on the NPM registry and that it's public.
-- Make sure your package on NPM has a link back to your code repo, this helps provide confidence that it's the right package.
-- Where possible, please use an [NPM scope](https://docs.npmjs.com/about-scopes) that matches either your Organization name or user name, this provides trust in the plugin.
-- If your plugin has both a frontend and backend link the documentation to the frontend package but make sure it mentioned needing to install the backend package.
-- Where possible include a screenshot of the features in you plugin documentation, it really does help when deciding to use a plugin.
+- Publish the package publicly on npm before you submit the manifest.
+- Link the npm package to its source repository.
+- Use an npm scope that matches the author organization or user when possible.
+- If a plugin has frontend and backend packages, link `documentation` to the
+  primary plugin guide.
+- Include a product screenshot in the plugin documentation when available.
