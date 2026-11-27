@@ -21,6 +21,9 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 import { BUIProvider } from '../../../provider/BUIProvider';
 import { Cell } from './Cell';
 import { Table } from './Table';
+import { useTable } from '../hooks/useTable';
+import type { OffsetParams } from '../hooks/types';
+import type { ColumnConfig } from '../types';
 
 const routerFuture = {
   v7_startTransition: true,
@@ -47,6 +50,104 @@ function RouterFixture({ children }: PropsWithChildren) {
     </TestRouter>
   );
 }
+
+const paginationItems = Array.from({ length: 25 }, (_, id) => ({
+  id,
+  name: `Item ${id}`,
+}));
+const paginationColumns: ColumnConfig<(typeof paginationItems)[number]>[] = [
+  {
+    id: 'name',
+    label: 'Name',
+    isRowHeader: true,
+    cell: item => <Cell>{item.name}</Cell>,
+  },
+];
+
+function PaginationFixture() {
+  const { tableProps } = useTable({
+    mode: 'complete',
+    data: paginationItems,
+    paginationOptions: { pageSize: 10 },
+  });
+
+  return <Table columnConfig={paginationColumns} {...tableProps} />;
+}
+
+describe('Table pagination', () => {
+  it('shows first and last controls by default', () => {
+    render(<PaginationFixture />);
+
+    const firstPage = screen.getByRole('button', { name: 'First table page' });
+    const lastPage = screen.getByRole('button', { name: 'Last table page' });
+    expect(firstPage).toBeDisabled();
+    expect(lastPage).toBeEnabled();
+
+    fireEvent.click(lastPage);
+    expect(screen.getByText('21 - 25 of 25')).toBeInTheDocument();
+    expect(firstPage).toBeEnabled();
+    expect(lastPage).toBeDisabled();
+
+    fireEvent.click(firstPage);
+    expect(screen.getByText('1 - 10 of 25')).toBeInTheDocument();
+  });
+
+  it('keeps the current page available when jumps to uncached pages fail', async () => {
+    let failLastPage = true;
+    let failFirstPage = true;
+    const getData = jest.fn(
+      async ({ offset, pageSize }: OffsetParams<unknown>) => {
+        if (offset === 20 && failLastPage) {
+          failLastPage = false;
+          throw new Error('last page unavailable');
+        }
+        if (offset === 0 && failFirstPage) {
+          failFirstPage = false;
+          throw new Error('first page unavailable');
+        }
+        return {
+          data: paginationItems.slice(offset, offset + pageSize),
+          totalCount: paginationItems.length,
+        };
+      },
+    );
+
+    function OffsetPaginationFixture() {
+      const { tableProps } = useTable({
+        mode: 'offset',
+        getData,
+        paginationOptions: { pageSize: 10, initialOffset: 10 },
+      });
+      return <Table columnConfig={paginationColumns} {...tableProps} />;
+    }
+
+    render(<OffsetPaginationFixture />);
+    expect(await screen.findByText('Item 10')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Last table page' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'last page unavailable',
+    );
+    expect(screen.getByText('Item 10')).toBeInTheDocument();
+    expect(screen.getByText('11 - 20 of 25')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Last table page' }));
+    expect(await screen.findByText('Item 20')).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'First table page' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'first page unavailable',
+    );
+    expect(screen.getByText('Item 20')).toBeInTheDocument();
+    expect(screen.getByText('21 - 25 of 25')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'First table page' }));
+    expect(await screen.findByText('Item 0')).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(getData).toHaveBeenCalledTimes(5);
+  });
+});
 
 describe('Table rowConfig navigation', () => {
   it('passes a relative getHref result to Row as an ordinary internal action', () => {

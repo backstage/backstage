@@ -89,6 +89,16 @@ export function useOffsetPagination<T extends TableItem, TFilter>(
     [],
   );
 
+  const onFirstPage = useCallback(() => {
+    cache.onJumpToPage(undefined);
+  }, [cache.onJumpToPage]);
+
+  const onLastPage = useCallback(() => {
+    if (cache.totalCount === undefined || cache.totalCount === 0) return;
+    const lastOffset = Math.floor((cache.totalCount - 1) / pageSize) * pageSize;
+    cache.onJumpToPage(lastOffset === 0 ? undefined : lastOffset);
+  }, [cache.totalCount, cache.onJumpToPage, pageSize]);
+
   return {
     data: cache.data,
     isPending: cache.isPending,
@@ -98,8 +108,10 @@ export function useOffsetPagination<T extends TableItem, TFilter>(
     pageSize,
     hasNextPage: cache.hasNextPage,
     hasPreviousPage: cache.hasPreviousPage,
+    onFirstPage,
     onNextPage: cache.onNextPage,
     onPreviousPage: cache.onPreviousPage,
+    onLastPage,
     onPageSizeChange,
     reload: cache.reload,
   };

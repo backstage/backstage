@@ -30,8 +30,10 @@ export type TablePaginationOwnProps = {
   totalCount?: number;
   hasNextPage: boolean;
   hasPreviousPage: boolean;
+  onFirstPage?: () => void;
   onNextPage: () => void;
   onPreviousPage: () => void;
+  onLastPage?: () => void;
   onPageSizeChange?: (size: number) => void;
   showPageSizeOptions?: boolean;
   getLabel?: (params: {

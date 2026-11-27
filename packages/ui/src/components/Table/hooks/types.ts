@@ -188,8 +188,10 @@ export interface PaginationResult<T> {
   pageSize: number;
   hasNextPage: boolean;
   hasPreviousPage: boolean;
+  onFirstPage?: () => void;
   onNextPage: () => void;
   onPreviousPage: () => void;
+  onLastPage?: () => void;
   onPageSizeChange: (size: number) => void;
 }
 
