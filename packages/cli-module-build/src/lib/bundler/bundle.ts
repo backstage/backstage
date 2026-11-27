@@ -23,12 +23,16 @@ import {
   printFileSizesAfterBuild,
 } from 'react-dev-utils/FileSizeReporter';
 import formatWebpackMessages from 'react-dev-utils/formatWebpackMessages';
-import { createConfig } from './config';
+import { createConfig, resolveBaseUrl } from './config';
 import { BuildOptions } from './types';
 import { resolveBundlingPaths, resolveOptionalBundlingPaths } from './paths';
 import chalk from 'chalk';
 import { createDetectedModulesEntryPoint } from './packageDetection';
 import { createRuntimeSharedDependenciesEntryPoint } from './moduleFederation';
+import {
+  preparePublicSources,
+  PUBLIC_SOURCES_COMPILER_NAME,
+} from './publicSources';
 
 // TODO(Rugvip): Limits from CRA, we might want to tweak these though.
 const WARN_AFTER_BUNDLE_GZIP_SIZE = 512 * 1024;
@@ -56,6 +60,9 @@ export async function buildBundle(options: BuildOptions) {
   };
 
   const configs: Configuration[] = [];
+  let publicSources:
+    | Awaited<ReturnType<typeof preparePublicSources>>
+    | undefined;
   if (options.moduleFederationRemote) {
     // Package detection is disabled for remote bundles
     configs.push(await createConfig(paths, commonConfigOptions));
@@ -70,6 +77,15 @@ export async function buildBundle(options: BuildOptions) {
         targetPath: paths.targetPath,
       });
 
+    publicSources = await preparePublicSources(paths, {
+      isDev: false,
+      webpack,
+      publicPath: resolveBaseUrl(options.frontendConfig).pathname.replace(
+        /\/$/,
+        '',
+      ),
+    });
+
     configs.push(
       await createConfig(paths, {
         ...commonConfigOptions,
@@ -78,6 +94,7 @@ export async function buildBundle(options: BuildOptions) {
         ],
         deferredEntryPoints: [...detectedModulesEntryPoint],
         appMode: publicPaths ? 'protected' : 'public',
+        publicSources: publicSources.registry,
       }),
     );
 
@@ -91,8 +108,18 @@ export async function buildBundle(options: BuildOptions) {
         await createConfig(publicPaths, {
           ...commonConfigOptions,
           appMode: 'public',
+          publicSources: publicSources.registry,
         }),
       );
+    }
+
+    // Added last, so that the stats of the app bundles keep their positions.
+    // The app compilers depend on this one, so it still runs first.
+    if (publicSources.config) {
+      for (const config of configs) {
+        config.dependencies = [PUBLIC_SOURCES_COMPILER_NAME];
+      }
+      configs.push(publicSources.config);
     }
   }
 
@@ -132,6 +159,18 @@ export async function buildBundle(options: BuildOptions) {
   }
 
   const { stats } = await build(configs, isCi, webpack);
+
+  // The public entry point is served from its own folder, including its static
+  // assets, and renders the same template. Like the public folder, the public
+  // sources are shared by both, so they're copied there too.
+  if (publicPaths && publicSources?.config) {
+    for (const file of publicSources.registry.emittedFiles) {
+      await fs.copy(
+        resolvePath(paths.targetDist, file),
+        resolvePath(publicPaths.targetDist, file),
+      );
+    }
+  }
 
   if (!stats) {
     throw new Error('No stats returned');

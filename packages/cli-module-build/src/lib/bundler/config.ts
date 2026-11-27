@@ -20,7 +20,6 @@ import { rspack, Configuration } from '@rspack/core';
 
 import { BundlingPaths } from './paths';
 import { Config } from '@backstage/config';
-import browserslist from 'browserslist';
 import ESLintRspackPlugin from 'eslint-rspack-plugin';
 import { TsCheckerRspackPlugin } from 'ts-checker-rspack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
@@ -39,6 +38,8 @@ import { hasReactDomClient } from './hasReactDomClient';
 import { createWorkspaceLinkingPlugins } from './linkWorkspaces';
 import { ConfigInjectingHtmlWebpackPlugin } from './ConfigInjectingHtmlWebpackPlugin';
 import { STATIC_ASSET_HASH_LENGTH } from './staticAssetHash';
+import { resolveBrowserslistTarget } from './browserslistTarget';
+import { PublicSourcesTemplatePlugin } from './publicSources';
 
 export function resolveBaseUrl(
   config: Config,
@@ -122,6 +123,7 @@ export async function createConfig(
     moduleFederationRemote,
     publicSubPath = '',
     webpack,
+    publicSources,
   } = options;
 
   const { plugins, loaders } = transforms(options);
@@ -198,10 +200,15 @@ export async function createConfig(
         'backstage-app-mode': options?.appMode ?? 'public',
       },
       template: paths.targetHtml,
-      templateParameters: {
+      // A function, so that the output files of the public sources are read
+      // once their compiler has finished
+      templateParameters: () => ({
         publicPath,
         config: frontendConfig,
-      },
+        ...(publicSources && {
+          sources: publicSources.createTemplateParameter(publicPath),
+        }),
+      }),
     };
     if (webpack) {
       // Config injection via index.html doesn't work across reloads with
@@ -222,19 +229,25 @@ export async function createConfig(
         ),
       );
     }
-    plugins.push(
-      new HtmlWebpackPlugin({
-        meta: {
-          'backstage-app-mode': options?.appMode ?? 'public',
-          // This is added to be written in the later step, and finally read by the extra entry point
-          'backstage-public-path': '<%= publicPath %>/',
-        },
-        minify: false,
-        publicPath: '<%= publicPath %>',
-        filename: 'index.html.tmpl',
-        template: `${require.resolve('raw-loader')}!${paths.targetHtml}`,
-      }),
-    );
+    const templatePlugin = new HtmlWebpackPlugin({
+      meta: {
+        'backstage-app-mode': options?.appMode ?? 'public',
+        // This is added to be written in the later step, and finally read by the extra entry point
+        'backstage-public-path': '<%= publicPath %>/',
+      },
+      minify: false,
+      publicPath: '<%= publicPath %>',
+      filename: 'index.html.tmpl',
+      template: `${require.resolve('raw-loader')}!${paths.targetHtml}`,
+    });
+    plugins.push(templatePlugin);
+    if (publicSources) {
+      // The app backend renders this template at runtime, without knowledge
+      // of the public sources, so their paths are filled in here
+      plugins.push(
+        new PublicSourcesTemplatePlugin(templatePlugin, publicSources),
+      );
+    }
   }
 
   if (options.moduleFederationRemote) {
@@ -328,19 +341,7 @@ export async function createConfig(
       // module federation remote is the host app, so remotes don't use it.
       { lazyCompilation: lazyCompilation && !moduleFederationRemote };
 
-  // Rspack targets the app's browserslist config when there is one, and picks
-  // its environment by NODE_ENV, which can change during the process, for
-  // example when postcss-load-config sets it in package builds. Name the
-  // environment for production builds, so they always minify JavaScript and
-  // CSS for the same browsers.
-  const browserslistTarget =
-    !isDev && !webpack && browserslist.findConfig(paths.targetPath)
-      ? {
-          target: `browserslist:${
-            process.env.BROWSERSLIST_ENV || 'production'
-          }` as const,
-        }
-      : {};
+  const browserslistTarget = resolveBrowserslistTarget(paths, options);
 
   return {
     mode,
