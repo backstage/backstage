@@ -25,6 +25,7 @@ import { Header, Breadcrumbs } from '@backstage/core-components';
 import {
   IconComponent,
   useApi,
+  useApiHolder,
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
 
@@ -42,6 +43,9 @@ import {
   InspectEntityDialog,
   EntityDisplayName,
   FavoriteEntity,
+  type EntityPresentationApi,
+  entityPresentationApiRef,
+  entityPresentationSnapshot,
 } from '@backstage/plugin-catalog-react';
 
 import { EntityLabels } from '../EntityLabels';
@@ -55,16 +59,22 @@ function headerProps(
   paramNamespace: string | undefined,
   paramName: string | undefined,
   entity: Entity | undefined,
+  presentationApi?: EntityPresentationApi,
 ): { headerTitle: string; headerType: string } {
   const kind = paramKind ?? entity?.kind ?? '';
   const namespace = paramNamespace ?? entity?.metadata.namespace ?? '';
-  const name =
-    entity?.metadata.title ?? paramName ?? entity?.metadata.name ?? '';
+  const name = entity
+    ? entityPresentationSnapshot(entity, undefined, presentationApi)
+        .primaryTitle
+    : paramName ?? '';
+
+  const showNamespace =
+    Boolean(namespace) &&
+    namespace !== DEFAULT_NAMESPACE &&
+    !name.startsWith(`${namespace}/`);
 
   return {
-    headerTitle: `${name}${
-      namespace && namespace !== DEFAULT_NAMESPACE ? ` in ${namespace}` : ''
-    }`,
+    headerTitle: `${name}${showNamespace ? ` in ${namespace}` : ''}`,
     headerType: (() => {
       let t = kind.toLowerCase();
       if (entity && entity.spec && 'type' in entity.spec) {
@@ -109,7 +119,14 @@ const useStyles = makeStyles(theme => ({
 function EntityHeaderTitle() {
   const { entity } = useAsyncEntity();
   const { kind, namespace, name } = useRouteRefParams(entityRouteRef);
-  const { headerTitle: title } = headerProps(kind, namespace, name, entity);
+  const presentationApi = useApiHolder().get(entityPresentationApiRef);
+  const { headerTitle: title } = headerProps(
+    kind,
+    namespace,
+    name,
+    entity,
+    presentationApi,
+  );
   return (
     <Box display="inline-flex" alignItems="center" height="1em" maxWidth="100%">
       <Box
@@ -153,7 +170,7 @@ function EntityHeaderSubtitle(props: { parentEntityRelations?: string[] }) {
         <EntityRefLink entityRef={ancestorEntity.targetRef} disableTooltip />
       )}
       <EntityRefLink entityRef={parentEntity.targetRef} disableTooltip />
-      {name}
+      {entity ? <EntityDisplayName entityRef={entity} hideIcon /> : name}
     </Breadcrumbs>
   ) : null;
 }
@@ -191,11 +208,13 @@ export function EntityHeader(props: {
   } = props;
   const { entity } = useAsyncEntity();
   const { kind, namespace, name } = useRouteRefParams(entityRouteRef);
+  const presentationApi = useApiHolder().get(entityPresentationApiRef);
   const { headerTitle: entityFallbackText, headerType: type } = headerProps(
     kind,
     namespace,
     name,
     entity,
+    presentationApi,
   );
 
   const [searchParams, setSearchParams] = useSearchParams();
