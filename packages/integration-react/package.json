@@ -35,6 +35,7 @@
   "dependencies": {
     "@backstage/config": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@remixicon/react": ">=4.6.0 <4.9.0"
   },

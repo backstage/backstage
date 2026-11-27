@@ -50,7 +50,8 @@
     "@backstage/types": "workspace:^",
     "command-exists": "^1.2.9",
     "fs-extra": "^11.2.0",
-    "yaml": "^2.0.0"
+    "yaml": "^2.0.0",
+    "zod": "^3.25.76 || ^4.0.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",

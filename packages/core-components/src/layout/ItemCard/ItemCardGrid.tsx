@@ -17,6 +17,7 @@ import Box from '@material-ui/core/Box';
 import {
   createStyles,
   makeStyles,
+  StyleRules,
   Theme,
   WithStyles,
 } from '@material-ui/core/styles';
@@ -29,7 +30,7 @@ import { ReactNode } from 'react';
  */
 export type ItemCardGridClassKey = 'root';
 
-const styles = (theme: Theme) =>
+const styles = (theme: Theme): StyleRules<ItemCardGridClassKey> =>
   createStyles({
     root: {
       display: 'grid',

@@ -23,14 +23,27 @@ import type { CliCommandContext } from '@backstage/cli-node';
 
 const PREFIX = `module.exports = require('@backstage/cli/config/eslint-factory')`;
 
+const LEGACY_CONFIGS = [
+  '@backstage/cli/config/eslint.js',
+  '@backstage/cli/config/eslint.backend.js',
+];
+
+// Each .eslintrc.js resolved the legacy configs from its own package
+// directory, so resolve them from there to get the same paths. A package
+// that can't resolve the CLI can't extend them either.
+function resolveLegacyConfigs(dir: string): string[] {
+  return LEGACY_CONFIGS.flatMap(config => {
+    try {
+      return [require.resolve(config, { paths: [dir] })];
+    } catch {
+      return [];
+    }
+  });
+}
+
 export default async ({ args, info }: CliCommandContext) => {
   cli({ name: info.usage, booleanFlagNegation: true }, undefined, args);
   const packages = await PackageGraph.listTargetPackages();
-
-  const oldConfigs = [
-    require.resolve('@backstage/cli/config/eslint.js'),
-    require.resolve('@backstage/cli/config/eslint.backend.js'),
-  ];
 
   const configPaths = new Array<string>();
   await Promise.all(
@@ -52,6 +65,7 @@ export default async ({ args, info }: CliCommandContext) => {
 
       // Only transform configs that extend the old config files, and
       // we remove that entry from the extends array.
+      const oldConfigs = resolveLegacyConfigs(dir);
       const extendsArray = (existingConfig.extends as string[]) ?? [];
       const extendIndex = extendsArray.findIndex(p => oldConfigs.includes(p));
       if (extendIndex === -1) {

@@ -58,6 +58,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
+    "@babel/runtime": "^7.28.4",
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/core-components": "workspace:^",
@@ -79,6 +80,8 @@
     "@backstage/ui": "workspace:^",
     "@codemirror/language": "^6.0.0",
     "@codemirror/legacy-modes": "^6.1.0",
+    "@codemirror/state": "^6.0.0",
+    "@codemirror/theme-one-dark": "^6.0.0",
     "@codemirror/view": "^6.0.0",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",

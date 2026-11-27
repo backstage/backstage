@@ -18,6 +18,7 @@ import Box from '@material-ui/core/Box';
 import {
   createStyles,
   makeStyles,
+  StyleRules,
   Theme,
   WithStyles,
 } from '@material-ui/core/styles';
@@ -31,7 +32,7 @@ import { ReactNode } from 'react';
  */
 export type ItemCardHeaderClassKey = 'root';
 
-const styles = (theme: Theme) =>
+const styles = (theme: Theme): StyleRules<ItemCardHeaderClassKey> =>
   createStyles({
     root: {
       color: theme.getPageTheme({ themeId: 'card' }).fontColor,

@@ -45,7 +45,8 @@
     "@backstage/cli-module-scaffolder": "workspace:^",
     "@backstage/cli-module-search": "workspace:^",
     "@backstage/cli-module-test-jest": "workspace:^",
-    "@backstage/cli-module-translations": "workspace:^"
+    "@backstage/cli-module-translations": "workspace:^",
+    "@backstage/cli-node": "workspace:^"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
