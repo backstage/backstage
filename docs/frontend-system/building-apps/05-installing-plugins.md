@@ -66,6 +66,20 @@ Manual installation may also be necessary if you need to control the ordering of
 
 If you need to use a 3rd-party plugin that does not yet support the new frontend system, you can use the conversion utilities from `@backstage/core-compat-api` to wrap it. See [Converting 3rd-party Plugins](./06-plugin-conversion.md) for details.
 
+## Removing a plugin
+
+1. Remove any manual installation code and other references in your app code. If the plugin was installed manually, this includes its import and feature registration in `createApp`, along with any conversion wrapper. If the plugin was only installed through [feature discovery](#feature-discovery), there is no installation code to remove.
+
+1. Remove the package from your app package:
+
+   ```bash title="From your Backstage root directory"
+   yarn --cwd packages/app remove @backstage/plugin-catalog
+   ```
+
+1. Remove any configuration for the plugin, such as entries under `app.extensions` in `app-config.yaml`.
+
+If the plugin is no longer used at all, remember to remove its backend plugin as well, as described in [Building Backends](../../backend-system/building-backends/01-index.md#removing-plugins-and-modules).
+
 ## Configuring installed plugins
 
 Once a plugin is installed, you can configure its extensions through the `app.extensions` section of your `app-config.yaml`. See [Configuring Extensions](./02-configuring-extensions.md) for details.
