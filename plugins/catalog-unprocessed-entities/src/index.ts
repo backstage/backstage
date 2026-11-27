@@ -28,3 +28,4 @@ export type {
   UnprocessedEntityCache,
   UnprocessedEntityError,
 } from './types';
+export { default } from './alpha/plugin';

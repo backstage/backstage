@@ -81,7 +81,10 @@ export const unprocessedEntitiesDevToolsContent = SubPageBlueprint.make({
   },
 });
 
-/** @alpha */
+/**
+ * The Unprocessed Entities plugin for the frontend system.
+ * @public
+ */
 export default createFrontendPlugin({
   pluginId: 'catalog-unprocessed-entities',
   title: 'Unprocessed Entities',

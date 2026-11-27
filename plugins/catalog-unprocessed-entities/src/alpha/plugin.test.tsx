@@ -22,17 +22,19 @@ import {
 import { createExtensionTester } from '@backstage/frontend-test-utils';
 import { CatalogUnprocessedEntitiesClient } from '@backstage/plugin-catalog-unprocessed-entities-common';
 
-import plugin, {
+import plugin from '..';
+import alphaPlugin from '../alpha';
+import {
   catalogUnprocessedEntitiesApi,
   catalogUnprocessedEntitiesPage,
   unprocessedEntitiesDevToolsContent,
 } from './plugin';
 import { catalogUnprocessedEntitiesApiRef } from '../api';
 
-describe('catalog-unprocessed-entities alpha plugin', () => {
+describe('catalog-unprocessed-entities plugin', () => {
   describe('plugin', () => {
-    it('is defined with the correct pluginId', () => {
-      expect(plugin).toBeDefined();
+    it('exports the same plugin from the root and alpha entry points', () => {
+      expect(plugin).toBe(alphaPlugin);
       expect(plugin.pluginId).toBe('catalog-unprocessed-entities');
     });
   });
