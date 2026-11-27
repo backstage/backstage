@@ -26,10 +26,22 @@ export function normalizeEntityName(name: string): string {
     .replace(/[^a-zA-Z0-9_\-\.]/g, '_');
 
   // invalid to start and end with _, -, .
-  cleaned = cleaned.replace(/^[-_.]+|[-_.]+$/g, '');
+  const separators = '_-.';
+  let start = 0;
+  let end = cleaned.length;
+  while (start < end && separators.includes(cleaned[start])) {
+    start += 1;
+  }
+  while (end > start && separators.includes(cleaned[end - 1])) {
+    end -= 1;
+  }
+  cleaned = cleaned.slice(start, end);
 
   // cleans up format for groups like 'my group (Reader)'
-  cleaned = cleaned.replace(/_+/g, '_');
+  while (cleaned.includes('__')) {
+    // replaceAll from node.js >= 15
+    cleaned = cleaned.replace('__', '_');
+  }
 
   return cleaned;
 }
