@@ -662,7 +662,7 @@ export async function createRouter(
       });
     }
     postProcessNotification(ret, opts);
-    return notification;
+    return ret;
   };
 
   const sendUserNotification = async (
