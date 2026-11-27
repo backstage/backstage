@@ -143,31 +143,57 @@ export class UnprocessedEntitiesModule {
 
   private async pending(owner?: string): Promise<HydratedRefreshState[]> {
     const columns = await this.finalEntityColumns();
-    const res = (
-      await this.database('refresh_state')
-        // Only candidate columns; final_entities shares some column names.
-        .select('refresh_state.*')
-        .leftJoin(
-          'final_entities',
-          'final_entities.entity_ref',
-          'refresh_state.entity_ref',
-        )
-        // A candidate is pending until a final row is published for it. A
-        // final row left by an earlier deletion of the same ref does not
-        // count: neither a tombstone, nor an empty row from before
-        // tombstones, nor a body that is still published for a deleted
-        // predecessor.
-        .where(q => {
-          q.whereNull('final_entities.entity_id');
-          if (columns.deletedAt) {
-            q.orWhereNotNull('final_entities.deleted_at');
-          }
-          q.orWhereRaw(
-            `${this.finalEntityOwner(
-              columns.winner,
-            )} <> refresh_state.entity_id`,
+    const db = this.database;
+    // A candidate is pending until a live final row is published for it. A
+    // final row left by an earlier deletion of the same ref does not count:
+    // neither a tombstone, nor a body that is still published for a deleted
+    // predecessor.
+    //
+    // A row is published for a candidate either through its own slot (no
+    // winner recorded) or by naming it as the winner. The winner always has
+    // the same ref as the row, so matching on IDs alone is enough. Keeping
+    // each match a separate NOT EXISTS lets the database plan them as
+    // anti-joins on the primary keys; a single join with OR conditions has to
+    // read every candidate row instead.
+    //
+    // The pending IDs are found first and the candidate rows read afterwards,
+    // so that only the few pending rows are read in full.
+    const pendingIds = db('refresh_state as candidate')
+      .select('candidate.entity_id')
+      .whereNotExists(
+        db('final_entities')
+          .select(db.raw('1'))
+          .whereRaw('final_entities.entity_id = candidate.entity_id')
+          .modify(q => {
+            if (columns.deletedAt) {
+              q.whereNull('final_entities.deleted_at');
+            }
+            if (columns.winner) {
+              q.whereNull('final_entities.winner_candidate_id');
+            }
+          }),
+      )
+      .modify(q => {
+        if (columns.winner) {
+          q.whereNotExists(
+            db('final_entities')
+              .select(db.raw('1'))
+              .whereRaw(
+                'final_entities.winner_candidate_id = candidate.entity_id',
+              )
+              .modify(inner => {
+                if (columns.deletedAt) {
+                  inner.whereNull('final_entities.deleted_at');
+                }
+              }),
           );
-        })
+        }
+      });
+
+    const res = (
+      await db('refresh_state')
+        .select('refresh_state.*')
+        .whereIn('refresh_state.entity_id', pendingIds)
     ).map(this.hydrateRefreshState);
     if (owner) {
       return res.filter(r => r.unprocessed_entity.spec?.owner === owner);
