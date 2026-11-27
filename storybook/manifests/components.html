@@ -620,13 +620,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">54 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">2/54 infos</a><a class="filter-pill" data-k="no-api" href="#filter-no-api">7/54 without API description</a><span class="filter-pill ok" aria-disabled="true">554 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">54 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">2/54 infos</a><a class="filter-pill" data-k="no-api" href="#filter-no-api">7/54 without API description</a><span class="filter-pill ok" aria-disabled="true">555 stories ok</span></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note info" style="margin-bottom: 16px;">
-            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>3.8s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
+            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>4.7s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
             <pre><code>typescript: {
   reactDocgen: 'react-docgen-typescript',
 }</code></pre>
@@ -5550,7 +5550,7 @@ import { Form } from "react-aria-components";</code></pre>
       <div class="badges">
         <label for="c-17-backstage-ui-table-dev-props" class="badge ok as-toggle">14 prop types</label>
         
-        <label for="c-17-backstage-ui-table-dev-stories" class="badge ok as-toggle">25 stories</label>
+        <label for="c-17-backstage-ui-table-dev-stories" class="badge ok as-toggle">26 stories</label>
         
         
       </div>
@@ -5676,6 +5676,65 @@ import { Fragment } from "react";</code></pre>
       id: &#39;lifecycle&#39;,
       label: &#39;Lifecycle&#39;,
       defaultWidth: &#39;1fr&#39;,
+      cell: item =&gt; &lt;CellText title={item.lifecycle} /&gt;,
+    },
+  ];
+
+  const { tableProps } = useTable({
+    mode: &#39;complete&#39;,
+    getData: () =&gt; data1,
+    paginationOptions: { pageSize: 5 },
+  });
+
+  return &lt;Table columnConfig={columns} {...tableProps} /&gt;;
+};</code></pre>
+              
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Resizable Columns</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ResizableColumns = () =&gt; {
+  const columns: ColumnConfig&lt;Data1Item&gt;[] = [
+    {
+      id: &#39;name&#39;,
+      label: &#39;Name&#39;,
+      isRowHeader: true,
+      isResizable: true,
+      defaultWidth: &#39;3fr&#39;,
+      minWidth: 200,
+      cell: item =&gt; (
+        &lt;CellText title={item.name} description={item.description} /&gt;
+      ),
+    },
+    {
+      id: &#39;owner&#39;,
+      label: &#39;Owner&#39;,
+      isResizable: true,
+      defaultWidth: &#39;2fr&#39;,
+      minWidth: 120,
+      maxWidth: 300,
+      cell: item =&gt; &lt;CellText title={item.owner.name} /&gt;,
+    },
+    {
+      id: &#39;type&#39;,
+      label: &#39;Type&#39;,
+      isResizable: true,
+      defaultWidth: &#39;1fr&#39;,
+      minWidth: 80,
+      maxWidth: 200,
+      cell: item =&gt; &lt;CellText title={item.type} /&gt;,
+    },
+    {
+      id: &#39;lifecycle&#39;,
+      label: &#39;Lifecycle&#39;,
+      isResizable: true,
+      defaultWidth: &#39;1fr&#39;,
+      minWidth: 80,
+      maxWidth: 200,
       cell: item =&gt; &lt;CellText title={item.lifecycle} /&gt;,
     },
   ];
@@ -18713,8 +18772,7 @@ virtualized?: | boolean
       &lt;/div&gt;
       &lt;div&gt;
         &lt;Text variant=&quot;body-large&quot; color=&quot;secondary&quot;&gt;
-          Resizable with defaultWidth — fr ratios with pixel min/max
-          constraints
+          Default widths with pixel min/max constraints
         &lt;/Text&gt;
         &lt;Table
           columnConfig={constrainedColumns}
