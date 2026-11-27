@@ -1,4 +1,4 @@
-# Sentry Scaffolder Actions
+# @backstage/plugin-scaffolder-backend-module-sentry
 
 The `@backstage/plugin-scaffolder-backend-module-sentry` package adds actions
 for creating Sentry projects and retrieving a project's public DSN from

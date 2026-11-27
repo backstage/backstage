@@ -75,7 +75,6 @@ spec:
         - name
         - organizationSlug
         - teamSlug
-        - projectSlug
       properties:
         name:
           title: Project name
@@ -103,11 +102,21 @@ spec:
       action: sentry:fetch:dsn
       input:
         organizationSlug: ${{ parameters.organizationSlug }}
-        projectSlug: ${{ parameters.projectSlug }}
+        projectSlug: ${{ steps['create-sentry-project'].output.result.slug }}
 ```
 
 The `sentry:fetch:dsn` action returns the project's public DSN in
 `steps['fetch-sentry-dsn'].output.dsn`.
+
+The `projectSlug` form field is optional. If it is omitted, Sentry generates the
+slug, and the DSN step uses the slug returned by the project creation step.
+
+### Dry runs
+
+The `sentry:project:create` action does not support dry runs. Although
+`sentry:fetch:dsn` supports dry runs, it still calls the Sentry API during a dry
+run. To skip both steps when your template has a `dryRun` parameter, add
+`if: ${{ parameters.dryRun !== true }}` to each step.
 
 ## Action reference
 
@@ -115,15 +124,15 @@ The `sentry:fetch:dsn` action returns the project's public DSN in
 
 Creates a project for the specified Sentry team.
 
-| Input              | Required | Description                                                                                       |
-| ------------------ | -------- | ------------------------------------------------------------------------------------------------- |
-| `organizationSlug` | Yes      | Slug of the Sentry organization.                                                                  |
-| `teamSlug`         | Yes      | Slug of the team that will own the project.                                                       |
-| `name`             | Yes      | Project name.                                                                                     |
-| `slug`             | No       | Project slug. Sentry generates one from the name if omitted.                                      |
-| `platform`         | No       | Sentry platform for the project.                                                                  |
-| `authToken`        | No       | Sentry token for this action. Overrides the configured token. Requires the `project:write` scope. |
-| `apiBaseUrl`       | No       | Compatibility value that must match the effective API base URL configured for the backend.        |
+| Input              | Required | Description                                                                                                                      |
+| ------------------ | -------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `organizationSlug` | Yes      | Slug of the Sentry organization.                                                                                                 |
+| `teamSlug`         | Yes      | Slug of the team that will own the project.                                                                                      |
+| `name`             | Yes      | Project name.                                                                                                                    |
+| `slug`             | No       | Project slug. Sentry generates one from the name if omitted.                                                                     |
+| `platform`         | No       | Sentry platform for the project.                                                                                                 |
+| `authToken`        | No       | Sentry token for this action. Overrides the configured token. Requires the `project:write` scope.                                |
+| `apiBaseUrl`       | No       | Can be omitted. Only needed for compatibility; if provided, it must match the effective API base URL configured for the backend. |
 
 The action returns the Sentry project `id` and `result`.
 
@@ -136,6 +145,6 @@ Fetches the public DSN for an existing Sentry project.
 | `organizationSlug` | Yes      | Slug of the Sentry organization.                                                                                                              |
 | `projectSlug`      | Yes      | Slug of the Sentry project.                                                                                                                   |
 | `authToken`        | No       | Sentry token for this action. Overrides the configured token. Requires one of the `project:admin`, `project:read`, or `project:write` scopes. |
-| `apiBaseUrl`       | No       | Compatibility value that must match the effective API base URL configured for the backend.                                                    |
+| `apiBaseUrl`       | No       | Can be omitted. Only needed for compatibility; if provided, it must match the effective API base URL configured for the backend.              |
 
 The action returns the public DSN in `dsn`. It supports dry runs.
