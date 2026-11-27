@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import {
   renderInTestApp,
   TestApiProvider,
   mockApis,
 } from '@backstage/test-utils';
-import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
+import {
+  catalogApiRef,
+  EntityPresentationApi,
+  entityPresentationApiRef,
+  entityRouteRef,
+} from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { identityApiRef } from '@backstage/core-plugin-api';
 import { ListTasksPage } from './ListTasksPage';
@@ -27,7 +33,12 @@ import {
   ScaffolderApi,
   scaffolderApiRef,
 } from '@backstage/plugin-scaffolder-react';
-import { act, fireEvent } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  screen,
+  waitForElementToBeRemoved,
+} from '@testing-library/react';
 import { rootRouteRef } from '../../routes';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 
@@ -90,11 +101,6 @@ describe('<ListTasksPage />', () => {
       totalTasks: 1,
     });
 
-    scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
-      title: 'One Template',
-      steps: [],
-    });
-
     const { getByText, findByText } = await renderInTestApp(
       <TestApiProvider
         apis={[
@@ -122,7 +128,7 @@ describe('<ListTasksPage />', () => {
     expect(getByText('List template tasks')).toBeInTheDocument();
     expect(getByText('All tasks that have been started')).toBeInTheDocument();
     expect(getByText('Tasks')).toBeInTheDocument();
-    expect(await findByText('One Template')).toBeInTheDocument();
+    expect(await findByText('test')).toBeInTheDocument();
     expect(await findByText('foo')).toBeInTheDocument();
   });
 
@@ -165,11 +171,6 @@ describe('<ListTasksPage />', () => {
         totalTasks: 1,
       });
 
-    scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
-      title: 'One Template',
-      steps: [],
-    });
-
     const { getByText, findByText } = await renderInTestApp(
       <TestApiProvider
         apis={[
@@ -199,7 +200,115 @@ describe('<ListTasksPage />', () => {
       limit: 5,
       offset: 0,
     });
-    expect(await findByText('One Template')).toBeInTheDocument();
+    expect(await findByText('mock')).toBeInTheDocument();
     expect(await findByText('boo')).toBeInTheDocument();
+  });
+
+  it('should use the entity presentation API for rendering, sorting, and filtering templates and owners', async () => {
+    scaffolderApiMock.listTasks.mockResolvedValue({
+      tasks: [
+        {
+          id: 'task-1',
+          spec: {
+            user: { ref: 'user:default/alice' },
+            templateInfo: {
+              entityRef: 'template:default/alpha-template',
+            },
+          } as any,
+          status: 'completed',
+          createdAt: '',
+          lastHeartbeatAt: '',
+        },
+        {
+          id: 'task-2',
+          spec: {
+            user: { ref: 'user:default/bob' },
+            templateInfo: {
+              entityRef: 'template:default/beta-template',
+            },
+          } as any,
+          status: 'completed',
+          createdAt: '',
+          lastHeartbeatAt: '',
+        },
+      ],
+      totalTasks: 2,
+    });
+
+    const presentations: Record<string, string> = {
+      'template:default/alpha-template': 'Zebra Template',
+      'template:default/beta-template': 'Aardvark Template',
+      'user:default/alice': 'Alice Example',
+      'user:default/bob': 'Bob Example',
+    };
+
+    const entityPresentationApi: EntityPresentationApi = {
+      forEntity: entityOrRef => {
+        const ref =
+          typeof entityOrRef === 'string'
+            ? entityOrRef
+            : stringifyEntityRef(entityOrRef);
+        const snapshot = {
+          entityRef: ref,
+          primaryTitle: presentations[ref] ?? ref,
+        };
+        return {
+          snapshot,
+          promise: Promise.resolve(snapshot),
+        };
+      },
+    };
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, catalogApi],
+          [identityApiRef, identityApi],
+          [scaffolderApiRef, scaffolderApiMock],
+          [permissionApiRef, mockPermissionApi],
+          [entityPresentationApiRef, entityPresentationApi],
+        ]}
+      >
+        <ListTasksPage />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/root': rootRouteRef,
+        },
+      },
+    );
+
+    expect(await screen.findByText('Zebra Template')).toBeInTheDocument();
+    expect(await screen.findByText('Aardvark Template')).toBeInTheDocument();
+    expect(await screen.findByText('Alice Example')).toBeInTheDocument();
+    expect(await screen.findByText('Bob Example')).toBeInTheDocument();
+
+    // Sort by Template column using presented titles (Aardvark before Zebra)
+    fireEvent.click(screen.getByText('Template'));
+    const linksAfterSort = screen
+      .getAllByRole('link')
+      .map(link => link.textContent);
+    expect(linksAfterSort.indexOf('Aardvark Template')).toBeLessThan(
+      linksAfterSort.indexOf('Zebra Template'),
+    );
+
+    // Filter by presented template title (debounced in Table)
+    const searchInput = screen.getByPlaceholderText('Filter');
+    fireEvent.change(searchInput, { target: { value: 'Zebra' } });
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText('Aardvark Template'),
+    );
+    expect(screen.getByText('Zebra Template')).toBeInTheDocument();
+
+    // Filter by presented owner display name
+    fireEvent.change(searchInput, { target: { value: 'Bob Example' } });
+    expect(await screen.findByText('Aardvark Template')).toBeInTheDocument();
+    expect(screen.queryByText('Zebra Template')).not.toBeInTheDocument();
+
+    // Filter by underlying entity ref even when a display title is used
+    fireEvent.change(searchInput, { target: { value: 'alice' } });
+    expect(await screen.findByText('Zebra Template')).toBeInTheDocument();
+    expect(screen.queryByText('Aardvark Template')).not.toBeInTheDocument();
   });
 });

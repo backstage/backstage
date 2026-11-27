@@ -22,9 +22,15 @@ import {
   Page,
   Progress,
   Table,
+  type TableColumn,
 } from '@backstage/core-components';
-import { useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
+import { useApi, useApiHolder, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  CatalogFilterLayout,
+  type EntityPresentationApi,
+  entityPresentationApiRef,
+  entityPresentationSnapshot,
+} from '@backstage/plugin-catalog-react';
 import useAsync from 'react-use/esm/useAsync';
 import { useState } from 'react';
 import {
@@ -49,6 +55,49 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../translation';
 
+function getEntityPresentationTitle(
+  entityRef: string | undefined,
+  defaultKind: string,
+  entityPresentationApi?: EntityPresentationApi,
+): string {
+  if (!entityRef) {
+    return '';
+  }
+  return entityPresentationSnapshot(
+    entityRef,
+    { defaultKind },
+    entityPresentationApi,
+  ).primaryTitle;
+}
+
+function createPresentationColumnHelpers(
+  getRef: (task: ScaffolderTask) => string | undefined,
+  defaultKind: string,
+  entityPresentationApi?: EntityPresentationApi,
+): Pick<TableColumn<ScaffolderTask>, 'customSort' | 'customFilterAndSearch'> {
+  const getTitle = (task: ScaffolderTask) =>
+    getEntityPresentationTitle(
+      getRef(task),
+      defaultKind,
+      entityPresentationApi,
+    );
+
+  return {
+    customSort: (row1, row2) =>
+      getTitle(row1).localeCompare(getTitle(row2), undefined, {
+        sensitivity: 'base',
+      }),
+    customFilterAndSearch: (filter, row) => {
+      const query = String(filter).toLocaleLowerCase();
+      const ref = getRef(row);
+      return (
+        getTitle(row).toLocaleLowerCase().includes(query) ||
+        Boolean(ref && ref.toLocaleLowerCase().includes(query))
+      );
+    },
+  };
+}
+
 export interface MyTaskPageProps {
   initiallySelectedFilter?: 'owned' | 'all';
   contextMenu?: {
@@ -66,6 +115,8 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
   const [page, setPage] = useState(0);
 
   const scaffolderApi = useApi(scaffolderApiRef);
+  const apiHolder = useApiHolder();
+  const entityPresentationApi = apiHolder.get(entityPresentationApiRef);
   const rootLink = useRouteRef(rootRouteRef);
 
   const [ownerFilter, setOwnerFilter] = useState(initiallySelectedFilter);
@@ -141,7 +192,12 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
             },
             {
               title: t('listTaskPage.content.tableCell.template'),
-              field: 'spec.templateInfo.entity.metadata.title',
+              field: 'spec.templateInfo.entityRef',
+              ...createPresentationColumnHelpers(
+                row => row.spec.templateInfo?.entityRef,
+                'template',
+                entityPresentationApi,
+              ),
               render: row => (
                 <TemplateTitleColumn
                   entityRef={row.spec.templateInfo?.entityRef}
@@ -156,6 +212,11 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
             {
               title: t('listTaskPage.content.tableCell.owner'),
               field: 'createdBy',
+              ...createPresentationColumnHelpers(
+                row => row.spec?.user?.ref,
+                'user',
+                entityPresentationApi,
+              ),
               render: row => (
                 <OwnerEntityColumn entityRef={row.spec?.user?.ref} />
               ),

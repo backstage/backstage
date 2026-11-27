@@ -13,24 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useApi } from '@backstage/core-plugin-api';
-import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
-import useAsync from 'react-use/esm/useAsync';
 import { parseEntityRef } from '@backstage/catalog-model';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 
 export const TemplateTitleColumn = ({ entityRef }: { entityRef?: string }) => {
-  const scaffolder = useApi(scaffolderApiRef);
-  const { value, loading, error } = useAsync(
-    () => scaffolder.getTemplateParameterSchema(entityRef || ''),
-    [scaffolder, entityRef],
-  );
-
-  if (loading || error || !entityRef) {
+  if (!entityRef) {
     return null;
   }
 
   return (
-    <EntityRefLink entityRef={parseEntityRef(entityRef)} title={value?.title} />
+    <EntityRefLink
+      entityRef={parseEntityRef(entityRef, { defaultKind: 'template' })}
+      defaultKind="template"
+    />
   );
 };

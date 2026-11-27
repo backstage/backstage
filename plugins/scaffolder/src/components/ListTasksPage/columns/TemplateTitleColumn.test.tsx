@@ -15,37 +15,81 @@
  */
 
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-
-import { TemplateTitleColumn } from './TemplateTitleColumn';
-import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import { screen } from '@testing-library/react';
 import {
-  scaffolderApiRef,
-  ScaffolderApi,
-} from '@backstage/plugin-scaffolder-react';
+  EntityPresentationApi,
+  entityPresentationApiRef,
+  entityRouteRef,
+} from '@backstage/plugin-catalog-react';
+import { TemplateTitleColumn } from './TemplateTitleColumn';
 
 describe('<TemplateTitleColumn />', () => {
-  const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
-    scaffold: jest.fn(),
-    getTemplateParameterSchema: jest.fn(),
-  } as any;
-
-  it('should render the column with the template name', async () => {
-    const props = {
-      entityRef: 'template:default/one-template',
-    };
-    scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
-      title: 'One Template',
-      steps: [],
-    });
-
-    const { getByText } = await renderInTestApp(
-      <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
-        <TemplateTitleColumn {...props} />
+  it('should render a link to the template entity', async () => {
+    await renderInTestApp(
+      <TestApiProvider apis={[]}>
+        <TemplateTitleColumn entityRef="template:default/one-template" />
       </TestApiProvider>,
-      { mountedRoutes: { '/test': entityRouteRef } },
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
-    const text = getByText('One Template');
-    expect(text).toBeDefined();
+    const link = await screen.findByRole('link', { name: 'one-template' });
+    expect(link).toHaveAttribute(
+      'href',
+      '/catalog/default/template/one-template',
+    );
+  });
+
+  it('should render nothing when entityRef is missing', async () => {
+    const { container } = await renderInTestApp(
+      <TestApiProvider apis={[]}>
+        <TemplateTitleColumn />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+    expect(container).toBeEmptyDOMElement();
+  });
+
+  it('should display the title from the entity presentation API', async () => {
+    const entityPresentationApi: EntityPresentationApi = {
+      forEntity: () => ({
+        snapshot: {
+          entityRef: 'template:default/one-template',
+          primaryTitle: 'Presented Template',
+        },
+        promise: Promise.resolve({
+          entityRef: 'template:default/one-template',
+          primaryTitle: 'Presented Template',
+        }),
+      }),
+    };
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[[entityPresentationApiRef, entityPresentationApi]]}
+      >
+        <TemplateTitleColumn entityRef="template:default/one-template" />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    const link = await screen.findByRole('link', {
+      name: 'Presented Template',
+    });
+    expect(link).toHaveAttribute(
+      'href',
+      '/catalog/default/template/one-template',
+    );
   });
 });
