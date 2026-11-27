@@ -75,6 +75,18 @@ describe('resolvePackages', () => {
 
     expect(nonPluginPackages).toContain(`packages${sep}app`);
     expect(nonPluginPackages).not.toContain(`plugins${sep}catalog`);
+
+    const multipleExcludes = await resolvePackagePaths({
+      exclude: ['packages/app', 'plugins/*'],
+    });
+
+    expect(multipleExcludes).toContain(`packages${sep}cli`);
+    expect(multipleExcludes).not.toContain(`packages${sep}app`);
+    expect(multipleExcludes).not.toContain(`plugins${sep}catalog`);
+
+    await expect(
+      resolvePackagePaths({ paths: ['packages/cli'], exclude: [] }),
+    ).resolves.toEqual([`packages${sep}cli`]);
   });
 
   it('should combine all options', async () => {
