@@ -134,9 +134,11 @@ Team: @backstage/kubernetes-maintainers — [Review board](https://github.com/or
 
 Scope: The Kubernetes plugin and the base it provides for other plugins to build upon.
 
-| Name           | Organization | Team | GitHub                                   | Discord      |
-| -------------- | ------------ | ---- | ---------------------------------------- | ------------ |
-| Matthew Clarke | Spotify      |      | [mclarke47](http://github.com/mclarke47) | mclarke#0725 |
+| Name           | Organization | Team | GitHub                                        | Discord      |
+| -------------- | ------------ | ---- | --------------------------------------------- | ------------ |
+| Gabe Montero   | Red Hat      |      | [gabemontero](https://github.com/gabemontero) | gmontero8846 |
+| Kashish Mittal | Red Hat      |      | [04kash](https://github.com/04kash)           | kashh.\_.    |
+| Matthew Clarke | Spotify      |      | [mclarke47](http://github.com/mclarke47)      | mclarke#0725 |
 
 ### Operations
 
