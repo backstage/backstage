@@ -54,10 +54,10 @@ const mockConfig = {
             clientId: 'microsoft-entra-id-enterprise-application-client-id',
             clientSecret:
               'microsoft-entra-id-enterprise-application-client-secret',
-            scope: 'microsoft-enterprise-app-id/mapped.permission',
+            scope: 'microsoft-enterprise-app-id/.default',
             allowedScopes: [
               {
-                scope: 'microsoft-enterprise-app-id/mapped.permission',
+                scope: 'microsoft-enterprise-app-id/.default',
                 clusterUrls: ['localhost'],
               },
               { scope: 'custom-app-id/.default', clusterUrls: ['localhost'] },
@@ -76,7 +76,7 @@ const mockConfig = {
 
 const allowedDefaultScope = [
   {
-    scope: 'microsoft-enterprise-app-id/mapped.permission',
+    scope: 'microsoft-enterprise-app-id/.default',
     clusterUrls: ['localhost'],
   },
 ];
@@ -245,7 +245,7 @@ describe('MicrosoftEntraIdStrategy tests', () => {
     expect(tokenCredential.lastScope).toBe('custom-app-id/.default');
   });
 
-  it('should accept api:// and https:// scopes and reject malformed scopes', async () => {
+  it("should accept '/.default' scopes and reject others before requesting a token", async () => {
     const tokenCredential = new ScopeCapturingTokenCredential(20 * 60 * 1000);
     const strategy = new MicrosoftEntraIdStrategy(
       logger,
@@ -285,16 +285,25 @@ describe('MicrosoftEntraIdStrategy tests', () => {
       'https://graph.microsoft.com/.default',
     );
 
-    const clusterWithInvalidScope: ClusterDetails = {
-      name: 'invalid-scope-cluster',
-      url: 'https://localhost:6443',
-      authMetadata: {
-        [ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE]: 'invalid scope!value',
-      },
-    };
-    await expect(
-      strategy.getCredential(clusterWithInvalidScope),
-    ).rejects.toThrow('Invalid Microsoft Entra ID scope');
+    const getToken = jest.spyOn(tokenCredential, 'getToken');
+    for (const scope of [
+      'custom-app-id/user.read',
+      'custom-app-id/.DEFAULT',
+      '/.default',
+      'api://my-app-id/.default https://graph.microsoft.com/.default',
+      'invalid scope!value',
+    ]) {
+      await expect(
+        strategy.getCredential({
+          name: 'invalid-scope-cluster',
+          url: 'https://localhost:6443',
+          authMetadata: {
+            [ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE]: scope,
+          },
+        }),
+      ).rejects.toThrow('Invalid Microsoft Entra ID scope');
+    }
+    expect(getToken).not.toHaveBeenCalled();
   });
 
   it('should fall back to config scope when annotation is empty string', async () => {
@@ -316,10 +325,10 @@ describe('MicrosoftEntraIdStrategy tests', () => {
     const credential = await strategy.getCredential(clusterWithEmptyAnnotation);
     expect(credential).toEqual({
       type: 'bearer token',
-      token: 'TOKEN_FOR_microsoft-enterprise-app-id/mapped.permission',
+      token: 'TOKEN_FOR_microsoft-enterprise-app-id/.default',
     });
     expect(tokenCredential.lastScope).toBe(
-      'microsoft-enterprise-app-id/mapped.permission',
+      'microsoft-enterprise-app-id/.default',
     );
   });
 
@@ -335,7 +344,7 @@ describe('MicrosoftEntraIdStrategy tests', () => {
                 tenantId: 'kubernetes-tenant-id',
                 clientId: 'kubernetes-client-id',
                 clientSecret: 'kubernetes-client-secret',
-                scope: 'microsoft-enterprise-app-id/mapped.permission',
+                scope: 'microsoft-enterprise-app-id/.default',
                 allowedScopes: allowedDefaultScope,
               },
             },
@@ -373,7 +382,7 @@ describe('MicrosoftEntraIdStrategy tests', () => {
                 tenantId: 'production-tenant-id',
                 clientId: 'production-client-id',
                 clientSecret: 'production-client-secret',
-                scope: 'microsoft-enterprise-app-id/mapped.permission',
+                scope: 'microsoft-enterprise-app-id/.default',
                 allowedScopes: allowedDefaultScope,
               },
             },
@@ -407,7 +416,7 @@ describe('MicrosoftEntraIdStrategy tests', () => {
           providers: {
             microsoft: {
               [env]: {
-                scope: 'microsoft-enterprise-app-id/mapped.permission',
+                scope: 'microsoft-enterprise-app-id/.default',
                 allowedScopes: allowedDefaultScope,
               },
             },
@@ -430,7 +439,7 @@ describe('MicrosoftEntraIdStrategy tests', () => {
     clientSecretCredentialMock.mockClear();
 
     const microsoftConfig: JsonObject = {
-      scope: 'microsoft-enterprise-app-id/mapped.permission',
+      scope: 'microsoft-enterprise-app-id/.default',
       allowedScopes: allowedDefaultScope,
     };
     const strategy = new MicrosoftEntraIdStrategy(logger, {
@@ -526,6 +535,39 @@ describe('MicrosoftEntraIdStrategy tests', () => {
         { scope: k8sAppScope, clusterUrls: ['k8s-dr.example.com'] },
       ],
     };
+
+    it("should refuse a config scope or allowed scope that does not end in '/.default'", async () => {
+      const tokenCredential = new CountingTokenCredential(20 * 60 * 1000);
+
+      await expect(
+        createStrategy(
+          {
+            ...bindings,
+            scope: '6dae42f8-4368-4678-94ff-3960e28e3630/user.read',
+          },
+          tokenCredential,
+        ).getCredential(cluster('https://myaks.hcp.eastus.azmk8s.io')),
+      ).rejects.toThrow(
+        `config key 'kubernetes.auth.providers.microsoft.${env}.scope'`,
+      );
+
+      await expect(
+        createStrategy(
+          {
+            scope: aksScope,
+            allowedScopes: [
+              {
+                scope: 'api://my-k8s-app-id/user.read',
+                clusterUrls: ['k8s.example.com'],
+              },
+            ],
+          },
+          tokenCredential,
+        ).getCredential(cluster('https://myaks.hcp.eastus.azmk8s.io')),
+      ).rejects.toThrow('allowedScopes[0].scope');
+
+      expect(tokenCredential.calls).toBe(0);
+    });
 
     it('should issue tokens for allowed scopes and cluster hostnames', async () => {
       const tokenCredential = new CountingTokenCredential(20 * 60 * 1000);

@@ -256,7 +256,7 @@ metadata:
   namespace: default
   annotations:
     kubernetes.io/auth-provider: microsoft
-    kubernetes.io/microsoft-entra-id-scope: my-custom-scope/role.permission
+    kubernetes.io/microsoft-entra-id-scope: api://my-k8s-app-id/.default
   name: on-prem-cluster0
 ```
 
@@ -276,10 +276,14 @@ There is no built-in default scope. If neither the annotation nor the config
 key is set, the provider throws an error at runtime. You must provide a
 scope through at least one of these two options.
 
-The resolved scope may use any of the forms Microsoft Entra ID accepts, such as
-`api://<app-id>/.default`, `<app-id>/user.read`, or a resource URL like
-`https://graph.microsoft.com/.default`. The provider rejects an empty scope or
-one containing invalid characters with a descriptive error.
+The provider requests an application token with the
+[client credentials flow](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-client-creds-grant-flow),
+so the scope must be a single resource identifier followed by `/.default`, such
+as `api://<app-id>/.default`, `<app-id>/.default`, or
+`https://graph.microsoft.com/.default`. The cluster's Entra ID application must
+grant your application the application permissions it needs. Any other scope,
+including a delegated one like `<app-id>/user.read`, is rejected with a
+descriptive error before a token is requested.
 
 When every cluster uses the same scope, the config key avoids repeating the
 annotation on each cluster entry:

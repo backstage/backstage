@@ -162,18 +162,14 @@ export class MicrosoftEntraIdStrategy implements AuthenticationStrategy {
     }
   }
 
-  /**
-   * Rejects empty scopes and characters Entra ID does not accept
-   * (`0-9a-zA-Z-_.:/`). Does not enforce a `<resource>/<permission>` shape.
-   */
+  /** Accepts only a single resource scope ending in `/.default`. */
   private validateScope(scope: string, source: string): string {
     const trimmed = scope.trim();
-    const isValid = trimmed.length > 0 && /^[0-9a-zA-Z-_.:/]+$/.test(trimmed);
-    if (!isValid) {
+    if (!/^[0-9a-zA-Z-_.:/]+\/\.default$/.test(trimmed)) {
       throw new Error(
         `Invalid Microsoft Entra ID scope '${scope}' from ${source}. ` +
-          `Expected a non-empty scope such as 'api://<app-id>/.default', ` +
-          `'<app-id>/user.read', or 'https://graph.microsoft.com/.default'.`,
+          `Expected a single resource scope ending in '/.default', such as 'api://<app-id>/.default', ` +
+          `'<app-id>/.default', or 'https://graph.microsoft.com/.default'.`,
       );
     }
     return trimmed;

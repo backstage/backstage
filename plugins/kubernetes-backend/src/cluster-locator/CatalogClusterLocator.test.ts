@@ -89,7 +89,7 @@ const entities: Entity[] = [
         'kubernetes.io/api-server-certificate-authority': 'caData',
         [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'microsoft',
         [ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE]:
-          'some-custom-microsoft-entra-id-scope/user.role',
+          'some-custom-microsoft-entra-id-scope/.default',
         'kubernetes.io/dashboard-url': 'my-url',
         'kubernetes.io/dashboard-app': 'my-app',
       },
