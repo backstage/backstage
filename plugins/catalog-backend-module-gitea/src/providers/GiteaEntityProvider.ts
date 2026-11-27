@@ -137,7 +137,7 @@ export class GiteaEntityProvider implements EntityProvider {
       const taskId = `${this.getProviderName()}:refresh`;
       return taskRunner.run({
         id: taskId,
-        fn: async () => {
+        fn: async signal => {
           const logger = this.logger.child({
             class: GiteaEntityProvider.prototype.constructor.name,
             taskId,
@@ -145,7 +145,7 @@ export class GiteaEntityProvider implements EntityProvider {
           });
 
           try {
-            await this.refresh(logger);
+            await this.refreshInternal(logger, signal);
           } catch (error) {
             logger.error(
               `${this.getProviderName()} refresh failed, ${error}`,
@@ -158,6 +158,13 @@ export class GiteaEntityProvider implements EntityProvider {
   }
 
   async refresh(logger: LoggerService): Promise<void> {
+    await this.refreshInternal(logger);
+  }
+
+  private async refreshInternal(
+    logger: LoggerService,
+    signal?: AbortSignal,
+  ): Promise<void> {
     if (!this.connection) {
       throw new Error('Gitea discovery connection not initialized');
     }
@@ -172,9 +179,11 @@ export class GiteaEntityProvider implements EntityProvider {
       let hasMoreData = true;
 
       while (hasMoreData) {
+        signal?.throwIfAborted();
         const url = `${OrgRepoApiUrl}?page=${page}`;
         const response = await fetch(url, {
           method: 'GET',
+          signal,
           ...getGiteaRequestOptions(this.integration.config),
         });
 
@@ -209,6 +218,7 @@ export class GiteaEntityProvider implements EntityProvider {
     await Promise.all(
       allRepos.map(repo =>
         limit(async () => {
+          signal?.throwIfAborted();
           if (repo.empty) {
             logger.warn(`Repo ${repo.html_url} is empty, skipping`);
             return;
@@ -224,6 +234,7 @@ export class GiteaEntityProvider implements EntityProvider {
           // API reference: https://gitea.com/api/swagger#/repository/repoGetContents
           const res = await fetch(contentsApiUrl, {
             method: 'GET',
+            signal,
             ...getGiteaRequestOptions(this.integration.config),
           });
           if (res.ok) {
@@ -244,6 +255,7 @@ export class GiteaEntityProvider implements EntityProvider {
     const locations = await Promise.all(
       validRepos.map(repo => limit(() => this.createLocationSpec(repo))),
     );
+    signal?.throwIfAborted();
     // Apply the locations to the catalog
     try {
       const providerName: string = this.getProviderName();

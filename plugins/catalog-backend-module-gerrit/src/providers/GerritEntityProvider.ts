@@ -124,7 +124,7 @@ export class GerritEntityProvider implements EntityProvider {
       const taskId = `${this.getProviderName()}:refresh`;
       return taskRunner.run({
         id: taskId,
-        fn: async () => {
+        fn: async signal => {
           const logger = this.logger.child({
             class: GerritEntityProvider.prototype.constructor.name,
             taskId,
@@ -132,7 +132,7 @@ export class GerritEntityProvider implements EntityProvider {
           });
 
           try {
-            await this.refresh(logger);
+            await this.refreshInternal(logger, signal);
           } catch (error) {
             logger.error(
               `${this.getProviderName()} refresh failed, ${error}`,
@@ -145,6 +145,13 @@ export class GerritEntityProvider implements EntityProvider {
   }
 
   async refresh(logger: LoggerService): Promise<void> {
+    await this.refreshInternal(logger);
+  }
+
+  private async refreshInternal(
+    logger: LoggerService,
+    signal?: AbortSignal,
+  ): Promise<void> {
     if (!this.connection) {
       throw new Error('Gerrit discovery connection not initialized');
     }
@@ -156,6 +163,7 @@ export class GerritEntityProvider implements EntityProvider {
     try {
       response = await fetch(projectQueryUrl, {
         method: 'GET',
+        signal,
         ...getGerritRequestOptions(this.integration.config),
       });
     } catch (e) {
@@ -170,9 +178,12 @@ export class GerritEntityProvider implements EntityProvider {
 
     const limit = pLimit(5);
     const locations = await Promise.all(
-      projects.map(project => limit(() => this.createLocationSpec(project))),
+      projects.map(project =>
+        limit(() => this.createLocationSpec(project, signal)),
+      ),
     );
 
+    signal?.throwIfAborted();
     await this.connection.applyMutation({
       type: 'full',
       entities: locations.map(location => ({
@@ -183,7 +194,11 @@ export class GerritEntityProvider implements EntityProvider {
     logger.info(`Found ${locations.length} locations.`);
   }
 
-  private async createLocationSpec(project: string): Promise<LocationSpec> {
+  private async createLocationSpec(
+    project: string,
+    signal?: AbortSignal,
+  ): Promise<LocationSpec> {
+    signal?.throwIfAborted();
     // If a branch has been configured, we can use it directly
     if (this.config.branch) {
       return {
@@ -203,6 +218,7 @@ export class GerritEntityProvider implements EntityProvider {
     try {
       response = await fetch(projectGetHeadUrl, {
         method: 'GET',
+        signal,
         ...getGerritRequestOptions(this.integration.config),
       });
     } catch (e) {

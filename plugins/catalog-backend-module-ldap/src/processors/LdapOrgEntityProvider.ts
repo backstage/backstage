@@ -271,10 +271,13 @@ export class LdapOrgEntityProvider implements EntityProvider {
    * Runs one single complete ingestion. This is only necessary if you use
    * manual scheduling.
    */
-  async read(options?: { logger?: LoggerService }) {
+  async read(options?: { logger?: LoggerService; signal?: AbortSignal }) {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
+
+    const signal = options?.signal;
+    signal?.throwIfAborted();
 
     const logger = options?.logger ?? this.options.logger;
     const { markReadComplete } = trackProgress(logger);
@@ -306,6 +309,7 @@ export class LdapOrgEntityProvider implements EntityProvider {
 
       const { markCommitComplete } = markReadComplete({ users, groups });
 
+      signal?.throwIfAborted();
       await this.connection.applyMutation({
         type: 'full',
         entities: [...users, ...groups].map(entity => ({
@@ -327,7 +331,7 @@ export class LdapOrgEntityProvider implements EntityProvider {
       const id = `${this.getProviderName()}:refresh`;
       await taskRunner.run({
         id,
-        fn: async () => {
+        fn: async signal => {
           const logger = this.options.logger.child({
             class: LdapOrgEntityProvider.prototype.constructor.name,
             taskId: id,
@@ -335,7 +339,7 @@ export class LdapOrgEntityProvider implements EntityProvider {
           });
 
           try {
-            await this.read({ logger });
+            await this.read({ logger, signal });
           } catch (error) {
             logger.error(
               `${this.getProviderName()} refresh failed, ${error}`,

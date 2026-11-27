@@ -120,7 +120,10 @@ export class LdapOrgEntityProvider implements EntityProvider {
     options: LdapOrgEntityProviderLegacyOptions,
   ): LdapOrgEntityProvider;
   getProviderName(): string;
-  read(options?: { logger?: LoggerService }): Promise<void>;
+  read(options?: {
+    logger?: LoggerService;
+    signal?: AbortSignal;
+  }): Promise<void>;
 }
 
 // @public @deprecated

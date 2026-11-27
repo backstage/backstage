@@ -238,6 +238,12 @@ describe('readPuppetNodes', () => {
         const entities = await readPuppetNodes(config);
         expect(entities).toHaveLength(1);
       });
+
+      it('should stop when the signal is aborted', async () => {
+        await expect(
+          readPuppetNodes(config, { signal: AbortSignal.abort() }),
+        ).rejects.toThrow();
+      });
     });
   });
 });

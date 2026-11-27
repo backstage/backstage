@@ -539,6 +539,50 @@ describe('GiteaEntityProvider', () => {
       );
     });
 
+    it('should not apply a mutation when the task is aborted', async () => {
+      (logger.child as jest.Mock).mockReturnValue(logger);
+      provider = new (GiteaEntityProvider as any)(
+        {
+          id: 'test-provider',
+          host: 'gitea.example.com',
+          organization: 'test-org',
+          catalogPath: 'catalog-info.yaml',
+          branch: 'main',
+        },
+        integration,
+        logger,
+        mockTaskRunner,
+      );
+      await provider.connect(mockConnection);
+      const taskFn = mockTaskRunner.run.mock.calls[0][0].fn as (
+        signal: AbortSignal,
+      ) => Promise<void>;
+      const repo = {
+        name: 'repo1',
+        html_url: 'https://gitea.example.com/test-org/repo1',
+        empty: false,
+      };
+
+      await taskFn(AbortSignal.abort());
+      expect(global.fetch).not.toHaveBeenCalled();
+
+      const controller = new AbortController();
+      (global.fetch as jest.Mock).mockImplementationOnce(async () => {
+        controller.abort();
+        return { ok: true, json: async () => [repo] };
+      });
+      await taskFn(controller.signal);
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+      expect(mockConnection.applyMutation).not.toHaveBeenCalled();
+
+      (global.fetch as jest.Mock)
+        .mockResolvedValueOnce({ ok: true, json: async () => [repo] })
+        .mockResolvedValueOnce({ ok: true, json: async () => [] })
+        .mockResolvedValueOnce({ ok: true });
+      await taskFn(new AbortController().signal);
+      expect(mockConnection.applyMutation).toHaveBeenCalledTimes(1);
+    });
+
     it('should handle errors when applying mutations', async () => {
       await provider.connect(mockConnection);
 
