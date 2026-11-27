@@ -1,1 +1,0 @@
-Fixed same-origin absolute link URLs navigating to broken paths such as /https:/example.com/page through the legacy Backstage UI router bridge
