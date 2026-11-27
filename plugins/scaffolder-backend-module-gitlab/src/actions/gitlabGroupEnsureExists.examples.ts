@@ -124,4 +124,20 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description: 'Ensure a personal user namespace exists',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'gitlabGroup',
+          name: 'Group',
+          action: 'gitlab:group:ensureExists',
+          input: {
+            repoUrl: 'gitlab.com?repo=my-project&owner=my-username',
+            path: ['my-username'],
+          },
+        },
+      ],
+    }),
+  },
 ];

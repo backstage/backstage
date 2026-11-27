@@ -25,6 +25,9 @@ const mockGitlabClient = {
     show: jest.fn(),
     create: jest.fn(),
   },
+  Namespaces: {
+    show: jest.fn(),
+  },
 };
 
 jest.mock('@gitbeaker/rest', () => ({
@@ -290,5 +293,128 @@ describe('gitlab:group:ensureExists', () => {
         token: 'mysecrettoken',
       }),
     );
+  });
+
+  it('should reuse an existing user namespace when owner is a user and path has no further segments', async () => {
+    mockGitlabClient.Groups.show.mockRejectedValueOnce({
+      cause: { response: { status: 404 } },
+    });
+    mockGitlabClient.Namespaces.show.mockResolvedValueOnce({
+      id: 42,
+      kind: 'user',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        repoUrl: 'gitlab.com?repo=my-project&owner=my-username',
+        path: ['my-username'],
+      },
+    });
+
+    expect(mockGitlabClient.Groups.create).not.toHaveBeenCalled();
+    expect(mockContext.output).toHaveBeenCalledWith('groupId', 42);
+  });
+
+  it('should throw InputError when attempting to create a subgroup under a user namespace', async () => {
+    mockGitlabClient.Groups.show.mockRejectedValueOnce({
+      cause: { response: { status: 404 } },
+    });
+    mockGitlabClient.Namespaces.show.mockResolvedValueOnce({
+      id: 42,
+      kind: 'user',
+    });
+
+    await expect(
+      action.handler({
+        ...mockContext,
+        input: {
+          repoUrl: 'gitlab.com?repo=my-project&owner=my-username',
+          path: ['my-username', 'subgroup'],
+        },
+      }),
+    ).rejects.toThrow(
+      "Cannot create subgroups under user namespace 'my-username'",
+    );
+
+    expect(mockGitlabClient.Groups.create).not.toHaveBeenCalled();
+  });
+
+  it('should create group when namespace does not exist (404)', async () => {
+    mockGitlabClient.Groups.show.mockRejectedValueOnce({
+      cause: { response: { status: 404 } },
+    });
+    mockGitlabClient.Namespaces.show.mockRejectedValueOnce({
+      cause: { response: { status: 404 } },
+    });
+    mockGitlabClient.Groups.create.mockResolvedValueOnce({
+      id: 99,
+      full_path: 'new-group',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        repoUrl: 'gitlab.com?repo=my-project&owner=owner',
+        path: ['new-group'],
+      },
+    });
+
+    expect(mockGitlabClient.Groups.create).toHaveBeenCalledWith(
+      'new-group',
+      'new-group',
+      {},
+    );
+    expect(mockContext.output).toHaveBeenCalledWith('groupId', 99);
+  });
+
+  it('should rethrow error when Namespaces.show rejects with a non-404 error', async () => {
+    mockGitlabClient.Groups.show.mockRejectedValueOnce({
+      cause: { response: { status: 404 } },
+    });
+    mockGitlabClient.Namespaces.show.mockRejectedValueOnce(
+      new Error('Internal Server Error'),
+    );
+
+    await expect(
+      action.handler({
+        ...mockContext,
+        input: {
+          repoUrl: 'gitlab.com?repo=my-project&owner=owner',
+          path: ['broken-group'],
+        },
+      }),
+    ).rejects.toThrow('Internal Server Error');
+
+    expect(mockGitlabClient.Groups.create).not.toHaveBeenCalled();
+  });
+
+  it('should fall through to group creation when namespace has kind group', async () => {
+    mockGitlabClient.Groups.show.mockRejectedValueOnce({
+      cause: { response: { status: 404 } },
+    });
+    mockGitlabClient.Namespaces.show.mockResolvedValueOnce({
+      id: 55,
+      kind: 'group',
+    });
+    mockGitlabClient.Groups.create.mockResolvedValueOnce({
+      id: 55,
+      full_path: 'hidden-group',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        repoUrl: 'gitlab.com?repo=my-project&owner=owner',
+        path: ['hidden-group'],
+      },
+    });
+
+    expect(mockGitlabClient.Groups.create).toHaveBeenCalledWith(
+      'hidden-group',
+      'hidden-group',
+      {},
+    );
+    expect(mockContext.output).toHaveBeenCalledWith('groupId', 55);
   });
 });
