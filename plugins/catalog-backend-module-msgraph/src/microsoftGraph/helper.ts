@@ -25,10 +25,17 @@ export function normalizeEntityName(name: string): string {
     .toLowerCase()
     .replace(/[^a-zA-Z0-9_\-\.]/g, '_');
 
-  // invalid to end with _
-  while (cleaned.endsWith('_')) {
-    cleaned = cleaned.substring(0, cleaned.length - 1);
+  // invalid to start and end with _, -, .
+  const separators = '_-.';
+  let start = 0;
+  let end = cleaned.length;
+  while (start < end && separators.includes(cleaned[start])) {
+    start += 1;
   }
+  while (end > start && separators.includes(cleaned[end - 1])) {
+    end -= 1;
+  }
+  cleaned = cleaned.slice(start, end);
 
   // cleans up format for groups like 'my group (Reader)'
   while (cleaned.includes('__')) {
