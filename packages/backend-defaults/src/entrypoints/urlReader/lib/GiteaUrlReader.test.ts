@@ -246,6 +246,46 @@ describe('GiteaUrlReader', () => {
         ),
       ).rejects.toThrow(NotModifiedError);
     });
+
+    it('should reject path traversal in the location URL without making a request', async () => {
+      const requestedUrls: string[] = [];
+      worker.use(
+        http.get('*', ({ request }) => {
+          requestedUrls.push(request.url);
+          return new HttpResponse(null, { status: 500 });
+        }),
+      );
+
+      await expect(
+        giteaProcessor.readUrl(
+          'https://gitea.com/owner/project/src/branch/main/../../../../victim/v2/secret.yaml',
+        ),
+      ).rejects.toThrow(/path traversal/);
+
+      await expect(
+        giteaProcessor.readUrl(
+          'https://gitea.com/owner/project/src/branch/main/%2e%2e/%2e%2e/%2e%2e/%2e%2e/victim/v2/secret.yaml',
+        ),
+      ).rejects.toThrow(/path traversal/);
+
+      // a malformed escape in the trailing fragment must not disable the
+      // traversal check for the earlier segments
+      await expect(
+        giteaProcessor.readUrl(
+          'https://gitea.com/owner/project/src/branch/main/%2e%2e/%2e%2e/%2e%2e/%2e%2e/victim/v2/secret.yaml#%ZZ',
+        ),
+      ).rejects.toThrow(/path traversal/);
+
+      // tab and newline characters are removed by URL parsing, so dot
+      // segments containing them must be rejected as well
+      await expect(
+        giteaProcessor.readUrl(
+          'https://gitea.com/owner/project/src/branch/main/.\t./.\t./.\t./.\t./victim/v2/secret.yaml',
+        ),
+      ).rejects.toThrow(/path traversal/);
+
+      expect(requestedUrls).toEqual([]);
+    });
   });
 
   describe('readTree', () => {

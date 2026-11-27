@@ -360,6 +360,58 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
       });
     });
 
+    it('encodes file paths that carry URL query structure', async () => {
+      const location: LocationSpec = {
+        type: 'azure-discovery',
+        target:
+          'https://dev.azure.com/shopify/engineering/_git/backstage?path=/catalog-info.yaml&version=GBtopic/catalog-info',
+      };
+      mockCodeSearch.mockResolvedValueOnce([
+        {
+          fileName: 'catalog-info.yaml',
+          path: '/catalog-info.yaml&version=GBattacker',
+          repository: {
+            name: 'backstage',
+          },
+          project: {
+            name: '*',
+          },
+        },
+        {
+          fileName: 'catalog-info.yaml',
+          path: '/sub dir/read me#x=y.yaml',
+          repository: {
+            name: 'backstage',
+          },
+          project: {
+            name: '*',
+          },
+        },
+      ]);
+      const emitter = jest.fn();
+
+      await processor.readLocation(location, false, emitter);
+
+      expect(emitter).toHaveBeenCalledWith({
+        type: 'location',
+        location: {
+          type: 'url',
+          target:
+            'https://dev.azure.com/shopify/engineering/_git/backstage?path=/catalog-info.yaml%26version%3DGBattacker&version=GBtopic/catalog-info',
+          presence: 'optional',
+        },
+      });
+      expect(emitter).toHaveBeenCalledWith({
+        type: 'location',
+        location: {
+          type: 'url',
+          target:
+            'https://dev.azure.com/shopify/engineering/_git/backstage?path=/sub%20dir/read%20me%23x%3Dy.yaml&version=GBtopic/catalog-info',
+          presence: 'optional',
+        },
+      });
+    });
+
     it('output nothing when code search does not find anything', async () => {
       const location: LocationSpec = {
         type: 'azure-discovery',

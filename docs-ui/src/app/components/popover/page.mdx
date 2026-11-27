@@ -2,9 +2,14 @@ import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
 import { ReactAriaLink } from '@/components/ReactAriaLink';
-import { dialogTriggerPropDefs, popoverPropDefs } from './props-definition';
+import {
+  dialogTriggerPropDefs,
+  previewTriggerPropDefs,
+  popoverPropDefs,
+} from './props-definition';
 import {
   popoverUsageSnippet,
+  previewTriggerSnippet,
   defaultSnippet,
   placementSnippet,
   hideArrowSnippet,
@@ -18,6 +23,7 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 export const reactAriaUrls = {
   dialogTrigger: 'https://react-aria.adobe.com/Modal#dialogtrigger',
   popover: 'https://react-aria.adobe.com/Popover',
+  previewTrigger: 'https://react-aria.adobe.com/PreviewTrigger',
 };
 
 <PageTitle
@@ -31,6 +37,15 @@ export const reactAriaUrls = {
 
 <CodeBlock code={popoverUsageSnippet} />
 
+### Hover previews
+
+Use `PreviewTrigger` instead of `DialogTrigger` to open an interactive popover on
+hover, keyboard focus, or long press. Set `delay` and `closeDelay` to control its
+opening and closing delays. Keyboard users can press Tab to enter the preview
+and Escape to dismiss it.
+
+<CodeBlock code={previewTriggerSnippet} />
+
 ## API reference
 
 ### DialogTrigger
@@ -40,6 +55,15 @@ Wraps the trigger button and popover content.
 <PropsTable data={dialogTriggerPropDefs} />
 
 <ReactAriaLink component="DialogTrigger" href={reactAriaUrls.dialogTrigger} />
+
+### PreviewTrigger
+
+Wraps the trigger element and interactive popover content, opening on hover,
+keyboard focus, or long press.
+
+<PropsTable data={previewTriggerPropDefs} />
+
+<ReactAriaLink component="PreviewTrigger" href={reactAriaUrls.previewTrigger} />
 
 ### Popover
 

@@ -110,6 +110,14 @@ describe('fetch:template:file', () => {
       );
     });
 
+    it('should disallow a target path within a .git directory', async () => {
+      await expect(
+        action.handler(mockContext({ targetPath: './target/.git/HEAD' })),
+      ).rejects.toThrow('targetPath must not be within a .git directory');
+
+      expect(mockFetchFile).not.toHaveBeenCalled();
+    });
+
     describe('valid input', () => {
       let context: ActionContext<FetchTemplateInput>;
 

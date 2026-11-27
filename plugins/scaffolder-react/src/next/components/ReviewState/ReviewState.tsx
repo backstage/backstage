@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useMemo } from 'react';
 import { StructuredMetadataTable } from '@backstage/core-components';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { Draft07 as JSONSchema, JsonSchema } from 'json-schema-library';
@@ -32,18 +33,29 @@ export type ReviewStateProps = {
    * values removed. Defaults to `formState`.
    */
   schemaFormState?: JsonObject;
+  /**
+   * All parameter steps, including hidden ones. A field is masked on review
+   * if any of these steps marks it as a password or secret, or sets a review
+   * mask for it. Defaults to `schemas`.
+   */
+  maskSchemas?: Pick<ParsedTemplateSchema, 'mergedSchema'>[];
 };
+
+type MaskSchema = Pick<ParsedTemplateSchema, 'mergedSchema'>;
+
+type CompiledStep = { source: MaskSchema; parsed: JSONSchema };
 
 type ReviewOverride = { kind: 'hide' } | { kind: 'mask'; value: string };
 
 function getReviewOverride(
   definition: JsonSchema | undefined,
+  allowHide: boolean = true,
 ): ReviewOverride | undefined {
   const reviewOptions = definition?.['ui:backstage']?.review;
   if (reviewOptions?.mask) {
     return { kind: 'mask', value: reviewOptions.mask };
   }
-  if (reviewOptions?.show === false) {
+  if (allowHide && reviewOptions?.show === false) {
     return { kind: 'hide' };
   }
   if (
@@ -56,29 +68,61 @@ function getReviewOverride(
 }
 
 /**
+ * Finds the review override for a field. The step that shows the field can
+ * mask or hide it, and any other step can mask it.
+ */
+function findOverride(
+  pointer: string,
+  ownStep: CompiledStep | undefined,
+  steps: CompiledStep[],
+  formState: JsonObject,
+): ReviewOverride | undefined {
+  const ownOverride = getReviewOverride(
+    ownStep?.parsed.getSchema({ pointer: `#/${pointer}`, data: formState }),
+  );
+  if (ownOverride) {
+    return ownOverride;
+  }
+  for (const step of steps) {
+    if (step === ownStep) {
+      continue;
+    }
+    // Only masks apply across steps, another step can't hide a field. Hiding
+    // is skipped here so that a secret that is also hidden is still masked.
+    const override = getReviewOverride(
+      step.parsed.getSchema({ pointer: `#/${pointer}`, data: formState }),
+      false,
+    );
+    if (override) {
+      return override;
+    }
+  }
+  return undefined;
+}
+
+/**
  * Applies review masks and `show: false` to the items and fields nested in
  * an array or unexploded object, as these are rendered as a single value.
  */
 function maskNestedValue(
   key: string,
   value: JsonValue,
-  parsedSchema: JSONSchema,
+  ownStep: CompiledStep | undefined,
+  steps: CompiledStep[],
   formState: JsonObject,
 ): JsonValue {
   const maskChild = (
     pointer: string,
     child: JsonValue,
   ): JsonValue | undefined => {
-    const override = getReviewOverride(
-      parsedSchema.getSchema({ pointer: `#/${pointer}`, data: formState }),
-    );
+    const override = findOverride(pointer, ownStep, steps, formState);
     if (override?.kind === 'hide') {
       return undefined;
     }
     if (override?.kind === 'mask') {
       return override.value;
     }
-    return maskNestedValue(pointer, child, parsedSchema, formState);
+    return maskNestedValue(pointer, child, ownStep, steps, formState);
   };
 
   if (Array.isArray(value)) {
@@ -108,11 +152,11 @@ function maskNestedValue(
 function processSchema(
   key: string,
   value: JsonValue | undefined,
-  schema: ParsedTemplateSchema,
+  ownStep: CompiledStep,
+  steps: CompiledStep[],
   formState: JsonObject,
 ): [string, JsonValue | undefined][] {
-  const parsedSchema = new JSONSchema(schema.mergedSchema);
-  const definitionInSchema = parsedSchema.getSchema({
+  const definitionInSchema = ownStep.parsed.getSchema({
     pointer: `#/${key}`,
     data: formState,
   });
@@ -122,15 +166,16 @@ function processSchema(
     definitionInSchema?.title ??
     formatKey(key);
 
+  const override = findOverride(key, ownStep, steps, formState);
+  if (override?.kind === 'mask') {
+    return [[name, override.value]];
+  }
+  if (override?.kind === 'hide') {
+    return [];
+  }
+
   if (definitionInSchema) {
     const backstageReviewOptions = definitionInSchema['ui:backstage']?.review;
-    const override = getReviewOverride(definitionInSchema);
-    if (override?.kind === 'mask') {
-      return [[name, override.value]];
-    }
-    if (override?.kind === 'hide') {
-      return [];
-    }
 
     if (definitionInSchema.enum && definitionInSchema.enumNames) {
       return [
@@ -146,13 +191,19 @@ function processSchema(
     if (backstageReviewOptions?.explode !== false && isJsonObject(value)) {
       // Recurse nested objects
       return Object.entries(value).flatMap(([nestedKey, nestedValue]) =>
-        processSchema(`${key}/${nestedKey}`, nestedValue, schema, formState),
+        processSchema(
+          `${key}/${nestedKey}`,
+          nestedValue,
+          ownStep,
+          steps,
+          formState,
+        ),
       );
     }
   }
 
   if (Array.isArray(value) || isJsonObject(value)) {
-    return [[name, maskNestedValue(key, value, parsedSchema, formState)]];
+    return [[name, maskNestedValue(key, value, ownStep, steps, formState)]];
   }
 
   return [[name, value]];
@@ -164,13 +215,38 @@ function processSchema(
  */
 export const ReviewState = (props: ReviewStateProps) => {
   const schemaFormState = props.schemaFormState ?? props.formState;
+  const maskSchemas = props.maskSchemas ?? props.schemas;
+  const steps = useMemo(
+    () =>
+      maskSchemas.map(source => ({
+        source,
+        parsed: new JSONSchema(source.mergedSchema),
+      })),
+    [maskSchemas],
+  );
   const reviewData = Object.fromEntries(
     Object.entries(props.formState)
-      .flatMap(([key, value]) => {
+      .flatMap(([key, value]): [string, JsonValue | undefined][] => {
         const schema = findSchemaForKey(key, props.schemas, schemaFormState);
-        return schema
-          ? processSchema(key, value, schema, schemaFormState)
-          : [[formatKey(key), value]];
+        if (schema) {
+          const ownStep = steps.find(step => step.source === schema) ?? {
+            source: schema,
+            parsed: new JSONSchema(schema.mergedSchema),
+          };
+          return processSchema(key, value, ownStep, steps, schemaFormState);
+        }
+        const override = findOverride(key, undefined, steps, schemaFormState);
+        if (override?.kind === 'mask') {
+          return [[formatKey(key), override.value]];
+        }
+        return [
+          [
+            formatKey(key),
+            value === undefined
+              ? value
+              : maskNestedValue(key, value, undefined, steps, schemaFormState),
+          ],
+        ];
       })
       .filter(prop => prop.length > 0),
   );

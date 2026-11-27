@@ -17,7 +17,7 @@
 jest.mock('fs-extra');
 
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'node:path';
+import { dirname, join, resolve as resolvePath } from 'node:path';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
@@ -27,6 +27,9 @@ import os from 'node:os';
 describe('fetchContents helper', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // The .git directory check reads the extracted tree; default to an
+    // empty one unless a test overrides it
+    (fs.readdir as unknown as jest.Mock).mockResolvedValue([]);
   });
 
   const integrations = ScmIntegrations.fromConfig(
@@ -117,13 +120,21 @@ describe('fetchContents helper', () => {
       readTree.mockResolvedValue({
         dir: dirFunction,
       });
+      (fs.mkdtemp as unknown as jest.Mock).mockResolvedValue('/tmp/staging');
       await fetchContents({
         ...options,
         outputPath: 'foo',
         fetchUrl: 'https://github.com/backstage/foo',
       });
+      // The staging directory is created next to the target directory, not
+      // in the system temp folder
+      expect(fs.mkdtemp).toHaveBeenCalledWith(
+        join(dirname(resolvePath('foo')), 'fetch-'),
+      );
       expect(fs.ensureDir).toHaveBeenCalledWith('foo');
-      expect(dirFunction).toHaveBeenCalledWith({ targetDir: 'foo' });
+      expect(dirFunction).toHaveBeenCalledWith({ targetDir: '/tmp/staging' });
+      expect(fs.copy).toHaveBeenCalledWith('/tmp/staging', 'foo');
+      expect(fs.remove).toHaveBeenCalledWith('/tmp/staging');
     });
 
     it('should pass through the token provided through to the URL reader', async () => {
@@ -138,6 +149,66 @@ describe('fetchContents helper', () => {
         'https://github.com/backstage/foo',
         expect.objectContaining({ token: 'mockToken' }),
       );
+    });
+
+    it('should reject fetched trees that contain a .git directory', async () => {
+      const dirFunction = jest.fn();
+      readTree.mockResolvedValue({
+        dir: dirFunction,
+      });
+      (fs.mkdtemp as unknown as jest.Mock).mockResolvedValue('/tmp/staging');
+      (fs.readdir as unknown as jest.Mock).mockImplementation(
+        async (dir: string) => {
+          if (dir === '/tmp/staging/subdir') {
+            return [{ name: '.GIT', isDirectory: () => true }];
+          }
+          return [
+            { name: 'README.md', isDirectory: () => false },
+            { name: 'subdir', isDirectory: () => true },
+          ];
+        },
+      );
+
+      await expect(
+        fetchContents({
+          ...options,
+          outputPath: 'foo',
+          fetchUrl: 'https://github.com/backstage/foo',
+        }),
+      ).rejects.toThrow(/contains a \.git directory/);
+
+      expect(dirFunction).toHaveBeenCalledWith({ targetDir: '/tmp/staging' });
+      // The target directory is left alone when the fetched tree is rejected
+      expect(fs.copy).not.toHaveBeenCalled();
+      expect(fs.remove).toHaveBeenCalledWith('/tmp/staging');
+    });
+
+    it('should not reject fetched trees when the target already contains a .git directory', async () => {
+      const dirFunction = jest.fn();
+      readTree.mockResolvedValue({
+        dir: dirFunction,
+      });
+      (fs.mkdtemp as unknown as jest.Mock).mockResolvedValue('/tmp/staging');
+      (fs.readdir as unknown as jest.Mock).mockImplementation(
+        async (dir: string) => {
+          // Only the target directory carries a pre-existing .git directory,
+          // the fetched tree staged for extraction is clean
+          if (dir === 'foo') {
+            return [{ name: '.git', isDirectory: () => true }];
+          }
+          return [];
+        },
+      );
+
+      await expect(
+        fetchContents({
+          ...options,
+          outputPath: 'foo',
+          fetchUrl: 'https://github.com/backstage/foo',
+        }),
+      ).resolves.toBeUndefined();
+
+      expect(fs.copy).toHaveBeenCalledWith('/tmp/staging', 'foo');
     });
   });
 

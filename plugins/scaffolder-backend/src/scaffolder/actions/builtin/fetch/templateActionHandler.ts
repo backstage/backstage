@@ -33,7 +33,7 @@ import {
   collectTemplateCapabilities,
   convertFiltersToRecord,
 } from '../../../../util/templating';
-import { extname } from 'node:path';
+import { extname, relative } from 'node:path';
 
 export type TemplateActionInput = {
   targetPath?: string;
@@ -83,6 +83,10 @@ export async function createTemplateActionHandler<
 
   if (isChildPath(templateDir, outputDir)) {
     throw new InputError('targetPath must not be within template path');
+  }
+
+  if (containsGitDirectory(relative(ctx.workspacePath, outputDir))) {
+    throw new InputError('targetPath must not be within a .git directory');
   }
 
   ctx.logger.info('Listing files and directories in template');
@@ -166,6 +170,13 @@ export async function createTemplateActionHandler<
     }
 
     const outputPath = resolveSafeChildPath(outputDir, localOutputPath);
+    if (containsGitDirectory(relative(ctx.workspacePath, outputPath))) {
+      ctx.logger.info(
+        `Skipping ${location} as its rendered path resolves to a .git directory`,
+      );
+      continue;
+    }
+
     if (fs.existsSync(outputPath) && !ctx.input.replace) {
       continue;
     }
@@ -260,4 +271,15 @@ function containsSkippedContent(localOutputPath: string): boolean {
     localOutputPath.startsWith('/') ||
     localOutputPath.includes('//')
   );
+}
+
+/**
+ * The `.git` directory of the task workspace is owned by the scaffolder's own
+ * git operations, so template output must never be placed inside one.
+ */
+export function containsGitDirectory(path: string): boolean {
+  // The comparison is case-insensitive, because the task workspace can
+  // live on file systems that treat any casing of the name as the same
+  // directory
+  return path.split(/[\\/]/).some(segment => segment.toLowerCase() === '.git');
 }

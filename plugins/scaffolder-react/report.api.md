@@ -197,6 +197,7 @@ export function makeFieldSchema<
 export type ReviewStepProps = {
   disableButtons: boolean;
   formData: JsonObject;
+  schemaFormState?: JsonObject;
   handleBack: () => void;
   handleReset: () => void;
   handleCreate: () => void;
@@ -204,6 +205,13 @@ export type ReviewStepProps = {
     uiSchema: UiSchema;
     mergedSchema: JsonObject;
     schema: JsonObject;
+    title: string;
+  }[];
+  allSteps?: {
+    uiSchema: UiSchema;
+    mergedSchema: JsonObject;
+    schema: JsonObject;
+    title: string;
   }[];
 };
 

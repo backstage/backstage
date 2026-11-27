@@ -377,10 +377,10 @@ In the examples above, the contents of the files have been shortened for simplic
 
 The `CatalogIndexPage` comes with three default actions - view, edit, and star. You might want to add more.
 
-To do this, first you'll need to add `@mui/utils` to your `packages/app/package.json`:
+The existing Material UI v4 components provide screen-reader-only labels. Ensure the component packages are installed in your app:
 
 ```sh
-yarn --cwd packages/app add @mui/utils
+yarn --cwd packages/app add @material-ui/core @material-ui/icons
 ```
 
 Then you'll do the following:
@@ -403,9 +403,8 @@ import {
 } from '@backstage/plugin-catalog';
 
 {/* highlight-add-start */}
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import OpenInNew from '@material-ui/icons/OpenInNew';
-import { visuallyHidden } from '@mui/utils';
 {/* highlight-add-end */}
 
 {/* highlight-add-start */}
@@ -417,7 +416,7 @@ const customActions: TableProps<CatalogTableRow>['actions'] = [
     return {
       icon: () => (
         <>
-          <Typography style={visuallyHidden}>{title}</Typography>
+          <Typography variant="srOnly">{title}</Typography>
           <OpenInNew fontSize="small" />
         </>
       ),

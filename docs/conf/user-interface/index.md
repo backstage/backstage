@@ -36,6 +36,14 @@ Backstage currently supports two parallel UI systems. The original theming and c
 We recognize that maintaining two separate theming systems is not ideal. Because of the fundamental architectural differences between MUI and Backstage UI, it can be challenging to automate theme updates or know exactly which theme to modify for a given component. Our recommendation is to inspect the component’s code and check its class names: if you see a class name starting with `bui`, you should use the Backstage UI theming approach to style it.
 :::
 
+## Material UI v5 compatibility
+
+Use [Backstage UI](https://ui.backstage.io) for new components and plugins. Material UI v5 support is retained for compatibility with existing plugins, rather than as a migration target for Material UI v4 code.
+
+`UnifiedTheme` and `UnifiedThemeProvider` from `@backstage/theme` provide Material UI v4 and v5 themes together, so existing plugins can use either version in the same app. Keep `UnifiedThemeProvider` when customizing an app theme, and use `createUnifiedTheme` or `createUnifiedThemeFromV4` to create compatible themes. Some Material UI v4 components accept other components as props; those integrations still require Material UI v4 components.
+
+The [BUI Theme Converter](#bui-theme-converter) accepts existing MUI themes to help migrate to Backstage UI. For existing v5 plugins, see the class-name-prefix troubleshooting below if static class names do not match the rendered elements.
+
 ## Creating custom themes
 
 During the transition to Backstage UI, you will need to maintain themes in two places: some components and plugins still rely on MUI, while others use Backstage UI. To make this easier, the [BUI Theme Converter](#bui-theme-converter) plugin can automatically generate BUI CSS variables from your existing MUI theme, giving you a head start on your Backstage UI theme.
@@ -669,7 +677,7 @@ export const myTheme = createUnifiedTheme({
 <details>
   <summary>Missing v5 prefix for MUI 5 class names</summary>
 
-If you are using MUI 5 components in the main app, you may notice that the rendered elements have a `v5-` prefix in front of the MUI class names, but not when you try to use the class name props in code.
+If an existing plugin uses Material UI v5 components in the main app, you may notice that the rendered elements have a `v5-` prefix in front of the MUI class names, but not when you try to use the class name props in code.
 
 Example:
 

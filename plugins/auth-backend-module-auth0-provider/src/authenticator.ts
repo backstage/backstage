@@ -140,7 +140,7 @@ export function createAuth0Authenticator(options?: { cache?: CacheService }) {
       });
     },
 
-    async refresh(input, { helper, strategy }) {
+    async refresh(input, { helper, strategy, domain }) {
       const result = await PassportHelpers.executeRefreshTokenStrategy(
         strategy,
         input.refreshToken,
@@ -148,7 +148,10 @@ export function createAuth0Authenticator(options?: { cache?: CacheService }) {
       );
 
       const { sub } = decodeJwt(result.params.id_token);
-      const cacheKey = sub ? `auth0-profile:${sub}` : undefined;
+      // The subject is only guaranteed to be unique within an Auth0 tenant, so
+      // the cache key is scoped by the domain of the environment as well to
+      // keep profiles from different tenants apart.
+      const cacheKey = sub ? `auth0-profile:${domain}:${sub}` : undefined;
 
       let fullProfile = cacheKey
         ? ((await profileCache?.get(cacheKey)) as PassportProfile | undefined)

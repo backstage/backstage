@@ -86,9 +86,8 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
       );
 
       const predicate = (url: URL) =>
-        url.host.endsWith(
-          `${integrationConfig.config.accountName}.${integrationConfig.config.host}`,
-        );
+        url.host ===
+        `${integrationConfig.config.accountName}.${integrationConfig.config.host}`;
       return { reader, predicate };
     });
   };

@@ -23,6 +23,7 @@ import { ConfigReader } from '@backstage/config';
 import { NotModifiedError } from '@backstage/errors';
 import {
   GerritIntegration,
+  GerritIntegrationConfig,
   readGerritIntegrationConfig,
 } from '@backstage/integration';
 import { JsonObject } from '@backstage/types';
@@ -32,7 +33,7 @@ import fs from 'fs-extra';
 import path from 'node:path';
 import { UrlReaderPredicateTuple } from './types';
 import { DefaultReadTreeResponseFactory } from './tree';
-import { GerritUrlReader } from './GerritUrlReader';
+import { GerritUrlReader, getGitilesTreeUrl } from './GerritUrlReader';
 import getRawBody from 'raw-body';
 
 const mockDir = createMockDirectory({ mockOsTmpDir: true });
@@ -553,5 +554,67 @@ describe.skip('GerritUrlReader', () => {
 
       await expect(gerritProcessor.search(searchUrl)).rejects.toThrow(Error);
     });
+  });
+});
+
+describe('getGitilesTreeUrl', () => {
+  const basePath = 'https://gerrit.com/gitiles/app/web/+/refs/heads/master';
+
+  const treeUrl = (config: JsonObject) =>
+    getGitilesTreeUrl(
+      readGerritIntegrationConfig(
+        new ConfigReader(config),
+      ) as GerritIntegrationConfig,
+      basePath,
+    );
+
+  it('uses the authenticated gitiles base url when a password is configured', () => {
+    expect(
+      treeUrl({
+        host: 'gerrit.com',
+        gitilesBaseUrl: 'https://gerrit.com/gitiles',
+        password: 'secret',
+      }),
+    ).toBe(
+      'https://gerrit.com/a/gitiles/app/web/+/refs/heads/master/?format=JSON&recursive',
+    );
+  });
+
+  it('uses the plain gitiles base url when no password is configured', () => {
+    expect(
+      treeUrl({
+        host: 'gerrit.com',
+        gitilesBaseUrl: 'https://gerrit.com/gitiles',
+      }),
+    ).toBe(
+      'https://gerrit.com/gitiles/app/web/+/refs/heads/master/?format=JSON&recursive',
+    );
+  });
+
+  // The base path comes from URL parsing, which drops a default port and
+  // lowercases the host, while the configuration is kept as written.
+  it.each([
+    [
+      'an explicitly written default port',
+      {
+        host: 'gerrit.com',
+        baseUrl: 'https://gerrit.com:443',
+        gitilesBaseUrl: 'https://gerrit.com:443/gitiles',
+        password: 'secret',
+      },
+      'https://gerrit.com:443/a/gitiles/app/web/+/refs/heads/master/?format=JSON&recursive',
+    ],
+    [
+      'a differently cased host',
+      {
+        host: 'gerrit.com',
+        baseUrl: 'https://Gerrit.com',
+        gitilesBaseUrl: 'https://Gerrit.com/gitiles',
+        password: 'secret',
+      },
+      'https://Gerrit.com/a/gitiles/app/web/+/refs/heads/master/?format=JSON&recursive',
+    ],
+  ])('keeps the authentication prefix for %s', (_name, config, expected) => {
+    expect(treeUrl(config)).toBe(expected);
   });
 });

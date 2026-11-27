@@ -61,8 +61,51 @@ export async function fetchContents(options: {
 
     const res = await reader.readTree(readUrl, { token });
     await fs.ensureDir(outputPath);
-    await res.dir({ targetDir: outputPath });
+
+    // The tree is extracted into a staging directory first, so that the
+    // check below covers only the fetched content and the target directory
+    // is only written to once that check has passed. The staging directory
+    // is created next to the target, so the copy stays on the same volume
+    // as the workspace rather than the system temp folder
+    const stagingDir = await fs.mkdtemp(
+      path.join(path.dirname(path.resolve(outputPath)), 'fetch-'),
+    );
+    try {
+      await res.dir({ targetDir: stagingDir });
+
+      // The .git directory of the task workspace is owned by the scaffolder's
+      // own git operations, so fetched content must not contain one either.
+      // Archives hosted on object stores can carry a .git directory through
+      // this extraction, which repository archives served by SCM hosts never
+      // do, so the extracted tree is checked once it is on disk.
+      if (await directoryTreeContainsGitDirectory(stagingDir)) {
+        throw new InputError(
+          `the content fetched from ${readUrl} contains a .git directory`,
+        );
+      }
+      await fs.copy(stagingDir, outputPath);
+    } finally {
+      await fs.remove(stagingDir);
+    }
   }
+}
+
+async function directoryTreeContainsGitDirectory(
+  dir: string,
+): Promise<boolean> {
+  for (const entry of await fs.readdir(dir, { withFileTypes: true })) {
+    // Symlinked directories are not followed; they are reported as
+    // symlinks by readdir and are not treated as directories here
+    if (entry.isDirectory()) {
+      if (entry.name.toLowerCase() === '.git') {
+        return true;
+      }
+      if (await directoryTreeContainsGitDirectory(path.join(dir, entry.name))) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 /**
