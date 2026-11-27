@@ -52,6 +52,7 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
       skipReposWithoutExactFileMatch?: boolean;
       skipForkedRepos?: boolean;
       includeArchivedRepos?: boolean;
+      skipReposMarkedForDeletion?: boolean;
     },
   ): GitLabDiscoveryProcessor;
   // (undocumented)
@@ -119,6 +120,7 @@ export type GitlabProviderConfig = {
   schedule?: SchedulerServiceTaskScheduleDefinition;
   skipForkedRepos?: boolean;
   includeArchivedRepos?: boolean;
+  skipReposMarkedForDeletion?: boolean;
   excludeRepos?: string[];
   includeUsersWithoutSeat?: boolean;
   membership?: boolean;
