@@ -264,6 +264,62 @@ describe('DefaultGithubCredentialsProvider tests', () => {
       );
     });
 
+    it('does not reuse GitHub App providers across different credentials or endpoints', async () => {
+      const connection = {
+        type: 'github',
+        title: 'GitHub',
+        baseUrl: 'https://github.com/',
+        auth: {
+          method: 'app',
+          appId: '123',
+          privateKey: 'first-private-key',
+          clientId: 'client-id',
+          clientSecret: 'client-secret',
+        },
+      };
+      const find = jest
+        .fn()
+        .mockResolvedValueOnce(connection)
+        .mockResolvedValueOnce({
+          ...connection,
+          auth: { ...connection.auth, privateKey: 'second-private-key' },
+        })
+        .mockResolvedValueOnce({
+          ...connection,
+          apiBaseUrl: 'https://api.example.com/',
+          auth: { ...connection.auth, privateKey: 'second-private-key' },
+        })
+        .mockResolvedValueOnce({
+          ...connection,
+          apiBaseUrl: 'https://api.example.com/',
+          auth: { ...connection.auth, privateKey: 'second-private-key' },
+        });
+      const provider =
+        DefaultGithubCredentialsProvider.experimentalFromConnections({
+          find: find as ConnectionsService['find'],
+        });
+
+      for (let i = 0; i < 4; i++) {
+        await provider.getCredentials({
+          url: 'https://github.com/backstage/backstage',
+        });
+      }
+
+      const create =
+        SingleInstanceGithubCredentialsProvider.create as jest.Mock;
+      expect(create).toHaveBeenCalledTimes(3);
+      expect(
+        create.mock.calls.map(([config]) => [
+          config.apiBaseUrl,
+          config.apps[0].privateKey,
+        ]),
+      ).toEqual([
+        [undefined, 'first-private-key'],
+        [undefined, 'second-private-key'],
+        ['https://api.example.com/', 'second-private-key'],
+      ]);
+    });
+
     it('does not reuse token providers after credential rotation', async () => {
       const connection = {
         type: 'github',

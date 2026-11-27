@@ -59,6 +59,10 @@ export class DefaultGithubCredentialsProvider
 
   private readonly providers: Map<string, GithubCredentialsProvider>;
   readonly #connections?: ConnectionsService;
+  // The App credentials that each cached connection provider was created
+  // with. They are compared on lookup rather than placed in the cache key, so
+  // that a provider is never reused for different App credentials.
+  readonly #providerAppCredentials = new Map<string, string>();
 
   private constructor(
     providers: Map<string, GithubCredentialsProvider>,
@@ -127,7 +131,15 @@ export class DefaultGithubCredentialsProvider
       // case-insensitive and does not depend on ordering. Static token
       // providers have no internal token cache, so they are recreated rather
       // than placing their secret token in a cache key.
+      // The API and raw base URLs are part of the key, since they decide where
+      // the provider sends its requests.
+      const endpointKey = JSON.stringify([
+        host,
+        connection.apiBaseUrl ?? null,
+        connection.rawBaseUrl ?? null,
+      ]);
       let providerKey: string | undefined;
+      let appCredentials: string | undefined;
       if (auth.method === 'app') {
         const appId = Number(auth.appId);
         if (!Number.isSafeInteger(appId) || appId <= 0) {
@@ -149,20 +161,40 @@ export class DefaultGithubCredentialsProvider
             allowedInstallationOwners: normalizedOrgs,
           },
         ];
-        providerKey = `${host}:app:${appId}:${JSON.stringify(
+        providerKey = `${endpointKey}:app:${appId}:${JSON.stringify(
           normalizedOrgs ?? [],
         )}:${String(auth.publicAccess ?? false)}`;
+        appCredentials = JSON.stringify([
+          auth.privateKey,
+          auth.clientId,
+          auth.clientSecret,
+          auth.webhookSecret ?? null,
+        ]);
       } else if (auth.method === 'token') {
         config.token = auth.token;
       } else {
-        providerKey = `${host}:none`;
+        providerKey = `${endpointKey}:none`;
       }
 
       let provider = providerKey ? this.providers.get(providerKey) : undefined;
+      if (
+        provider &&
+        providerKey &&
+        this.#providerAppCredentials.get(providerKey) !== appCredentials
+      ) {
+        // The App credentials changed, for example because the private key
+        // was rotated, so the cached provider and its tokens can't be reused.
+        provider = undefined;
+      }
       if (!provider) {
         provider = SingleInstanceGithubCredentialsProvider.create(config);
         if (providerKey) {
           this.providers.set(providerKey, provider);
+          if (appCredentials === undefined) {
+            this.#providerAppCredentials.delete(providerKey);
+          } else {
+            this.#providerAppCredentials.set(providerKey, appCredentials);
+          }
         }
       }
 
