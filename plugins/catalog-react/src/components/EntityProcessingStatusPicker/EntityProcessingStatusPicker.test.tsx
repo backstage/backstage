@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen, within } from '@testing-library/react';
 import { EntityErrorFilter, EntityOrphanFilter } from '../../filters';
 import { MockEntityListContextProvider } from '@backstage/plugin-catalog-react/testUtils';
 import { EntityProcessingStatusPicker } from './EntityProcessingStatusPicker';
-import { renderInTestApp } from '@backstage/test-utils';
+import {
+  mockApis,
+  renderInTestApp,
+  TestApiProvider,
+} from '@backstage/test-utils';
+import { analyticsApiRef } from '@backstage/core-plugin-api';
 
 describe('<EntityProcessingStatusPicker/>', () => {
   it('renders all processing status options', async () => {
@@ -108,5 +113,56 @@ describe('<EntityProcessingStatusPicker/>', () => {
     expect(updateFilters).toHaveBeenCalledWith({
       error: undefined,
     });
+  });
+
+  it('captures a filter event for each status the user selects', async () => {
+    const analyticsApi = mockApis.analytics();
+    await renderInTestApp(
+      <TestApiProvider apis={[[analyticsApiRef, analyticsApi]]}>
+        <MockEntityListContextProvider value={{}}>
+          <EntityProcessingStatusPicker />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
+    );
+    expect(analyticsApi.captureEvent).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByTestId('processing-status-picker-expand'));
+    fireEvent.click(screen.getByText('Is Orphan'));
+    fireEvent.click(screen.getByText('Has Error'));
+
+    expect(analyticsApi.captureEvent).toHaveBeenCalledTimes(2);
+    expect(analyticsApi.captureEvent).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        action: 'filter',
+        subject: 'Is Orphan',
+        attributes: { filter: 'orphan' },
+      }),
+    );
+    expect(analyticsApi.captureEvent).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        action: 'filter',
+        subject: 'Has Error',
+        attributes: { filter: 'error' },
+      }),
+    );
+  });
+
+  it('does not capture a filter event when a status is deselected', async () => {
+    const analyticsApi = mockApis.analytics();
+    await renderInTestApp(
+      <TestApiProvider apis={[[analyticsApiRef, analyticsApi]]}>
+        <MockEntityListContextProvider value={{}}>
+          <EntityProcessingStatusPicker />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
+    );
+
+    fireEvent.click(screen.getByTestId('processing-status-picker-expand'));
+    fireEvent.click(screen.getByText('Is Orphan'));
+    fireEvent.click(within(screen.getByRole('listbox')).getByText('Is Orphan'));
+
+    expect(analyticsApi.captureEvent).toHaveBeenCalledTimes(1);
   });
 });
