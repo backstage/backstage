@@ -23,6 +23,7 @@ import {
   dirname,
   resolve as resolvePath,
   relative as relativePath,
+  sep,
 } from 'node:path';
 import { exec as execCb } from 'node:child_process';
 import { packageVersions } from './versions';
@@ -35,6 +36,23 @@ const exec = promisify(execCb);
 
 export type GitConfig = {
   defaultBranch?: string;
+};
+
+/**
+ * The package managers that a created app can use.
+ */
+export type PackageManagerName = 'yarn' | 'pnpm';
+
+/**
+ * Options for the templating task.
+ */
+export type TemplatingOptions = {
+  /**
+   * Called with the path of each template file, relative to the template
+   * directory and with forward slashes. Files for which it returns `true` are
+   * left out of the created app.
+   */
+  exclude?: (templateFilePath: string) => boolean;
 };
 
 export class Task {
@@ -84,12 +102,13 @@ export class Task {
  * @param templateDir - location containing template files
  * @param destinationDir - location to save templated project
  * @param context - template parameters
- * @param excludedDirs - template files to exclude
+ * @param options - templating options, such as which template files to exclude
  */
 export async function templatingTask(
   templateDir: string,
   destinationDir: string,
   context: any,
+  options: TemplatingOptions = {},
 ) {
   const files = await recursive(templateDir).catch(error => {
     throw new Error(`Failed to read template directory: ${error.message}`);
@@ -97,6 +116,10 @@ export async function templatingTask(
 
   for (const file of files) {
     const filePath = relativePath(templateDir, file);
+
+    if (options.exclude?.(filePath.split(sep).join('/'))) {
+      continue;
+    }
 
     const destinationFile = resolvePath(destinationDir, filePath);
     await fs.ensureDir(dirname(destinationFile));
@@ -178,11 +201,15 @@ export async function checkPathExistsTask(path: string) {
 }
 
 /**
- * Run `yarn install` and `run tsc` in application directory
+ * Run `install` and `tsc` with the package manager in application directory
  *
  * @param appDir - location of application to build
+ * @param packageManager - the package manager of the application, `yarn` by default
  */
-export async function buildAppTask(appDir: string) {
+export async function buildAppTask(
+  appDir: string,
+  packageManager: PackageManagerName = 'yarn',
+) {
   process.chdir(appDir);
 
   const runCmd = async (cmd: string) => {
@@ -197,12 +224,14 @@ export async function buildAppTask(appDir: string) {
 
   const installTimeout = setTimeout(() => {
     Task.error(
-      "\n⏱️  It's taking a long time to install dependencies, you may want to exit (Ctrl-C) and run 'yarn install' and 'yarn tsc' manually",
+      `\n⏱️  It's taking a long time to install dependencies, you may want to exit (Ctrl-C) and run '${packageManager} install' and '${packageManager} tsc' manually`,
     );
   }, TEN_MINUTES_MS);
 
-  await runCmd('yarn install').finally(() => clearTimeout(installTimeout));
-  await runCmd('yarn tsc');
+  await runCmd(`${packageManager} install`).finally(() =>
+    clearTimeout(installTimeout),
+  );
+  await runCmd(`${packageManager} tsc`);
 }
 
 /**
@@ -294,6 +323,24 @@ export async function tryInitGitRepository(dir: string) {
 }
 
 /**
+ * Adds a file to the initial commit that {@link tryInitGitRepository} made,
+ * such as the lockfile that the install created afterwards.
+ *
+ * @param dir - path of the git repository
+ * @param file - path of the file, relative to the repository
+ * @returns true if the file was added to the commit
+ */
+export async function tryAddToInitialCommit(dir: string, file: string) {
+  try {
+    await exec(`git add -- ${JSON.stringify(file)}`, { cwd: dir });
+    await exec('git commit --amend --no-edit', { cwd: dir });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * This fetches the yarn.lock seed file at https://github.com/backstage/backstage/blob/master/packages/create-app/seed-yarn.lock
  * Its purpose is to lock individual dependencies with broken releases to known working versions.
  * This flow is decoupled from the release of the create-app package in order to avoid
@@ -341,11 +388,15 @@ export async function fetchYarnLockSeedTask(dir: string) {
  * Tries to get the version from a given command if possible
  *
  * @param command - command to run
+ * @param options - the directory to run the command in, the current directory by default
  * @returns object - version with the version found and N/A if not found, error contains any error and undefined otherwise
  */
-export async function tryCommandForVersion(command: string) {
+export async function tryCommandForVersion(
+  command: string,
+  options?: { cwd?: string },
+) {
   try {
-    const result = await exec(command);
+    const result = await exec(command, { cwd: options?.cwd });
 
     const version = (result.stdout || result.stderr).trim();
     return { version: version || 'N/A', error: undefined };

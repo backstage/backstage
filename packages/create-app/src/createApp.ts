@@ -28,10 +28,12 @@ import {
   checkPathExistsTask,
   moveAppTask,
   templatingTask,
+  tryAddToInitialCommit,
   tryInitGitRepository,
   readGitConfig,
   fetchYarnLockSeedTask,
   tryCommandForVersion,
+  PackageManagerName,
 } from './lib/tasks';
 
 const DEFAULT_BRANCH = 'master';
@@ -49,14 +51,90 @@ function isBelowMinimum(version: string, minimum: string) {
   );
 }
 
+// The pnpm versions that the created app and the Backstage CLI support
+const SUPPORTED_PNPM_VERSIONS =
+  'pnpm 11.28 or a later 11.x release, or pnpm 12.7 or later';
+// The pnpm version that created apps pin in the packageManager field
+const PNPM_VERSION = '12.14.0';
+
+// Template files that are only used by one of the package managers, without
+// the '.hbs' suffix. Files under '.yarn/' are also only used by Yarn.
+const YARN_ONLY_FILES = ['.yarnrc.yml', 'yarn.lock'];
+const PNPM_ONLY_FILES = ['pnpm-workspace.yaml'];
+
+/**
+ * Picks the package manager for the created app from the `--package-manager`
+ * option, falling back to pnpm when the command runs through pnpm, for
+ * example with `pnpm create @backstage/app`, and to Yarn otherwise. A custom
+ * template from `--template-path` may not support pnpm, so it only gets pnpm
+ * through the option.
+ */
+export function resolvePackageManager(opts: OptionValues): PackageManagerName {
+  if (opts.packageManager !== undefined) {
+    if (opts.packageManager !== 'yarn' && opts.packageManager !== 'pnpm') {
+      throw new Error(
+        `Unsupported package manager '${opts.packageManager}', expected 'yarn' or 'pnpm'`,
+      );
+    }
+    return opts.packageManager;
+  }
+  if (opts.templatePath) {
+    return 'yarn';
+  }
+  return process.env.npm_config_user_agent?.startsWith('pnpm/')
+    ? 'pnpm'
+    : 'yarn';
+}
+
+/**
+ * Returns whether the template file is only used by a different package
+ * manager than the one that was selected.
+ */
+export function isTemplateFileExcluded(
+  packageManager: PackageManagerName,
+  templateFilePath: string,
+): boolean {
+  const file = templateFilePath.replace(/\.hbs$/, '');
+  if (packageManager === 'pnpm') {
+    return YARN_ONLY_FILES.includes(file) || file.startsWith('.yarn/');
+  }
+  return PNPM_ONLY_FILES.includes(file);
+}
+
+// The same versions as the range '^11.28.0 || >=12.7.0' that the Backstage
+// CLI checks with prereleases included, without a dependency on semver
+function isSupportedPnpmVersion(version: string): boolean {
+  const match = version.match(/^(\d+)\.(\d+)\.(\d+)(-\S+)?$/);
+  if (!match) {
+    return false;
+  }
+  const [major, minor, patch] = match.slice(1, 4).map(Number);
+  // A prerelease comes before its release, so 12.7.0-rc.1 is below 12.7.0
+  const isPrereleaseOfMinimum = Boolean(match[4]) && patch === 0;
+  if (major === 11) {
+    return minor > 28 || (minor === 28 && !isPrereleaseOfMinimum);
+  }
+  return (
+    major > 12 ||
+    (major === 12 && (minor > 7 || (minor === 7 && !isPrereleaseOfMinimum)))
+  );
+}
+
 export default async (opts: OptionValues): Promise<void> => {
+  const packageManager = resolvePackageManager(opts);
+
   // Prerequisite check — runs before the interactive prompt to fail fast
   let hasPrerequisiteError = false;
   const [major, minor, patch] = process.versions.node.split('.').map(Number);
   const minimumVersion = MINIMUM_NODE_VERSIONS.find(
     v => Number(v.split('.')[0]) === major,
   );
-  const yarn = await tryCommandForVersion('yarn -v');
+  // pnpm refuses to run in directories where a package.json pins another
+  // package manager, so its version is read from the temp directory instead
+  const pkgManager = await tryCommandForVersion(
+    `${packageManager} -v`,
+    packageManager === 'pnpm' ? { cwd: os.tmpdir() } : undefined,
+  );
   let python = await tryCommandForVersion('python3 --version');
   if (python.error) {
     python = await tryCommandForVersion('python --version');
@@ -66,12 +144,26 @@ export default async (opts: OptionValues): Promise<void> => {
   Task.log('Prerequisites check...');
   Task.log();
   Task.log(`  Node version is: ${major}.${minor}.${patch}`);
-  Task.log(`  Yarn version is: ${yarn.version}`);
+  Task.log(
+    `  ${packageManager === 'pnpm' ? 'pnpm' : 'Yarn'} version is: ${
+      pkgManager.version
+    }`,
+  );
   Task.log(`  Python version is: ${python.version.replace(/^Python\s+/, '')}`);
 
-  if (yarn.error) {
+  if (pkgManager.error) {
     Task.error(
-      'Yarn is not available. Please install Yarn before creating a Backstage app.',
+      packageManager === 'pnpm'
+        ? `pnpm is not available. Please install ${SUPPORTED_PNPM_VERSIONS} before creating a Backstage app.`
+        : 'Yarn is not available. Please install Yarn before creating a Backstage app.',
+    );
+    hasPrerequisiteError = true;
+  } else if (
+    packageManager === 'pnpm' &&
+    !isSupportedPnpmVersion(pkgManager.version)
+  ) {
+    Task.error(
+      `${SUPPORTED_PNPM_VERSIONS} is required, found ${pkgManager.version}. Please upgrade pnpm before creating a Backstage app.`,
     );
     hasPrerequisiteError = true;
   }
@@ -162,6 +254,17 @@ export default async (opts: OptionValues): Promise<void> => {
   try {
     const gitConfig = await readGitConfig();
 
+    const templateContext = {
+      ...answers,
+      defaultBranch: gitConfig?.defaultBranch ?? DEFAULT_BRANCH,
+      packageManager,
+      pnpm: packageManager === 'pnpm',
+      pnpmVersion: PNPM_VERSION,
+    };
+    const templatingOptions = {
+      exclude: (file: string) => isTemplateFileExcluded(packageManager, file),
+    };
+
     if (opts.path) {
       // Template directly to specified path
 
@@ -169,10 +272,12 @@ export default async (opts: OptionValues): Promise<void> => {
       await checkPathExistsTask(appDir);
 
       Task.section('Preparing files');
-      await templatingTask(templateDir, opts.path, {
-        ...answers,
-        defaultBranch: gitConfig?.defaultBranch ?? DEFAULT_BRANCH,
-      });
+      await templatingTask(
+        templateDir,
+        opts.path,
+        templateContext,
+        templatingOptions,
+      );
     } else {
       // Template to temporary location, and then move files
 
@@ -183,28 +288,47 @@ export default async (opts: OptionValues): Promise<void> => {
       const tempDir = await fs.mkdtemp(resolvePath(os.tmpdir(), answers.name));
 
       Task.section('Preparing files');
-      await templatingTask(templateDir, tempDir, {
-        ...answers,
-        defaultBranch: gitConfig?.defaultBranch ?? DEFAULT_BRANCH,
-      });
+      await templatingTask(
+        templateDir,
+        tempDir,
+        templateContext,
+        templatingOptions,
+      );
 
       Task.section('Moving to final location');
       await moveAppTask(tempDir, appDir, answers.name);
     }
 
-    const fetchedYarnLockSeed = await fetchYarnLockSeedTask(appDir);
+    // pnpm apps do not get a seed lockfile, any pins for them go into the template
+    const fetchedYarnLockSeed =
+      packageManager === 'yarn' ? await fetchYarnLockSeedTask(appDir) : true;
 
+    let initializedGit = false;
     if (gitConfig) {
       if (await tryInitGitRepository(appDir)) {
+        initializedGit = true;
         // Since we don't know whether we were able to init git before we
         // try, we can't track the actual task execution
         Task.forItem('init', 'git repository', async () => {});
       }
     }
 
+    // A pnpm app gets no seed lockfile, so its initial commit would have no
+    // lockfile, and the frozen install of the generated CI workflow would
+    // fail on it
+    let lockfileCommitted = packageManager !== 'pnpm' || !initializedGit;
     if (!opts.skipInstall) {
       Task.section('Installing dependencies');
-      await buildAppTask(appDir);
+      await buildAppTask(appDir, packageManager);
+      if (!lockfileCommitted) {
+        lockfileCommitted = await tryAddToInitialCommit(
+          appDir,
+          'pnpm-lock.yaml',
+        );
+        if (lockfileCommitted) {
+          Task.forItem('commit', 'pnpm-lock.yaml', async () => {});
+        }
+      }
     }
 
     Task.log();
@@ -230,13 +354,22 @@ export default async (opts: OptionValues): Promise<void> => {
     if (opts.skipInstall) {
       Task.log(
         `  Install the dependencies: ${chalk.cyan(
-          `cd ${opts.path ?? answers.name} && yarn install`,
+          `cd ${opts.path ?? answers.name} && ${packageManager} install`,
+        )}`,
+      );
+    }
+    if (!lockfileCommitted) {
+      Task.log(
+        `  Commit the lockfile before you push the app: ${chalk.cyan(
+          `cd ${
+            opts.path ?? answers.name
+          } && git add pnpm-lock.yaml && git commit -m "Add pnpm-lock.yaml"`,
         )}`,
       );
     }
     Task.log(
       `  Run the app: ${chalk.cyan(
-        `cd ${opts.path ?? answers.name} && yarn start`,
+        `cd ${opts.path ?? answers.name} && ${packageManager} start`,
       )}`,
     );
     Task.log(
