@@ -50,13 +50,23 @@ The fixer handles exact-version `@backstage/*` patches declared in the root
 selected Backstage release, runs one lockfile-only Yarn install, and then runs
 the full verification again. It never updates a patch to an older version and
 restores `package.json` and `yarn.lock` if the install or verification fails.
+
+If an updated patch no longer applies, the fixer checks whether the change it
+contains has already been released. It installs the unpatched target versions
+and tests each patch with `git apply --check -R` against the released package
+contents. A patch that reverse-applies in full is removed, together with its
+`resolutions` entry, and the remaining patches are updated as usual. A patch
+that only partly matches, or doesn't match at all, is left alone. Review removed
+patches before merging, since the check compares the built package output
+rather than the original source change. This check requires `git`.
+
 Unsupported or ambiguous cases remain verification failures for manual repair.
 The `--fix` mode requires Yarn 3 or later.
 
 The repair runs in the working checkout using the repository's configured Yarn
 binary, plugins, and registry settings, with dependency build scripts disabled.
 Run it in a clean, exclusive checkout. An abrupt interruption can leave a
-partial change behind.
+partial change behind, including deleted patch files.
 
 For an automated Backstage version bump, run the commands in this order:
 

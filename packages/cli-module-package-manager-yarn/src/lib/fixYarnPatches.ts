@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { run } from '@backstage/cli-common';
+import { ExitCodeError, run } from '@backstage/cli-common';
 import { semverUtils, structUtils } from '@yarnpkg/core';
+import { parseSyml } from '@yarnpkg/parsers';
 import { patchUtils } from '@yarnpkg/plugin-patch';
 import fs from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 import {
   verifyYarnPatches,
@@ -31,6 +33,24 @@ export type FixYarnPatchesOptions = VerifyYarnPatchesOptions & {
   install?: (rootDir: string) => Promise<void>;
   verificationResult?: VerifyYarnPatchesResult;
   writeFile?: (filePath: string, content: string) => Promise<void>;
+  /**
+   * Extracts the unpatched contents of an installed package and returns the
+   * directory they were extracted to. Temporary folders created by Yarn are
+   * removed afterwards.
+   */
+  extractPackage?: (options: {
+    rootDir: string;
+    packageName: string;
+    version: string;
+  }) => Promise<string>;
+  /**
+   * Returns true if the patch file can be reverse-applied in full to the
+   * package sources in the given directory.
+   */
+  isPatchReverseApplicable?: (options: {
+    patchPath: string;
+    packageDir: string;
+  }) => Promise<boolean>;
 };
 
 export type FixYarnPatchesResult = {
@@ -105,6 +125,11 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 function createTargetManifest(options: {
   originalManifest: string;
   holdbacks: PatchHoldbackFix[];
+  /**
+   * Replace patch resolutions with plain `npm:` references to the target
+   * version, instead of retargeting the patch.
+   */
+  unpatched?: boolean;
 }): { content: string; transitions: string[] } | undefined {
   let manifest: unknown;
   try {
@@ -151,11 +176,13 @@ function createTargetManifest(options: {
     }
     let targetReference: string;
     try {
-      targetReference = createRetargetedPatchReference({
-        packageName: holdback.packageName,
-        targetVersion: holdback.targetVersion,
-        reference: declaration.reference,
-      });
+      targetReference = options.unpatched
+        ? `npm:${holdback.targetVersion}`
+        : createRetargetedPatchReference({
+            packageName: holdback.packageName,
+            targetVersion: holdback.targetVersion,
+            reference: declaration.reference,
+          });
     } catch {
       return undefined;
     }
@@ -167,6 +194,122 @@ function createTargetManifest(options: {
     );
   }
   return { content, transitions };
+}
+
+function removeResolutions(
+  manifestContent: string,
+  packageNames: string[],
+): string {
+  const manifest = JSON.parse(manifestContent);
+  for (const packageName of packageNames) {
+    delete manifest.resolutions[packageName];
+  }
+  if (Object.keys(manifest.resolutions).length === 0) {
+    delete manifest.resolutions;
+  }
+  const indent = manifestContent.match(/^([ \t]+)"/m)?.[1] ?? 2;
+  const trailingNewline = manifestContent.endsWith('\n') ? '\n' : '';
+  return `${JSON.stringify(manifest, null, indent)}${trailingNewline}`;
+}
+
+async function defaultExtractPackage(options: {
+  rootDir: string;
+  packageName: string;
+  version: string;
+  env: NodeJS.ProcessEnv | undefined;
+}): Promise<string> {
+  const stdoutChunks: Buffer[] = [];
+  const child = run(
+    [
+      'yarn',
+      'patch',
+      `${options.packageName}@npm:${options.version}`,
+      '--json',
+    ],
+    {
+      cwd: options.rootDir,
+      env: createYarnEnvironment(options.env),
+      onStdout: data => stdoutChunks.push(data),
+    },
+  );
+  await child.waitForExit();
+  if (child.signalCode) {
+    throw new Error(`Yarn patch was terminated by ${child.signalCode}`);
+  }
+  for (const line of Buffer.concat(stdoutChunks).toString().split('\n')) {
+    try {
+      const entry = JSON.parse(line);
+      if (isRecord(entry) && typeof entry.path === 'string') {
+        return entry.path;
+      }
+    } catch {
+      // Not a JSON line
+    }
+  }
+  throw new Error(
+    `Yarn did not report where '${options.packageName}' was extracted`,
+  );
+}
+
+async function defaultIsPatchReverseApplicable(options: {
+  patchPath: string;
+  packageDir: string;
+  env: NodeJS.ProcessEnv | undefined;
+}): Promise<boolean> {
+  // Stop git from discovering an enclosing repository, since paths would then
+  // be resolved relative to that repository root rather than the package.
+  const child = run(['git', 'apply', '--check', '-R', options.patchPath], {
+    cwd: options.packageDir,
+    env: {
+      ...(options.env ?? process.env),
+      GIT_CEILING_DIRECTORIES: path.dirname(options.packageDir),
+    },
+    stdio: 'ignore',
+  });
+  try {
+    await child.waitForExit();
+  } catch (error) {
+    // A non-zero exit means the patch does not reverse-apply. Anything else,
+    // such as git not being installed, is a failure to run the check.
+    if (error instanceof ExitCodeError) {
+      return false;
+    }
+    throw error;
+  }
+  return !child.signalCode;
+}
+
+async function removeExtractedPackage(packageDir: string): Promise<void> {
+  // Yarn extracts into a "user" folder inside an "xfs-<hex>" folder that it
+  // creates directly in the system temporary directory. The path is read from
+  // command output, so only remove a folder with exactly that shape and
+  // location, and never follow a symbolic link.
+  const parent = path.dirname(packageDir);
+  if (
+    !path.isAbsolute(packageDir) ||
+    path.normalize(packageDir) !== packageDir ||
+    path.basename(packageDir) !== 'user' ||
+    !/^xfs-[0-9a-f]+$/.test(path.basename(parent))
+  ) {
+    return;
+  }
+  try {
+    const [tempRoot, parentRoot, parentStat] = await Promise.all([
+      fs.realpath(os.tmpdir()),
+      fs.realpath(path.dirname(parent)),
+      fs.lstat(parent),
+    ]);
+    if (
+      tempRoot !== parentRoot ||
+      !parentStat.isDirectory() ||
+      parentStat.isSymbolicLink()
+    ) {
+      return;
+    }
+    await fs.rm(parent, { recursive: true, force: true });
+  } catch {
+    // Leaving a temporary folder behind is harmless
+  }
 }
 
 async function defaultInstall(
@@ -295,16 +438,26 @@ export async function fixYarnPatches(
   const writeFile =
     options.writeFile ??
     ((filePath: string, content: string) => fs.writeFile(filePath, content));
+  const install =
+    options.install ?? ((dir: string) => defaultInstall(dir, options.env));
+  const removedPatchFiles = new Map<string, Buffer>();
   const restoreFailure = async (
     reason: string,
   ): Promise<FixYarnPatchesResult> => {
-    const restored = await restoreOriginals({
+    let restored = await restoreOriginals({
       manifestPath,
       lockfilePath,
       originalManifest,
       originalLockfile,
       writeFile,
     });
+    for (const [filePath, content] of removedPatchFiles) {
+      try {
+        await fs.writeFile(filePath, content);
+      } catch {
+        restored = false;
+      }
+    }
     return {
       status: 'not-fixable',
       message: restored
@@ -313,14 +466,14 @@ export async function fixYarnPatches(
     };
   };
 
-  try {
-    await writeFile(manifestPath, target.content);
-    await (options.install ?? (dir => defaultInstall(dir, options.env)))(
-      rootDir,
-    );
+  const applyManifest = async (
+    manifestContent: string,
+  ): Promise<string | undefined> => {
+    await writeFile(manifestPath, manifestContent);
+    await install(rootDir);
     const finalManifest = await fs.readFile(manifestPath, 'utf8');
-    if (finalManifest !== target.content) {
-      return restoreFailure('Yarn changed package.json unexpectedly');
+    if (finalManifest !== manifestContent) {
+      return 'Yarn changed package.json unexpectedly';
     }
     const verified = await verifyYarnPatches({
       rootDir,
@@ -328,16 +481,182 @@ export async function fixYarnPatches(
       fetch: options.fetch,
     });
     if (verified.errors.length > 0) {
-      return restoreFailure(
-        `The repaired project did not pass patch verification: ${verified.errors
-          .map(error => error.message)
-          .join('; ')}`,
-      );
+      return `The repaired project did not pass patch verification: ${verified.errors
+        .map(error => error.message)
+        .join('; ')}`;
+    }
+    return undefined;
+  };
+
+  let retargetFailure: string;
+  try {
+    const failure = await applyManifest(target.content);
+    if (failure) {
+      return restoreFailure(failure);
     }
     return { status: 'fixed', message: target.transitions.join('; ') };
   } catch (error) {
+    retargetFailure = `Yarn could not repair the patches: ${String(error)}`;
+  }
+
+  // The install failed, which commonly happens when a patch was an early
+  // backport of a change that has since been released and so no longer
+  // applies. Check whether each patch reverse-applies in full to the target
+  // version, and if so, drop it.
+  try {
+    const dropped = await findReleasedPatches({
+      rootDir,
+      holdbacks,
+      originalManifest,
+      writeFile,
+      install,
+      manifestPath,
+      extractPackage:
+        options.extractPackage ??
+        (o => defaultExtractPackage({ ...o, env: options.env })),
+      isPatchReverseApplicable:
+        options.isPatchReverseApplicable ??
+        (o => defaultIsPatchReverseApplicable({ ...o, env: options.env })),
+    });
+    if (dropped.length === 0) {
+      return restoreFailure(retargetFailure);
+    }
+
+    const remaining = holdbacks.filter(h => !dropped.includes(h));
+    const remainingTarget = createTargetManifest({
+      originalManifest,
+      holdbacks: remaining,
+    });
+    if (!remainingTarget) {
+      return restoreFailure(retargetFailure);
+    }
+    const finalManifest = removeResolutions(
+      remainingTarget.content,
+      dropped.map(h => h.packageName),
+    );
+    for (const holdback of dropped) {
+      const patchPath = holdback.declaration.paths[0].absolute;
+      removedPatchFiles.set(patchPath, await fs.readFile(patchPath));
+      await fs.rm(patchPath);
+    }
+    const failure =
+      (await applyManifest(finalManifest)) ??
+      (await findOutdatedDroppedPackages(lockfilePath, dropped));
+    if (failure) {
+      return restoreFailure(`${retargetFailure}; ${failure}`);
+    }
+    return {
+      status: 'fixed',
+      message: [
+        ...remainingTarget.transitions,
+        ...dropped.map(
+          h =>
+            `Removed patch for '${h.packageName}' because it is already included in version '${h.targetVersion}' (deleted '${h.declaration.paths[0].relative}')`,
+        ),
+      ].join('; '),
+    };
+  } catch (error) {
     return restoreFailure(
-      `Yarn could not repair the patches: ${String(error)}`,
+      `${retargetFailure}; checking for released patches failed: ${String(
+        error,
+      )}`,
     );
   }
+}
+
+/**
+ * Without its resolution, a dropped package goes back to the ranges its
+ * dependents declare, which could select a version older than the one the
+ * patch was checked against and that still lacks the change.
+ */
+async function findOutdatedDroppedPackages(
+  lockfilePath: string,
+  dropped: PatchHoldbackFix[],
+): Promise<string | undefined> {
+  const lockfile = parseSyml(await fs.readFile(lockfilePath, 'utf8'));
+  const outdated = new Array<string>();
+  for (const [key, entry] of Object.entries(lockfile)) {
+    if (key === '__metadata' || typeof entry?.resolution !== 'string') {
+      continue;
+    }
+    const locator = structUtils.parseLocator(entry.resolution, true);
+    const holdback = dropped.find(
+      h => h.packageName === structUtils.stringifyIdent(locator),
+    );
+    const version = semverUtils.clean(String(entry.version ?? ''));
+    if (
+      holdback &&
+      (!version ||
+        !semverUtils.satisfiesWithPrereleases(
+          version,
+          `>=${holdback.targetVersion}`,
+        ))
+    ) {
+      outdated.push(
+        `'${holdback.packageName}' resolved to '${entry.version}', which is older than '${holdback.targetVersion}'`,
+      );
+    }
+  }
+  if (outdated.length === 0) {
+    return undefined;
+  }
+  return `Removing the patch resolutions selected versions that the patches were not checked against: ${outdated.join(
+    '; ',
+  )}`;
+}
+
+/**
+ * Installs the unpatched target versions and returns the holdbacks whose
+ * patch reverse-applies in full to them.
+ */
+async function findReleasedPatches(options: {
+  rootDir: string;
+  holdbacks: PatchHoldbackFix[];
+  originalManifest: string;
+  manifestPath: string;
+  writeFile: (filePath: string, content: string) => Promise<void>;
+  install: (rootDir: string) => Promise<void>;
+  extractPackage: NonNullable<FixYarnPatchesOptions['extractPackage']>;
+  isPatchReverseApplicable: NonNullable<
+    FixYarnPatchesOptions['isPatchReverseApplicable']
+  >;
+}): Promise<PatchHoldbackFix[]> {
+  const probe = createTargetManifest({
+    originalManifest: options.originalManifest,
+    holdbacks: options.holdbacks,
+    unpatched: true,
+  });
+  if (!probe) {
+    return [];
+  }
+  await options.writeFile(options.manifestPath, probe.content);
+  await options.install(options.rootDir);
+
+  const released: PatchHoldbackFix[] = [];
+  for (const holdback of options.holdbacks) {
+    // Rollback restores deleted patches by content, which would turn a
+    // symbolic link into a regular file, so linked patches are never dropped
+    const patchStat = await fs.lstat(holdback.declaration.paths[0].absolute);
+    if (patchStat.isSymbolicLink()) {
+      continue;
+    }
+    const packageDir = await options.extractPackage({
+      rootDir: options.rootDir,
+      packageName: holdback.packageName,
+      version: holdback.targetVersion,
+    });
+    try {
+      if (
+        await options.isPatchReverseApplicable({
+          patchPath: holdback.declaration.paths[0].absolute,
+          packageDir,
+        })
+      ) {
+        released.push(holdback);
+      }
+    } finally {
+      await removeExtractedPackage(packageDir);
+    }
+  }
+  return released;
 }
