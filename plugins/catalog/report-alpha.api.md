@@ -1250,7 +1250,7 @@ const _default: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
-            internal: false;
+            internal: true;
           }
         >;
       };

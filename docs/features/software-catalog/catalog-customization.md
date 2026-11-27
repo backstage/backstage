@@ -62,7 +62,9 @@ This will display an "Export selection" button on the catalog index page that al
 
 #### Advanced Configuration
 
-For advanced export customization like custom export formats, create a frontend module that provides a catalog export extension:
+For custom export formats or columns, install the export configuration
+extension in a frontend module with `pluginId: 'catalog'`. The Catalog page
+only accepts export configuration from its own plugin and modules.
 
 ```tsx title="src/catalogExportExtension.tsx"
 import { createFrontendModule } from '@backstage/frontend-plugin-api';

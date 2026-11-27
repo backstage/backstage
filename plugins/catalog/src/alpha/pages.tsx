@@ -39,7 +39,12 @@ import { catalogExportConfigDataRef } from '../CatalogExportConfigBlueprint';
 export const catalogPage = PageBlueprint.makeWithOverrides({
   inputs: {
     filters: createExtensionInput([coreExtensionData.reactElement]),
-    exportConfig: createExtensionInput([catalogExportConfigDataRef.optional()]),
+    exportConfig: createExtensionInput(
+      [catalogExportConfigDataRef.optional()],
+      {
+        internal: true,
+      },
+    ),
   },
   configSchema: {
     pagination: z

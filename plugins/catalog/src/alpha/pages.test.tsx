@@ -22,8 +22,10 @@ import {
   createExtensionTester,
   mockApis,
   renderInTestApp,
+  renderTestApp,
 } from '@backstage/frontend-test-utils';
-import { catalogEntityPage } from './pages';
+import { catalogEntityPage, catalogPage } from './pages';
+import { CatalogExportConfigBlueprint } from '..';
 import {
   EntityContentBlueprint,
   EntityContextMenuItemBlueprint,
@@ -48,6 +50,8 @@ import {
 } from '@backstage/catalog-model';
 import {
   useAppNode,
+  createFrontendModule,
+  createFrontendPlugin,
   createTranslationRef,
   createTranslationResource,
   translationApiRef,
@@ -110,6 +114,84 @@ jest.mock('./components/EntityLayout/EntityLayoutBui', () => {
 // resolution under CI load.
 beforeAll(async () => {
   await import('./components/EntityLayout');
+});
+
+describe('Catalog index page export configuration', () => {
+  it('accepts export config from Catalog modules and ignores other plugins', async () => {
+    const ignoredAttachment = jest.fn();
+
+    renderTestApp({
+      config: {
+        app: {
+          baseUrl: 'http://localhost:3000',
+          extensions: [
+            {
+              'page:catalog': { config: { exportSettings: { enabled: true } } },
+            },
+          ],
+        },
+        backend: { baseUrl: 'http://localhost:7007' },
+      },
+      features: [
+        createFrontendPlugin({
+          pluginId: 'catalog',
+          extensions: [catalogPage],
+        }),
+        createFrontendModule({
+          pluginId: 'catalog',
+          extensions: [
+            CatalogExportConfigBlueprint.make({
+              name: 'custom-columns',
+              params: {
+                columns: [
+                  { entityFilterKey: 'metadata.name', title: 'Catalog name' },
+                ],
+              },
+            }),
+          ],
+        }),
+        createFrontendPlugin({
+          pluginId: 'other',
+          extensions: [
+            CatalogExportConfigBlueprint.make({
+              name: 'custom-columns',
+              params: {
+                columns: [
+                  { entityFilterKey: 'metadata.name', title: 'Other name' },
+                ],
+              },
+            }),
+          ],
+        }),
+      ],
+      apis: [
+        catalogApiMock(),
+        mockApis.permission(),
+        [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+      ],
+      initialRouteEntries: ['/catalog'],
+      isExpectedError(error) {
+        if (error.code === 'EXTENSION_INPUT_INTERNAL_IGNORED') {
+          ignoredAttachment(error.context.extensionId);
+          return true;
+        }
+        return false;
+      },
+    });
+
+    expect(ignoredAttachment).toHaveBeenCalledWith(
+      'catalog-export-config:other/custom-columns',
+    );
+    await userEvent.click(
+      await screen.findByRole('button', { name: /export selection/i }),
+    );
+    expect(
+      await screen.findByRole('checkbox', { name: 'Catalog name' }),
+    ).toBeChecked();
+    expect(
+      screen.queryByRole('checkbox', { name: 'Other name' }),
+    ).not.toBeInTheDocument();
+  });
 });
 
 describe('Entity page', () => {
