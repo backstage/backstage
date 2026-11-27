@@ -45,9 +45,16 @@ import {
   kubernetesServiceLocatorExtensionPoint,
   type KubernetesServiceLocatorExtensionPoint,
   KubernetesServiceLocatorFactory,
+  kubernetesProxyPermissionResourceRef,
 } from '@backstage/plugin-kubernetes-node';
+import {
+  kubernetesClustersReadPermission,
+  kubernetesProxyPermission,
+  kubernetesResourcesReadPermission,
+} from '@backstage/plugin-kubernetes-common';
 import { KubernetesRouter } from './service/KubernetesRouter';
 import { KubernetesInitializer } from './service/KubernetesInitializer';
+import { kubernetesProxyPermissionRules } from './permissions/rules';
 import { createKubernetesActions } from './actions';
 
 class ObjectsProvider implements KubernetesObjectsProviderExtensionPoint {
@@ -244,6 +251,15 @@ export const kubernetesPlugin = createBackendPlugin({
         auditor,
         actionsRegistry,
       }) {
+        permissionsRegistry.addResourceType({
+          resourceRef: kubernetesProxyPermissionResourceRef,
+          rules: kubernetesProxyPermissionRules,
+          permissions: [kubernetesProxyPermission],
+        });
+        permissionsRegistry.addPermissions([
+          kubernetesResourcesReadPermission,
+          kubernetesClustersReadPermission,
+        ]);
         // TODO: this could do with a cleanup and push some of this initialization somewhere else
         if (config.has('kubernetes')) {
           const initializer = KubernetesInitializer.create({
@@ -271,6 +287,7 @@ export const kubernetesPlugin = createBackendPlugin({
             config,
             catalog,
             permissions,
+            permissionsRegistry,
             discovery,
             auth,
             httpAuth,

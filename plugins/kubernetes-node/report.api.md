@@ -23,6 +23,7 @@ import { KubernetesWatchOptions } from '@backstage/plugin-kubernetes-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import type { ObjectToFetch as ObjectToFetch_2 } from '@backstage/plugin-kubernetes-node';
+import { PermissionResourceRef } from '@backstage/plugin-permission-node';
 
 // @public (undocumented)
 export interface AuthenticationStrategy {
@@ -80,6 +81,9 @@ export interface FetchResponseWrapper {
   // (undocumented)
   responses: FetchResponse[];
 }
+
+// @public
+export type KubernetesAction = 'read' | 'write' | 'delete' | 'exec';
 
 // @public
 export interface KubernetesAuthStrategyExtensionPoint {
@@ -226,6 +230,31 @@ export type KubernetesObjectTypes =
   | 'secrets'
   | 'persistentvolumes'
   | 'persistentvolumeclaims';
+
+// @public
+export type KubernetesProxyFilter = {
+  key: string;
+  values?: string[];
+};
+
+// @public
+export const kubernetesProxyPermissionResourceRef: PermissionResourceRef<
+  KubernetesProxyRequest,
+  KubernetesProxyFilter,
+  'kubernetes-proxy-request',
+  'kubernetes'
+>;
+
+// @public
+export interface KubernetesProxyRequest {
+  action: KubernetesAction;
+  apiGroup: string;
+  cluster: string;
+  namespace: string | undefined;
+  resourceType: string | undefined;
+  subresource: string | undefined;
+  verb: string;
+}
 
 // @public
 export interface KubernetesRouterExtensionPoint {
