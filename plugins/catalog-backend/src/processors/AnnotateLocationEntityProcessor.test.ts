@@ -73,6 +73,48 @@ describe('AnnotateLocationEntityProcessor', () => {
       });
     });
 
+    it('keeps an encoded GitLab branch in view, edit, and source URLs', async () => {
+      const location: LocationSpec = {
+        type: 'url',
+        target:
+          'https://gitlab.example.com/group/project/-/blob/feature%2F1234/catalog-info.yaml',
+      };
+      const integrations = ScmIntegrations.fromConfig(
+        new ConfigReader({
+          integrations: {
+            gitlab: [
+              {
+                host: 'gitlab.example.com',
+                apiBaseUrl: 'https://gitlab.example.com/api/v4',
+              },
+            ],
+          },
+        }),
+      );
+      const processor = new AnnotateLocationEntityProcessor({ integrations });
+      const entity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: { name: 'slash-branch' },
+      };
+
+      const result = await processor.preProcessEntity(
+        entity,
+        location,
+        () => {},
+        location,
+      );
+      expect(result.metadata.annotations).toEqual(
+        expect.objectContaining({
+          'backstage.io/view-url': location.target,
+          'backstage.io/edit-url':
+            'https://gitlab.example.com/group/project/-/edit/feature%2F1234/catalog-info.yaml',
+          'backstage.io/source-location':
+            'url:https://gitlab.example.com/group/project/-/blob/feature%2F1234/',
+        }),
+      );
+    });
+
     it('does not override existing annotations', async () => {
       const entity: Entity = {
         apiVersion: 'backstage.io/v1alpha1',
