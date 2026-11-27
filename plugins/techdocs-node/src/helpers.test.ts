@@ -132,6 +132,41 @@ describe('parseReferenceAnnotation', () => {
 });
 
 describe('transformDirLocation', () => {
+  it('keeps an encoded GitLab ref when resolving TechDocs dir:.', () => {
+    const source =
+      'https://gitlab.example.com/group/project/-/blob/feature%2F1234/';
+    (getEntitySourceLocation as jest.Mock).mockReturnValue({
+      type: 'url',
+      target: source,
+    });
+    const entity: Entity = {
+      ...entityBase,
+      metadata: {
+        ...entityBase.metadata,
+        annotations: { [TECHDOCS_ANNOTATION]: 'dir:.' },
+      },
+    };
+    const integrations = ScmIntegrations.fromConfig(
+      new ConfigReader({
+        integrations: {
+          gitlab: [
+            {
+              host: 'gitlab.example.com',
+              apiBaseUrl: 'https://gitlab.example.com/api/v4',
+            },
+          ],
+        },
+      }),
+    );
+    expect(
+      transformDirLocation(
+        entity,
+        parseReferenceAnnotation(TECHDOCS_ANNOTATION, entity),
+        integrations,
+      ),
+    ).toEqual({ type: 'url', target: source });
+  });
+
   it.each`
     techdocsRef           | target
     ${'dir:.'}            | ${'https://my-url/folder/'}

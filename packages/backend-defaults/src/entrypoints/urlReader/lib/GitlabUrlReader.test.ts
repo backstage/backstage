@@ -405,6 +405,58 @@ describe('GitlabUrlReader', () => {
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
     });
 
+    it('reads tree and blob locations with an encoded slash in the branch', async () => {
+      const requests: string[] = [];
+      worker.use(
+        http.get(
+          'https://gitlab.com/api/v4/projects/backstage%2Fmock/repository/commits',
+          ({ request }) => {
+            const params = new URL(request.url).searchParams;
+            requests.push(
+              `commits:${params.get('ref_name')}:${params.get('path')}`,
+            );
+            return HttpResponse.json([{ id: 'sha123abc' }]);
+          },
+        ),
+        http.get(
+          'https://gitlab.com/api/v4/projects/backstage%2Fmock/repository/archive',
+          ({ request }) => {
+            const params = new URL(request.url).searchParams;
+            requests.push(`archive:${params.get('sha')}:${params.get('path')}`);
+            return new HttpResponse(new Uint8Array(archiveBuffer), {
+              headers: {
+                'content-disposition':
+                  'attachment; filename="mock-main-sha123abc.zip"',
+              },
+            });
+          },
+        ),
+      );
+      for (const kind of ['tree', 'blob']) {
+        const result = await gitlabProcessor.readTree(
+          `https://gitlab.com/backstage/mock/-/${kind}/feature%2F1234/docs`,
+        );
+        expect((await result.files()).map(file => file.path)).toEqual([
+          'index.md',
+        ]);
+      }
+      const root = await gitlabProcessor.readTree(
+        'https://gitlab.com/backstage/mock/-/tree/feature%2F1234/',
+      );
+      expect((await root.files()).map(file => file.path)).toEqual([
+        'docs/index.md',
+        'mkdocs.yml',
+      ]);
+      expect(requests).toEqual([
+        'commits:feature/1234:docs',
+        'archive:feature/1234:docs',
+        'commits:feature/1234:docs',
+        'archive:feature/1234:docs',
+        'commits:feature/1234:null',
+        'archive:feature/1234:null',
+      ]);
+    });
+
     it('creates a directory with the wanted files', async () => {
       const response = await gitlabProcessor.readTree(
         'https://gitlab.com/backstage/mock',
@@ -645,6 +697,52 @@ describe('GitlabUrlReader', () => {
       );
     });
 
+    it('searches a glob on a branch with an encoded slash', async () => {
+      const refs: string[] = [];
+      worker.use(
+        http.get(
+          'https://gitlab.com/api/v4/projects/backstage%2Fmock/repository/commits',
+          ({ request }) => {
+            const params = new URL(request.url).searchParams;
+            refs.push(`${params.get('ref_name')}:${params.get('path')}`);
+            return HttpResponse.json(commitsOfSubPathGitlabApiResponse);
+          },
+        ),
+      );
+      const result = await gitlabProcessor.search(
+        'https://gitlab.com/backstage/mock/-/tree/feature%2F1234/docs/**/index.*',
+      );
+      expect(refs).toEqual(['feature/1234:docs']);
+      expect(result.files).toHaveLength(1);
+      expect(result.files[0].url).toBe(
+        'https://gitlab.com/backstage/mock/-/tree/feature%2F1234/docs/index.md',
+      );
+      expect((await result.files[0].content()).toString()).toBe(
+        '# Test Subpath\n',
+      );
+    });
+
+    it('searches an encoded directory on a slash-containing branch', async () => {
+      const paths: string[] = [];
+      worker.use(
+        http.get(
+          'https://gitlab.com/api/v4/projects/backstage%2Fmock/repository/commits',
+          ({ request }) => {
+            const params = new URL(request.url).searchParams;
+            paths.push(`${params.get('ref_name')}:${params.get('path')}`);
+            return HttpResponse.json(commitsOfSubPathGitlabApiResponse);
+          },
+        ),
+      );
+      const result = await gitlabProcessor.search(
+        'https://gitlab.com/backstage/mock/-/tree/feature%2F1234/do%63s/**/*.md',
+      );
+      expect(paths).toEqual(['feature/1234:docs']);
+      expect(result.files.map(file => file.url)).toEqual([
+        'https://gitlab.com/backstage/mock/-/tree/feature%2F1234/docs/index.md',
+      ]);
+    });
+
     it('works when there are multiple globs', async () => {
       const result = await gitlabProcessor.search(
         'https://gitlab.com/backstage/mock/tree/main/**/docs/**/index.*',
@@ -859,6 +957,45 @@ describe('GitlabUrlReader', () => {
       );
 
       await expect(response.files()).resolves.toHaveLength(2);
+    });
+
+    it('reads an encoded slash branch on a GitLab installation with a relative path', async () => {
+      const projectPath = 'group%2Fgitlab-project';
+      const refs: string[] = [];
+      worker.use(
+        http.get(
+          `https://gitlab.mycompany.com/gitlab/api/v4/projects/${projectPath}`,
+          () => HttpResponse.json({ default_branch: 'main' }),
+        ),
+        http.get(
+          `https://gitlab.mycompany.com/gitlab/api/v4/projects/${projectPath}/repository/commits`,
+          ({ request }) => {
+            const params = new URL(request.url).searchParams;
+            refs.push(`${params.get('ref_name')}:${params.get('path')}`);
+            return HttpResponse.json([{ id: 'sha123abc' }]);
+          },
+        ),
+        http.get(
+          `https://gitlab.mycompany.com/gitlab/api/v4/projects/${projectPath}/repository/archive`,
+          ({ request }) => {
+            const params = new URL(request.url).searchParams;
+            refs.push(`${params.get('sha')}:${params.get('path')}`);
+            return new HttpResponse(new Uint8Array(archiveBuffer), {
+              headers: {
+                'content-disposition':
+                  'attachment; filename="mock-main-sha123abc.zip"',
+              },
+            });
+          },
+        ),
+      );
+      const result = await relativePathGitlabProcessor.readTree(
+        'https://gitlab.mycompany.com/gitlab/group/gitlab-project/-/tree/feature%2F1234/docs',
+      );
+      expect((await result.files()).map(file => file.path)).toEqual([
+        'index.md',
+      ]);
+      expect(refs).toEqual(['feature/1234:docs', 'feature/1234:docs']);
     });
 
     it('reads artifact URLs with the configured segment in the project path', async () => {

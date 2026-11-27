@@ -525,7 +525,9 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
         keys: [
           ...modified.map(
             filePath =>
-              `url:${project.web_url}/-/tree/${targetBranch}/${filePath}`,
+              `url:${project.web_url}/-/tree/${encodeURIComponent(
+                targetBranch,
+              )}/${filePath}`,
           ),
           ...modified.map(
             filePath =>

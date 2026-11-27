@@ -708,7 +708,7 @@ describe('GitlabDiscoveryEntityProvider - events', () => {
       });
       expect(connection.refresh).toHaveBeenCalledWith({
         keys: [
-          'url:https://example.com/group1/test-repo1/-/tree/feature/1234/catalog-info.yaml',
+          'url:https://example.com/group1/test-repo1/-/tree/feature%2F1234/catalog-info.yaml',
           'url:https://example.com/group1/test-repo1/-/blob/feature%2F1234/catalog-info.yaml',
         ],
       });

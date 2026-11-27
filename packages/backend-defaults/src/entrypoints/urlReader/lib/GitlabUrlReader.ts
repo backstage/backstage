@@ -37,6 +37,42 @@ import { Minimatch } from 'minimatch';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import { ReaderFactory, ReadTreeResponseFactory } from './types';
 
+// GitLab URLs with an escaped slash in the ref have an unambiguous segment.
+// Leave all other URL forms to git-url-parse for compatibility.
+function getEncodedGitLabRef(url: string) {
+  const pathname = new URL(url).pathname;
+  const marker =
+    /\/-\/(?:tree|blob)\//.exec(pathname) ?? /\/(?:tree|blob)\//.exec(pathname);
+  if (!marker) {
+    return undefined;
+  }
+
+  const branchAndPath = pathname.slice(marker.index + marker[0].length);
+  const slash = branchAndPath.indexOf('/');
+  const encodedRef =
+    slash === -1 ? branchAndPath : branchAndPath.slice(0, slash);
+  if (!/%2f/i.test(encodedRef)) {
+    return undefined;
+  }
+
+  return {
+    full_name: pathname.slice(1, marker.index),
+    ref: decodeURIComponent(encodedRef),
+    filepath:
+      slash === -1 ? '' : decodeURIComponent(branchAndPath.slice(slash + 1)),
+    branchPath: pathname.slice(
+      0,
+      marker.index + marker[0].length + encodedRef.length,
+    ),
+  };
+}
+
+function parseGitLabUrlWithEncodedRef(url: string) {
+  const parsed = parseGitUrl(url);
+  const encoded = getEncodedGitLabRef(url);
+  return encoded ? { ...parsed, ...encoded } : parsed;
+}
+
 /**
  * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files on GitLab.
  *
@@ -121,7 +157,7 @@ export class GitlabUrlReader implements UrlReaderService {
     options?: UrlReaderServiceReadTreeOptions,
   ): Promise<UrlReaderServiceReadTreeResponse> {
     const { etag, signal, token } = options ?? {};
-    const { ref, full_name, filepath } = parseGitUrl(url);
+    const { ref, full_name, filepath } = parseGitLabUrlWithEncodedRef(url);
 
     const repoFullName = this.validateAndStripGitLabRelativePath(
       `/${full_name}`,
@@ -232,7 +268,7 @@ export class GitlabUrlReader implements UrlReaderService {
     url: string,
     options?: UrlReaderServiceSearchOptions,
   ): Promise<UrlReaderServiceSearchResponse> {
-    const { filepath } = parseGitUrl(url);
+    const { filepath } = parseGitLabUrlWithEncodedRef(url);
 
     // If it's a direct URL we use readUrl instead
     if (!filepath?.match(/[*?]/)) {
@@ -263,7 +299,15 @@ export class GitlabUrlReader implements UrlReaderService {
 
     const staticPart = this.getStaticPart(filepath);
     const matcher = new Minimatch(filepath);
-    const treeUrl = trimEnd(url.replace(filepath, staticPart), `/`);
+    const encoded = getEncodedGitLabRef(url);
+    let treeUrl: string;
+    if (encoded) {
+      const resolved = new URL(url);
+      resolved.pathname = `${encoded.branchPath}/${staticPart}`;
+      treeUrl = trimEnd(resolved.toString(), '/');
+    } else {
+      treeUrl = trimEnd(url.replace(filepath, staticPart), '/');
+    }
     const pathPrefix = staticPart ? `${staticPart}/` : '';
     const tree = await this.readTree(treeUrl, {
       etag: options?.etag,
@@ -272,16 +316,27 @@ export class GitlabUrlReader implements UrlReaderService {
     });
 
     const files = await tree.files();
+    const hasEncodedRef = Boolean(encoded);
     return {
       etag: tree.etag,
-      files: files.map(file => ({
-        url: this.integration.resolveUrl({
-          url: `/${pathPrefix}${file.path}`,
-          base: url,
-        }),
-        content: file.content,
-        lastModifiedAt: file.lastModifiedAt,
-      })),
+      files: files.map(file => {
+        let fileUrl: string;
+        if (hasEncodedRef) {
+          const resolved = new URL(treeUrl);
+          resolved.pathname = `${trimEnd(resolved.pathname, '/')}/${file.path}`;
+          fileUrl = resolved.toString();
+        } else {
+          fileUrl = this.integration.resolveUrl({
+            url: `/${pathPrefix}${file.path}`,
+            base: url,
+          });
+        }
+        return {
+          url: fileUrl,
+          content: file.content,
+          lastModifiedAt: file.lastModifiedAt,
+        };
+      }),
     };
   }
 
