@@ -139,7 +139,7 @@ export class AwsS3EntityProvider implements EntityProvider {
       const taskId = `${this.getProviderName()}:refresh`;
       return taskRunner.run({
         id: taskId,
-        fn: async () => {
+        fn: async signal => {
           const logger = this.logger.child({
             class: AwsS3EntityProvider.prototype.constructor.name,
             taskId,
@@ -147,7 +147,7 @@ export class AwsS3EntityProvider implements EntityProvider {
           });
 
           try {
-            await this.refresh(logger);
+            await this.refreshWithSignal(logger, signal);
           } catch (error) {
             logger.error(
               `${this.getProviderName()} refresh failed, ${error}`,
@@ -196,13 +196,17 @@ export class AwsS3EntityProvider implements EntityProvider {
   }
 
   async refresh(logger: LoggerService) {
+    await this.refreshWithSignal(logger);
+  }
+
+  private async refreshWithSignal(logger: LoggerService, signal?: AbortSignal) {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
 
     logger.info('Discovering AWS S3 objects');
 
-    const keys = await this.listAllObjectKeys();
+    const keys = await this.listAllObjectKeys(signal);
     logger.info(`Discovered ${keys.length} AWS S3 objects`);
 
     const validKeys = keys.filter(key => !hasDotPathSegment(key));
@@ -215,6 +219,7 @@ export class AwsS3EntityProvider implements EntityProvider {
 
     const locations = validKeys.map(key => this.createLocationSpec(key));
 
+    signal?.throwIfAborted();
     await this.connection.applyMutation({
       type: 'full',
       entities: locations.map(location => {
@@ -228,7 +233,7 @@ export class AwsS3EntityProvider implements EntityProvider {
     logger.info(`Committed ${locations.length} Locations for AWS S3 objects`);
   }
 
-  private async listAllObjectKeys(): Promise<string[]> {
+  private async listAllObjectKeys(signal?: AbortSignal): Promise<string[]> {
     if (!this.s3) {
       throw new Error('Not initialized');
     }
@@ -238,11 +243,15 @@ export class AwsS3EntityProvider implements EntityProvider {
     let continuationToken: string | undefined = undefined;
     let output: ListObjectsV2Output;
     do {
-      output = await this.s3.listObjectsV2({
-        Bucket: this.config.bucketName,
-        ContinuationToken: continuationToken,
-        Prefix: this.config.prefix,
-      });
+      signal?.throwIfAborted();
+      output = await this.s3.listObjectsV2(
+        {
+          Bucket: this.config.bucketName,
+          ContinuationToken: continuationToken,
+          Prefix: this.config.prefix,
+        },
+        { abortSignal: signal },
+      );
 
       if (output.Contents) {
         output.Contents.forEach(item => {

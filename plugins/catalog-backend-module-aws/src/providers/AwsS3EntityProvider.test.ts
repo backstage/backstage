@@ -436,6 +436,44 @@ describe('AwsS3EntityProvider', () => {
     },
   );
 
+  it('does not apply a full update when the scheduled task is aborted', async () => {
+    const schedule = new PersistingTaskRunner();
+    const applyMutation = jest.fn();
+    const provider = AwsS3EntityProvider.fromConfig(
+      new ConfigReader({
+        catalog: {
+          providers: {
+            awsS3: { test: { bucketName: 'bucket-1', region: 'eu-west-1' } },
+          },
+        },
+      }),
+      { schedule, logger },
+    )[0];
+    await provider.connect({ applyMutation, refresh: jest.fn() });
+    const runTask = (signal: AbortSignal) =>
+      (schedule.getTasks()[0].fn as (signal: AbortSignal) => Promise<void>)(
+        signal,
+      );
+
+    const controller = new AbortController();
+    s3SendMock.mockImplementationOnce(async () => {
+      controller.abort();
+      return {
+        Contents: createObjectList(keys),
+        NextContinuationToken: 'next-token',
+      };
+    });
+    await runTask(controller.signal);
+    expect(s3SendMock).toHaveBeenCalledTimes(1);
+    expect(s3SendMock).toHaveBeenCalledWith(expect.anything(), {
+      abortSignal: controller.signal,
+    });
+    expect(applyMutation).not.toHaveBeenCalled();
+
+    await runTask(new AbortController().signal);
+    expect(applyMutation).toHaveBeenCalledTimes(1);
+  });
+
   it('fail without schedule and scheduler', () => {
     const config = new ConfigReader({
       catalog: {
