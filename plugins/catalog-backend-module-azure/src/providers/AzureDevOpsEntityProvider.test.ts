@@ -343,6 +343,56 @@ describe('AzureDevOpsEntityProvider', () => {
     );
   });
 
+  it('does not apply a full update when the scheduled task is aborted', async () => {
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = AzureDevOpsEntityProvider.fromConfig(
+      new ConfigReader({
+        catalog: {
+          providers: {
+            azureDevOps: {
+              test: { organization: 'myorganization', project: 'myproject' },
+            },
+          },
+        },
+      }),
+      { schedule, logger },
+    )[0];
+    await provider.connect(entityProviderConnection);
+    const runTask = (signal: AbortSignal) =>
+      (schedule.getTasks()[0].fn as (signal: AbortSignal) => Promise<void>)(
+        signal,
+      );
+
+    const controller = new AbortController();
+    mockCodeSearch.mockImplementationOnce(async () => {
+      controller.abort();
+      return [];
+    });
+    await runTask(controller.signal);
+    expect(mockCodeSearch).toHaveBeenLastCalledWith(
+      expect.anything(),
+      expect.anything(),
+      'myorganization',
+      'myproject',
+      '*',
+      '/catalog-info.yaml',
+      '',
+      controller.signal,
+    );
+    expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
+
+    mockCodeSearch.mockResolvedValueOnce([]);
+    await runTask(new AbortController().signal);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: [],
+    });
+  });
+
   it('fail without schedule and scheduler', () => {
     const config = new ConfigReader({
       catalog: {

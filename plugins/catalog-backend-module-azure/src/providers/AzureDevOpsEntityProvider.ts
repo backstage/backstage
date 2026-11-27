@@ -126,7 +126,7 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
       const taskId = `${this.getProviderName()}:refresh`;
       return taskRunner.run({
         id: taskId,
-        fn: async () => {
+        fn: async signal => {
           const logger = this.logger.child({
             class: AzureDevOpsEntityProvider.prototype.constructor.name,
             taskId,
@@ -134,7 +134,7 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
           });
 
           try {
-            await this.refresh(logger);
+            await this.refreshWithSignal(logger, signal);
           } catch (error) {
             logger.error(
               `${this.getProviderName()} refresh failed, ${error}`,
@@ -158,6 +158,10 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
   }
 
   async refresh(logger: LoggerService) {
+    await this.refreshWithSignal(logger);
+  }
+
+  private async refreshWithSignal(logger: LoggerService, signal?: AbortSignal) {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
@@ -172,6 +176,7 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
       this.config.repository,
       this.config.path,
       this.config.branch || '',
+      signal,
     );
 
     logger.info(`Discovered ${files.length} catalog files`);
@@ -181,6 +186,7 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
       this.createLocationSpec(key),
     );
 
+    signal?.throwIfAborted();
     await this.connection.applyMutation({
       type: 'full',
       entities: locations.map(location => {

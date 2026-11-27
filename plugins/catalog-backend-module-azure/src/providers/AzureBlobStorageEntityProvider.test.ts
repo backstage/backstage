@@ -180,6 +180,38 @@ describe('AzureBlobStorageEntityProvider', () => {
     );
   });
 
+  it('does not apply a full update when the scheduled task is aborted', async () => {
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = AzureBlobStorageEntityProvider.fromConfig(
+      new ConfigReader({
+        integrations: {
+          azureBlobStorage: [{ accountName }],
+        },
+        catalog: {
+          providers: {
+            azureBlob: { test: { containerName, accountName } },
+          },
+        },
+      }),
+      { schedule, logger },
+    )[0];
+    await provider.connect(entityProviderConnection);
+    const runTask = (signal: AbortSignal) =>
+      (schedule.getTasks()[0].fn as (signal: AbortSignal) => Promise<void>)(
+        signal,
+      );
+
+    await runTask(AbortSignal.abort());
+    expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
+
+    await runTask(new AbortController().signal);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+  });
+
   // eslint-disable-next-line jest/expect-expect
   it('apply full update no prefix', async () => {
     return expectMutation(

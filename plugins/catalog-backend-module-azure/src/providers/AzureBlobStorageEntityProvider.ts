@@ -136,7 +136,7 @@ export class AzureBlobStorageEntityProvider implements EntityProvider {
       const taskId = `${this.getProviderName()}:refresh`;
       return taskRunner.run({
         id: taskId,
-        fn: async () => {
+        fn: async signal => {
           const logger = this.logger.child({
             class: AzureBlobStorageEntityProvider.prototype.constructor.name,
             taskId,
@@ -144,7 +144,7 @@ export class AzureBlobStorageEntityProvider implements EntityProvider {
           });
 
           try {
-            await this.refresh(logger);
+            await this.refresh(logger, signal);
           } catch (error) {
             logger.error(
               `${this.getProviderName()} refresh failed, ${error}`,
@@ -195,14 +195,14 @@ export class AzureBlobStorageEntityProvider implements EntityProvider {
     await this.scheduleFn();
   }
 
-  async refresh(logger: LoggerService) {
+  async refresh(logger: LoggerService, signal?: AbortSignal) {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
 
     logger.info('Discovering Azure Blob Storage blobs');
 
-    const keys = await this.listAllBlobKeys();
+    const keys = await this.listAllBlobKeys(signal);
     logger.info(`Discovered ${keys.length} Azure Blob Storage blobs`);
 
     const validKeys = keys.filter(key => !hasDotPathSegment(key));
@@ -215,6 +215,7 @@ export class AzureBlobStorageEntityProvider implements EntityProvider {
 
     const locations = validKeys.map(key => this.createLocationSpec(key));
 
+    signal?.throwIfAborted();
     await this.connection.applyMutation({
       type: 'full',
       entities: locations.map(location => {
@@ -230,15 +231,18 @@ export class AzureBlobStorageEntityProvider implements EntityProvider {
     );
   }
 
-  private async listAllBlobKeys(): Promise<string[]> {
+  private async listAllBlobKeys(signal?: AbortSignal): Promise<string[]> {
     const keys: string[] = [];
     const containerClient = this.blobServiceClient?.getContainerClient(
       this.config.containerName,
     );
 
-    for await (const blob of (
-      containerClient as ContainerClient
-    ).listBlobsFlat()) {
+    for await (const blob of (containerClient as ContainerClient).listBlobsFlat(
+      {
+        abortSignal: signal,
+      },
+    )) {
+      signal?.throwIfAborted();
       if (blob.name) {
         keys.push(blob.name);
       }
