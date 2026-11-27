@@ -10,11 +10,11 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { defaultEntityContentGroups } from '@backstage/plugin-catalog-react/alpha';
 import { Entity } from '@backstage/catalog-model';
-import { EntityCardType } from '@backstage/plugin-catalog-react';
-import { EntityContentLayoutProps } from '@backstage/plugin-catalog-react';
+import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
+import { EntityContentLayoutProps } from '@backstage/plugin-catalog-react/alpha';
 import { EntityContextMenuItemData } from '@backstage/plugin-catalog-react';
 import { EntityContextMenuItemParams } from '@backstage/plugin-catalog-react';
-import { EntityHeaderLayoutProps } from '@backstage/plugin-catalog-react';
+import { EntityHeaderLayoutProps } from '@backstage/plugin-catalog-react/alpha';
 import { EntityListContextProps } from '@backstage/plugin-catalog-react';
 import { EntityListPagination } from '@backstage/plugin-catalog-react';
 import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
@@ -938,11 +938,6 @@ const _default: OverridableFrontendPlugin<
       inputs: {
         layouts: ExtensionInput<
           | ConfigurableExtensionDataRef<
-              (props: EntityContentLayoutProps) => React.JSX.Element,
-              'catalog.entity-content-layout.component',
-              {}
-            >
-          | ConfigurableExtensionDataRef<
               (entity: Entity) => boolean,
               'catalog.entity-filter-function',
               {
@@ -955,6 +950,11 @@ const _default: OverridableFrontendPlugin<
               {
                 optional: true;
               }
+            >
+          | ConfigurableExtensionDataRef<
+              (props: EntityContentLayoutProps) => React.JSX.Element,
+              'catalog.entity-content-layout.component',
+              {}
             >,
           {
             singleton: false;
@@ -1018,16 +1018,16 @@ const _default: OverridableFrontendPlugin<
       };
       output:
         | ExtensionDataRef<
+            EntityContextMenuItemData,
+            'catalog.entity-context-menu-item-data',
+            {}
+          >
+        | ExtensionDataRef<
             (entity: Entity) => boolean,
             'catalog.entity-filter-function',
             {
               optional: true;
             }
-          >
-        | ExtensionDataRef<
-            EntityContextMenuItemData,
-            'catalog.entity-context-menu-item-data',
-            {}
           >;
       inputs: {};
       params: EntityContextMenuItemParams;
@@ -1043,16 +1043,16 @@ const _default: OverridableFrontendPlugin<
       };
       output:
         | ExtensionDataRef<
+            EntityContextMenuItemData,
+            'catalog.entity-context-menu-item-data',
+            {}
+          >
+        | ExtensionDataRef<
             (entity: Entity) => boolean,
             'catalog.entity-filter-function',
             {
               optional: true;
             }
-          >
-        | ExtensionDataRef<
-            EntityContextMenuItemData,
-            'catalog.entity-context-menu-item-data',
-            {}
           >;
       inputs: {};
       params: EntityContextMenuItemParams;
@@ -1068,16 +1068,16 @@ const _default: OverridableFrontendPlugin<
       };
       output:
         | ExtensionDataRef<
+            EntityContextMenuItemData,
+            'catalog.entity-context-menu-item-data',
+            {}
+          >
+        | ExtensionDataRef<
             (entity: Entity) => boolean,
             'catalog.entity-filter-function',
             {
               optional: true;
             }
-          >
-        | ExtensionDataRef<
-            EntityContextMenuItemData,
-            'catalog.entity-context-menu-item-data',
-            {}
           >;
       inputs: {};
       params: EntityContextMenuItemParams;

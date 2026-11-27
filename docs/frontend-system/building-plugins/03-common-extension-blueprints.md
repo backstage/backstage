@@ -118,18 +118,6 @@ Creates menu items inside the entity context menu. Import
 `EntityContextMenuItemBlueprint` from `@backstage/plugin-catalog-react`.
 The `useProps` hook returns the item's link or action.
 
-### EntityContentLayout
-
-Import `EntityContentLayoutBlueprint` from `@backstage/plugin-catalog-react`
-to install an entity overview layout. Its component receives the matching cards
-as elements with optional card types.
-
-### EntityHeaderLayout
-
-Import `EntityHeaderLayoutBlueprint` from `@backstage/plugin-catalog-react`
-to install an entity header layout. Its component receives the available tabs
-and the active tab ID.
-
 ## Extension blueprints in `@backstage/plugin-search-react/alpha`
 
 These are the [extension blueprints](../architecture/23-extension-blueprints.md) provided by the Search plugin.

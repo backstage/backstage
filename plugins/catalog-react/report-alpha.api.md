@@ -249,7 +249,7 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-// @public
+// @alpha (undocumented)
 export type EntityCardType = 'info' | 'content';
 
 // @public (undocumented)
@@ -399,7 +399,7 @@ export type EntityContentGroupDefinitions = Record<
   }
 >;
 
-// @public
+// @alpha (undocumented)
 export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
   kind: 'entity-content-layout';
   params: {
@@ -454,7 +454,7 @@ export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-// @public
+// @alpha (undocumented)
 export interface EntityContentLayoutProps {
   // (undocumented)
   cards: Array<{
@@ -469,16 +469,16 @@ export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
   params: EntityContextMenuItemParams;
   output:
     | ExtensionDataRef<
+        EntityContextMenuItemData,
+        'catalog.entity-context-menu-item-data',
+        {}
+      >
+    | ExtensionDataRef<
         (entity: Entity) => boolean,
         'catalog.entity-filter-function',
         {
           optional: true;
         }
-      >
-    | ExtensionDataRef<
-        EntityContextMenuItemData,
-        'catalog.entity-context-menu-item-data',
-        {}
       >;
   inputs: {};
   config: {
@@ -620,7 +620,7 @@ export const EntityHeaderBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-// @public
+// @alpha (undocumented)
 export const EntityHeaderLayoutBlueprint: ExtensionBlueprint<{
   kind: 'entity-header-layout';
   params: {
@@ -661,7 +661,7 @@ export const EntityHeaderLayoutBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-// @public
+// @alpha (undocumented)
 export interface EntityHeaderLayoutProps {
   // (undocumented)
   activeTabId?: string;

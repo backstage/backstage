@@ -23,8 +23,7 @@ import IconButton from '@material-ui/core/IconButton';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { IconElement } from '@backstage/frontend-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
-import { JSX as JSX_2 } from 'react';
-import { JSX as JSX_3 } from 'react/jsx-runtime';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { LinkProps } from '@backstage/core-components';
 import { Observable } from '@backstage/types';
 import { OutlinedTextFieldProps } from '@material-ui/core/TextField';
@@ -53,7 +52,7 @@ export type AllowedEntityFilters<T extends DefaultEntityFilters> = {
 // @public
 export const AsyncEntityProvider: (
   props: AsyncEntityProviderProps,
-) => JSX_3.Element;
+) => JSX_2.Element;
 
 // @public
 export interface AsyncEntityProviderProps {
@@ -91,7 +90,7 @@ export function CatalogAutocomplete<
   FreeSolo extends boolean | undefined = undefined,
 >(
   props: CatalogAutocompleteProps<T, Multiple, DisableClearable, FreeSolo>,
-): JSX_3.Element;
+): JSX_2.Element;
 
 // @public
 export type CatalogAutocompleteProps<
@@ -117,15 +116,15 @@ export type CatalogAutocompleteProps<
 
 // @public (undocumented)
 export const CatalogFilterLayout: {
-  (props: { children: ReactNode }): JSX_3.Element;
+  (props: { children: ReactNode }): JSX_2.Element;
   Filters: (props: {
     children: ReactNode;
     options?: {
       drawerBreakpoint?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | number;
       drawerAnchor?: 'left' | 'right' | 'top' | 'bottom';
     };
-  }) => JSX_3.Element;
-  Content: (props: { children: ReactNode }) => JSX_3.Element;
+  }) => JSX_2.Element;
+  Content: (props: { children: ReactNode }) => JSX_2.Element;
 };
 
 // @public (undocumented)
@@ -321,7 +320,7 @@ export function defaultEntityPresentation(
 ): EntityRefPresentationSnapshot;
 
 // @public (undocumented)
-export const DefaultFilters: (props: DefaultFiltersProps) => JSX_3.Element;
+export const DefaultFilters: (props: DefaultFiltersProps) => JSX_2.Element;
 
 // @public
 export type DefaultFiltersProps = {
@@ -335,7 +334,7 @@ export type DefaultFiltersProps = {
 export function EntityAutocompletePicker<
   T extends DefaultEntityFilters = DefaultEntityFilters,
   Name extends AllowedEntityFilters<T> = AllowedEntityFilters<T>,
->(props: EntityAutocompletePickerProps<T, Name>): JSX_3.Element | null;
+>(props: EntityAutocompletePickerProps<T, Name>): JSX_2.Element | null;
 
 // @public (undocumented)
 export type EntityAutocompletePickerProps<
@@ -361,88 +360,21 @@ export type EntityAutocompletePickerProps<
 };
 
 // @public
-export type EntityCardType = 'info' | 'content';
-
-// @public
-export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
-  kind: 'entity-content-layout';
-  params: {
-    filter?: string | FilterPredicate | ((entity: Entity) => boolean);
-    loader: () => Promise<(props: EntityContentLayoutProps) => JSX_2.Element>;
-  };
-  output:
-    | ExtensionDataRef<
-        (entity: Entity) => boolean,
-        'catalog.entity-filter-function',
-        {
-          optional: true;
-        }
-      >
-    | ExtensionDataRef<
-        string,
-        'catalog.entity-filter-expression',
-        {
-          optional: true;
-        }
-      >
-    | ExtensionDataRef<
-        (props: EntityContentLayoutProps) => React.JSX.Element,
-        'catalog.entity-content-layout.component',
-        {}
-      >;
-  inputs: {};
-  config: {
-    type: string | undefined;
-    filter: string | FilterPredicate | undefined;
-  };
-  configInput: {
-    type?: string | undefined;
-    filter?: string | FilterPredicate | undefined;
-  };
-  dataRefs: {
-    filterFunction: ConfigurableExtensionDataRef<
-      (entity: Entity) => boolean,
-      'catalog.entity-filter-function',
-      {}
-    >;
-    filterExpression: ConfigurableExtensionDataRef<
-      string,
-      'catalog.entity-filter-expression',
-      {}
-    >;
-    component: ConfigurableExtensionDataRef<
-      (props: EntityContentLayoutProps) => React.JSX.Element,
-      'catalog.entity-content-layout.component',
-      {}
-    >;
-  };
-}>;
-
-// @public
-export interface EntityContentLayoutProps {
-  // (undocumented)
-  cards: Array<{
-    type?: EntityCardType;
-    element: JSX_2.Element;
-  }>;
-}
-
-// @public
 export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
   kind: 'entity-context-menu-item';
   params: EntityContextMenuItemParams;
   output:
     | ExtensionDataRef<
+        EntityContextMenuItemData,
+        'catalog.entity-context-menu-item-data',
+        {}
+      >
+    | ExtensionDataRef<
         (entity: Entity) => boolean,
         'catalog.entity-filter-function',
         {
           optional: true;
         }
-      >
-    | ExtensionDataRef<
-        EntityContextMenuItemData,
-        'catalog.entity-context-menu-item-data',
-        {}
       >;
   inputs: {};
   config: {
@@ -524,72 +456,8 @@ export type EntityFilter = {
   toQueryValue?: () => string | string[];
 };
 
-// @public
-export const EntityHeaderLayoutBlueprint: ExtensionBlueprint<{
-  kind: 'entity-header-layout';
-  params: {
-    filter?: FilterPredicate | ((entity: Entity) => boolean);
-    loader: () => Promise<(props: EntityHeaderLayoutProps) => JSX_2.Element>;
-  };
-  output:
-    | ExtensionDataRef<
-        (entity: Entity) => boolean,
-        'catalog.entity-filter-function',
-        {
-          optional: true;
-        }
-      >
-    | ExtensionDataRef<
-        (props: EntityHeaderLayoutProps) => JSX_2.Element,
-        'catalog.entity-header-layout.component',
-        {}
-      >;
-  inputs: {};
-  config: {
-    filter: FilterPredicate | undefined;
-  };
-  configInput: {
-    filter?: FilterPredicate | undefined;
-  };
-  dataRefs: {
-    filterFunction: ConfigurableExtensionDataRef<
-      (entity: Entity) => boolean,
-      'catalog.entity-filter-function',
-      {}
-    >;
-    component: ConfigurableExtensionDataRef<
-      (props: EntityHeaderLayoutProps) => JSX_2.Element,
-      'catalog.entity-header-layout.component',
-      {}
-    >;
-  };
-}>;
-
-// @public
-export interface EntityHeaderLayoutProps {
-  // (undocumented)
-  activeTabId?: string;
-  // (undocumented)
-  tabs: Array<
-    | {
-        id: string;
-        label: string;
-        href: string;
-      }
-    | {
-        id: string;
-        label: string;
-        items: Array<{
-          id: string;
-          label: string;
-          href: string;
-        }>;
-      }
-  >;
-}
-
 // @public (undocumented)
-export function EntityInfoCard(props: EntityInfoCardProps): JSX_3.Element;
+export function EntityInfoCard(props: EntityInfoCardProps): JSX_2.Element;
 
 // @public (undocumented)
 export interface EntityInfoCardProps {
@@ -623,7 +491,7 @@ export class EntityKindFilter implements EntityFilter {
 // @public (undocumented)
 export const EntityKindPicker: (
   props: EntityKindPickerProps,
-) => JSX_3.Element | null;
+) => JSX_2.Element | null;
 
 // @public
 export interface EntityKindPickerProps {
@@ -652,7 +520,7 @@ export class EntityLifecycleFilter implements EntityFilter {
 // @public (undocumented)
 export const EntityLifecyclePicker: (props: {
   initialFilter?: string[];
-}) => JSX_3.Element;
+}) => JSX_2.Element;
 
 // @public @deprecated
 export const EntityListContext: Context<
@@ -704,7 +572,7 @@ export type EntityListPagination =
 // @public
 export const EntityListProvider: <EntityFilters extends DefaultEntityFilters>(
   props: EntityListProviderProps,
-) => JSX_3.Element;
+) => JSX_2.Element;
 
 // @public (undocumented)
 export type EntityListProviderProps = PropsWithChildren<{
@@ -737,7 +605,7 @@ export class EntityNamespaceFilter implements EntityFilter {
 // @public (undocumented)
 export const EntityNamespacePicker: (
   props: EntityNamespacePickerProps,
-) => JSX_3.Element;
+) => JSX_2.Element;
 
 // @public
 export interface EntityNamespacePickerProps {
@@ -786,7 +654,7 @@ export class EntityOwnerFilter implements EntityFilter {
 // @public (undocumented)
 export const EntityOwnerPicker: (
   props?: EntityOwnerPickerProps,
-) => JSX_3.Element | null;
+) => JSX_2.Element | null;
 
 // @public (undocumented)
 export type EntityOwnerPickerProps = {
@@ -796,7 +664,7 @@ export type EntityOwnerPickerProps = {
 // @public
 export const EntityPeekAheadPopover: (
   props: EntityPeekAheadPopoverProps,
-) => JSX_3.Element;
+) => JSX_2.Element;
 
 // @public
 export type EntityPeekAheadPopoverProps = PropsWithChildren<{
@@ -829,10 +697,10 @@ export function entityPresentationSnapshot(
 ): EntityRefPresentationSnapshot;
 
 // @public (undocumented)
-export const EntityProcessingStatusPicker: () => JSX_3.Element;
+export const EntityProcessingStatusPicker: () => JSX_2.Element;
 
 // @public
-export const EntityProvider: (props: EntityProviderProps) => JSX_3.Element;
+export const EntityProvider: (props: EntityProviderProps) => JSX_2.Element;
 
 // @public
 export interface EntityProviderProps {
@@ -859,7 +727,7 @@ export type EntityRefLinkProps = {
 // @public
 export function EntityRefLinks<
   TRef extends string | CompoundEntityRef | Entity,
->(props: EntityRefLinksProps<TRef>): JSX_3.Element;
+>(props: EntityRefLinksProps<TRef>): JSX_2.Element;
 
 // @public
 export type EntityRefLinksProps<
@@ -910,7 +778,7 @@ export const entityRouteRef: RouteRef<{
 }>;
 
 // @public
-export const EntitySearchBar: () => JSX_3.Element;
+export const EntitySearchBar: () => JSX_2.Element;
 
 // @public (undocumented)
 export type EntitySourceLocation = {
@@ -920,7 +788,7 @@ export type EntitySourceLocation = {
 
 // @public
 export const EntityTable: {
-  <T extends Entity>(props: EntityTableProps<T>): JSX_3.Element;
+  <T extends Entity>(props: EntityTableProps<T>): JSX_2.Element;
   columns: Readonly<{
     createEntityRefColumn<T extends Entity>(options: {
       defaultKind?: string;
@@ -978,7 +846,7 @@ export class EntityTagFilter implements EntityFilter {
 }
 
 // @public (undocumented)
-export const EntityTagPicker: (props: EntityTagPickerProps) => JSX_3.Element;
+export const EntityTagPicker: (props: EntityTagPickerProps) => JSX_2.Element;
 
 // @public (undocumented)
 export type EntityTagPickerProps = {
@@ -1021,7 +889,7 @@ export class EntityTypeFilter implements EntityFilter {
 // @public (undocumented)
 export const EntityTypePicker: (
   props: EntityTypePickerProps,
-) => JSX_3.Element | null;
+) => JSX_2.Element | null;
 
 // @public
 export interface EntityTypePickerProps {
@@ -1054,7 +922,7 @@ export class EntityUserFilter implements EntityFilter {
 }
 
 // @public
-export const FavoriteEntity: (props: FavoriteEntityProps) => JSX_3.Element;
+export const FavoriteEntity: (props: FavoriteEntityProps) => JSX_2.Element;
 
 // @public (undocumented)
 export type FavoriteEntityProps = ComponentProps<typeof IconButton> & {
@@ -1095,13 +963,13 @@ export function InspectEntityDialog(props: {
   initialTab?: 'overview' | 'ancestry' | 'colocated' | 'json' | 'yaml';
   onClose: () => void;
   onSelect?: (tab: string) => void;
-}): JSX_3.Element | null;
+}): JSX_2.Element | null;
 
 // @public
 export function MissingAnnotationEmptyState(props: {
   annotation: string | string[];
   readMoreUrl?: string;
-}): JSX_3.Element;
+}): JSX_2.Element;
 
 // @public (undocumented)
 export type MissingAnnotationEmptyStateClassKey = 'code';
@@ -1113,7 +981,7 @@ export function MockEntityListContextProvider<
   props: PropsWithChildren<{
     value?: Partial<EntityListContextProps<T>>;
   }>,
-): JSX_3.Element;
+): JSX_2.Element;
 
 // @public
 export class MockStarredEntitiesApi implements StarredEntitiesApi {
@@ -1138,7 +1006,7 @@ export const starredEntitiesApiRef: ApiRef_2<StarredEntitiesApi>;
 // @public (undocumented)
 export const UnregisterEntityDialog: (
   props: UnregisterEntityDialogProps,
-) => JSX_3.Element;
+) => JSX_2.Element;
 
 // @public (undocumented)
 export type UnregisterEntityDialogProps = {
@@ -1230,7 +1098,7 @@ export type UserListFilterKind = 'owned' | 'starred' | 'all';
 // @public (undocumented)
 export const UserListPicker: (
   props: UserListPickerProps,
-) => JSX_3.Element | null;
+) => JSX_2.Element | null;
 
 // @public (undocumented)
 export type UserListPickerProps = {
