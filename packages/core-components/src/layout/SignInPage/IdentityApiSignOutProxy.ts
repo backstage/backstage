@@ -75,7 +75,7 @@ export class IdentityApiSignOutProxy implements IdentityApi {
     return this.config.identityApi.getCredentials();
   }
 
-  signOut(): Promise<void> {
-    return this.config.signOut();
+  signOut(options?: { preserveLocation?: boolean }): Promise<void> {
+    return this.config.signOut(options);
   }
 }

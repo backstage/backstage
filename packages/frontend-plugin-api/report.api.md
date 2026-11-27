@@ -1578,7 +1578,7 @@ export type IdentityApi = {
   getCredentials(): Promise<{
     token?: string;
   }>;
-  signOut(): Promise<void>;
+  signOut(options?: { preserveLocation?: boolean }): Promise<void>;
 };
 
 // @public @deprecated

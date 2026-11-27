@@ -135,16 +135,27 @@ export class AppIdentityProxy implements IdentityApi {
     });
   }
 
-  async signOut(): Promise<void> {
-    await this.waitForTarget.then(target => target.signOut());
+  async signOut(options?: { preserveLocation?: boolean }): Promise<void> {
+    const { pathname, search, hash } = window.location;
+    const preservedUrl =
+      options?.preserveLocation && !pathname.startsWith('//')
+        ? `${pathname}${search}${hash}`
+        : undefined;
 
+    await this.waitForTarget.then(target => target.signOut(options));
     await this.#cookieAuthSignOut?.();
 
-    this.navigateToUrl(this.signOutTargetUrl);
+    this.navigateToUrl(preservedUrl ?? this.signOutTargetUrl);
   }
 
   private navigateToUrl(url: string): void {
+    const currentPathAndSearch = `${window.location.pathname}${window.location.search}`;
     window.location.href = url;
+    // Assigning location.href to the same path and search with a hash fragment
+    // triggers a fragment navigation rather than a full page reload (#35309).
+    if (url.startsWith(`${currentPathAndSearch}#`)) {
+      window.location.reload();
+    }
   }
 
   enableCookieAuth(ctx: {

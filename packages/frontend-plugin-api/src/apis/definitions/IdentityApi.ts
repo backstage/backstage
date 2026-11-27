@@ -45,9 +45,13 @@ export type IdentityApi = {
   getCredentials(): Promise<{ token?: string }>;
 
   /**
-   * Sign out the current user
+   * Sign out the current user.
+   *
+   * @param options - Optional sign-out options. If `preserveLocation` is true,
+   *   requests that the app navigates back to the current window location after
+   *   sign out, preserving path, search query, and hash. Defaults to false.
    */
-  signOut(): Promise<void>;
+  signOut(options?: { preserveLocation?: boolean }): Promise<void>;
 };
 
 /**
