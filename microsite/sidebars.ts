@@ -464,6 +464,7 @@ export default {
         sidebarElementWithIndex({ label: 'Gerrit' }, [
           'integrations/gerrit/locations',
           'integrations/gerrit/discovery',
+          'integrations/gerrit/events',
         ]),
         sidebarElementWithIndex({ label: 'GitHub' }, [
           'integrations/github/locations',
