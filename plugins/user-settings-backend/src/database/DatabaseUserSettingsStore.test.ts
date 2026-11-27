@@ -124,7 +124,7 @@ describe.each(databases.eachSupportedId())(
       });
 
       it('should run queued queries in the async context of their own caller', async () => {
-        const als = new AsyncLocalStorage<string>();
+        const asyncStorage = new AsyncLocalStorage<string>();
         const storesByBucket = new Map<string, Set<string | undefined>>();
         const onQuery = (data: { bindings?: unknown[] }) => {
           const bucket = data.bindings?.find(
@@ -132,7 +132,7 @@ describe.each(databases.eachSupportedId())(
           ) as string | undefined;
           if (bucket) {
             const stores = storesByBucket.get(bucket) ?? new Set();
-            stores.add(als.getStore());
+            stores.add(asyncStorage.getStore());
             storesByBucket.set(bucket, stores);
           }
         };
@@ -140,7 +140,7 @@ describe.each(databases.eachSupportedId())(
 
         try {
           // The first caller takes all 10 slots of the shared limiter
-          const first = als.run('first', () =>
+          const first = asyncStorage.run('first', () =>
             storage.multiget({
               userEntityRef: 'user-1',
               items: Array.from(Array(10)).map((_, i) => ({
@@ -150,7 +150,7 @@ describe.each(databases.eachSupportedId())(
             }),
           );
           // The second caller is queued, and needs several key chunks
-          const second = als.run('second', () =>
+          const second = asyncStorage.run('second', () =>
             storage.multiget({
               userEntityRef: 'user-1',
               items: Array.from(Array(250)).map((_, i) => ({

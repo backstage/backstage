@@ -200,7 +200,7 @@ describe('DocsSynchronizer', () => {
     });
 
     it('should run queued builds in the async context of their own caller', async () => {
-      const als = new AsyncLocalStorage<string>();
+      const asyncStorage = new AsyncLocalStorage<string>();
       const releases: Array<() => void> = [];
       const seenStores: Array<string | undefined> = [];
       let onEleventhBuild: () => void = () => {};
@@ -208,7 +208,7 @@ describe('DocsSynchronizer', () => {
         onEleventhBuild = resolve;
       });
       MockedDocsBuilder.prototype.build.mockImplementation(() => {
-        seenStores.push(als.getStore());
+        seenStores.push(asyncStorage.getStore());
         if (seenStores.length === 11) {
           onEleventhBuild();
         }
@@ -232,9 +232,9 @@ describe('DocsSynchronizer', () => {
 
       // Fill all 10 build slots from one caller, then queue one from another
       for (let i = 0; i < 10; i++) {
-        als.run('first', sync);
+        asyncStorage.run('first', sync);
       }
-      als.run('second', sync);
+      asyncStorage.run('second', sync);
       await new Promise<void>(resolve => resolve());
       expect(seenStores).toEqual(Array(10).fill('first'));
 

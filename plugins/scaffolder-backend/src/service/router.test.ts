@@ -1955,7 +1955,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         createdBy: '',
       });
 
-      const als = new AsyncLocalStorage<string>();
+      const asyncStorage = new AsyncLocalStorage<string>();
       let onCleanup: (store: string | undefined) => void = () => {};
       const cleanupStore = new Promise<string | undefined>(resolve => {
         onCleanup = resolve;
@@ -1977,12 +1977,12 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
               ],
             }),
           );
-          return () => onCleanup(als.getStore());
+          return () => onCleanup(asyncStorage.getStore());
         });
       });
 
       const app = express()
-        .use((_req, _res, next) => als.run('request', next))
+        .use((_req, _res, next) => asyncStorage.run('request', next))
         .use(unwrappedRouter);
 
       const req = request(app)

@@ -38,7 +38,7 @@ jest.mock('@modelcontextprotocol/sdk/server/streamableHttp.js', () => ({
 
 describe('createStreamableRouter', () => {
   it('should clean up a closed connection in the async context of its request', async () => {
-    const als = new AsyncLocalStorage<string>();
+    const asyncStorage = new AsyncLocalStorage<string>();
 
     const auditor = mockServices.auditor.mock();
     const closedAuditStores: Array<string | undefined> = [];
@@ -48,12 +48,12 @@ describe('createStreamableRouter', () => {
     });
     auditor.createEvent.mockImplementation(async options => {
       if (options.meta?.actionType === 'closed') {
-        closedAuditStores.push(als.getStore());
+        closedAuditStores.push(asyncStorage.getStore());
       }
       return {
         success: jest.fn(async () => {
           if (options.meta?.actionType === 'closed') {
-            closedAuditStores.push(als.getStore());
+            closedAuditStores.push(asyncStorage.getStore());
             onClosedAuditSuccess();
           }
         }),
@@ -66,21 +66,21 @@ describe('createStreamableRouter', () => {
     metrics.createHistogram.mockImplementation(
       () =>
         ({
-          record: () => sessionDurationStores.push(als.getStore()),
+          record: () => sessionDurationStores.push(asyncStorage.getStore()),
         } as any),
     );
 
     const closeStores: Array<string | undefined> = [];
     const server = {
       connect: jest.fn(),
-      close: jest.fn(() => closeStores.push(als.getStore())),
+      close: jest.fn(() => closeStores.push(asyncStorage.getStore())),
     };
     const mcpService = {
       getServer: () => server,
     } as unknown as McpService;
 
     const app = express()
-      .use((_req, _res, next) => als.run('request', next))
+      .use((_req, _res, next) => asyncStorage.run('request', next))
       .use(
         createStreamableRouter({
           mcpService,
