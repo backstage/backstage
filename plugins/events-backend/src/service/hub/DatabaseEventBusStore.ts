@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AsyncLocalStorage } from 'node:async_hooks';
 import { EventParams } from '@backstage/plugin-events-node';
 import { EventBusStore } from './types';
 import { Knex } from 'knex';
@@ -100,10 +99,6 @@ class DatabaseEventBusListener {
   }>();
 
   #isShuttingDown = false;
-  // The listener connection is opened lazily by whichever request needs it
-  // first. Run the long-lived connection work in the async context that this
-  // listener was created in instead, so that it isn't tied to that request.
-  readonly #runInOwnContext = AsyncLocalStorage.snapshot();
   #connPromise?: Promise<InternalDbConnection>;
   #connTimeout?: NodeJS.Timeout;
   #keepaliveInterval?: NodeJS.Timeout;
@@ -197,16 +192,14 @@ class DatabaseEventBusListener {
   #maybeTimeoutConnection() {
     // If we don't have any listeners, destroy the connection after a timeout
     if (this.#listeners.size === 0 && !this.#connTimeout) {
-      this.#connTimeout = this.#runInOwnContext(() =>
-        setTimeout(() => {
-          this.#connTimeout = undefined;
-          this.#connPromise?.then(conn => {
-            this.#logger.info('Listener connection timed out, destroying');
-            this.#connPromise = undefined;
-            this.#destroyConnection(conn);
-          });
-        }, LISTENER_CONNECTION_TIMEOUT_MS),
-      );
+      this.#connTimeout = setTimeout(() => {
+        this.#connTimeout = undefined;
+        this.#connPromise?.then(conn => {
+          this.#logger.info('Listener connection timed out, destroying');
+          this.#connPromise = undefined;
+          this.#destroyConnection(conn);
+        });
+      }, LISTENER_CONNECTION_TIMEOUT_MS);
     }
   }
 
@@ -270,9 +263,7 @@ class DatabaseEventBusListener {
         throw error;
       }
     });
-    this.#connPromise = Promise.resolve().then(() =>
-      this.#runInOwnContext(connect),
-    );
+    this.#connPromise = Promise.resolve().then(connect);
     try {
       await this.#connPromise;
     } catch (error) {

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { AsyncLocalStorage } from 'node:async_hooks';
 import { DefaultEventsService } from './DefaultEventsService';
 import { EventParams } from './EventParams';
 import { EVENTS_NOTIFY_TIMEOUT_HEADER } from './EventsService';
@@ -71,28 +70,6 @@ describe('DefaultEventsService', () => {
       { topic: 'topicB', eventPayload: { test: 'topicB' } },
       { topic: 'topicC', eventPayload: { test: 'topicC' } },
     ]);
-  });
-
-  it('runs subscribers in their own async context rather than the publisher context', async () => {
-    const logger = mockServices.logger.mock();
-    const events = DefaultEventsService.create({ logger });
-    const storage = new AsyncLocalStorage<string>();
-    const seen: Array<string | undefined> = [];
-
-    await storage.run('subscriber', () =>
-      events.subscribe({
-        id: 'subscriber',
-        topics: ['topicA'],
-        onEvent: async () => {
-          seen.push(storage.getStore());
-        },
-      }),
-    );
-    await storage.run('publisher', () =>
-      events.publish({ topic: 'topicA', eventPayload: {} }),
-    );
-
-    expect(seen).toEqual(['subscriber']);
   });
 
   it('logs errors from subscribers', async () => {

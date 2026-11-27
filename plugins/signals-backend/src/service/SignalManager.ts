@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { AsyncLocalStorage } from 'node:async_hooks';
 import { EventParams, EventsService } from '@backstage/plugin-events-node';
 import { SignalPayload } from '@backstage/plugin-signals-node';
 import { RawData, WebSocket } from 'ws';
@@ -60,10 +59,6 @@ export class SignalManager {
   private events: EventsService;
   private logger: LoggerService;
   private pingInterval: ReturnType<typeof setInterval> | undefined;
-  // The ping interval is started by the first connection. Run it in the async
-  // context that this manager was created in, so that it isn't tied to the
-  // request of that first connection.
-  private readonly runInOwnContext = AsyncLocalStorage.snapshot();
 
   static create(options: SignalManagerOptions) {
     return new SignalManager(options);
@@ -118,9 +113,7 @@ export class SignalManager {
   addConnection(ws: WebSocket, identity: BackstageUserInfo) {
     // Start pinging on first connection
     if (!this.pingInterval) {
-      this.pingInterval = this.runInOwnContext(() =>
-        setInterval(() => this.ping(), 30000),
-      );
+      this.pingInterval = setInterval(() => this.ping(), 30000);
     }
 
     const id = uuid();

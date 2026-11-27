@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { AsyncLocalStorage } from 'node:async_hooks';
 import {
   LoggerService,
   RootLifecycleService,
@@ -62,10 +61,6 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
   private readonly databaseFactory: () => Promise<Knex>;
   private readonly logger: LoggerService;
   private poller?: TaskStatePoller;
-  // Scheduled tasks keep running long after the call that scheduled them, so
-  // they run in the async context that this scheduler was created in rather
-  // than that of the caller.
-  private readonly runInOwnContext = AsyncLocalStorage.snapshot();
 
   constructor(
     pluginId: string,
@@ -125,14 +120,7 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
     await TaskWorker.cancel(knex, id);
   }
 
-  scheduleTask(
-    task: SchedulerServiceTaskScheduleDefinition &
-      SchedulerServiceTaskInvocationDefinition,
-  ): Promise<void> {
-    return this.runInOwnContext(() => this.doScheduleTask(task));
-  }
-
-  private async doScheduleTask(
+  async scheduleTask(
     task: SchedulerServiceTaskScheduleDefinition &
       SchedulerServiceTaskInvocationDefinition,
   ): Promise<void> {
