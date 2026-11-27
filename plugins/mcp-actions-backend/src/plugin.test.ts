@@ -144,6 +144,55 @@ describe('Mcp Backend', () => {
     expect(client.getInstructions()).toBe(instructions);
   });
 
+  describe('tool name separator', () => {
+    it('should use the configured separator in tool names', async () => {
+      const { server } = await startTestBackend({
+        features: [
+          mcpPlugin,
+          mockPluginWithActions,
+          metricsServiceMock.mock().factory,
+          tracingServiceMock.mock().factory,
+          mockServices.rootConfig.factory({
+            data: {
+              backend: {
+                actions: {
+                  pluginSources: ['local'],
+                },
+              },
+              mcpActions: {
+                toolNameSeparator: '__',
+              },
+            },
+          }),
+        ],
+      });
+
+      const address = server.address();
+      if (typeof address !== 'object' || !('port' in address!)) {
+        throw new Error('server broke');
+      }
+
+      const client = new Client({
+        name: 'test client',
+        version: '1.0',
+      });
+      const transport = new StreamableHTTPClientTransport(
+        new URL(`http://localhost:${address.port}/api/mcp-actions/v1`),
+      );
+
+      await client.connect(transport);
+
+      const result = await client.request(
+        {
+          method: 'tools/list',
+        },
+        ListToolsResultSchema,
+      );
+
+      expect(result.tools[0].name).toBe('local__make-greeting');
+    });
+  });
+
   describe('multi-server routing', () => {
     const mockCatalogPlugin = createBackendPlugin({
       pluginId: 'catalog-actions',

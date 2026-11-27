@@ -86,6 +86,7 @@ export class McpService {
   private readonly logger: LoggerService | undefined;
   private readonly auditor: AuditorService;
   private readonly namespacedToolNames: boolean;
+  private readonly toolNameSeparator: string;
   private readonly tracingService: TracingService;
   private readonly captureToolPayloads: boolean;
   private readonly operationDuration: MetricsServiceHistogram<McpServerOperationAttributes>;
@@ -99,11 +100,13 @@ export class McpService {
     auditor: AuditorService,
     namespacedToolNames?: boolean,
     captureToolPayloads?: boolean,
+    toolNameSeparator?: string,
   ) {
     this.actions = actions;
     this.logger = logger;
     this.auditor = auditor;
     this.namespacedToolNames = namespacedToolNames ?? true;
+    this.toolNameSeparator = toolNameSeparator ?? '.';
     this.tracingService = tracingService;
     this.captureToolPayloads = captureToolPayloads ?? false;
     this.operationDuration =
@@ -125,6 +128,7 @@ export class McpService {
     auditor,
     namespacedToolNames,
     captureToolPayloads,
+    toolNameSeparator,
   }: {
     actions: ActionsService;
     metrics: MetricsService;
@@ -133,6 +137,7 @@ export class McpService {
     auditor: AuditorService;
     namespacedToolNames?: boolean;
     captureToolPayloads?: boolean;
+    toolNameSeparator?: string;
   }) {
     return new McpService(
       actions,
@@ -142,6 +147,7 @@ export class McpService {
       auditor,
       namespacedToolNames,
       captureToolPayloads,
+      toolNameSeparator,
     );
   }
 
@@ -389,7 +395,7 @@ export class McpService {
 
   private getToolName(action: ActionsServiceAction): string {
     if (this.namespacedToolNames) {
-      return `${action.pluginId}.${action.name}`;
+      return `${action.pluginId}${this.toolNameSeparator}${action.name}`;
     }
     return action.name;
   }
