@@ -169,7 +169,7 @@ export type KubernetesProxyOptions = {
   };
 };
 
-// @public (undocumented)
+// @public
 export class MicrosoftEntraIdStrategy implements AuthenticationStrategy {
   constructor(
     logger: LoggerService,

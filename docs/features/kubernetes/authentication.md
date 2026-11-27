@@ -212,6 +212,10 @@ kubernetes:
           clientId: ${KUBERNETES_AZURE_CLIENT_ID}
           clientSecret: ${KUBERNETES_AZURE_CLIENT_SECRET}
           tenantId: ${KUBERNETES_AZURE_TENANT_ID}
+          allowedScopes:
+            - scope: ${KUBERNETES_ENTERPRISE_APP_SCOPE}
+              clusterUrls:
+                - k8s.example.com
 ```
 
 The credentials sit under `kubernetes.auth.providers` rather than the top-level
@@ -293,6 +297,51 @@ kubernetes:
 When clusters require different scopes, set the
 `kubernetes.io/microsoft-entra-id-scope` annotation per cluster instead.
 The annotation always takes precedence over the config key.
+
+#### Allowed scopes and clusters
+
+`allowedScopes` is a security measure. Anyone who can register a
+`kubernetes-cluster` Resource in the catalog controls both its cluster URL and
+its `kubernetes.io/microsoft-entra-id-scope` annotation. Without this list, the
+backend would send a token for your Entra ID application to a server that
+person controls, and they could replay it against your real clusters with the
+application's permissions.
+
+The provider only requests a token when the resolved scope and the cluster
+hostname match an entry in
+`kubernetes.auth.providers.microsoft.<env>.allowedScopes`:
+
+- The rule applies to clusters from every cluster locator method.
+- The scope from the `scope` config key must be listed too.
+- If the list is not set, no token is issued.
+- Hostname patterns use the same syntax as `dangerouslyAllowClusterUrls`: an
+  exact hostname, or `*.` followed by a domain suffix. Only the hostname is
+  matched. The port, path and scheme are ignored.
+
+The following example allows the static AKS server application scope for AKS
+API servers, and a custom application scope for one self-hosted cluster:
+
+```yaml
+kubernetes:
+  auth:
+    environment: development
+    providers:
+      microsoft:
+        development:
+          allowedScopes:
+            - scope: 6dae42f8-4368-4678-94ff-3960e28e3630/.default
+              clusterUrls:
+                - '*.azmk8s.io'
+            - scope: api://my-k8s-app-id/.default
+              clusterUrls:
+                - k8s.example.com
+```
+
+:::caution
+The `*.azmk8s.io` pattern matches any AKS cluster, including clusters outside
+your subscriptions. Prefer exact hostnames, or a narrow suffix such as
+`*.privatelink.<region>.azmk8s.io`.
+:::
 
 ## Client Side Providers
 

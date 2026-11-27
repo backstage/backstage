@@ -182,45 +182,56 @@ export interface Config {
 
     auth?: {
       /**
-       * The environment used to resolve the per-environment Kubernetes auth
-       * configuration keys (for example
-       * `kubernetes.auth.providers.microsoft.<env>`).
-       *
-       * Defaults to `development` when unset.
+       * Environment that selects the `kubernetes.auth.providers.microsoft.<env>`
+       * block. Defaults to `development`.
        */
       environment?: string;
       providers?: {
         /**
-         * Microsoft Entra Id configuration used by the Kubernetes backend to
-         * request tokens for clusters.
-         *
-         * These are backend-only secrets and are kept under `kubernetes.auth`
-         * rather than the frontend-visible `auth` section. You may configure
-         * the same Entra application that the Microsoft sign-in provider uses,
-         * or a dedicated application for the Kubernetes backend.
+         * Backend-only Microsoft Entra Id application credentials used to
+         * request cluster tokens. Can reuse the sign-in application or a
+         * dedicated one.
          */
         microsoft?: {
           [authEnv: string]: {
             /**
-             * Microsoft Entra Id tenant id used to request Kubernetes tokens
+             * Microsoft Entra Id tenant ID.
              */
             tenantId: string;
             /**
-             * Microsoft Entra Id client id used to request Kubernetes tokens
+             * Microsoft Entra Id client ID.
              */
             clientId: string;
             /**
-             * Microsoft Entra Id client secret used to request Kubernetes tokens
+             * Microsoft Entra Id client secret.
              *
              * @visibility secret
              */
             clientSecret: string;
             /**
-             * Microsoft Entra Id scope required to obtain the authentication token
+             * Default Microsoft Entra Id scope for cluster tokens. The
+             * `kubernetes.io/microsoft-entra-id-scope` annotation overrides it.
              *
              * @visibility frontend
              */
             scope?: string;
+            /**
+             * Security allowlist of scope and cluster hostname pairs. It stops
+             * anyone who can register a cluster in the catalog from receiving
+             * a token for this application on a server they control. No token
+             * is issued when unset or when no entry matches.
+             */
+            allowedScopes?: Array<{
+              /**
+               * Scope, for example `api://<app-id>/.default`.
+               */
+              scope: string;
+              /**
+               * Hostname patterns such as `*.example.com`, matched like
+               * `dangerouslyAllowClusterUrls`. Port, path and scheme are ignored.
+               */
+              clusterUrls: string[];
+            }>;
           };
         };
       };
@@ -234,7 +245,7 @@ export interface Config {
       microsoft?: {
         [authEnv: string]: {
           /**
-           * Microsoft Entra Id scope required to obtain the authentication token
+           * Microsoft Entra Id scope for Kubernetes tokens.
            *
            * @visibility frontend
            */

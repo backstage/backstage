@@ -29,6 +29,7 @@ import {
 import { ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE } from '@backstage/plugin-kubernetes-common';
 import type { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { hostnameMatchesPattern } from '../cluster-locator/validateClusterApiServerUrl';
 
 interface CachedToken {
   accessToken: AccessToken;
@@ -43,6 +44,8 @@ export type MicrosoftEntraIdStrategyOptions = {
 };
 
 /**
+ * Authenticates to Kubernetes clusters with a Microsoft Entra ID application
+ * token, issued only for scope and hostname pairs listed in `allowedScopes`.
  *
  * @public
  */
@@ -61,19 +64,11 @@ export class MicrosoftEntraIdStrategy implements AuthenticationStrategy {
       return this.explicitTokenCredential;
     }
     if (!this.lazyTokenCredential) {
-      const env =
-        this.options.config.getOptionalString('kubernetes.auth.environment') ??
-        'development';
+      const prefix = this.getConfigPrefix();
       this.lazyTokenCredential = new ClientSecretCredential(
-        this.options.config.getString(
-          `kubernetes.auth.providers.microsoft.${env}.tenantId`,
-        ),
-        this.options.config.getString(
-          `kubernetes.auth.providers.microsoft.${env}.clientId`,
-        ),
-        this.options.config.getString(
-          `kubernetes.auth.providers.microsoft.${env}.clientSecret`,
-        ),
+        this.options.config.getString(`${prefix}.tenantId`),
+        this.options.config.getString(`${prefix}.clientId`),
+        this.options.config.getString(`${prefix}.clientSecret`),
       );
     }
     return this.lazyTokenCredential;
@@ -84,6 +79,7 @@ export class MicrosoftEntraIdStrategy implements AuthenticationStrategy {
     _authConfig?: KubernetesRequestAuth,
   ): Promise<KubernetesCredential> {
     const scope = this.resolveScope(clusterDetails);
+    this.assertScopeAllowedForCluster(scope, clusterDetails.url);
     const cached = this.getOrCreateCacheEntry(scope);
 
     if (!this.tokenRequiresRefresh(cached)) {
@@ -111,29 +107,62 @@ export class MicrosoftEntraIdStrategy implements AuthenticationStrategy {
     if (annotation && annotation.length > 0) {
       return this.validateScope(annotation, 'annotation');
     }
-    const env =
-      this.options.config.getOptionalString('kubernetes.auth.environment') ??
-      'development';
-    const key = `kubernetes.auth.providers.microsoft.${env}.scope`;
+    const key = `${this.getConfigPrefix()}.scope`;
     return this.validateScope(
       this.options.config.getString(key),
       `config key '${key}'`,
     );
   }
+  private getConfigPrefix(): string {
+    const env =
+      this.options.config.getOptionalString('kubernetes.auth.environment') ??
+      'development';
+    return `kubernetes.auth.providers.microsoft.${env}`;
+  }
+  /** Security check: send tokens only to trusted hosts for allowed scopes. */
+  private assertScopeAllowedForCluster(
+    scope: string,
+    clusterUrl: string,
+  ): void {
+    const key = `${this.getConfigPrefix()}.allowedScopes`;
+    const entries = this.options.config.getOptionalConfigArray(key);
+    if (!entries || entries.length === 0) {
+      throw new Error(
+        `Refusing to issue a Microsoft Entra ID token: no allowed scopes are configured. ` +
+          `Set '${key}' to bind each allowed scope to the cluster hostnames it may be sent to.`,
+      );
+    }
+    let hostname: string;
+    try {
+      hostname = new URL(clusterUrl).hostname.toLowerCase();
+    } catch {
+      throw new Error(
+        'Refusing to issue a Microsoft Entra ID token: cluster URL is not a valid URL.',
+      );
+    }
+    const allowed = entries.some((entry, i) => {
+      const allowedScope = this.validateScope(
+        entry.getString('scope'),
+        `config key '${key}[${i}].scope'`,
+      );
+      return (
+        allowedScope === scope &&
+        entry
+          .getStringArray('clusterUrls')
+          .some(pattern => hostnameMatchesPattern(hostname, pattern))
+      );
+    });
+    if (!allowed) {
+      throw new Error(
+        `Refusing to issue a Microsoft Entra ID token: scope '${scope}' is not allowed for cluster host '${hostname}'. ` +
+          `Add a matching entry to '${key}'.`,
+      );
+    }
+  }
 
   /**
-   * Validates a Microsoft Entra ID scope expression.
-   *
-   * Scopes come in several valid shapes — `api://<app-id>/.default`,
-   * `<app-id>/user.read`, and resource URLs such as
-   * `https://graph.microsoft.com/.default` — so this does not enforce a fixed
-   * `<resource>/<permission>` structure. MSAL (used under `@azure/identity`)
-   * only rejects empty scopes and otherwise forwards the value to Microsoft
-   * Entra ID, and `@azure/identity` exposes no public scope validator (its
-   * `scopeUtils` helpers are `@internal`). Validating here catches the common
-   * misconfigurations — an empty value or stray whitespace — with an
-   * actionable error instead of an opaque token request failure. The allowed
-   * character set mirrors the one Entra ID accepts (`0-9a-zA-Z-_.:/`).
+   * Rejects empty scopes and characters Entra ID does not accept
+   * (`0-9a-zA-Z-_.:/`). Does not enforce a `<resource>/<permission>` shape.
    */
   private validateScope(scope: string, source: string): string {
     const trimmed = scope.trim();
@@ -168,7 +197,7 @@ export class MicrosoftEntraIdStrategy implements AuthenticationStrategy {
       this.logger.info('Fetching new Microsoft Entra ID token');
 
       const newAccessToken = await this.getTokenCredential().getToken(scope, {
-        requestOptions: { timeout: 10_000 }, // 10 seconds
+        requestOptions: { timeout: 10_000 },
       });
       if (!newAccessToken) {
         throw new Error('AccessToken is null');
@@ -179,7 +208,7 @@ export class MicrosoftEntraIdStrategy implements AuthenticationStrategy {
       const error = err instanceof Error ? err : new Error(String(err));
       this.logger.error('Unable to fetch Microsoft Entra ID token', error);
 
-      // only throw the error if the token has already expired, otherwise re-use existing until we're able to fetch a new token
+      // Keep serving the cached token until it actually expires.
       if (this.tokenExpired(cached)) {
         throw err;
       }
@@ -191,7 +220,7 @@ export class MicrosoftEntraIdStrategy implements AuthenticationStrategy {
   }
 
   private tokenRequiresRefresh(cached: CachedToken): boolean {
-    // Set tokens to expire 15 minutes before its actual expiry time
+    // Refresh 15 minutes before expiry.
     const expiresOn = cached.accessToken.expiresOnTimestamp - 15 * 60 * 1000;
     return Date.now() >= expiresOn;
   }

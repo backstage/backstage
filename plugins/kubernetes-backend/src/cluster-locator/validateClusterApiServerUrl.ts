@@ -35,7 +35,10 @@ function isNonPublicIp(ip: string): boolean {
   }
 }
 
-function hostnameMatchesPattern(hostname: string, pattern: string): boolean {
+export function hostnameMatchesPattern(
+  hostname: string,
+  pattern: string,
+): boolean {
   const normalizedHost = hostname.toLowerCase();
   const normalizedPattern = pattern.toLowerCase();
 

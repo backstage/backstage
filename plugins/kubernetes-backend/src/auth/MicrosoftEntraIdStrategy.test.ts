@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { ConfigReader } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 import { AccessToken, TokenCredential } from '@azure/identity';
 import { MicrosoftEntraIdStrategy } from './MicrosoftEntraIdStrategy';
 
@@ -41,8 +42,7 @@ import { ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE } from '@backstage/plugi
 
 const logger = mockServices.logger.mock();
 
-// The strategy resolves the environment from `kubernetes.auth.environment`,
-// which defaults to `development` when unset.
+// `kubernetes.auth.environment` defaults to `development` when unset.
 const env = 'development';
 const mockConfig = {
   kubernetes: {
@@ -55,12 +55,31 @@ const mockConfig = {
             clientSecret:
               'microsoft-entra-id-enterprise-application-client-secret',
             scope: 'microsoft-enterprise-app-id/mapped.permission',
+            allowedScopes: [
+              {
+                scope: 'microsoft-enterprise-app-id/mapped.permission',
+                clusterUrls: ['localhost'],
+              },
+              { scope: 'custom-app-id/.default', clusterUrls: ['localhost'] },
+              { scope: 'api://my-app-id/.default', clusterUrls: ['localhost'] },
+              {
+                scope: 'https://graph.microsoft.com/.default',
+                clusterUrls: ['localhost'],
+              },
+            ],
           },
         },
       },
     },
   },
 };
+
+const allowedDefaultScope = [
+  {
+    scope: 'microsoft-enterprise-app-id/mapped.permission',
+    clusterUrls: ['localhost'],
+  },
+];
 
 class StaticTokenCredential implements TokenCredential {
   private count: number = 0;
@@ -139,13 +158,13 @@ describe('MicrosoftEntraIdStrategy tests', () => {
     const strategy = new MicrosoftEntraIdStrategy(
       logger,
       { config: config },
-      new StaticTokenCredential(16 * 60 * 1000), // token expires in 16min
+      new StaticTokenCredential(16 * 60 * 1000), // expires in 16 min
     );
 
     const credential = await strategy.getCredential(clusterWithoutAnnotation);
     expect(credential).toEqual({ type: 'bearer token', token: 'MY_TOKEN_1' });
 
-    jest.setSystemTime(Date.now() + 2 * 60 * 1000); // advance time by 2mins
+    jest.setSystemTime(Date.now() + 2 * 60 * 1000); // advance 2 min
 
     const credential2 = await strategy.getCredential(clusterWithoutAnnotation);
     expect(credential2).toEqual({ type: 'bearer token', token: 'MY_TOKEN_2' });
@@ -157,18 +176,18 @@ describe('MicrosoftEntraIdStrategy tests', () => {
     const strategy = new MicrosoftEntraIdStrategy(
       logger,
       { config: config },
-      new StaticTokenCredential(16 * 60 * 1000), // new tokens expires in 16min
+      new StaticTokenCredential(16 * 60 * 1000), // expires in 16 min
     );
 
     const credential = await strategy.getCredential(clusterWithoutAnnotation);
     expect(credential).toEqual({ type: 'bearer token', token: 'MY_TOKEN_1' });
 
-    jest.setSystemTime(Date.now() + 2 * 60 * 1000); // advance time by 2min
+    jest.setSystemTime(Date.now() + 2 * 60 * 1000); // advance 2 min
 
     const credential2 = await strategy.getCredential(clusterWithoutAnnotation);
     expect(credential2).toEqual({ type: 'bearer token', token: 'MY_TOKEN_2' });
 
-    jest.setSystemTime(Date.now() + 2 * 60 * 1000); // advance time by 2min
+    jest.setSystemTime(Date.now() + 2 * 60 * 1000); // advance 2 min
 
     const credential3 = await strategy.getCredential(clusterWithoutAnnotation);
     expect(credential3).toEqual({ type: 'bearer token', token: 'MY_TOKEN_2' });
@@ -183,18 +202,18 @@ describe('MicrosoftEntraIdStrategy tests', () => {
     const strategy = new MicrosoftEntraIdStrategy(
       logger,
       { config: config },
-      new StaticTokenCredential(16 * 60 * 1000), // new tokens expires in 16min
+      new StaticTokenCredential(16 * 60 * 1000), // expires in 16 min
     );
 
     const credential = await strategy.getCredential(clusterWithoutAnnotation);
     expect(credential).toEqual({ type: 'bearer token', token: 'MY_TOKEN_1' });
 
-    jest.setSystemTime(Date.now() + 2 * 60 * 1000); // advance time by 2min
+    jest.setSystemTime(Date.now() + 2 * 60 * 1000); // advance 2 min
 
     const credential2 = await strategy.getCredential(clusterWithoutAnnotation);
     expect(credential2).toEqual({ type: 'bearer token', token: 'MY_TOKEN_2' });
 
-    jest.setSystemTime(Date.now() + 17 * 60 * 1000); // advance time by 17min
+    jest.setSystemTime(Date.now() + 17 * 60 * 1000); // advance 17 min
 
     await expect(
       strategy.getCredential(clusterWithoutAnnotation),
@@ -317,6 +336,7 @@ describe('MicrosoftEntraIdStrategy tests', () => {
                 clientId: 'kubernetes-client-id',
                 clientSecret: 'kubernetes-client-secret',
                 scope: 'microsoft-enterprise-app-id/mapped.permission',
+                allowedScopes: allowedDefaultScope,
               },
             },
           },
@@ -354,6 +374,7 @@ describe('MicrosoftEntraIdStrategy tests', () => {
                 clientId: 'production-client-id',
                 clientSecret: 'production-client-secret',
                 scope: 'microsoft-enterprise-app-id/mapped.permission',
+                allowedScopes: allowedDefaultScope,
               },
             },
           },
@@ -387,6 +408,7 @@ describe('MicrosoftEntraIdStrategy tests', () => {
             microsoft: {
               [env]: {
                 scope: 'microsoft-enterprise-app-id/mapped.permission',
+                allowedScopes: allowedDefaultScope,
               },
             },
           },
@@ -402,5 +424,170 @@ describe('MicrosoftEntraIdStrategy tests', () => {
       strategy.getCredential(clusterWithoutAnnotation),
     ).rejects.toThrow(`kubernetes.auth.providers.microsoft.${env}.tenantId`);
     expect(clientSecretCredentialMock).not.toHaveBeenCalled();
+  });
+
+  describe('allowed scopes', () => {
+    const aksScope = '6dae42f8-4368-4678-94ff-3960e28e3630/.default';
+    const k8sAppScope = 'api://my-k8s-app-id/.default';
+
+    class CountingTokenCredential extends ScopeCapturingTokenCredential {
+      public calls = 0;
+
+      getToken(scope: string | string[]): Promise<AccessToken | null> {
+        this.calls++;
+        return super.getToken(scope);
+      }
+    }
+
+    function createStrategy(
+      microsoftConfig: JsonObject,
+      tokenCredential: TokenCredential,
+    ) {
+      return new MicrosoftEntraIdStrategy(
+        logger,
+        {
+          config: new ConfigReader({
+            kubernetes: {
+              auth: { providers: { microsoft: { [env]: microsoftConfig } } },
+            },
+          }),
+        },
+        tokenCredential,
+      );
+    }
+
+    function cluster(url: string, scope?: string): ClusterDetails {
+      return {
+        name: 'cluster',
+        url,
+        authMetadata: scope
+          ? { [ANNOTATION_KUBERNETES_MICROSOFT_ENTRA_ID_SCOPE]: scope }
+          : {},
+      };
+    }
+
+    const bindings = {
+      scope: aksScope,
+      allowedScopes: [
+        { scope: aksScope, clusterUrls: ['*.azmk8s.io'] },
+        { scope: k8sAppScope, clusterUrls: ['k8s.example.com'] },
+        { scope: k8sAppScope, clusterUrls: ['k8s-dr.example.com'] },
+      ],
+    };
+
+    it('should issue tokens for allowed scopes and cluster hostnames', async () => {
+      const tokenCredential = new CountingTokenCredential(20 * 60 * 1000);
+      const strategy = createStrategy(bindings, tokenCredential);
+
+      await expect(
+        strategy.getCredential(
+          cluster('https://myaks-abc123.hcp.eastus.azmk8s.io:443'),
+        ),
+      ).resolves.toEqual({
+        type: 'bearer token',
+        token: `TOKEN_FOR_${aksScope}`,
+      });
+      expect(tokenCredential.lastScope).toBe(aksScope);
+
+      await expect(
+        strategy.getCredential(cluster('https://MYAKS.HCP.EASTUS.AZMK8S.IO')),
+      ).resolves.toEqual({
+        type: 'bearer token',
+        token: `TOKEN_FOR_${aksScope}`,
+      });
+
+      await expect(
+        strategy.getCredential(cluster('https://k8s.example.com', k8sAppScope)),
+      ).resolves.toEqual({
+        type: 'bearer token',
+        token: `TOKEN_FOR_${k8sAppScope}`,
+      });
+
+      // Entries naming the same scope combine their hostname patterns
+      await expect(
+        strategy.getCredential(
+          cluster('https://k8s-dr.example.com:6443', k8sAppScope),
+        ),
+      ).resolves.toEqual({
+        type: 'bearer token',
+        token: `TOKEN_FOR_${k8sAppScope}`,
+      });
+    });
+
+    it('should not request a token when the cluster hostname is not allowed for the scope', async () => {
+      const tokenCredential = new CountingTokenCredential(20 * 60 * 1000);
+      const strategy = createStrategy(bindings, tokenCredential);
+
+      for (const url of [
+        'https://evil.example.net',
+        'https://k8s.example.com',
+        'https://evilazmk8s.io',
+        'not a url',
+      ]) {
+        await expect(strategy.getCredential(cluster(url))).rejects.toThrow(
+          /Refusing to issue a Microsoft Entra ID token/,
+        );
+      }
+      await expect(
+        strategy.getCredential(cluster('https://evil.example.net')),
+      ).rejects.toThrow(
+        `scope '${aksScope}' is not allowed for cluster host 'evil.example.net'`,
+      );
+      expect(tokenCredential.calls).toBe(0);
+
+      // A token cached for an allowed host is not handed to a disallowed host
+      await expect(
+        strategy.getCredential(cluster('https://myaks.hcp.eastus.azmk8s.io')),
+      ).resolves.toEqual({
+        type: 'bearer token',
+        token: `TOKEN_FOR_${aksScope}`,
+      });
+      await expect(
+        strategy.getCredential(cluster('https://evil.example.net')),
+      ).rejects.toThrow(/not allowed for cluster host/);
+      expect(tokenCredential.calls).toBe(1);
+    });
+
+    it('should not request a token when the scope is not allowed', async () => {
+      const tokenCredential = new CountingTokenCredential(20 * 60 * 1000);
+
+      const strategy = createStrategy(bindings, tokenCredential);
+      await expect(
+        strategy.getCredential(
+          cluster(
+            'https://myaks.hcp.eastus.azmk8s.io',
+            'api://attacker-app/.default',
+          ),
+        ),
+      ).rejects.toThrow(
+        "scope 'api://attacker-app/.default' is not allowed for cluster host",
+      );
+
+      const unlistedDefaultScope = createStrategy(
+        { ...bindings, scope: 'api://unlisted-app/.default' },
+        tokenCredential,
+      );
+      await expect(
+        unlistedDefaultScope.getCredential(
+          cluster('https://myaks.hcp.eastus.azmk8s.io'),
+        ),
+      ).rejects.toThrow(
+        "scope 'api://unlisted-app/.default' is not allowed for cluster host",
+      );
+
+      expect(tokenCredential.calls).toBe(0);
+    });
+
+    it('should not request a token when no allowed scopes are configured', async () => {
+      const tokenCredential = new CountingTokenCredential(20 * 60 * 1000);
+      const strategy = createStrategy({ scope: aksScope }, tokenCredential);
+
+      await expect(
+        strategy.getCredential(cluster('https://myaks.hcp.eastus.azmk8s.io')),
+      ).rejects.toThrow(
+        `kubernetes.auth.providers.microsoft.${env}.allowedScopes`,
+      );
+      expect(tokenCredential.calls).toBe(0);
+    });
   });
 });
