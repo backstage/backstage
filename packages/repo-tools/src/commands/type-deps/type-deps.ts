@@ -15,15 +15,22 @@
  */
 
 import fs from 'node:fs';
-import { resolve as resolvePath } from 'node:path';
+import { createRequire } from 'node:module';
+import {
+  isAbsolute,
+  relative as relativePath,
+  resolve as resolvePath,
+  sep,
+} from 'node:path';
 // Cba polluting root package.json, we'll have this
 // eslint-disable-next-line @backstage/no-undeclared-imports
 import chalk from 'chalk';
 import { getPackages, Package } from '@manypkg/get-packages';
 import { getPackageExportDetails } from '../../lib/getPackageExportDetails';
+import * as ts from 'typescript';
 
 export default async () => {
-  const { packages } = await getPackages(resolvePath('.'));
+  const { packages, root } = await getPackages(resolvePath('.'));
 
   let hadErrors = false;
   let checkedCount = 0;
@@ -33,7 +40,7 @@ export default async () => {
       continue;
     }
     checkedCount += 1;
-    const { errors } = await checkTypes(pkg);
+    const { errors } = await checkTypes(pkg, root.dir);
     if (errors.length) {
       hadErrors = true;
       console.error(
@@ -82,6 +89,10 @@ type PackageJsonWithTypes = {
     types?: string;
   };
 };
+
+const moduleResolutionOptions = {
+  moduleResolution: ts.ModuleResolutionKind.Bundler,
+};
 function shouldCheckTypes(pkg: Package & PackageJsonWithTypes) {
   return (
     !pkg.packageJson.private &&
@@ -92,11 +103,12 @@ function shouldCheckTypes(pkg: Package & PackageJsonWithTypes) {
 
 /**
  * Read a declaration file and recursively follow all relative imports and
- * re-exports, collecting the source content of each file encountered.
+ * re-exports, collecting the external module specifiers referenced by each
+ * file encountered.
  */
-function collectDeclSources(entryPath: string): string[] {
+function collectDeclDeps(entryPath: string): string[] {
   const visited = new Set<string>();
-  const sources: string[] = [];
+  const deps: string[] = [];
 
   function visit(filePath: string) {
     const resolved = resolvePath(filePath);
@@ -115,29 +127,78 @@ function collectDeclSources(entryPath: string): string[] {
     }
 
     const src = fs.readFileSync(actualPath, 'utf8');
-    sources.push(src);
+    const specifiers = parseModuleSpecifiers(actualPath, src);
+    deps.push(...findAllDeps(src, specifiers));
 
-    // Follow relative imports and re-exports into chunk files
-    const relativeRefs = (
-      src.match(/^(?:import|export) .* from '\..*';$/gm) || []
-    )
-      .map(match => match.match(/from '(.*)'/)?.[1] ?? '')
-      .filter(n => n.startsWith('.'));
-
-    const dir = resolvePath(actualPath, '..');
-    for (const ref of relativeRefs) {
-      visit(resolvePath(dir, ref));
+    // Follow relative imports and re-exports into chunk files, letting
+    // TypeScript resolve the .js/.cjs/.mjs and directory forms to their
+    // declaration files
+    for (const ref of specifiers) {
+      if (!ref.startsWith('.')) {
+        continue;
+      }
+      const resolution = ts.resolveModuleName(
+        ref,
+        actualPath,
+        moduleResolutionOptions,
+        ts.sys,
+      );
+      visit(
+        resolution.resolvedModule?.resolvedFileName ??
+          resolvePath(actualPath, '..', ref),
+      );
     }
   }
 
   visit(entryPath);
-  return sources;
+  return deps;
 }
 
-function findAllDeps(declSrc: string) {
-  const importedDeps = (declSrc.match(/^import .* from '.*';$/gm) || [])
-    .map(match => match.match(/from '(.*)'/)?.[1] ?? '')
-    .filter(n => !n.startsWith('.'));
+/**
+ * Parse a declaration file and return every module specifier it references:
+ * imports, re-exports, `import()` types, `import = require()` declarations,
+ * and ambient module declarations.
+ */
+function parseModuleSpecifiers(filePath: string, src: string): string[] {
+  const sourceFile = ts.createSourceFile(
+    filePath,
+    src,
+    ts.ScriptTarget.Latest,
+    true,
+  );
+  const specifiers: string[] = [];
+
+  const visit = (node: ts.Node): void => {
+    if (
+      (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) &&
+      node.moduleSpecifier &&
+      ts.isStringLiteral(node.moduleSpecifier)
+    ) {
+      specifiers.push(node.moduleSpecifier.text);
+    } else if (
+      ts.isImportEqualsDeclaration(node) &&
+      ts.isExternalModuleReference(node.moduleReference) &&
+      ts.isStringLiteral(node.moduleReference.expression)
+    ) {
+      specifiers.push(node.moduleReference.expression.text);
+    } else if (
+      ts.isImportTypeNode(node) &&
+      ts.isLiteralTypeNode(node.argument) &&
+      ts.isStringLiteral(node.argument.literal)
+    ) {
+      specifiers.push(node.argument.literal.text);
+    } else if (ts.isModuleDeclaration(node) && ts.isStringLiteral(node.name)) {
+      specifiers.push(node.name.text);
+    }
+    ts.forEachChild(node, visit);
+  };
+
+  visit(sourceFile);
+  return specifiers;
+}
+
+function findAllDeps(declSrc: string, specifiers: string[]) {
+  const importedDeps = specifiers.filter(n => !n.startsWith('.'));
   const referencedDeps = (
     declSrc.match(/^\/\/\/ <reference types=".*" \/>$/gm) || []
   )
@@ -166,10 +227,10 @@ function findAllDeps(declSrc: string) {
  * Scan index.d.ts for imports and return errors for any dependency that's
  * missing or incorrect in package.json
  */
-function checkTypes(pkg: Package) {
+function checkTypes(pkg: Package, root: string) {
   const allDeps = getPackageExportDetails(pkg.packageJson).flatMap(exp => {
     const entryPath = resolvePath(pkg.dir, 'dist', exp.distPath);
-    return collectDeclSources(entryPath).flatMap(src => findAllDeps(src));
+    return collectDeclDeps(entryPath);
   });
   const deps = Array.from(new Set(allDeps));
 
@@ -180,7 +241,7 @@ function checkTypes(pkg: Package) {
       dep = dep.slice(0, -2);
     }
     try {
-      const typeDep = findTypesPackage(dep, pkg);
+      const typeDep = findTypesPackage(dep, pkg, root);
       if (typeDep) {
         typeDeps.push(typeDep);
       }
@@ -195,10 +256,12 @@ function checkTypes(pkg: Package) {
 }
 
 /**
- * Find the package used for types. This assumes that types are working is a package
- * can be resolved, it doesn't do any checking of presence of types inside the dep.
+ * Find the package used for types. This assumes that types are working if a
+ * package can be resolved. For specifiers that `require.resolve` cannot see,
+ * e.g. ESM-only packages, TypeScript itself is asked to resolve the types as
+ * a last resort before the dependency is reported as missing.
  */
-function findTypesPackage(dep: string, pkg: Package) {
+function findTypesPackage(dep: string, pkg: Package, root: string) {
   try {
     require.resolve(`@types/${dep}/package.json`, { paths: [pkg.dir] });
     return `@types/${dep}`;
@@ -217,16 +280,62 @@ function findTypesPackage(dep: string, pkg: Package) {
           require.resolve(`${dep}.d.ts`, { paths: [pkg.dir] });
           return undefined;
         } catch {
-          // And finally a naive lookup of the file directly, in case `require.resolve` fails us due to "exports"
-          if (fs.existsSync(resolvePath(pkg.dir, `node_modules/${dep}.d.ts`))) {
-            return undefined;
-          }
+          // And finally, ask TypeScript itself whether it finds type
+          // declarations for the specifier, in case `require.resolve` fails
+          // us due to "exports": ESM-only packages may expose no "require"
+          // or "default" export condition, so require.resolve fails even
+          // though the dependency is installed and its types work. This
+          // applies the same exports, typesVersions and types condition
+          // rules that a build of the package would. The resolved file must
+          // be declarations rather than plain JavaScript, and must be inside
+          // the repo root, so that packages installed outside the repo
+          // can't mask a missing dependency.
+          const resolution = ts.resolveModuleName(
+            dep,
+            resolvePath(pkg.dir, 'index.d.ts'),
+            moduleResolutionOptions,
+            ts.sys,
+          );
+          const resolvedFile = resolution.resolvedModule?.resolvedFileName;
+          const realRoot = fs.realpathSync(root);
+          const relFile = resolvedFile
+            ? relativePath(realRoot, resolvedFile)
+            : '..';
           if (
-            fs.existsSync(
-              resolvePath(pkg.dir, `../../node_modules/${dep}.d.ts`),
-            )
+            resolvedFile &&
+            /\.(d\.)?[cm]?ts$/.test(resolvedFile) &&
+            !relFile.startsWith('..') &&
+            !isAbsolute(relFile)
           ) {
             return undefined;
+          }
+          // Some type-only modules ship a bare .d.ts file next to the
+          // specifier path, which the exports gate can also hide. Search the
+          // node_modules directories that Node itself would search for the
+          // package, limited to the repo root.
+          const segments = dep.split('/');
+          const packageName = segments[0].startsWith('@')
+            ? segments.slice(0, 2).join('/')
+            : segments[0];
+          const searchPaths =
+            createRequire(resolvePath(pkg.dir, 'package.json')).resolve.paths(
+              packageName,
+            ) || [];
+          for (const searchDir of searchPaths) {
+            if (!fs.existsSync(searchDir)) {
+              continue;
+            }
+            const relDir = relativePath(realRoot, fs.realpathSync(searchDir));
+            if (
+              relDir === '..' ||
+              relDir.startsWith(`..${sep}`) ||
+              isAbsolute(relDir)
+            ) {
+              continue;
+            }
+            if (fs.existsSync(resolvePath(searchDir, `${dep}.d.ts`))) {
+              return undefined;
+            }
           }
           throw mkErr('MissingDepError', `No types for ${dep}`, { dep });
         }
