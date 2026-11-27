@@ -92,6 +92,8 @@ export interface RowProps<T>
 export type ColumnOwnProps = {
   children?: React.ReactNode;
   className?: string;
+  /** Enables users to resize the column using a pointer or keyboard. */
+  isResizable?: boolean;
 };
 
 /** @public */
@@ -222,6 +224,7 @@ export interface ColumnConfig<T extends TableItem> {
   header?: () => ReactElement;
   isSortable?: boolean;
   isHidden?: boolean;
+  isResizable?: boolean;
   width?: ColumnSize | null;
   defaultWidth?: ColumnSize | null;
   minWidth?: ColumnStaticSize | null;
