@@ -543,6 +543,13 @@ describe('Cancellable TaskWorker', () => {
   const workflowRunner: NunjucksWorkflowRunner = {
     execute: (task: TaskContext) => {
       myTask = task;
+      return new Promise(resolve => {
+        task.cancelSignal.addEventListener(
+          'abort',
+          () => resolve({ output: {} }),
+          { once: true },
+        );
+      });
     },
   } as unknown as NunjucksWorkflowRunner;
 
