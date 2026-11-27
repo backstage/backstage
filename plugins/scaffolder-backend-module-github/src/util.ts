@@ -221,6 +221,11 @@ export async function getOctokitOptions(options: {
     });
 
   if (!credentialProviderToken) {
+    if (integrationConfig.apps && integrationConfig.apps.length > 0) {
+      throw new InputError(
+        `None of the GitHub Apps configured for ${host} are installed on ${owner}.`,
+      );
+    }
     throw new InputError(
       `No token available for host: ${host}, with owner ${owner}, and repo ${repo}. Make sure GitHub auth is configured correctly. See https://backstage.io/docs/auth/github/provider for more details.`,
     );
