@@ -40,7 +40,7 @@
     "jsdom": "^27",
     "node-gyp": "^12.0.0",
     "prettier": "^2.3.2",
-    "typescript": "~5.8.0"
+    "typescript": "~5.9.0"
   },
   "resolutions": {
     "@types/react": "^18",
