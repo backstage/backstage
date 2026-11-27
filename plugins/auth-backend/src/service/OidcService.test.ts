@@ -1243,9 +1243,9 @@ describe('OidcService', () => {
           });
 
           await expect(
-            service.verifyRevocationClient(
-              'https://example.com/oauth-metadata.json',
-            ),
+            service.verifyRevocationClient({
+              clientId: 'https://example.com/oauth-metadata.json',
+            }),
           ).resolves.toBe(true);
 
           for (const clientId of [
@@ -1253,7 +1253,7 @@ describe('OidcService', () => {
             'https://example.com/OAUTH-METADATA.json',
           ]) {
             await expect(
-              service.verifyRevocationClient(clientId),
+              service.verifyRevocationClient({ clientId }),
             ).resolves.toBe(false);
           }
         });
