@@ -87,7 +87,9 @@ export class MicrosoftEntraIdStrategy implements AuthenticationStrategy {
     }
 
     if (!cached.newTokenPromise) {
-      cached.newTokenPromise = this.fetchNewToken(scope, cached);
+      cached.newTokenPromise = Promise.resolve().then(() =>
+        this.fetchNewToken(scope, cached),
+      );
     }
 
     return cached.newTokenPromise

@@ -426,6 +426,58 @@ describe('MicrosoftEntraIdStrategy tests', () => {
     expect(clientSecretCredentialMock).not.toHaveBeenCalled();
   });
 
+  it('should retry after credential initialization fails', async () => {
+    clientSecretCredentialMock.mockClear();
+
+    const microsoftConfig: JsonObject = {
+      scope: 'microsoft-enterprise-app-id/mapped.permission',
+      allowedScopes: allowedDefaultScope,
+    };
+    const strategy = new MicrosoftEntraIdStrategy(logger, {
+      config: new ConfigReader({
+        kubernetes: {
+          auth: { providers: { microsoft: { [env]: microsoftConfig } } },
+        },
+      }),
+    });
+
+    await expect(
+      strategy.getCredential(clusterWithoutAnnotation),
+    ).rejects.toThrow(`kubernetes.auth.providers.microsoft.${env}.tenantId`);
+
+    Object.assign(microsoftConfig, {
+      tenantId: 'tenant-id',
+      clientId: 'client-id',
+      clientSecret: 'client-secret',
+    });
+
+    const credential = await strategy.getCredential(clusterWithoutAnnotation);
+    expect(credential).toEqual({
+      type: 'bearer token',
+      token: 'CLIENT_SECRET_TOKEN',
+    });
+    expect(clientSecretCredentialMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('should share one token request between concurrent requests', async () => {
+    const tokenCredential = new StaticTokenCredential(20 * 60 * 1000);
+    const getToken = jest.spyOn(tokenCredential, 'getToken');
+    const strategy = new MicrosoftEntraIdStrategy(
+      logger,
+      { config: config },
+      tokenCredential,
+    );
+
+    const credentials = await Promise.all([
+      strategy.getCredential(clusterWithoutAnnotation),
+      strategy.getCredential(clusterWithoutAnnotation),
+    ]);
+
+    const expected = { type: 'bearer token', token: 'MY_TOKEN_1' };
+    expect(credentials).toEqual([expected, expected]);
+    expect(getToken).toHaveBeenCalledTimes(1);
+  });
+
   describe('allowed scopes', () => {
     const aksScope = '6dae42f8-4368-4678-94ff-3960e28e3630/.default';
     const k8sAppScope = 'api://my-k8s-app-id/.default';
