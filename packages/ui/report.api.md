@@ -356,6 +356,7 @@ export const BadgeDefinition: {
   readonly classNames: {
     readonly root: 'bui-Badge';
     readonly icon: 'bui-BadgeIcon';
+    readonly spinner: 'bui-BadgeSpinner';
   };
   readonly bg: 'consumer';
   readonly propDefs: {
@@ -363,6 +364,12 @@ export const BadgeDefinition: {
     readonly size: {
       readonly dataAttribute: true;
       readonly default: 'small';
+    };
+    readonly status: {
+      readonly dataAttribute: true;
+    };
+    readonly isPending: {
+      readonly dataAttribute: true;
     };
     readonly children: {};
     readonly className: {};
@@ -373,6 +380,8 @@ export const BadgeDefinition: {
 export type BadgeOwnProps = {
   icon?: React.ReactNode;
   size?: 'small' | 'medium';
+  status?: 'info' | 'success' | 'warning' | 'danger';
+  isPending?: boolean;
   children?: React.ReactNode;
   className?: string;
 };
