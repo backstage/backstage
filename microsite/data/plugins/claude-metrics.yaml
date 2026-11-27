@@ -1,0 +1,11 @@
+---
+title: Claude Metrics
+author: Moataz Nabil
+authorUrl: https://github.com/moatazeldebsy
+category: Monitoring
+description: Claude Code adoption, departments, tool acceptance, commits and PRs, and Claude API cost for your Anthropic organization, from the Admin API or Claude Code's OpenTelemetry export.
+documentation: https://github.com/moatazeldebsy/claude-metrics-viewer/blob/main/docs/backstage-integration.md
+iconUrl: https://raw.githubusercontent.com/moatazeldebsy/claude-metrics-viewer/main/claude-plugin/.claude-plugin/icon.png
+npmPackageName: '@moatazeldebsy/backstage-plugin-claude-metrics'
+addedDate: '2026-11-23'
+status: active
