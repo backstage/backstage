@@ -6752,6 +6752,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-search-backend-module-opensearch@workspace:plugins/search-backend-module-opensearch":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-search-backend-module-opensearch@workspace:plugins/search-backend-module-opensearch"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/integration-aws-node": "workspace:^"
+    "@backstage/plugin-search-backend-node": "workspace:^"
+    "@backstage/plugin-search-common": "workspace:^"
+    "@opensearch-project/opensearch": "npm:^2.2.1"
+    "@short.io/opensearch-mock": "npm:^0.4.0"
+    "@types/aws4": "npm:^1.5.1"
+    aws4: "npm:^1.12.0"
+    lodash: "npm:^4.17.21"
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-search-backend-module-pg@workspace:plugins/search-backend-module-pg":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-search-backend-module-pg@workspace:plugins/search-backend-module-pg"

@@ -42,6 +42,7 @@ import {
 } from '@backstage/integration-aws-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { ElasticSearchAuthProvider } from '../auth';
+import { warnLegacyOpenSearchProvider } from '../deprecation';
 import {
   createOpenSearchAuthTransport,
   createElasticSearchAuthTransport,
@@ -209,6 +210,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       ),
       esConfig,
       authProvider,
+      logger,
     );
     if (clientOptions.provider === 'elastic') {
       logger.info('Initializing Elastic.co ElasticSearch search engine.');
@@ -545,6 +547,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     credentialProvider: AwsCredentialProvider,
     config?: Config,
     authProvider?: ElasticSearchAuthProvider,
+    logger?: LoggerService,
   ): Promise<ElasticSearchClientOptions> {
     if (!config) {
       throw new Error('No elastic search config found');
@@ -584,6 +587,9 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       };
     }
     if (config.getOptionalString('provider') === 'aws') {
+      if (logger) {
+        warnLegacyOpenSearchProvider(logger, 'aws');
+      }
       // AWS provider uses SigV4 signing; authProvider is not applicable here
       if (authProvider) {
         throw new Error(
@@ -617,6 +623,9 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       };
     }
     if (config.getOptionalString('provider') === 'opensearch') {
+      if (logger) {
+        warnLegacyOpenSearchProvider(logger, 'opensearch');
+      }
       const authConfig = authProvider
         ? undefined
         : config.getOptionalConfig('auth');
