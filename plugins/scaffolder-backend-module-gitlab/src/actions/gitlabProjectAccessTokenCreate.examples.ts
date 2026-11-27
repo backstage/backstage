@@ -126,7 +126,8 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
-    description: 'Create a GitLab project access token with multiple options',
+    description:
+      'Create a GitLab project access token with multiple options and protected variable',
     example: yaml.stringify({
       steps: [
         {
