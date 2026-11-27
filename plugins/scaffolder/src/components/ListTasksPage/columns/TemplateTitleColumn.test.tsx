@@ -24,7 +24,7 @@ import {
 import { TemplateTitleColumn } from './TemplateTitleColumn';
 
 describe('<TemplateTitleColumn />', () => {
-  it('should render a link to the template entity and nothing when missing', async () => {
+  it('should render a link to the template entity', async () => {
     await renderInTestApp(
       <TestApiProvider apis={[]}>
         <TemplateTitleColumn entityRef="template:default/one-template" />
@@ -41,7 +41,9 @@ describe('<TemplateTitleColumn />', () => {
       'href',
       '/catalog/default/template/one-template',
     );
+  });
 
+  it('should render nothing when entityRef is missing', async () => {
     const { container } = await renderInTestApp(
       <TestApiProvider apis={[]}>
         <TemplateTitleColumn />

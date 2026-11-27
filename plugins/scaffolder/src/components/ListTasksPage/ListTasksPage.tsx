@@ -55,66 +55,46 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../translation';
 
-function getTemplateTitle(
-  task: ScaffolderTask,
+function getEntityPresentationTitle(
+  entityRef: string | undefined,
+  defaultKind: string,
   entityPresentationApi?: EntityPresentationApi,
 ): string {
-  const templateInfo = task.spec?.templateInfo;
-  if (templateInfo?.entity) {
-    return entityPresentationSnapshot(
-      {
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
-        kind: 'Template',
-        metadata: templateInfo.entity.metadata,
-      },
-      { defaultKind: 'template' },
-      entityPresentationApi,
-    ).primaryTitle;
+  if (!entityRef) {
+    return '';
   }
-  if (templateInfo?.entityRef) {
-    return entityPresentationSnapshot(
-      templateInfo.entityRef,
-      { defaultKind: 'template' },
-      entityPresentationApi,
-    ).primaryTitle;
-  }
-  return '';
-}
-
-function getOwnerTitle(
-  task: ScaffolderTask,
-  entityPresentationApi?: EntityPresentationApi,
-): string {
-  const user = task.spec?.user;
-  if (user?.entity) {
-    return entityPresentationSnapshot(
-      user.entity,
-      { defaultKind: 'user' },
-      entityPresentationApi,
-    ).primaryTitle;
-  }
-  if (user?.ref) {
-    return entityPresentationSnapshot(
-      user.ref,
-      { defaultKind: 'user' },
-      entityPresentationApi,
-    ).primaryTitle;
-  }
-  return '';
+  return entityPresentationSnapshot(
+    entityRef,
+    { defaultKind },
+    entityPresentationApi,
+  ).primaryTitle;
 }
 
 function createPresentationColumnHelpers(
-  getTitle: (task: ScaffolderTask) => string,
+  getRef: (task: ScaffolderTask) => string | undefined,
+  defaultKind: string,
+  entityPresentationApi?: EntityPresentationApi,
 ): Pick<TableColumn<ScaffolderTask>, 'customSort' | 'customFilterAndSearch'> {
+  const getTitle = (task: ScaffolderTask) =>
+    getEntityPresentationTitle(
+      getRef(task),
+      defaultKind,
+      entityPresentationApi,
+    );
+
   return {
     customSort: (row1, row2) =>
-      getTitle(row1)
-        .toLocaleLowerCase()
-        .localeCompare(getTitle(row2).toLocaleLowerCase()),
-    customFilterAndSearch: (filter, row) =>
-      getTitle(row)
-        .toLocaleLowerCase()
-        .includes(String(filter).toLocaleLowerCase()),
+      getTitle(row1).localeCompare(getTitle(row2), undefined, {
+        sensitivity: 'base',
+      }),
+    customFilterAndSearch: (filter, row) => {
+      const query = String(filter).toLocaleLowerCase();
+      const ref = getRef(row);
+      return (
+        getTitle(row).toLocaleLowerCase().includes(query) ||
+        Boolean(ref && ref.toLocaleLowerCase().includes(query))
+      );
+    },
   };
 }
 
@@ -212,9 +192,11 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
             },
             {
               title: t('listTaskPage.content.tableCell.template'),
-              field: 'spec.templateInfo.entity.metadata.title',
-              ...createPresentationColumnHelpers(row =>
-                getTemplateTitle(row, entityPresentationApi),
+              field: 'spec.templateInfo.entityRef',
+              ...createPresentationColumnHelpers(
+                row => row.spec.templateInfo?.entityRef,
+                'template',
+                entityPresentationApi,
               ),
               render: row => (
                 <TemplateTitleColumn
@@ -230,8 +212,10 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
             {
               title: t('listTaskPage.content.tableCell.owner'),
               field: 'createdBy',
-              ...createPresentationColumnHelpers(row =>
-                getOwnerTitle(row, entityPresentationApi),
+              ...createPresentationColumnHelpers(
+                row => row.spec?.user?.ref,
+                'user',
+                entityPresentationApi,
               ),
               render: row => (
                 <OwnerEntityColumn entityRef={row.spec?.user?.ref} />

@@ -305,5 +305,10 @@ describe('<ListTasksPage />', () => {
     fireEvent.change(searchInput, { target: { value: 'Bob Example' } });
     expect(await screen.findByText('Aardvark Template')).toBeInTheDocument();
     expect(screen.queryByText('Zebra Template')).not.toBeInTheDocument();
+
+    // Filter by underlying entity ref even when a display title is used
+    fireEvent.change(searchInput, { target: { value: 'alice' } });
+    expect(await screen.findByText('Zebra Template')).toBeInTheDocument();
+    expect(screen.queryByText('Aardvark Template')).not.toBeInTheDocument();
   });
 });
