@@ -37,34 +37,139 @@ type InstallationTokenData = {
   repositories?: String[];
 };
 
+// Minimum time between on-demand token refreshes triggered by a missing
+// repository in a cached "selected" allowlist. Prevents repeated refreshes for
+// inaccessible repos while letting newly created repos work immediately.
+const REPO_ACCESS_REFRESH_THROTTLE_SECONDS = 60;
+
+function isDeferredRepoRefreshError(error: unknown): boolean {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    (error as { deferredRepoRefresh?: unknown }).deferredRepoRefresh === true
+  );
+}
+
 class Cache {
   private readonly tokenCache = new Map<string, InstallationTokenData>();
+  private readonly repoRefreshAttempts = new Map<string, DateTime>();
+  private readonly pendingFetches = new Map<
+    string,
+    Promise<InstallationTokenData>
+  >();
 
   async getOrCreateToken(
     owner: string,
     repo: string | undefined,
     supplier: () => Promise<InstallationTokenData>,
+    options?: { refreshOnRepoMiss?: boolean },
   ): Promise<{ accessToken: string }> {
-    let existingInstallationData = this.tokenCache.get(owner);
-
-    if (
-      !existingInstallationData ||
-      this.isExpired(existingInstallationData.expiresAt)
-    ) {
-      existingInstallationData = await supplier();
-      // Allow 10 minutes grace to account for clock skew
-      existingInstallationData.expiresAt =
-        existingInstallationData.expiresAt.minus({ minutes: 10 });
-      this.tokenCache.set(owner, existingInstallationData);
-    }
+    const ownerKey = owner.toLowerCase();
+    const cached = this.tokenCache.get(ownerKey);
+    const servedFromCache = Boolean(
+      cached && !this.isExpired(cached.expiresAt),
+    );
+    let existingInstallationData =
+      cached && !this.isExpired(cached.expiresAt)
+        ? cached
+        : await this.fetchAndCache(owner, supplier);
 
     if (!this.appliesToRepo(existingInstallationData, repo)) {
-      throw new Error(
-        `The Backstage GitHub application used in the ${owner} organization does not have access to a repository with the name ${repo}`,
-      );
+      if (servedFromCache && repo) {
+        const pendingRefresh = this.pendingFetches.get(ownerKey);
+        if (pendingRefresh) {
+          if (options?.refreshOnRepoMiss === false) {
+            throw this.createRepoAccessError(owner, repo, true);
+          }
+          existingInstallationData = await pendingRefresh;
+        }
+        if (
+          !this.appliesToRepo(existingInstallationData, repo) &&
+          this.canRefreshForRepo(owner, repo)
+        ) {
+          if (options?.refreshOnRepoMiss === false) {
+            throw this.createRepoAccessError(owner, repo, true);
+          }
+          this.recordRepoRefreshAttempt(owner, repo);
+          existingInstallationData = await this.fetchAndCache(owner, supplier);
+        }
+      }
+
+      if (!this.appliesToRepo(existingInstallationData, repo)) {
+        throw this.createRepoAccessError(owner, repo, false);
+      }
     }
 
     return { accessToken: existingInstallationData.token };
+  }
+
+  private createRepoAccessError(
+    owner: string,
+    repo: string | undefined,
+    deferredRepoRefresh: boolean,
+  ): Error {
+    const error = new Error(
+      `The Backstage GitHub application used in the ${owner} organization does not have access to a repository with the name ${repo}`,
+    );
+    if (deferredRepoRefresh) {
+      (error as { deferredRepoRefresh?: boolean }).deferredRepoRefresh = true;
+    }
+    return error;
+  }
+
+  private async fetchAndCache(
+    owner: string,
+    supplier: () => Promise<InstallationTokenData>,
+  ): Promise<InstallationTokenData> {
+    const key = owner.toLowerCase();
+    let pending = this.pendingFetches.get(key);
+    if (!pending) {
+      const request = supplier()
+        .then(data => {
+          // Allow 10 minutes grace to account for clock skew
+          data.expiresAt = data.expiresAt.minus({ minutes: 10 });
+          this.tokenCache.set(key, data);
+          return data;
+        })
+        .finally(() => {
+          if (this.pendingFetches.get(key) === request) {
+            this.pendingFetches.delete(key);
+          }
+        });
+      pending = request;
+      this.pendingFetches.set(key, pending);
+    }
+    return await pending;
+  }
+
+  private repoRefreshKey(owner: string, repo: string): string {
+    return `${owner.toLowerCase()}/${repo.toLowerCase()}`;
+  }
+
+  private canRefreshForRepo(owner: string, repo: string): boolean {
+    const lastAttempt = this.repoRefreshAttempts.get(
+      this.repoRefreshKey(owner, repo),
+    );
+    if (!lastAttempt) {
+      return true;
+    }
+    const age = DateTime.local().diff(lastAttempt).as('seconds');
+    return age >= REPO_ACCESS_REFRESH_THROTTLE_SECONDS;
+  }
+
+  private recordRepoRefreshAttempt(owner: string, repo: string): void {
+    const now = DateTime.local();
+    if (this.repoRefreshAttempts.size >= 1000) {
+      for (const [key, timestamp] of this.repoRefreshAttempts) {
+        if (
+          now.diff(timestamp).as('seconds') >=
+          REPO_ACCESS_REFRESH_THROTTLE_SECONDS
+        ) {
+          this.repoRefreshAttempts.delete(key);
+        }
+      }
+    }
+    this.repoRefreshAttempts.set(this.repoRefreshKey(owner, repo), now);
   }
 
   private isExpired = (date: DateTime) => DateTime.local() > date;
@@ -152,6 +257,7 @@ class GithubAppManager {
   async getInstallationCredentials(
     owner?: string,
     repo?: string,
+    options?: { refreshOnRepoMiss?: boolean },
   ): Promise<{ accessToken: string | undefined }> {
     // No owner means a bare host URL (e.g. https://github.com) — return an
     // app-level JWT rather than an installation token.
@@ -171,38 +277,43 @@ class GithubAppManager {
     }
 
     // Go and grab an access token for the app scoped to a repository if provided, if not use the organisation installation.
-    return this.cache.getOrCreateToken(owner, repo, async () => {
-      const { installationId, suspended } = await this.getInstallationData(
-        owner,
-      );
-      if (suspended) {
-        throw new Error(`The GitHub application for ${owner} is suspended`);
-      }
-
-      const result = await this.createInstallationAccessToken(installationId);
-
-      let repositoryNames;
-
-      if (result.data.repository_selection === 'selected') {
-        const installationClient = new Octokit({
-          baseUrl: this.baseUrl,
-          auth: result.data.token,
-        });
-        const repos = await installationClient.paginate(
-          installationClient.apps.listReposAccessibleToInstallation,
+    return this.cache.getOrCreateToken(
+      owner,
+      repo,
+      async () => {
+        const { installationId, suspended } = await this.getInstallationData(
+          owner,
         );
-        // The return type of the paginate method is incorrect.
-        const repositories: RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response']['data']['repositories'] =
-          repos.repositories ?? repos;
+        if (suspended) {
+          throw new Error(`The GitHub application for ${owner} is suspended`);
+        }
 
-        repositoryNames = repositories.map(repository => repository.name);
-      }
-      return {
-        token: result.data.token,
-        expiresAt: DateTime.fromISO(result.data.expires_at),
-        repositories: repositoryNames,
-      };
-    });
+        const result = await this.createInstallationAccessToken(installationId);
+
+        let repositoryNames;
+
+        if (result.data.repository_selection === 'selected') {
+          const installationClient = new Octokit({
+            baseUrl: this.baseUrl,
+            auth: result.data.token,
+          });
+          const repos = await installationClient.paginate(
+            installationClient.apps.listReposAccessibleToInstallation,
+          );
+          // The return type of the paginate method is incorrect.
+          const repositories: RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response']['data']['repositories'] =
+            repos.repositories ?? repos;
+
+          repositoryNames = repositories.map(repository => repository.name);
+        }
+        return {
+          token: result.data.token,
+          expiresAt: DateTime.fromISO(result.data.expires_at),
+          repositories: repositoryNames,
+        };
+      },
+      options,
+    );
   }
 
   async getPublicInstallationToken(): Promise<{ accessToken: string }> {
@@ -396,18 +507,50 @@ export class GithubAppCredentialsMux {
       return undefined;
     }
 
+    const deferRepoRefresh = this.apps.length > 1 && Boolean(repo);
     const results = await Promise.all(
       this.apps.map(app =>
-        app.getInstallationCredentials(owner, repo).then(
-          credentials => ({ credentials, error: undefined }),
-          error => ({ credentials: undefined, error }),
-        ),
+        app
+          .getInstallationCredentials(owner, repo, {
+            refreshOnRepoMiss: !deferRepoRefresh,
+          })
+          .then(
+            credentials => ({ app, credentials, error: undefined }),
+            error => ({ app, credentials: undefined, error }),
+          ),
       ),
     );
 
-    const result = results.find(
+    let result = results.find(
       resultItem => resultItem.credentials?.accessToken,
     );
+
+    if (!result && deferRepoRefresh) {
+      const refreshedResults = await Promise.all(
+        results.map(resultItem =>
+          isDeferredRepoRefreshError(resultItem.error)
+            ? resultItem.app
+                .getInstallationCredentials(owner, repo, {
+                  refreshOnRepoMiss: true,
+                })
+                .then(
+                  credentials => ({
+                    app: resultItem.app,
+                    credentials,
+                    error: undefined,
+                  }),
+                  error => ({
+                    app: resultItem.app,
+                    credentials: undefined,
+                    error,
+                  }),
+                )
+            : Promise.resolve(resultItem),
+        ),
+      );
+      results.splice(0, results.length, ...refreshedResults);
+      result = results.find(resultItem => resultItem.credentials?.accessToken);
+    }
 
     if (result) {
       return result.credentials!.accessToken;

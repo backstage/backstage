@@ -1017,6 +1017,327 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
     }
   });
 
+  it('should refresh cached selected repositories on a repo miss so newly created repos work', async () => {
+    octokit.apps.listInstallations.mockResolvedValue({
+      headers: { etag: '123' },
+      data: [
+        {
+          id: 1,
+          repository_selection: 'selected',
+          account: { login: 'backstage' },
+        },
+      ],
+    } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+    octokit.apps.createInstallationAccessToken
+      .mockResolvedValueOnce({
+        data: {
+          expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+          token: 'initial_token',
+          repository_selection: 'selected',
+        },
+      } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response'])
+      .mockResolvedValueOnce({
+        data: {
+          expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+          token: 'refreshed_token',
+          repository_selection: 'selected',
+        },
+      } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
+
+    octokit.apps.listReposAccessibleToInstallation
+      .mockResolvedValueOnce({
+        data: { repositories: [{ name: 'existing-repo' }] },
+      } as RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response'])
+      .mockResolvedValueOnce({
+        data: {
+          repositories: [{ name: 'existing-repo' }, { name: 'new-repo' }],
+        },
+      } as RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response']);
+
+    // Initial org-level lookup (e.g. during repo creation) caches only existing-repo.
+    const initial = await github.getCredentials({
+      url: 'https://github.com/backstage',
+    });
+    expect(initial.token).toEqual('initial_token');
+
+    // Subsequent lookup for the newly created repo refreshes the allowlist and succeeds.
+    const next = await github.getCredentials({
+      url: 'https://github.com/backstage/new-repo',
+    });
+    expect(next.token).toEqual('refreshed_token');
+    expect(octokit.apps.createInstallationAccessToken).toHaveBeenCalledTimes(2);
+  });
+
+  it('should throttle on-miss refreshes of cached selected repositories', async () => {
+    jest.useFakeTimers({ now: new Date('2024-01-01T12:00:00Z') });
+    try {
+      octokit.apps.listInstallations.mockResolvedValue({
+        headers: { etag: '123' },
+        data: [
+          {
+            id: 1,
+            repository_selection: 'selected',
+            account: { login: 'backstage' },
+          },
+        ],
+      } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+      octokit.apps.createInstallationAccessToken.mockResolvedValue({
+        data: {
+          expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+          token: 'secret_token',
+          repository_selection: 'selected',
+        },
+      } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
+
+      octokit.apps.listReposAccessibleToInstallation.mockResolvedValue({
+        data: { repositories: [{ name: 'existing-repo' }] },
+      } as RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response']);
+
+      // Warm cache with org lookup.
+      await github.getCredentials({ url: 'https://github.com/backstage' });
+      expect(octokit.apps.createInstallationAccessToken).toHaveBeenCalledTimes(
+        1,
+      );
+
+      // First miss triggers a single refresh and still throws.
+      await expect(
+        github.getCredentials({
+          url: 'https://github.com/backstage/missing-repo',
+        }),
+      ).rejects.toThrow(
+        'The Backstage GitHub application used in the backstage organization does not have access to a repository with the name missing-repo',
+      );
+      expect(octokit.apps.createInstallationAccessToken).toHaveBeenCalledTimes(
+        2,
+      );
+
+      // Within the throttle window, subsequent misses do not re-fetch.
+      jest.setSystemTime(new Date('2024-01-01T12:00:30Z'));
+      await expect(
+        github.getCredentials({
+          url: 'https://github.com/backstage/missing-repo',
+        }),
+      ).rejects.toThrow(
+        'The Backstage GitHub application used in the backstage organization does not have access to a repository with the name missing-repo',
+      );
+      expect(octokit.apps.createInstallationAccessToken).toHaveBeenCalledTimes(
+        2,
+      );
+
+      // Past the throttle window, a refresh is allowed again.
+      jest.setSystemTime(new Date('2024-01-01T12:01:30Z'));
+      await expect(
+        github.getCredentials({
+          url: 'https://github.com/backstage/missing-repo',
+        }),
+      ).rejects.toThrow(
+        'The Backstage GitHub application used in the backstage organization does not have access to a repository with the name missing-repo',
+      );
+      expect(octokit.apps.createInstallationAccessToken).toHaveBeenCalledTimes(
+        3,
+      );
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  it('should share an in-flight allowlist refresh across concurrent repo misses', async () => {
+    octokit.apps.listInstallations.mockResolvedValue({
+      headers: { etag: '123' },
+      data: [
+        {
+          id: 1,
+          repository_selection: 'selected',
+          account: { login: 'backstage' },
+        },
+      ],
+    } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+    let resolveRefreshRepos!: (value: unknown) => void;
+    octokit.apps.createInstallationAccessToken
+      .mockResolvedValueOnce({
+        data: {
+          expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+          token: 'initial_token',
+          repository_selection: 'selected',
+        },
+      } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response'])
+      .mockResolvedValueOnce({
+        data: {
+          expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+          token: 'refreshed_token',
+          repository_selection: 'selected',
+        },
+      } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
+
+    octokit.apps.listReposAccessibleToInstallation
+      .mockResolvedValueOnce({
+        data: { repositories: [{ name: 'existing-repo' }] },
+      } as RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response'])
+      .mockReturnValueOnce(
+        new Promise(resolve => {
+          resolveRefreshRepos = resolve;
+        }),
+      );
+
+    await github.getCredentials({ url: 'https://github.com/backstage' });
+
+    const first = github.getCredentials({
+      url: 'https://github.com/backstage/new-repo',
+    });
+    const second = github.getCredentials({
+      url: 'https://github.com/backstage/new-repo',
+    });
+
+    resolveRefreshRepos({
+      data: {
+        repositories: [{ name: 'existing-repo' }, { name: 'new-repo' }],
+      },
+    });
+
+    const [firstResult, secondResult] = await Promise.all([first, second]);
+    expect(firstResult.token).toEqual('refreshed_token');
+    expect(secondResult.token).toEqual('refreshed_token');
+    expect(octokit.apps.createInstallationAccessToken).toHaveBeenCalledTimes(2);
+  });
+
+  it('should check cached app credentials before refreshing other apps on a repo miss', async () => {
+    const multiAppProvider = SingleInstanceGithubCredentialsProvider.create({
+      host: 'github.com',
+      apps: [
+        {
+          appId: 1,
+          privateKey: 'privateKey1',
+          webhookSecret: '123',
+          clientId: 'CLIENT_ID_1',
+          clientSecret: 'CLIENT_SECRET_1',
+        },
+        {
+          appId: 2,
+          privateKey: 'privateKey2',
+          webhookSecret: '456',
+          clientId: 'CLIENT_ID_2',
+          clientSecret: 'CLIENT_SECRET_2',
+        },
+      ],
+    });
+
+    octokit.apps.listInstallations.mockResolvedValue({
+      headers: { etag: '123' },
+      data: [
+        {
+          id: 1,
+          repository_selection: 'selected',
+          account: { login: 'backstage' },
+        },
+      ],
+    } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+    octokit.apps.createInstallationAccessToken
+      .mockResolvedValueOnce({
+        data: {
+          expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+          token: 'app1_token',
+          repository_selection: 'selected',
+        },
+      } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response'])
+      .mockResolvedValueOnce({
+        data: {
+          expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+          token: 'app2_token',
+          repository_selection: 'selected',
+        },
+      } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
+
+    octokit.apps.listReposAccessibleToInstallation
+      .mockResolvedValueOnce({
+        data: { repositories: [{ name: 'repo-a' }] },
+      } as RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response'])
+      .mockResolvedValueOnce({
+        data: { repositories: [{ name: 'repo-b1' }, { name: 'repo-b2' }] },
+      } as RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response']);
+
+    // Warm both app caches.
+    const first = await multiAppProvider.getCredentials({
+      url: 'https://github.com/backstage/repo-a',
+    });
+    expect(first.token).toEqual('app1_token');
+    expect(octokit.apps.createInstallationAccessToken).toHaveBeenCalledTimes(2);
+
+    // Lookups for repositories covered by App 2's cache should not cause App 1 to refresh.
+    const b1 = await multiAppProvider.getCredentials({
+      url: 'https://github.com/backstage/repo-b1',
+    });
+    const b2 = await multiAppProvider.getCredentials({
+      url: 'https://github.com/backstage/repo-b2',
+    });
+    expect(b1.token).toEqual('app2_token');
+    expect(b2.token).toEqual('app2_token');
+    expect(octokit.apps.createInstallationAccessToken).toHaveBeenCalledTimes(2);
+    expect(
+      octokit.apps.listReposAccessibleToInstallation,
+    ).toHaveBeenCalledTimes(2);
+  });
+
+  it('should share cached tokens and allowlist refreshes across different owner casings', async () => {
+    octokit.apps.listInstallations.mockResolvedValue({
+      headers: { etag: '123' },
+      data: [
+        {
+          id: 1,
+          repository_selection: 'selected',
+          account: { login: 'backstage' },
+        },
+      ],
+    } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+    octokit.apps.createInstallationAccessToken
+      .mockResolvedValueOnce({
+        data: {
+          expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+          token: 'initial_token',
+          repository_selection: 'selected',
+        },
+      } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response'])
+      .mockResolvedValueOnce({
+        data: {
+          expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+          token: 'refreshed_token',
+          repository_selection: 'selected',
+        },
+      } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
+
+    octokit.apps.listReposAccessibleToInstallation
+      .mockResolvedValueOnce({
+        data: { repositories: [{ name: 'existing-repo' }] },
+      } as RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response'])
+      .mockResolvedValueOnce({
+        data: {
+          repositories: [{ name: 'existing-repo' }, { name: 'new-repo' }],
+        },
+      } as RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response']);
+
+    await github.getCredentials({
+      url: 'https://github.com/Backstage/existing-repo',
+    });
+    await github.getCredentials({
+      url: 'https://github.com/backstage/existing-repo',
+    });
+    expect(octokit.apps.createInstallationAccessToken).toHaveBeenCalledTimes(1);
+
+    const first = await github.getCredentials({
+      url: 'https://github.com/Backstage/new-repo',
+    });
+    const second = await github.getCredentials({
+      url: 'https://github.com/backstage/new-repo',
+    });
+    expect(first.token).toEqual('refreshed_token');
+    expect(second.token).toEqual('refreshed_token');
+    expect(octokit.apps.createInstallationAccessToken).toHaveBeenCalledTimes(2);
+  });
+
   describe('public access', () => {
     it('should use an installation token when public access is enabled and owner is not in allowed list', async () => {
       const githubProvider = SingleInstanceGithubCredentialsProvider.create({
