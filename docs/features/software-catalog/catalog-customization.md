@@ -62,12 +62,16 @@ This will display an "Export selection" button on the catalog index page that al
 
 #### Advanced Configuration
 
-For advanced export customization like custom export formats, create a frontend module that provides a catalog export extension:
+For custom export formats or columns, install the export configuration
+extension in a frontend module with `pluginId: 'catalog'`. The Catalog page
+only accepts export configuration from its own plugin and modules.
 
 ```tsx title="src/catalogExportExtension.tsx"
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
-import { CatalogExportConfigBlueprint } from '@backstage/plugin-catalog/alpha';
-import type { CatalogExporter } from '@backstage/plugin-catalog';
+import {
+  CatalogExportConfigBlueprint,
+  type CatalogExporter,
+} from '@backstage/plugin-catalog';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 
 // Define custom export formats using streaming async generators
@@ -617,7 +621,7 @@ You can configure the context menu items using `EntityContextMenuItemBlueprint`.
 To add a new context item you can do something like this:
 
 ```tsx
-import { EntityContextMenuItemBlueprint } from '@backstage/plugin-catalog-react/alpha';
+import { EntityContextMenuItemBlueprint } from '@backstage/plugin-catalog-react';
 const customEntityMenuItem = EntityContextMenuItemBlueprint.make({
   name: 'open-dialog',
   params: {

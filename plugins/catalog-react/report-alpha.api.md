@@ -461,22 +461,22 @@ export interface EntityContentLayoutProps {
   }>;
 }
 
-// @alpha (undocumented)
+// @public
 export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
   kind: 'entity-context-menu-item';
   params: EntityContextMenuItemParams;
   output:
+    | ExtensionDataRef<
+        EntityContextMenuItemData,
+        'catalog.entity-context-menu-item-data',
+        {}
+      >
     | ExtensionDataRef<
         (entity: Entity) => boolean,
         'catalog.entity-filter-function',
         {
           optional: true;
         }
-      >
-    | ExtensionDataRef<
-        EntityContextMenuItemData,
-        'catalog.entity-context-menu-item-data',
-        {}
       >;
   inputs: {};
   config: {
@@ -499,18 +499,32 @@ export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-// @alpha (undocumented)
+// @public
 export type EntityContextMenuItemData = {
   icon: IconElement;
-  useProps: UseProps;
+  useProps: EntityContextMenuItemUseProps;
 };
 
-// @alpha (undocumented)
+// @public
 export type EntityContextMenuItemParams = {
-  useProps: UseProps;
+  useProps: EntityContextMenuItemUseProps;
   icon: IconElement;
   filter?: FilterPredicate | ((entity: Entity) => boolean);
 };
+
+// @public
+export type EntityContextMenuItemUseProps = () =>
+  | {
+      title: ReactNode;
+      href: string;
+      onClick?: () => void | Promise<void>;
+      disabled?: boolean;
+    }
+  | {
+      title: ReactNode;
+      onClick: () => void | Promise<void>;
+      disabled?: boolean;
+    };
 
 // @public (undocumented)
 export function EntityDataTable(props: EntityDataTableProps): JSX_3.Element;
@@ -798,19 +812,8 @@ export function useEntityPermission(
   error?: Error;
 };
 
-// @alpha (undocumented)
-export type UseProps = () =>
-  | {
-      title: ReactNode;
-      href: string;
-      onClick?: () => void | Promise<void>;
-      disabled?: boolean;
-    }
-  | {
-      title: ReactNode;
-      onClick: () => void | Promise<void>;
-      disabled?: boolean;
-    };
+// @alpha @deprecated (undocumented)
+export type UseProps = EntityContextMenuItemUseProps;
 
 // (No @packageDocumentation comment for this package)
 ```

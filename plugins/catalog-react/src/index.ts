@@ -35,3 +35,11 @@ export { getEntityRelations, getEntitySourceLocation } from './utils';
 export type { EntitySourceLocation } from './utils';
 export * from './deprecated';
 export { catalogReactTranslationRef } from './translation';
+export {
+  EntityContextMenuItemBlueprint,
+  type EntityContextMenuItemParams,
+} from './alpha/blueprints/EntityContextMenuItemBlueprint';
+export type {
+  EntityContextMenuItemData,
+  EntityContextMenuItemUseProps,
+} from './alpha/blueprints/extensionData';

@@ -12,12 +12,16 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { ComponentEntity } from '@backstage/catalog-model';
 import { ComponentProps } from 'react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
+import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Context } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { EntityOrderQuery } from '@backstage/catalog-client';
+import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { FilterPredicate } from '@backstage/filter-predicates';
 import IconButton from '@material-ui/core/IconButton';
 import { IconComponent } from '@backstage/core-plugin-api';
+import { IconElement } from '@backstage/frontend-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { LinkProps } from '@backstage/core-components';
@@ -352,6 +356,71 @@ export type EntityAutocompletePickerProps<
     state: AutocompleteRenderOptionState,
   ) => ReactNode;
 };
+
+// @public
+export const EntityContextMenuItemBlueprint: ExtensionBlueprint<{
+  kind: 'entity-context-menu-item';
+  params: EntityContextMenuItemParams;
+  output:
+    | ExtensionDataRef<
+        EntityContextMenuItemData,
+        'catalog.entity-context-menu-item-data',
+        {}
+      >
+    | ExtensionDataRef<
+        (entity: Entity) => boolean,
+        'catalog.entity-filter-function',
+        {
+          optional: true;
+        }
+      >;
+  inputs: {};
+  config: {
+    filter: FilterPredicate | undefined;
+  };
+  configInput: {
+    filter?: FilterPredicate | undefined;
+  };
+  dataRefs: {
+    data: ConfigurableExtensionDataRef<
+      EntityContextMenuItemData,
+      'catalog.entity-context-menu-item-data',
+      {}
+    >;
+    filterFunction: ConfigurableExtensionDataRef<
+      (entity: Entity) => boolean,
+      'catalog.entity-filter-function',
+      {}
+    >;
+  };
+}>;
+
+// @public
+export type EntityContextMenuItemData = {
+  icon: IconElement;
+  useProps: EntityContextMenuItemUseProps;
+};
+
+// @public
+export type EntityContextMenuItemParams = {
+  useProps: EntityContextMenuItemUseProps;
+  icon: IconElement;
+  filter?: FilterPredicate | ((entity: Entity) => boolean);
+};
+
+// @public
+export type EntityContextMenuItemUseProps = () =>
+  | {
+      title: ReactNode;
+      href: string;
+      onClick?: () => void | Promise<void>;
+      disabled?: boolean;
+    }
+  | {
+      title: ReactNode;
+      onClick: () => void | Promise<void>;
+      disabled?: boolean;
+    };
 
 // @public
 export const EntityDisplayName: (props: EntityDisplayNameProps) => JSX.Element;

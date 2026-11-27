@@ -69,7 +69,7 @@ Your custom component receives a `navItems` prop—a collection with `take(id)` 
 
 App root wrapper extensions install React components that wrap the entire app root. Use them for global providers, such as a query client, that every plugin in the app needs. They are the replacement for providers that used to be bundled into a custom root router component.
 
-## Extension blueprints in `@backstage/plugin-catalog-react/alpha`
+## Catalog extension blueprints
 
 These are the [extension blueprints](../architecture/23-extension-blueprints.md) provided by the Catalog plugin.
 
@@ -114,9 +114,9 @@ Avoid using `convertLegacyEntityContentExtension` from `@backstage/core-compat-a
 
 ### EntityContextMenuItem - [Example](https://github.com/backstage/backstage/blob/5d0d2c547c7a67a60c4097334bd2c2ca11fbd6b3/plugins/catalog/src/alpha/contextMenuItems.tsx#L54-L151)
 
-Creates menu items inside the entity context menu. Exported as `EntityContextMenuItemBlueprint`.
-
-See the [API reference](https://backstage.io/api/stable/variables/_backstage_plugin-catalog-react.plugins_catalog-react_src_alpha.EntityContextMenuItemBlueprint.html).
+Creates menu items inside the entity context menu. Import
+`EntityContextMenuItemBlueprint` from `@backstage/plugin-catalog-react`.
+The `useProps` hook returns the item's link or action.
 
 ## Extension blueprints in `@backstage/plugin-search-react/alpha`
 

@@ -17,7 +17,7 @@ import { createExtensionTester } from '@backstage/frontend-test-utils';
 import {
   EntityContextMenuItemBlueprint,
   type EntityContextMenuItemParams,
-} from './EntityContextMenuItemBlueprint';
+} from '../..';
 import { Entity } from '@backstage/catalog-model';
 
 describe('EntityContextMenuItemBlueprint', () => {
