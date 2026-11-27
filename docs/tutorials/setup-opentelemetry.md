@@ -179,7 +179,7 @@ If you need to disable/configure some OpenTelemetry feature there are lots of [e
 
 ### Available Metrics
 
-The following metrics are available:
+The following metrics are emitted by the core plugins included in a default Backstage installation. This is not an exhaustive list: plugins can emit additional metrics, and new metrics can be added in Backstage releases. Do not use this list as a fixed allowlist when configuring a telemetry pipeline.
 
 - `catalog_entities_count`: Total amount of entities in the catalog
 - `catalog_registered_locations_count`: Total amount of registered locations in the catalog
@@ -200,6 +200,12 @@ The following metrics are available:
 - `backend_tasks.task.runs.duration`: Histogram of task run durations
 - `backend_tasks.task.runs.started`: Gauge recording the Unix epoch time (seconds) when each task (`taskId` label) was last started
 - `backend_tasks.task.runs.completed`: Gauge recording the Unix epoch time (seconds) when each task (`taskId` label) was last completed
+
+### Manually instrumented traces
+
+Some Backstage packages emit manually instrumented spans in addition to the spans created by automatic instrumentation. These include spans for catalog processing, scheduled backend tasks, and MCP action execution. Once trace exporting is configured, these spans appear alongside the automatic spans in your tracing backend.
+
+This is not an exhaustive list. Plugins can emit their own spans, and spans can change as instrumentation evolves.
 
 ## References
 
