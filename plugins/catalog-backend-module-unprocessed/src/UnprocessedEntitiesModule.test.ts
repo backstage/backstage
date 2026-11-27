@@ -54,6 +54,8 @@ describe('UnprocessedEntitiesModule', () => {
       table.string('entity_id').primary();
       table.string('entity_ref').unique();
       table.text('final_entity').nullable();
+      table.string('deleted_at').nullable();
+      table.string('winner_candidate_id').nullable();
     });
 
     const now = new Date().toISOString();
@@ -85,11 +87,102 @@ describe('UnprocessedEntitiesModule', () => {
       last_discovery_at: now,
     });
 
-    await db('final_entities').insert({
-      entity_id: 'failed-entity',
-      entity_ref: 'component:default/failed',
-      final_entity: null,
+    // Re-created after a deletion: its final row is the old tombstone, with
+    // a different ID. It is pending, not failed.
+    await db('refresh_state').insert({
+      entity_id: 'recreated-entity',
+      entity_ref: 'component:default/recreated',
+      unprocessed_entity: JSON.stringify({
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: { name: 'recreated' },
+        spec: { owner: 'group:default/team-a', type: 'service' },
+      }),
+      next_update_at: now,
+      last_discovery_at: now,
     });
+
+    // Re-created over an empty row from before tombstones, which has no
+    // deletion time. It is pending too.
+    await db('refresh_state').insert({
+      entity_id: 'recreated-legacy-entity',
+      entity_ref: 'component:default/recreated-legacy',
+      unprocessed_entity: JSON.stringify({
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: { name: 'recreated-legacy' },
+        spec: { owner: 'group:default/team-a', type: 'service' },
+      }),
+      next_update_at: now,
+      last_discovery_at: now,
+    });
+
+    // Re-created while its deleted predecessor's body is still published. It
+    // is pending until its own body replaces that one.
+    await db('refresh_state').insert({
+      entity_id: 'recreated-stale-entity',
+      entity_ref: 'component:default/recreated-stale',
+      unprocessed_entity: JSON.stringify({
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: { name: 'recreated-stale' },
+        spec: { owner: 'group:default/team-a', type: 'service' },
+      }),
+      next_update_at: now,
+      last_discovery_at: now,
+    });
+
+    // Re-created and already published into the old slot. It is neither
+    // pending nor failed.
+    await db('refresh_state').insert({
+      entity_id: 'revived-entity',
+      entity_ref: 'component:default/revived',
+      unprocessed_entity: JSON.stringify({
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: { name: 'revived' },
+        spec: { owner: 'group:default/team-a', type: 'service' },
+      }),
+      next_update_at: now,
+      last_discovery_at: now,
+    });
+
+    await db('final_entities').insert([
+      {
+        entity_id: 'stale-slot',
+        entity_ref: 'component:default/recreated-stale',
+        final_entity: '{}',
+      },
+      {
+        entity_id: 'revived-slot',
+        entity_ref: 'component:default/revived',
+        final_entity: '{}',
+        winner_candidate_id: 'revived-entity',
+      },
+      {
+        entity_id: 'legacy-slot',
+        entity_ref: 'component:default/recreated-legacy',
+        final_entity: null,
+      },
+      {
+        entity_id: 'failed-entity',
+        entity_ref: 'component:default/failed',
+        final_entity: null,
+      },
+      {
+        entity_id: 'old-slot',
+        entity_ref: 'component:default/recreated',
+        final_entity: null,
+        deleted_at: now,
+      },
+      // A tombstone with no candidate is neither pending nor failed.
+      {
+        entity_id: 'deleted-slot',
+        entity_ref: 'component:default/deleted',
+        final_entity: null,
+        deleted_at: now,
+      },
+    ]);
 
     mockPermissions = {
       authorize: jest.fn(),
@@ -138,15 +231,30 @@ describe('UnprocessedEntitiesModule', () => {
 
       expect(response.status).toBe(200);
       expect(response.body.type).toBe('pending');
-      expect(response.body.entities).toHaveLength(1);
-      expect(response.body.entities[0]).toEqual(
-        expect.objectContaining({
-          entity_id: 'pending-entity',
-          entity_ref: 'component:default/pending',
-        }),
-      );
+      expect(
+        response.body.entities
+          .map((e: { entity_ref: string }) => e.entity_ref)
+          .sort(),
+      ).toEqual([
+        'component:default/pending',
+        'component:default/recreated',
+        'component:default/recreated-legacy',
+        'component:default/recreated-stale',
+      ]);
+      expect(
+        response.body.entities
+          .map((e: { entity_id: string }) => e.entity_id)
+          .sort(),
+      ).toEqual([
+        'pending-entity',
+        'recreated-entity',
+        'recreated-legacy-entity',
+        'recreated-stale-entity',
+      ]);
       // Columns from the joined final entity must not leak into the result.
-      expect(response.body.entities[0]).not.toHaveProperty('final_entity');
+      for (const entity of response.body.entities) {
+        expect(entity).not.toHaveProperty('final_entity');
+      }
       expect(mockPermissions.authorize).toHaveBeenCalledTimes(1);
     });
 
@@ -199,6 +307,43 @@ describe('UnprocessedEntitiesModule', () => {
       expect(response.status).toBe(403);
       expect(mockPermissions.authorize).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it('works before the catalog has added the tombstone columns', async () => {
+    mockPermissions.authorize.mockResolvedValue([
+      { result: AuthorizeResult.ALLOW },
+    ]);
+    await db.schema.alterTable('final_entities', table => {
+      table.dropColumn('deleted_at');
+      table.dropColumn('winner_candidate_id');
+    });
+    await db('final_entities')
+      .whereIn('entity_id', ['old-slot', 'deleted-slot', 'revived-slot'])
+      .delete();
+
+    const pending = await request(app)
+      .get('/entities/unprocessed/pending')
+      .auth(mockCredentials.user.token(), { type: 'bearer' });
+    expect(pending.status).toBe(200);
+    expect(
+      pending.body.entities
+        .map((e: { entity_ref: string }) => e.entity_ref)
+        .sort(),
+    ).toEqual([
+      'component:default/pending',
+      'component:default/recreated',
+      'component:default/recreated-legacy',
+      'component:default/recreated-stale',
+      'component:default/revived',
+    ]);
+
+    const failed = await request(app)
+      .get('/entities/unprocessed/failed')
+      .auth(mockCredentials.user.token(), { type: 'bearer' });
+    expect(failed.status).toBe(200);
+    expect(
+      failed.body.entities.map((e: { entity_id: string }) => e.entity_id),
+    ).toEqual(['failed-entity']);
   });
 
   describe('DELETE /entities/unprocessed/delete/:entity_id', () => {

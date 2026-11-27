@@ -4457,3 +4457,142 @@ Planning:
 Planning Time: 2.208 ms
 Execution Time: 80882.884 ms
 ```
+
+## SCM event refresh target selection (2026-11-22)
+
+Representative read-only `SELECT` plans for the wrapped candidate-ID
+`UNION` in scenarios 22-24. The text and JSON plans were captured in
+separate executions. `plans.json` contains all three query shapes under
+keys starting with `scm`. URL values and arrays are redacted as `:url`,
+and the `LIKE` input is redacted as `:prefix_pattern`.
+
+## scm exact hit wrapped
+
+```text
+Nested Loop  (cost=1586.65..2533.12 rows=112 width=43) (actual time=0.332..0.335 rows=1.00 loops=1)
+  Buffers: shared hit=46
+  ->  Unique  (cost=1586.22..1586.78 rows=112 width=516) (actual time=0.318..0.321 rows=1.00 loops=1)
+        Buffers: shared hit=42
+        ->  Sort  (cost=1586.22..1586.50 rows=112 width=516) (actual time=0.317..0.318 rows=2.00 loops=1)
+              Sort Key: rk.entity_id
+              Sort Method: quicksort  Memory: 25kB
+              Buffers: shared hit=42
+              ->  Append  (cost=0.41..1582.41 rows=112 width=516) (actual time=0.144..0.311 rows=2.00 loops=1)
+                    Buffers: shared hit=42
+                    ->  Index Scan using refresh_keys_key_idx on refresh_keys rk  (cost=0.41..16.80 rows=2 width=37) (actual time=0.033..0.033 rows=0.00 loops=1)
+                          Index Cond: ((key)::text = ANY (:url::text[]))
+                          Index Searches: 1
+                          Buffers: shared hit=3
+                    ->  Nested Loop  (cost=1.66..1565.05 rows=110 width=37) (actual time=0.111..0.276 rows=2.00 loops=1)
+                          Buffers: shared hit=39
+                          ->  Nested Loop  (cost=1.11..953.65 rows=110 width=72) (actual time=0.083..0.230 rows=2.00 loops=1)
+                                Buffers: shared hit=29
+                                ->  Index Only Scan using search_key_value_entity_idx on search s  (cost=0.69..24.97 rows=110 width=37) (actual time=0.064..0.187 rows=2.00 loops=1)
+                                      Index Cond: ((key = ANY ('{metadata.annotations.backstage.io/managed-by-location,metadata.annotations.backstage.io/managed-by-origin-location}'::text[])) AND (value = ANY (:url::text[])))
+                                      Heap Fetches: 0
+                                      Index Searches: 4
+                                      Buffers: shared hit=21
+                                ->  Index Scan using final_entities_pkey on final_entities f  (cost=0.42..8.44 rows=1 width=109) (actual time=0.020..0.020 rows=1.00 loops=2)
+                                      Index Cond: ((entity_id)::text = (s.entity_id)::text)
+                                      Index Searches: 2
+                                      Buffers: shared hit=8
+                          ->  Index Scan using refresh_state_entity_ref_uniq on refresh_state candidate  (cost=0.55..5.56 rows=1 width=109) (actual time=0.022..0.022 rows=1.00 loops=2)
+                                Index Cond: ((entity_ref)::text = (f.entity_ref)::text)
+                                Index Searches: 2
+                                Buffers: shared hit=10
+  ->  Index Scan using refresh_state_pkey on refresh_state  (cost=0.42..8.45 rows=1 width=43) (actual time=0.012..0.012 rows=1.00 loops=1)
+        Index Cond: ((entity_id)::text = (rk.entity_id)::text)
+        Index Searches: 1
+        Buffers: shared hit=4
+Planning:
+  Buffers: shared hit=40
+Planning Time: 0.978 ms
+Execution Time: 0.396 ms
+```
+
+## scm exact miss wrapped
+
+```text
+Nested Loop  (cost=1586.65..2533.12 rows=112 width=43) (actual time=0.088..0.090 rows=0.00 loops=1)
+  Buffers: shared hit=13
+  ->  Unique  (cost=1586.22..1586.78 rows=112 width=516) (actual time=0.088..0.089 rows=0.00 loops=1)
+        Buffers: shared hit=13
+        ->  Sort  (cost=1586.22..1586.50 rows=112 width=516) (actual time=0.087..0.088 rows=0.00 loops=1)
+              Sort Key: rk.entity_id
+              Sort Method: quicksort  Memory: 25kB
+              Buffers: shared hit=13
+              ->  Append  (cost=0.41..1582.41 rows=112 width=516) (actual time=0.082..0.083 rows=0.00 loops=1)
+                    Buffers: shared hit=13
+                    ->  Index Scan using refresh_keys_key_idx on refresh_keys rk  (cost=0.41..16.80 rows=2 width=37) (actual time=0.025..0.025 rows=0.00 loops=1)
+                          Index Cond: ((key)::text = ANY (:url::text[]))
+                          Index Searches: 1
+                          Buffers: shared hit=3
+                    ->  Nested Loop  (cost=1.66..1565.05 rows=110 width=37) (actual time=0.057..0.057 rows=0.00 loops=1)
+                          Buffers: shared hit=10
+                          ->  Nested Loop  (cost=1.11..953.65 rows=110 width=72) (actual time=0.056..0.057 rows=0.00 loops=1)
+                                Buffers: shared hit=10
+                                ->  Index Only Scan using search_key_value_entity_idx on search s  (cost=0.69..24.97 rows=110 width=37) (actual time=0.056..0.056 rows=0.00 loops=1)
+                                      Index Cond: ((key = ANY ('{metadata.annotations.backstage.io/managed-by-location,metadata.annotations.backstage.io/managed-by-origin-location}'::text[])) AND (value = ANY (:url::text[])))
+                                      Heap Fetches: 0
+                                      Index Searches: 2
+                                      Buffers: shared hit=10
+                                ->  Index Scan using final_entities_pkey on final_entities f  (cost=0.42..8.44 rows=1 width=109) (never executed)
+                                      Index Cond: ((entity_id)::text = (s.entity_id)::text)
+                                      Index Searches: 0
+                          ->  Index Scan using refresh_state_entity_ref_uniq on refresh_state candidate  (cost=0.55..5.56 rows=1 width=109) (never executed)
+                                Index Cond: ((entity_ref)::text = (f.entity_ref)::text)
+                                Index Searches: 0
+  ->  Index Scan using refresh_state_pkey on refresh_state  (cost=0.42..8.45 rows=1 width=43) (never executed)
+        Index Cond: ((entity_id)::text = (rk.entity_id)::text)
+        Index Searches: 0
+Planning:
+  Buffers: shared hit=40
+Planning Time: 0.983 ms
+Execution Time: 0.144 ms
+```
+
+## scm prefix wrapped
+
+```text
+Nested Loop  (cost=243998.03..244995.23 rows=118 width=43) (actual time=673.615..674.240 rows=61.00 loops=1)
+  Buffers: shared hit=888177
+  ->  Unique  (cost=243997.60..243998.19 rows=118 width=516) (actual time=673.584..673.616 rows=61.00 loops=1)
+        Buffers: shared hit=887933
+        ->  Sort  (cost=243997.60..243997.90 rows=118 width=516) (actual time=673.581..673.593 rows=122.00 loops=1)
+              Sort Key: rk.entity_id
+              Sort Method: quicksort  Memory: 25kB
+              Buffers: shared hit=887933
+              ->  Append  (cost=0.00..243993.54 rows=118 width=516) (actual time=240.482..673.454 rows=122.00 loops=1)
+                    Buffers: shared hit=887933
+                    ->  Seq Scan on refresh_keys rk  (cost=0.00..2005.40 rows=5 width=37) (actual time=8.465..8.465 rows=0.00 loops=1)
+                          Filter: ((key)::text ~~ :prefix_pattern::text)
+                          Rows Removed by Filter: 47152
+                          Buffers: shared hit=1416
+                    ->  Nested Loop  (cost=1.66..241987.55 rows=113 width=37) (actual time=232.014..664.970 rows=122.00 loops=1)
+                          Buffers: shared hit=886517
+                          ->  Nested Loop  (cost=1.11..241359.47 rows=113 width=72) (actual time=231.978..661.878 rows=122.00 loops=1)
+                                Buffers: shared hit=885907
+                                ->  Index Only Scan using search_key_value_entity_idx on search s  (cost=0.69..240405.47 rows=113 width=37) (actual time=231.937..660.568 rows=122.00 loops=1)
+                                      Index Cond: (key = ANY ('{metadata.annotations.backstage.io/managed-by-location,metadata.annotations.backstage.io/managed-by-origin-location}'::text[]))
+                                      Filter: ((value)::text ~~ :prefix_pattern::text)
+                                      Rows Removed by Filter: 1470706
+                                      Heap Fetches: 148280
+                                      Index Searches: 1
+                                      Buffers: shared hit=885419
+                                ->  Index Scan using final_entities_pkey on final_entities f  (cost=0.42..8.44 rows=1 width=109) (actual time=0.010..0.010 rows=1.00 loops=122)
+                                      Index Cond: ((entity_id)::text = (s.entity_id)::text)
+                                      Index Searches: 122
+                                      Buffers: shared hit=488
+                          ->  Index Scan using refresh_state_entity_ref_uniq on refresh_state candidate  (cost=0.55..5.56 rows=1 width=109) (actual time=0.025..0.025 rows=1.00 loops=122)
+                                Index Cond: ((entity_ref)::text = (f.entity_ref)::text)
+                                Index Searches: 122
+                                Buffers: shared hit=610
+  ->  Index Scan using refresh_state_pkey on refresh_state  (cost=0.42..8.45 rows=1 width=43) (actual time=0.010..0.010 rows=1.00 loops=61)
+        Index Cond: ((entity_id)::text = (rk.entity_id)::text)
+        Index Searches: 61
+        Buffers: shared hit=244
+Planning:
+  Buffers: shared hit=40
+Planning Time: 0.956 ms
+Execution Time: 674.312 ms
+```

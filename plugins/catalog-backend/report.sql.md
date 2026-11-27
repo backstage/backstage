@@ -20,14 +20,16 @@
 
 ## Table `final_entities`
 
-| Column            | Type                       | Nullable | Max Length | Default |
-| ----------------- | -------------------------- | -------- | ---------- | ------- |
-| `entity_id`       | `character varying`        | false    | 255        | -       |
-| `entity_ref`      | `character varying`        | false    | 255        | -       |
-| `final_entity`    | `text`                     | true     | -          | -       |
-| `generation`      | `bigint`                   | true     | -          | -       |
-| `hash`            | `character varying`        | false    | 255        | -       |
-| `last_updated_at` | `timestamp with time zone` | true     | -          | -       |
+| Column                | Type                       | Nullable | Max Length | Default |
+| --------------------- | -------------------------- | -------- | ---------- | ------- |
+| `deleted_at`          | `timestamp with time zone` | true     | -          | -       |
+| `entity_id`           | `character varying`        | false    | 255        | -       |
+| `entity_ref`          | `character varying`        | false    | 255        | -       |
+| `final_entity`        | `text`                     | true     | -          | -       |
+| `generation`          | `bigint`                   | true     | -          | -       |
+| `hash`                | `character varying`        | false    | 255        | -       |
+| `last_updated_at`     | `timestamp with time zone` | true     | -          | -       |
+| `winner_candidate_id` | `character varying`        | true     | 255        | -       |
 
 ### Indices
 

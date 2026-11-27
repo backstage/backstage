@@ -50,6 +50,7 @@ export class UnprocessedEntitiesModule {
   private readonly httpAuth: HttpAuthService;
 
   private readonly database: Knex;
+  private knownColumns?: { deletedAt: boolean; winner: boolean };
   private readonly router: Pick<HttpRouterService, 'use'>;
   private readonly permissions: PermissionsService;
 
@@ -109,17 +110,90 @@ export class UnprocessedEntitiesModule {
     };
   }
 
+  /**
+   * The tombstone columns only exist once the catalog backend has run its
+   * migrations, which may be a different version than this module, or may
+   * not have happened yet. Until then, a final row always belongs to the
+   * candidate with the same ID.
+   */
+  private async finalEntityColumns(): Promise<{
+    deletedAt: boolean;
+    winner: boolean;
+  }> {
+    if (this.knownColumns) {
+      return this.knownColumns;
+    }
+    const [deletedAt, winner] = await Promise.all([
+      this.database.schema.hasColumn('final_entities', 'deleted_at'),
+      this.database.schema.hasColumn('final_entities', 'winner_candidate_id'),
+    ]);
+    const columns = { deletedAt, winner };
+    if (deletedAt && winner) {
+      this.knownColumns = columns;
+    }
+    return columns;
+  }
+
+  /** The candidate that a final row was last published for. */
+  private finalEntityOwner(winner: boolean): string {
+    return winner
+      ? 'COALESCE(final_entities.winner_candidate_id, final_entities.entity_id)'
+      : 'final_entities.entity_id';
+  }
+
   private async pending(owner?: string): Promise<HydratedRefreshState[]> {
+    const columns = await this.finalEntityColumns();
+    const db = this.database;
+    // A candidate is pending until a live final row is published for it. A
+    // final row left by an earlier deletion of the same ref does not count:
+    // neither a tombstone, nor a body that is still published for a deleted
+    // predecessor.
+    //
+    // A row is published for a candidate either through its own slot (no
+    // winner recorded) or by naming it as the winner. The winner always has
+    // the same ref as the row, so matching on IDs alone is enough. Keeping
+    // each match a separate NOT EXISTS lets the database plan them as
+    // anti-joins on the primary keys; a single join with OR conditions has to
+    // read every candidate row instead.
+    //
+    // The pending IDs are found first and the candidate rows read afterwards,
+    // so that only the few pending rows are read in full.
+    const pendingIds = db('refresh_state as candidate')
+      .select('candidate.entity_id')
+      .whereNotExists(
+        db('final_entities')
+          .select(db.raw('1'))
+          .whereRaw('final_entities.entity_id = candidate.entity_id')
+          .modify(q => {
+            if (columns.deletedAt) {
+              q.whereNull('final_entities.deleted_at');
+            }
+            if (columns.winner) {
+              q.whereNull('final_entities.winner_candidate_id');
+            }
+          }),
+      )
+      .modify(q => {
+        if (columns.winner) {
+          q.whereNotExists(
+            db('final_entities')
+              .select(db.raw('1'))
+              .whereRaw(
+                'final_entities.winner_candidate_id = candidate.entity_id',
+              )
+              .modify(inner => {
+                if (columns.deletedAt) {
+                  inner.whereNull('final_entities.deleted_at');
+                }
+              }),
+          );
+        }
+      });
+
     const res = (
-      await this.database('refresh_state')
-        // Only candidate columns; final_entities shares some column names.
+      await db('refresh_state')
         .select('refresh_state.*')
-        .leftJoin(
-          'final_entities',
-          'final_entities.entity_id',
-          'refresh_state.entity_id',
-        )
-        .whereNull('final_entities.entity_id')
+        .whereIn('refresh_state.entity_id', pendingIds)
     ).map(this.hydrateRefreshState);
     if (owner) {
       return res.filter(r => r.unprocessed_entity.spec?.owner === owner);
@@ -129,16 +203,25 @@ export class UnprocessedEntitiesModule {
   }
 
   private async failed(owner?: string): Promise<HydratedRefreshState[]> {
-    const res = (
+    const columns = await this.finalEntityColumns();
+    const res: HydratedRefreshState[] = (
       await this.database('refresh_state')
         // Only candidate columns; final_entities shares some column names.
         .select('refresh_state.*')
-        .rightJoin(
+        .innerJoin(
           'final_entities',
-          'final_entities.entity_id',
-          'refresh_state.entity_id',
+          'final_entities.entity_ref',
+          'refresh_state.entity_ref',
         )
         .whereNull('final_entities.final_entity')
+        .modify(q => {
+          if (columns.deletedAt) {
+            q.whereNull('final_entities.deleted_at');
+          }
+        })
+        .whereRaw(
+          `${this.finalEntityOwner(columns.winner)} = refresh_state.entity_id`,
+        )
     ).map(this.hydrateRefreshState);
     if (owner) {
       return res.filter(r => r.unprocessed_entity.spec?.owner === owner);

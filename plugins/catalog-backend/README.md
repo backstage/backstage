@@ -109,12 +109,43 @@ The migration preserves an existing valid index and repairs an invalid one left
 by an interrupted build. Reruns do not reset the generation counter. Reversing
 the migration discards this bookkeeping, not entity or search contents.
 
-This does not expose a change-feed API or track deletions. On PostgreSQL,
+This does not expose a change-feed API. Deleted entities are kept as internal
+tombstones, so their deletion also gets a generation. On PostgreSQL,
 generations are assigned by a database trigger, so writes from older instances
 during a rolling upgrade are tracked too. On SQLite and MySQL, older instances
 can overwrite content while retaining a previously assigned generation. A
-non-null generation is therefore not proof of complete change tracking. Any future feed needs an explicit rollout activation boundary
-and initial synchronization strategy.
+non-null generation is therefore not proof of complete change tracking. Any
+future feed needs an explicit rollout activation boundary and initial
+synchronization strategy.
+
+On MySQL, the upgrade creates a database trigger. If binary logging is
+enabled, which is the default on Amazon RDS and Aurora with backups, MySQL
+only lets users with the `SUPER` privilege create triggers. Unless the catalog's
+database user has that privilege, set `log_bin_trust_function_creators=1` on
+the server, for example in the RDS DB parameter group, before upgrading.
+Otherwise startup fails with an error that explains this, and succeeds on a
+retry once the setting is in place.
+
+During a rolling upgrade, older instances can delay some catalog changes:
+
+- An older instance can handle an entity's deletion without removing it from
+  the catalog. A background check finds such entities and removes them,
+  logging a warning for each one. Outside of an upgrade, that warning
+  points to a bug or to manual changes to the database.
+- An older instance cannot publish updates to an entity that was deleted and
+  created again after the upgrade. Its attempts fail and are retried, so the
+  update is published once an upgraded instance picks it up.
+
+Instances running an older version refuse to start once the upgrade's
+database migrations have run, unless `database.migrations.skip` is set. Once
+the last older instance stops, no new delays arise. Delays that already
+happened clear over time. A deletion is repaired within one scheduling
+interval of the background check, currently 10 minutes, plus the time it takes
+to stitch the entity. Updates clear at the pace of the retries. Each background
+check reads every entity's database row once, which takes under a second on a
+catalog of about 800,000 entities with a warm database cache. To avoid
+these delays entirely, stop all older catalog instances before the upgraded
+version runs its migrations. If you skip migrations, you must do this yourself.
 
 ## Development
 

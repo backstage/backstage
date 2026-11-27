@@ -1,13 +1,50 @@
 # Publication generations
 
 This is internal publication bookkeeping, not a change-feed API. Existing rows
-remain null until a changed publication; deletions are untracked, as are
-old-instance writes on SQLite and MySQL. See [upgrade guidance](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/README.md#upgrading-large-installations).
+remain null until a changed publication. Deletions are tracked as tombstones
+(see below). On PostgreSQL, writes from older instances during a rolling upgrade
+get generations too; on MySQL and SQLite they are untracked. See [upgrade guidance](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/README.md#upgrading-large-installations).
 
 The existing hash check skips unchanged output in ordinary operation. Overlapping
 attempts may still publish identical content with distinct generations. Consumers
 must tolerate repeated content and gaps: rows retain only their latest generation,
 and intermediate publications or deleted rows are not retained as history.
+
+## Final rows, slots and tombstones
+
+A final entity row is a slot for its entity ref. Its `entity_id` starts out
+equal to the first candidate's `refresh_state.entity_id`, but it is kept when
+the entity is deleted and created again. The published `metadata.uid` always
+comes from the current candidate. Never join `final_entities.entity_id` or
+`search.entity_id` to `refresh_state.entity_id`; join on `entity_ref` instead.
+
+An entity exists if and only if its final row exists and `final_entity` is not
+null. `deleted_at` is informational.
+
+`winner_candidate_id` records which candidate's body is published, and every
+publication sets it. Tombstones clear it. A live row where it is null was last
+written by older code, which never reuses a slot, so its winner is the row's own
+`entity_id`. Read the winner as `COALESCE(winner_candidate_id, entity_id)` on
+live rows. There is no foreign key, so the value can briefly point at a deleted
+candidate until the deletion's stitch runs.
+
+A permanent integrity sweep runs every 10 minutes as one anti-join over all
+final rows, and requests a stitch for each live row whose winner no longer
+exists and that has no pending stitch. The query has no limit on purpose: with
+one, the planner expects many matches and picks a nested loop that is far slower
+than the hash anti-join. A run is expected to find nothing; a finding is logged
+as a warning. During a rolling upgrade it repairs
+deletions whose stitch request an older stitcher consumed without clearing the
+row.
+
+A trigger on `refresh_state` deletions requests a stitch for every deleted ref,
+using the same ticket contract as application code. PostgreSQL uses one
+statement-level trigger per deletion; MySQL and SQLite only have row-level
+triggers, which cost more for wide deletions but behave the same. When the stitcher then finds no candidate for a live slot, it clears the
+body, deletes the search rows and assigns a generation in one publication.
+Re-creation revives the same slot. The hash is the plain content hash while the
+slot and candidate IDs match; otherwise the candidate ID is folded in, so that
+identical content from a new candidate still publishes its new UID.
 
 ## Transaction and lock order
 
@@ -16,20 +53,26 @@ counter uses a transaction, not a sequence: the next allocator waits for commit
 or rollback, and rollback restores both publication and counter. Decimal strings
 preserve bigint precision in JavaScript.
 
-On PostgreSQL, take the originating candidate's key-share lock before writing
-the final row. Updating a final row twice in one transaction can recheck its FK
-even without changing the key. The early parent lock prevents an inversion with
-cascading deletion, which locks refresh state before final entities.
+Final rows no longer reference `refresh_state`, so publication takes the lock
+that the foreign key used to take implicitly: its first statement takes a key
+share lock on the candidate (a shared lock on MySQL), held until commit. If
+the candidate is already gone, the publication abandons. Otherwise deleting
+the candidate waits for the publication, and the deletion's stitch request,
+which replaces the ticket but keeps the current lease, then sees the committed
+body and tombstones it. Without that lock, a publication that stalled past its
+lease could commit a live body after the deletion's stitch had already found
+nothing to tombstone and settled.
 
-Write and validate the final entity, then synchronize search. On PostgreSQL, a
-deferred constraint trigger on `final_entities` then allocates the generation
-inside `COMMIT`: it runs after all other work in the transaction, so the counter
-lock is taken last and held only for the commit itself, with no round trip to
-the client. PostgreSQL makes a transaction visible before releasing its locks,
-so a later allocation cannot commit first. The trigger fires only when the
-entity body is written, including by older instances during a rolling upgrade.
-SQLite and MySQL allocate in application code as the last statements before
-commit. Never acquire queue or unrelated entity locks after the counter lock.
+Lock the candidate, write and validate the final entity, then synchronize
+search. On PostgreSQL, a deferred constraint trigger on `final_entities` then
+allocates the generation inside `COMMIT`: it runs after all other work in the
+transaction, so the counter lock is taken last and held only for the commit
+itself, with no round trip to the client. PostgreSQL makes a transaction visible
+before releasing its locks, so a later allocation cannot commit first. The
+trigger fires whenever the entity body is written, including when a tombstone
+clears it and when older instances write during a rolling upgrade. SQLite and MySQL allocate in
+application code as the last statements before commit. Never acquire queue or
+unrelated entity locks after the counter lock.
 Claim settlement stays after commit. Publication requires a root connection;
 releasing a nested `SAVEPOINT` would retain the counter lock into queue settlement.
 
