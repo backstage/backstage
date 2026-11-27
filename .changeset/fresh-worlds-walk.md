@@ -2,4 +2,4 @@
 '@backstage/frontend-plugin-api': patch
 ---
 
-added Helmet library to PageBlueprint which now properly set HTML tags in <head>
+Pages and sub-pages now update the browser title when navigating. <head>
