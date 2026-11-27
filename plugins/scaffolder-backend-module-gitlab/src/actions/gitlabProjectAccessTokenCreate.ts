@@ -83,10 +83,9 @@ export const createGitlabProjectAccessTokenAction = (options: {
           z
             .string({
               description:
-                'GitLab CI/CD variable name in which to store the generated token. When set, the raw token is not exposed in outputs.',
+                'GitLab CI/CD variable name in which to store the generated token',
             })
-            .regex(/^[A-Za-z0-9_]{1,255}$/)
-            .optional(),
+            .regex(/^[A-Za-z0-9_]{1,255}$/),
         variableProtected: z =>
           z
             .boolean({
@@ -111,20 +110,11 @@ export const createGitlabProjectAccessTokenAction = (options: {
             .optional(),
       },
       output: {
-        access_token: z =>
-          z
-            .string({
-              description:
-                'Deprecated. The raw access token. Omitted when variableKey is provided.',
-            })
-            .optional(),
         variableKey: z =>
-          z
-            .string({
-              description:
-                'Name of the GitLab CI/CD variable containing the token',
-            })
-            .optional(),
+          z.string({
+            description:
+              'Name of the GitLab CI/CD variable containing the token',
+          }),
       },
     },
     async handler(ctx) {
@@ -172,61 +162,40 @@ export const createGitlabProjectAccessTokenAction = (options: {
           },
         );
 
-      if (variableKey) {
-        await ctx.checkpoint({
-          key: `project.access.token.variable.${projectId}.${name}.${variableKey}.${environmentScope}`,
-          fn: async () => {
-            const response = await createAccessToken();
-
-            try {
-              await api.ProjectVariables.create(
-                projectId,
-                variableKey,
-                response.token,
-                {
-                  variableType: 'env_var' as VariableType,
-                  protected: variableProtected,
-                  masked: true,
-                  masked_and_hidden: maskedAndHidden,
-                  raw: true,
-                  environmentScope,
-                },
-              );
-            } catch (error) {
-              try {
-                await api.ProjectAccessTokens.revoke(projectId, response.id);
-              } catch (cleanupError) {
-                ctx.logger.error(
-                  `Failed to revoke project access token ${response.id}`,
-                );
-              }
-
-              throw error;
-            }
-          },
-        });
-
-        ctx.output('variableKey', variableKey);
-        return;
-      }
-
-      ctx.logger.warn(
-        'The access_token output is deprecated because it persists the token in task state. Provide variableKey to store the token securely in GitLab.',
-      );
-
-      const projectAccessToken = await ctx.checkpoint({
-        key: `project.access.token.${projectId}.${name}`,
+      await ctx.checkpoint({
+        key: `project.access.token.variable.${projectId}.${name}.${variableKey}.${environmentScope}`,
         fn: async () => {
           const response = await createAccessToken();
-          return response.token;
+
+          try {
+            await api.ProjectVariables.create(
+              projectId,
+              variableKey,
+              response.token,
+              {
+                variableType: 'env_var' as VariableType,
+                protected: variableProtected,
+                masked: true,
+                masked_and_hidden: maskedAndHidden,
+                raw: true,
+                environmentScope,
+              },
+            );
+          } catch (error) {
+            try {
+              await api.ProjectAccessTokens.revoke(projectId, response.id);
+            } catch (cleanupError) {
+              ctx.logger.error(
+                `Failed to revoke project access token ${response.id}`,
+              );
+            }
+
+            throw error;
+          }
         },
       });
 
-      if (!projectAccessToken) {
-        throw new Error('Could not create project access token');
-      }
-
-      ctx.output('access_token', projectAccessToken);
+      ctx.output('variableKey', variableKey);
     },
   });
 };

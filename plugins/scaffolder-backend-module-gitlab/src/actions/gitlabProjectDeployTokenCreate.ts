@@ -69,10 +69,9 @@ export const createGitlabProjectDeployTokenAction = (options: {
           z
             .string({
               description:
-                'GitLab CI/CD variable name in which to store the generated token. When set, the raw token is not exposed in outputs.',
+                'GitLab CI/CD variable name in which to store the generated token',
             })
-            .regex(/^[A-Za-z0-9_]{1,255}$/)
-            .optional(),
+            .regex(/^[A-Za-z0-9_]{1,255}$/),
         variableProtected: z =>
           z
             .boolean({
@@ -97,24 +96,15 @@ export const createGitlabProjectDeployTokenAction = (options: {
             .optional(),
       },
       output: {
-        deploy_token: z =>
-          z
-            .string({
-              description:
-                'Deprecated. The raw deploy token. Omitted when variableKey is provided.',
-            })
-            .optional(),
         user: z =>
           z.string({
             description: 'Deploy token username',
           }),
         variableKey: z =>
-          z
-            .string({
-              description:
-                'Name of the GitLab CI/CD variable containing the token',
-            })
-            .optional(),
+          z.string({
+            description:
+              'Name of the GitLab CI/CD variable containing the token',
+          }),
       },
     },
     async handler(ctx) {
@@ -146,69 +136,10 @@ export const createGitlabProjectDeployTokenAction = (options: {
         requireScmUserCredentials,
       });
 
-      if (variableKey) {
-        const deployUsername = await ctx.checkpoint({
-          key: `create.deploy.token.variable.${projectId}.${name}.${variableKey}.${environmentScope}`,
-          fn: async () => {
-            const response = await api.DeployTokens.create(
-              name,
-              scopes as DeployTokenScope[],
-              {
-                projectId,
-                username,
-              },
-            );
-
-            if (!response.hasOwnProperty('token')) {
-              throw new InputError(
-                `No deploy_token given from gitlab instance`,
-              );
-            }
-
-            try {
-              await api.ProjectVariables.create(
-                projectId,
-                variableKey,
-                response.token as string,
-                {
-                  variableType: 'env_var' as VariableType,
-                  protected: variableProtected,
-                  masked: true,
-                  masked_and_hidden: maskedAndHidden,
-                  raw: true,
-                  environmentScope,
-                },
-              );
-            } catch (error) {
-              try {
-                await api.DeployTokens.remove(response.id, { projectId });
-              } catch (cleanupError) {
-                ctx.logger.error(
-                  `Failed to revoke project deploy token ${response.id}`,
-                );
-              }
-
-              throw error;
-            }
-
-            // Username is not secret.
-            return response.username;
-          },
-        });
-
-        ctx.output('variableKey', variableKey);
-        ctx.output('user', deployUsername);
-        return;
-      }
-
-      ctx.logger.warn(
-        'The deploy_token output is deprecated because it persists the token in task state. Provide variableKey to store the token securely in GitLab.',
-      );
-
-      const { deployToken, deployUsername } = await ctx.checkpoint({
-        key: `create.deploy.token.${projectId}.${name}`,
+      const deployUsername = await ctx.checkpoint({
+        key: `create.deploy.token.variable.${projectId}.${name}.${variableKey}.${environmentScope}`,
         fn: async () => {
-          const res = await api.DeployTokens.create(
+          const response = await api.DeployTokens.create(
             name,
             scopes as DeployTokenScope[],
             {
@@ -217,18 +148,42 @@ export const createGitlabProjectDeployTokenAction = (options: {
             },
           );
 
-          if (!res.hasOwnProperty('token')) {
+          if (!response.hasOwnProperty('token')) {
             throw new InputError(`No deploy_token given from gitlab instance`);
           }
 
-          return {
-            deployToken: res.token as string,
-            deployUsername: res.username,
-          };
+          try {
+            await api.ProjectVariables.create(
+              projectId,
+              variableKey,
+              response.token as string,
+              {
+                variableType: 'env_var' as VariableType,
+                protected: variableProtected,
+                masked: true,
+                masked_and_hidden: maskedAndHidden,
+                raw: true,
+                environmentScope,
+              },
+            );
+          } catch (error) {
+            try {
+              await api.DeployTokens.remove(response.id, { projectId });
+            } catch (cleanupError) {
+              ctx.logger.error(
+                `Failed to revoke project deploy token ${response.id}`,
+              );
+            }
+
+            throw error;
+          }
+
+          // Username is not secret.
+          return response.username;
         },
       });
 
-      ctx.output('deploy_token', deployToken);
+      ctx.output('variableKey', variableKey);
       ctx.output('user', deployUsername);
     },
   });

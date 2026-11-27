@@ -91,7 +91,10 @@ describe('gitlab:create-deploy-token', () => {
       },
     );
 
-    expect(mockContext.output).toHaveBeenCalledWith('deploy_token', 'TOKEN');
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'variableKey',
+      'BACKSTAGE_DEPLOY_TOKEN',
+    );
     expect(mockContext.output).toHaveBeenCalledWith('user', 'User');
   });
 
@@ -115,7 +118,10 @@ describe('gitlab:create-deploy-token', () => {
       },
     );
 
-    expect(mockContext.output).toHaveBeenCalledWith('deploy_token', 'TOKEN');
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'variableKey',
+      'BACKSTAGE_DEPLOY_TOKEN',
+    );
     expect(mockContext.output).toHaveBeenCalledWith('user', 'User');
   });
 
@@ -139,7 +145,10 @@ describe('gitlab:create-deploy-token', () => {
       },
     );
 
-    expect(mockContext.output).toHaveBeenCalledWith('deploy_token', 'TOKEN');
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'variableKey',
+      'BACKSTAGE_DEPLOY_TOKEN',
+    );
     expect(mockContext.output).toHaveBeenCalledWith('user', 'User');
   });
 
@@ -163,7 +172,10 @@ describe('gitlab:create-deploy-token', () => {
       },
     );
 
-    expect(mockContext.output).toHaveBeenCalledWith('deploy_token', 'TOKEN');
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'variableKey',
+      'BACKSTAGE_DEPLOY_TOKEN',
+    );
     expect(mockContext.output).toHaveBeenCalledWith('user', 'User');
   });
 
@@ -187,34 +199,8 @@ describe('gitlab:create-deploy-token', () => {
       },
     );
 
-    expect(mockContext.output).toHaveBeenCalledWith('deploy_token', 'TOKEN');
-    expect(mockContext.output).toHaveBeenCalledWith('user', 'User');
-  });
-
-  it(`Should ${examples[5].description}`, async () => {
-    mockGitlabClient.DeployTokens.create.mockResolvedValue({
-      id: 1,
-      token: 'TOKEN',
-      username: 'User',
-    });
-    mockGitlabClient.ProjectVariables.create.mockResolvedValue({});
-
-    await action.handler({
-      ...mockContext,
-      input: yaml.parse(examples[5].example).steps[0].input,
-    });
-
-    expect(mockGitlabClient.DeployTokens.create).toHaveBeenCalledWith(
-      'backstage-deploy-token',
-      ['read_registry'],
-      {
-        projectId: '456',
-        username: undefined,
-      },
-    );
-
     expect(mockGitlabClient.ProjectVariables.create).toHaveBeenCalledWith(
-      '456',
+      42,
       'BACKSTAGE_DEPLOY_TOKEN',
       'TOKEN',
       {
@@ -232,9 +218,5 @@ describe('gitlab:create-deploy-token', () => {
       'BACKSTAGE_DEPLOY_TOKEN',
     );
     expect(mockContext.output).toHaveBeenCalledWith('user', 'User');
-    expect(mockContext.output).not.toHaveBeenCalledWith(
-      'deploy_token',
-      expect.anything(),
-    );
   });
 });

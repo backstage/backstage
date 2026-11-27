@@ -28,6 +28,7 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl: 'gitlab.com?repo=repo&owner=owner',
             projectId: '456',
+            variableKey: 'BACKSTAGE_ACCESS_TOKEN',
           },
         },
       ],
@@ -44,6 +45,7 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl: 'gitlab.com?repo=repo&owner=owner',
             projectId: '789',
+            variableKey: 'BACKSTAGE_ACCESS_TOKEN',
             scopes: ['read_registry', 'write_repository'],
           },
         },
@@ -61,6 +63,7 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl: 'gitlab.com?repo=repo&owner=owner',
             projectId: '101112',
+            variableKey: 'BACKSTAGE_ACCESS_TOKEN',
             name: 'my-custom-token',
           },
         },
@@ -79,6 +82,7 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl: 'gitlab.com?repo=repo&owner=owner',
             projectId: 42,
+            variableKey: 'BACKSTAGE_ACCESS_TOKEN',
           },
         },
       ],
@@ -96,6 +100,7 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl: 'gitlab.com?repo=repo&owner=owner',
             projectId: '123',
+            variableKey: 'BACKSTAGE_ACCESS_TOKEN',
             expiresAt: '2024-06-25',
           },
         },
@@ -113,6 +118,7 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl: 'gitlab.com?repo=repo&owner=owner',
             projectId: '456',
+            variableKey: 'BACKSTAGE_ACCESS_TOKEN',
             accessLevel: 30,
           },
         },
@@ -120,7 +126,8 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
-    description: 'Create a GitLab project access token with multiple options',
+    description:
+      'Create a GitLab project access token with multiple options and protected variable',
     example: yaml.stringify({
       steps: [
         {
@@ -130,9 +137,11 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl: 'gitlab.com?repo=repo&owner=owner',
             projectId: '456',
+            variableKey: 'BACKSTAGE_ACCESS_TOKEN',
             accessLevel: 40,
             name: 'full-access-token',
             expiresAt: '2024-12-31',
+            variableProtected: true,
           },
         },
       ],
@@ -150,6 +159,7 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl: 'gitlab.com?repo=repo&owner=owner',
             projectId: '101112',
+            variableKey: 'BACKSTAGE_ACCESS_TOKEN',
             token: 'personal-access-token',
           },
         },
@@ -167,6 +177,7 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl: 'gitlab.com?repo=repo&owner=owner',
             projectId: '101112',
+            variableKey: 'BACKSTAGE_ACCESS_TOKEN',
             scopes: ['read_repository', 'read_api'],
           },
         },
@@ -184,6 +195,7 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl: 'gitlab.com?repo=repo&owner=owner',
             projectId: '101112',
+            variableKey: 'BACKSTAGE_ACCESS_TOKEN',
             accessLevel: 10,
           },
         },
@@ -202,6 +214,7 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl: 'gitlab.com?repo=repo&owner=owner',
             projectId: '101112',
+            variableKey: 'BACKSTAGE_ACCESS_TOKEN',
             accessLevel: 40,
           },
         },
@@ -219,6 +232,7 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl: 'gitlab.com?repo=repo&owner=owner',
             projectId: '101112',
+            variableKey: 'BACKSTAGE_ACCESS_TOKEN',
             accessLevel: 50,
           },
         },
@@ -237,6 +251,7 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl: 'gitlab.com?repo=repo&owner=owner',
             projectId: '101112',
+            variableKey: 'BACKSTAGE_ACCESS_TOKEN',
             name: 'no-expiry-token',
           },
         },
@@ -255,27 +270,7 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl: 'gitlab.example.com?repo=repo&owner=owner',
             projectId: '101112',
-          },
-        },
-      ],
-    }),
-  },
-  {
-    description:
-      'Create a GitLab project access token and store it as a CI/CD variable',
-    example: yaml.stringify({
-      steps: [
-        {
-          id: 'createAccessToken',
-          action: 'gitlab:projectAccessToken:create',
-          name: 'Create GitLab Project Access Token',
-          input: {
-            repoUrl: 'gitlab.com?repo=repo&owner=owner',
-            projectId: '456',
-            name: 'backstage-access-token',
-            scopes: ['read_repository'],
             variableKey: 'BACKSTAGE_ACCESS_TOKEN',
-            variableProtected: true,
           },
         },
       ],

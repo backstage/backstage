@@ -68,170 +68,30 @@ describe('gitlab:projectAccessToken:create examples', () => {
     jest.resetAllMocks();
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('requires a variable key and exposes only variable metadata', () => {
+    expect(action.schema?.input).toHaveProperty(
+      'required',
+      expect.arrayContaining(['variableKey']),
+    );
+    expect(action.schema?.output).toHaveProperty(
+      'required',
+      expect.arrayContaining(['variableKey']),
+    );
+    expect(Object.keys(action.schema!.output!.properties!)).toEqual([
+      'variableKey',
+    ]);
+  });
+
   it('should create a GitLab project access token with minimal options.', async () => {
     mockGitlabClient.ProjectAccessTokens.create.mockResolvedValue({
       token: 'gitlab-token',
       username: 'gitlab-user',
     });
-    mockContext.logger.warn = jest.fn();
-
-    await action.handler({
-      ...mockContext,
-      input: {
-        repoUrl: 'gitlab.com?repo=repo&owner=owner',
-        projectId: '987',
-      },
-    });
-
-    expect(mockGitlabClient.ProjectAccessTokens.create).toHaveBeenCalledWith(
-      '987',
-      'tokenname',
-      ['read_repository'],
-      DateTime.now().plus({ days: 365 }).toISODate()!,
-      {
-        accessLevel: 40,
-      },
-    );
-
-    expect(mockContext.output).toHaveBeenCalledWith(
-      'access_token',
-      'gitlab-token',
-    );
-    expect(mockContext.logger.warn).toHaveBeenCalledWith(
-      expect.stringContaining('access_token output is deprecated'),
-    );
-  });
-
-  it('should create a GitLab project access token with custom scopes.', async () => {
-    mockGitlabClient.ProjectAccessTokens.create.mockResolvedValue({
-      token: 'gitlab-token',
-      username: 'gitlab-user',
-    });
-
-    await action.handler({
-      ...mockContext,
-      input: {
-        repoUrl: 'gitlab.com?repo=repo&owner=owner',
-        projectId: '987',
-        scopes: ['read_registry', 'write_repository'],
-      },
-    });
-
-    expect(mockGitlabClient.ProjectAccessTokens.create).toHaveBeenCalledWith(
-      '987',
-      'tokenname',
-      ['read_registry', 'write_repository'],
-      DateTime.now().plus({ days: 365 }).toISODate()!,
-      {
-        accessLevel: 40,
-      },
-    );
-
-    expect(mockContext.output).toHaveBeenCalledWith(
-      'access_token',
-      'gitlab-token',
-    );
-  });
-
-  it('should create a GitLab project access token with a specified name.', async () => {
-    mockGitlabClient.ProjectAccessTokens.create.mockResolvedValue({
-      token: 'gitlab-token',
-      username: 'gitlab-user',
-    });
-
-    await action.handler({
-      ...mockContext,
-      input: {
-        repoUrl: 'gitlab.com?repo=repo&owner=owner',
-        projectId: '2110',
-        name: 'token',
-      },
-    });
-
-    expect(mockGitlabClient.ProjectAccessTokens.create).toHaveBeenCalledWith(
-      '2110',
-      'token',
-      ['read_repository'],
-      DateTime.now().plus({ days: 365 }).toISODate()!,
-      {
-        accessLevel: 40,
-      },
-    );
-
-    expect(mockContext.output).toHaveBeenCalledWith(
-      'access_token',
-      'gitlab-token',
-    );
-  });
-
-  it('should create a GitLab project access token with a numeric project ID.', async () => {
-    mockGitlabClient.ProjectAccessTokens.create.mockResolvedValue({
-      token: 'gitlab-token',
-      username: 'gitlab-user',
-    });
-
-    await action.handler({
-      ...mockContext,
-      input: {
-        repoUrl: 'gitlab.com?repo=repo&owner=owner',
-        projectId: 23,
-      },
-    });
-
-    expect(mockGitlabClient.ProjectAccessTokens.create).toHaveBeenCalledWith(
-      23,
-      'tokenname',
-      ['read_repository'],
-      DateTime.now().plus({ days: 365 }).toISODate()!,
-      {
-        accessLevel: 40,
-      },
-    );
-
-    expect(mockContext.output).toHaveBeenCalledWith(
-      'access_token',
-      'gitlab-token',
-    );
-  });
-
-  it('should create a GitLab project access token with a specified expired Date.', async () => {
-    mockGitlabClient.ProjectAccessTokens.create.mockResolvedValue({
-      token: 'gitlab-token',
-      username: 'gitlab-user',
-    });
-
-    await action.handler({
-      ...mockContext,
-      input: {
-        repoUrl: 'gitlab.com?repo=repo&owner=owner',
-        projectId: '123',
-        expiresAt: '1999-07-14',
-      },
-    });
-
-    expect(mockGitlabClient.ProjectAccessTokens.create).toHaveBeenCalledWith(
-      '123',
-      'tokenname',
-      ['read_repository'],
-      '1999-07-14',
-      {
-        accessLevel: 40,
-      },
-    );
-
-    expect(mockContext.output).toHaveBeenCalledWith(
-      'access_token',
-      'gitlab-token',
-    );
-  });
-
-  it('should create a token and store it as a CI/CD variable when variableKey is provided', async () => {
-    mockGitlabClient.ProjectAccessTokens.create.mockResolvedValue({
-      id: 1,
-      token: 'secret-token',
-    });
-    mockGitlabClient.ProjectVariables.create.mockResolvedValue({});
-    mockContext.logger.warn = jest.fn();
+    const checkpointSpy = jest.spyOn(mockContext, 'checkpoint');
 
     await action.handler({
       ...mockContext,
@@ -255,7 +115,7 @@ describe('gitlab:projectAccessToken:create examples', () => {
     expect(mockGitlabClient.ProjectVariables.create).toHaveBeenCalledWith(
       '987',
       'MY_TOKEN',
-      'secret-token',
+      'gitlab-token',
       {
         variableType: 'env_var',
         protected: false,
@@ -265,13 +125,128 @@ describe('gitlab:projectAccessToken:create examples', () => {
         environmentScope: '*',
       },
     );
+    expect(checkpointSpy).toHaveBeenCalledWith({
+      key: 'project.access.token.variable.987.tokenname.MY_TOKEN.*',
+      fn: expect.any(Function),
+    });
+    expect(await checkpointSpy.mock.results[0].value).toBeUndefined();
+    expect(mockContext.output).toHaveBeenCalledTimes(1);
+    expect(mockContext.output).toHaveBeenCalledWith('variableKey', 'MY_TOKEN');
+  });
+
+  it('should create a GitLab project access token with custom scopes.', async () => {
+    mockGitlabClient.ProjectAccessTokens.create.mockResolvedValue({
+      token: 'gitlab-token',
+      username: 'gitlab-user',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        projectId: '987',
+        variableKey: 'MY_TOKEN',
+        scopes: ['read_registry', 'write_repository'],
+      },
+    });
+
+    expect(mockGitlabClient.ProjectAccessTokens.create).toHaveBeenCalledWith(
+      '987',
+      'tokenname',
+      ['read_registry', 'write_repository'],
+      DateTime.now().plus({ days: 365 }).toISODate()!,
+      {
+        accessLevel: 40,
+      },
+    );
 
     expect(mockContext.output).toHaveBeenCalledWith('variableKey', 'MY_TOKEN');
-    expect(mockContext.output).not.toHaveBeenCalledWith(
-      'access_token',
-      expect.anything(),
+  });
+
+  it('should create a GitLab project access token with a specified name.', async () => {
+    mockGitlabClient.ProjectAccessTokens.create.mockResolvedValue({
+      token: 'gitlab-token',
+      username: 'gitlab-user',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        projectId: '2110',
+        variableKey: 'MY_TOKEN',
+        name: 'token',
+      },
+    });
+
+    expect(mockGitlabClient.ProjectAccessTokens.create).toHaveBeenCalledWith(
+      '2110',
+      'token',
+      ['read_repository'],
+      DateTime.now().plus({ days: 365 }).toISODate()!,
+      {
+        accessLevel: 40,
+      },
     );
-    expect(mockContext.logger.warn).not.toHaveBeenCalled();
+
+    expect(mockContext.output).toHaveBeenCalledWith('variableKey', 'MY_TOKEN');
+  });
+
+  it('should create a GitLab project access token with a numeric project ID.', async () => {
+    mockGitlabClient.ProjectAccessTokens.create.mockResolvedValue({
+      token: 'gitlab-token',
+      username: 'gitlab-user',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        projectId: 23,
+        variableKey: 'MY_TOKEN',
+      },
+    });
+
+    expect(mockGitlabClient.ProjectAccessTokens.create).toHaveBeenCalledWith(
+      23,
+      'tokenname',
+      ['read_repository'],
+      DateTime.now().plus({ days: 365 }).toISODate()!,
+      {
+        accessLevel: 40,
+      },
+    );
+
+    expect(mockContext.output).toHaveBeenCalledWith('variableKey', 'MY_TOKEN');
+  });
+
+  it('should create a GitLab project access token with a specified expired Date.', async () => {
+    mockGitlabClient.ProjectAccessTokens.create.mockResolvedValue({
+      token: 'gitlab-token',
+      username: 'gitlab-user',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        projectId: '123',
+        variableKey: 'MY_TOKEN',
+        expiresAt: '1999-07-14',
+      },
+    });
+
+    expect(mockGitlabClient.ProjectAccessTokens.create).toHaveBeenCalledWith(
+      '123',
+      'tokenname',
+      ['read_repository'],
+      '1999-07-14',
+      {
+        accessLevel: 40,
+      },
+    );
+
+    expect(mockContext.output).toHaveBeenCalledWith('variableKey', 'MY_TOKEN');
   });
 
   it('should create a token and store it as a CI/CD variable with custom options', async () => {
@@ -312,10 +287,6 @@ describe('gitlab:projectAccessToken:create examples', () => {
       'variableKey',
       'BACKSTAGE_ACCESS_TOKEN',
     );
-    expect(mockContext.output).not.toHaveBeenCalledWith(
-      'access_token',
-      expect.anything(),
-    );
   });
 
   it('should revoke the access token when variable creation fails', async () => {
@@ -343,6 +314,7 @@ describe('gitlab:projectAccessToken:create examples', () => {
       '987',
       42,
     );
+    expect(mockContext.output).not.toHaveBeenCalled();
   });
 
   it('should propagate the original error when revoke fails during cleanup', async () => {

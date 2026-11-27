@@ -69,12 +69,31 @@ describe('gitlab:create-deploy-token', () => {
     jest.resetAllMocks();
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('requires a variable key and exposes only variable metadata', () => {
+    expect(action.schema?.input).toHaveProperty(
+      'required',
+      expect.arrayContaining(['variableKey']),
+    );
+    expect(action.schema?.output).toHaveProperty(
+      'required',
+      expect.arrayContaining(['variableKey', 'user']),
+    );
+    expect(Object.keys(action.schema!.output!.properties!).sort()).toEqual([
+      'user',
+      'variableKey',
+    ]);
+  });
+
   it('should work when there is a token provided through ctx.input', async () => {
     mockGitlabClient.DeployTokens.create.mockResolvedValue({
       token: 'TOKEN',
       username: 'User',
     });
-    mockContext.logger.warn = jest.fn();
+    const checkpointSpy = jest.spyOn(mockContext, 'checkpoint');
 
     await action.handler({
       ...mockContext,
@@ -85,6 +104,7 @@ describe('gitlab:create-deploy-token', () => {
         username: 'tokenuser',
         scopes: ['read_repository'],
         token: 'oidctoken',
+        variableKey: 'DEPLOY_TOKEN',
       },
     });
 
@@ -97,11 +117,23 @@ describe('gitlab:create-deploy-token', () => {
       },
     );
 
-    expect(mockContext.output).toHaveBeenCalledWith('deploy_token', 'TOKEN');
-    expect(mockContext.output).toHaveBeenCalledWith('user', 'User');
-    expect(mockContext.logger.warn).toHaveBeenCalledWith(
-      expect.stringContaining('deploy_token output is deprecated'),
+    expect(mockGitlabClient.ProjectVariables.create).toHaveBeenCalledWith(
+      '123',
+      'DEPLOY_TOKEN',
+      'TOKEN',
+      expect.objectContaining({ masked: true, raw: true }),
     );
+    expect(checkpointSpy).toHaveBeenCalledWith({
+      key: 'create.deploy.token.variable.123.tokenname.DEPLOY_TOKEN.*',
+      fn: expect.any(Function),
+    });
+    expect(await checkpointSpy.mock.results[0].value).toBe('User');
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'variableKey',
+      'DEPLOY_TOKEN',
+    );
+    expect(mockContext.output).toHaveBeenCalledWith('user', 'User');
+    expect(mockContext.output).toHaveBeenCalledTimes(2);
   });
 
   it('should work when there is not a token provided through ctx.input e.g. integration token', async () => {
@@ -109,39 +141,6 @@ describe('gitlab:create-deploy-token', () => {
       token: 'TOKEN',
       username: 'User',
     });
-
-    await action.handler({
-      ...mockContext,
-      input: {
-        repoUrl: 'gitlab.com?repo=bob&owner=owner',
-        projectId: '123',
-        name: 'tokenname',
-        username: 'tokenuser',
-        scopes: ['read_repository'],
-      },
-    });
-
-    expect(mockGitlabClient.DeployTokens.create).toHaveBeenCalledWith(
-      'tokenname',
-      ['read_repository'],
-      {
-        projectId: '123',
-        username: 'tokenuser',
-      },
-    );
-
-    expect(mockContext.output).toHaveBeenCalledWith('deploy_token', 'TOKEN');
-    expect(mockContext.output).toHaveBeenCalledWith('user', 'User');
-  });
-
-  it('should create a token and store it as a CI/CD variable when variableKey is provided', async () => {
-    mockGitlabClient.DeployTokens.create.mockResolvedValue({
-      id: 1,
-      token: 'deploy-secret',
-      username: 'deploy-user',
-    });
-    mockGitlabClient.ProjectVariables.create.mockResolvedValue({});
-    mockContext.logger.warn = jest.fn();
 
     await action.handler({
       ...mockContext,
@@ -167,7 +166,7 @@ describe('gitlab:create-deploy-token', () => {
     expect(mockGitlabClient.ProjectVariables.create).toHaveBeenCalledWith(
       '123',
       'DEPLOY_TOKEN',
-      'deploy-secret',
+      'TOKEN',
       {
         variableType: 'env_var',
         protected: false,
@@ -182,12 +181,7 @@ describe('gitlab:create-deploy-token', () => {
       'variableKey',
       'DEPLOY_TOKEN',
     );
-    expect(mockContext.output).toHaveBeenCalledWith('user', 'deploy-user');
-    expect(mockContext.output).not.toHaveBeenCalledWith(
-      'deploy_token',
-      expect.anything(),
-    );
-    expect(mockContext.logger.warn).not.toHaveBeenCalled();
+    expect(mockContext.output).toHaveBeenCalledWith('user', 'User');
   });
 
   it('should create a token and store it as a CI/CD variable with custom options', async () => {
@@ -262,6 +256,7 @@ describe('gitlab:create-deploy-token', () => {
     expect(mockGitlabClient.DeployTokens.remove).toHaveBeenCalledWith(1, {
       projectId: '123',
     });
+    expect(mockContext.output).not.toHaveBeenCalled();
   });
 
   it('should propagate the original error when remove fails during cleanup', async () => {
