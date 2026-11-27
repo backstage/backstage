@@ -55,9 +55,10 @@ You can also install additional search result list item extensions using the
 
 ### Search filters
 
-Similarly, search filter extensions are automatically discovered. You can add
-custom filters using the `SearchFilterBlueprint` or
-`SearchFilterResultTypeBlueprint` from `@backstage/plugin-search-react/alpha`.
+To register a result type in the Search page selector, use
+`SearchFilterResultTypeBlueprint` from `@backstage/plugin-search-react`.
+To add a custom filter control, use `SearchFilterBlueprint` from
+`@backstage/plugin-search-react/alpha`.
 
 ## Adding Search to the Backend
 

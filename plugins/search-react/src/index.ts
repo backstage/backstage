@@ -35,3 +35,7 @@ export type {
   SearchContextValue,
 } from './context';
 export { searchReactTranslationRef } from './translation';
+export {
+  SearchFilterResultTypeBlueprint,
+  type SearchFilterResultTypeBlueprintParams,
+} from './alpha/blueprints/SearchFilterResultTypeBlueprint';

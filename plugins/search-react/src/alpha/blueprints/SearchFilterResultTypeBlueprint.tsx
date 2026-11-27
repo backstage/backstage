@@ -17,7 +17,10 @@
 import { createExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { searchResultTypeDataRef } from './types';
 
-/** @alpha */
+/**
+ * Parameters for registering a search result type.
+ * @public
+ */
 export interface SearchFilterResultTypeBlueprintParams {
   /**
    * The value of the result type.
@@ -34,7 +37,8 @@ export interface SearchFilterResultTypeBlueprintParams {
 }
 
 /**
- * @alpha
+ * Registers a result type in the Search page result type selector.
+ * @public
  */
 export const SearchFilterResultTypeBlueprint = createExtensionBlueprint({
   kind: 'search-filter-result-type',

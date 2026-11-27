@@ -6,13 +6,17 @@
 import { ApiRef } from '@backstage/frontend-plugin-api';
 import { AsyncState } from 'react-use/esm/useAsync';
 import { AutocompleteProps } from '@material-ui/lab/Autocomplete';
+import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Dispatch } from 'react';
 import { DispatchWithoutAction } from 'react';
 import { Extension } from '@backstage/core-plugin-api';
+import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ForwardRefExoticComponent } from 'react';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { JSX as JSX_3 } from 'react';
 import { LinkProps } from '@backstage/core-components';
 import { ListItemProps } from '@material-ui/core/ListItem';
 import { ListItemTextProps } from '@material-ui/core/ListItemText';
@@ -239,6 +243,42 @@ export type SearchFilterComponentProps = {
   defaultValue?: string[] | string | null;
   valuesDebounceMs?: number;
 };
+
+// @public
+export const SearchFilterResultTypeBlueprint: ExtensionBlueprint<{
+  kind: 'search-filter-result-type';
+  params: SearchFilterResultTypeBlueprintParams;
+  output: ExtensionDataRef<
+    {
+      value: string;
+      name: string;
+      icon: JSX_3.Element;
+    },
+    'search.filters.result-types.type',
+    {}
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    resultType: ConfigurableExtensionDataRef<
+      {
+        value: string;
+        name: string;
+        icon: JSX_3.Element;
+      },
+      'search.filters.result-types.type',
+      {}
+    >;
+  };
+}>;
+
+// @public
+export interface SearchFilterResultTypeBlueprintParams {
+  icon: JSX.Element;
+  name: string;
+  value: string;
+}
 
 // @public (undocumented)
 export type SearchFilterWrapperProps = SearchFilterComponentProps & {
