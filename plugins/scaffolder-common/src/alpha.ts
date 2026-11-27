@@ -21,3 +21,4 @@ export {
   filterHiddenStepValues,
   resolveParameterSteps,
 } from './filterHiddenStepValues';
+export { renderDefaultValue } from './renderDefaultValue';
