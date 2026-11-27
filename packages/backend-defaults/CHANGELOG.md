@@ -1,5 +1,15 @@
 # @backstage/backend-defaults
 
+## 0.19.1
+
+### Patch Changes
+
+- e10e38b: Azure Blob Storage URLs are now matched against integrations by exact account host, so an integration no longer claims URLs of a storage account whose name merely ends with the configured account name.
+- 0c9eda6: The Gerrit and Bitbucket Cloud URL readers now derive the base of their request URLs from the parsed URL rather than from the raw URL string.
+- 7c5d800: The GitHub and Bitbucket URL readers now reject URLs whose repository, owner, or reference parts contain path traversal or URL query and fragment delimiter sequences, including in their default branch and commit lookups.
+- Updated dependencies
+  - @backstage/integration@2.3.0
+
 ## 0.19.0
 
 ### Minor Changes

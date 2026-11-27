@@ -1,5 +1,13 @@
 # @backstage/plugin-scaffolder-node
 
+## 1.0.1
+
+### Patch Changes
+
+- 0862acc: The `fetchContents` helper used behind `fetch:plain` and `fetch:template` now rejects fetched trees that contain a `.git` directory, matched case-insensitively. The repository initialization used by scaffolder publish actions now replaces any pre-existing `.git` directory in the source path instead of reusing it.
+- Updated dependencies
+  - @backstage/integration@2.3.0
+
 ## 1.0.0
 
 ### Patch Changes

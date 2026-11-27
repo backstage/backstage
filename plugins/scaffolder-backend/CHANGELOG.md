@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-backend
 
+## 4.3.1
+
+### Patch Changes
+
+- 8886bd3: Fixed matching of action input values in scaffolder permission policies, including identifiers that are provided as arrays of values, such as the path of the `gitlab:group:ensureExists` action. Conditional policies now apply to every identifier that the array denotes, including the parent groups that `gitlab:group:ensureExists` ensures along the way, so allow-list policies for that action need to allow those parent groups as well. Inputs that denote no identifiers at all, such as an empty array, are now rejected.
+- 0862acc: Scaffolder template, fetch and rename actions no longer place their output inside a `.git` directory of the task workspace, matched case-insensitively, so repository metadata there is always provided by the scaffolder's own git operations.
+- Updated dependencies
+  - @backstage/integration@2.3.0
+  - @backstage/plugin-scaffolder-node@1.0.1
+
 ## 4.3.0
 
 ### Minor Changes

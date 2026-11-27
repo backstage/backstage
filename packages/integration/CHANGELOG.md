@@ -1,5 +1,18 @@
 # @backstage/integration
 
+## 2.3.0
+
+### Minor Changes
+
+- 7c5d800: SCM URLs whose repository, owner, or reference parts contain path traversal or URL query and fragment delimiter sequences are now rejected by the SCM URL helpers, and the Bitbucket Cloud and Server default branch lookups now apply the same validation.
+
+### Patch Changes
+
+- b0a0298: Gitea location URLs are now rejected when their repository path contains traversal sequences or URL query and fragment delimiters.
+- 0c9eda6: The Gerrit and Bitbucket Cloud URL readers now derive the base of their request URLs from the parsed URL rather than from the raw URL string.
+- c518d07: When `allowedInstallationOwners` is configured for a GitHub App, installations owned by other accounts are now left out when enumerating the app's installations. This makes the enumeration consistent with how the list is already enforced when installation tokens are issued, so that consumers deriving organizations from the app's installations, such as catalog providers, only see the allowed ones.
+- 5ae00ab: When `allowedInstallationOwners` is configured for a GitHub App, the `publicAccess` token fallback now only mints its token from an installation owned by one of the allowed accounts, instead of using the first available installation. This makes the fallback consistent with how the list is already enforced when installation tokens are issued, so that the fallback is always served by an installation within the allow list.
+
 ## 2.2.0
 
 ### Minor Changes
