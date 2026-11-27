@@ -361,6 +361,30 @@ describe('persistent task suspension', () => {
     ).toEqual({});
   });
 
+  it('delivers cancellation after a resumed worker reads the previous wait', async () => {
+    const { taskId } = await dispatch();
+    await run();
+    await broker.resume({
+      taskId,
+      key: gate.key,
+      triggerId: 'approved',
+      payload: {},
+      principalRefs: [credentials.principal.userEntityRef],
+      resumedBy: {
+        type: 'user',
+        userEntityRef: credentials.principal.userEntityRef,
+      },
+    });
+    const listEvents = jest.spyOn(store, 'listEvents');
+    const resumed = await broker.claim();
+    await waitForExpect(() => expect(listEvents).toHaveBeenCalled());
+    await Promise.all(listEvents.mock.results.map(call => call.value));
+    await broker.cancel(taskId);
+    await waitForExpect(() => expect(resumed.cancelSignal.aborted).toBe(true));
+    await worker.runOneTask(resumed);
+    expect(afterGate).not.toHaveBeenCalled();
+  });
+
   it('matches an event after restart and consumes the wait only once', async () => {
     const { taskId } = await dispatch();
     await run();

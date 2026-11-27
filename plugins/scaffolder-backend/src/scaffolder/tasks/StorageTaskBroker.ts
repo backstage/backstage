@@ -255,6 +255,8 @@ export class TaskManager implements TaskContext {
       clearTimeout(this.heartbeatTimeoutId);
     }
 
+    this.onDone?.();
+
     // Clean up serialized workspace on success only
     // Failed tasks may be retried later, so keep their workspace
     if (result === 'completed') {
@@ -270,6 +272,7 @@ export class TaskManager implements TaskContext {
   }
 
   private startTimeout() {
+    if (this.isDone || this.isSuspending) return;
     this.heartbeatTimeoutId = setTimeout(async () => {
       try {
         await this.storage.heartbeatTask(this.task.taskId);
@@ -403,7 +406,6 @@ export class StorageTaskBroker implements TaskBroker {
           if (event.type === 'completion' && !event.isTaskRecoverable) {
             shouldUnsubscribe = true;
           }
-          if (event.body.status === 'waiting') shouldUnsubscribe = true;
         }
         if (shouldUnsubscribe) {
           subscription.unsubscribe();

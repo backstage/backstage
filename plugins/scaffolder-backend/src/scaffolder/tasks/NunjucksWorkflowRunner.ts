@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  CustomErrorBase,
-  InputError,
-  isError,
-  NotAllowedError,
-  stringifyError,
-} from '@backstage/errors';
+import { InputError, NotAllowedError, stringifyError } from '@backstage/errors';
 
 import { ScmIntegrations } from '@backstage/integration';
 import {
@@ -103,16 +97,8 @@ import {
 } from '../../util/templating';
 import { BackstageLoggerTransport, WinstonLogger } from './logger';
 
-class TaskSuspendSignal extends CustomErrorBase {
-  name = 'TaskSuspendSignal' as const;
-
-  static is(value: unknown): value is TaskSuspendSignal {
-    return isError(value) && value.name === 'TaskSuspendSignal';
-  }
-
-  constructor(readonly options: TaskSuspendOptions & { stepId: string }) {
-    super('Task suspended');
-  }
+class TaskSuspendSignal {
+  constructor(readonly options: TaskSuspendOptions & { stepId: string }) {}
 }
 
 type NunjucksWorkflowRunnerOptions = {
@@ -983,7 +969,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             decision,
           );
         } catch (err) {
-          if (TaskSuspendSignal.is(err)) {
+          if (err instanceof TaskSuspendSignal) {
             // Remove the local copy before another worker can resume this task.
             await fs.remove(workspacePath);
             removedBeforeSuspension = true;
