@@ -11,7 +11,7 @@ read the [old frontend system version of this guide](./getting-started--old.md)
 instead.
 ::::
 
-Search functions as a plugin to Backstage, so you will need to use Backstage to
+[Search](../../references/glossary.md#search) functions as a [plugin](../../references/glossary.md#plugin) to Backstage, so you will need to use Backstage to
 use Search.
 
 If you haven't setup Backstage already, start
@@ -23,7 +23,7 @@ If you haven't setup Backstage already, start
 yarn --cwd packages/app add @backstage/plugin-search @backstage/plugin-search-react
 ```
 
-Once installed, the search plugin is automatically available in your app through
+Once installed, the search plugin is automatically available in your [app](../../references/glossary.md#app) through
 the default feature discovery. It provides a search page at `/search`, a search
 navigation item in the sidebar, and a search modal accessible from the sidebar.
 For more details and alternative installation methods, see
@@ -45,8 +45,8 @@ app:
 ### Search result list items
 
 The search page automatically discovers and uses search result list item
-extensions provided by installed plugins. For example, the catalog plugin
-provides a `CatalogSearchResultListItem` and the TechDocs plugin provides a
+extensions provided by installed plugins. For example, the [catalog](../../references/glossary.md#software-catalog) plugin
+provides a `CatalogSearchResultListItem` and the [TechDocs](../../references/glossary.md#techdocs) plugin provides a
 `TechDocsSearchResultListItem`. These are automatically registered when the
 respective plugins are installed.
 
@@ -89,9 +89,9 @@ backend.add(import('@backstage/plugin-search-backend-module-techdocs'));
 backend.start();
 ```
 
-With the above setup Search will use the [Lunr](https://github.com/olivernn/lunr.js) in-memory Search Engine but if your have Postgres setup as your database then it will use Postgres as your Search Engine. Learn more in the [Search Engines](./search-engines.md) documentation.
+With the above setup Search will use the [Lunr](https://github.com/olivernn/lunr.js) in-memory [Search Engine](../../references/glossary.md#search-engine-backstage-search) but if your have Postgres setup as your database then it will use Postgres as your Search Engine. Learn more in the [Search Engines](./search-engines.md) documentation.
 
-The above also sets up two Collators for you - Catalog and TechDocs - which will index content from these two locations so that you can easily search them. Learn more in the [Collators documentation](./collators.md).
+The above also sets up two [Collators](../../references/glossary.md#collator-search-plugin) for you - Catalog and TechDocs - which will index content from these two locations so that you can easily search them. Learn more in the [Collators documentation](./collators.md).
 
 ## Customizing Search
 
@@ -156,7 +156,7 @@ to configure these in your Backstage instance.
 Backstage Search can be used to power search of anything! Plugins like the
 Catalog offer default [collators](./concepts.md#collators) (e.g.
 [DefaultCatalogCollator](https://github.com/backstage/backstage/blob/df12cc25aa4934a98bc42ed03c07f64a1a0a9d72/plugins/catalog-backend/src/search/DefaultCatalogCollator.ts))
-which are responsible for providing documents
+which are responsible for providing [documents](../../references/glossary.md#document-search-plugin)
 [to be indexed](./concepts.md#documents-and-indices). You can register any
 number of collators with the `IndexBuilder` like this:
 
@@ -189,7 +189,7 @@ indexBuilder.addCollator({
 });
 ```
 
-Backstage Search builds and maintains its index
+Backstage Search builds and maintains its [index](../../references/glossary.md#index-search-plugin)
 [on a schedule](./concepts.md#the-scheduler). You can change how often the
 indexes are rebuilt for a given type of document. You may want to do this if
 your documents are updated more or less frequently. You can do so by configuring

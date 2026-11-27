@@ -14,7 +14,7 @@ instead.
 
 ## How to implement your own Search API
 
-The Search plugin provides implementation of one primary API by default: the
+The [Search](../../references/glossary.md#search) [plugin](../../references/glossary.md#plugin) provides implementation of one primary [API](../../references/glossary.md#api) by default: the
 [SearchApi](https://github.com/backstage/backstage/blob/db2666b980853c281b8fe77905d7639c5d255f13/plugins/search/src/apis.ts#L35),
 which is responsible for talking to the search-backend to query search results.
 
@@ -35,15 +35,15 @@ to do that in two steps.
 
 2. Override the default API extension by creating a custom API extension using
    `createApiExtension` from `@backstage/frontend-plugin-api`, and install it
-   in your app. See the [Utility APIs](../../frontend-system/utility-apis/01-index.md) documentation for details on how to create and install custom API extensions.
+   in your [app](../../references/glossary.md#app). See the [Utility APIs](../../frontend-system/utility-apis/01-index.md) documentation for details on how to create and install custom API extensions.
 
 ## How to customize fields in the Software Catalog or TechDocs index
 
-Sometimes, you might want to have the ability to control which data passes into the search index
-in the catalog collator or customize data for a specific kind. You can easily achieve this
+Sometimes, you might want to have the ability to control which data passes into the search [index](../../references/glossary.md#index-search-plugin)
+in the [catalog](../../references/glossary.md#software-catalog) [collator](../../references/glossary.md#collator-search-plugin) or customize data for a specific [kind](../../references/glossary.md#kind). You can easily achieve this
 by passing an `entityTransformer` callback to the `DefaultCatalogCollatorFactory`. This behavior
 is also possible for the `DefaultTechDocsCollatorFactory`. You can either simply amend the default behavior
-or even write an entirely new document (which should still follow some required basic structure).
+or even write an entirely new [document](../../references/glossary.md#document-search-plugin) (which should still follow some required basic structure).
 
 > `authorization` and `location` cannot be modified via a `entityTransformer`, `location` can be modified only through `locationTemplate`.
 

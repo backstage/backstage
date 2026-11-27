@@ -4,14 +4,14 @@ title: Search Engines
 description: Choosing and configuring your search engine for Backstage
 ---
 
-Backstage supports 3 search engines by default, an in-memory engine called [Lunr](#lunr), [Postgres](#postgres)
+Backstage supports 3 [search engines](../../references/glossary.md#search-engine-backstage-search) by default, an in-memory engine called [Lunr](#lunr), [Postgres](#postgres)
 and [Elasticsearch/OpenSearch](#elasticsearch-and-opensearch).
 
 ## Lunr
 
 Lunr search engine is enabled by default for your Backstage instance if you have not done additional changes to the scaffolded app.
 
-As Lunr is built into the Search backend plugin it can be added like this:
+As Lunr is built into the [Search](../../references/glossary.md#search) backend [plugin](../../references/glossary.md#plugin) it can be added like this:
 
 ```bash title="From your Backstage root directory"
 yarn --cwd packages/backend add @backstage/plugin-search-backend
@@ -46,7 +46,7 @@ The Postgres based search engine only requires that Postgres being configured as
 the database engine for Backstage. Therefore it targets setups that want to
 avoid maintaining another external service like Elasticsearch. The search
 provides decent results and performs well with ten thousands of indexed
-documents. The connection to Postgres is established via the database manager
+[documents](../../references/glossary.md#document-search-plugin). The connection to Postgres is established via the database manager
 also used by other plugins.
 
 > **Important**: The search plugin requires at least Postgres 12!
@@ -204,10 +204,10 @@ search:
 #### Others
 
 Other Elasticsearch instances can be connected to by using standard
-Elasticsearch authentication methods and exposed URL, provided that the cluster
+Elasticsearch [authentication](../../references/glossary.md#authentication) methods and exposed URL, provided that the cluster
 supports that. The configuration options needed are the URL to the node and
 authentication information. Authentication can be handled by either providing
-username/password or an API key. For more information how to create an API key,
+username/password or an [API](../../references/glossary.md#api) key. For more information how to create an API key,
 see
 [Elastic documentation on API keys](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-api-key.html).
 
@@ -252,7 +252,7 @@ search:
 
 ### Elasticsearch batch key field
 
-By default, during bulk uploads with the Elasticsearch indexer, each document is assigned an auto-generated `_id` unless a `batchKeyField` is explicitly set. This configuration is optional and most users won’t need to customize it. However, if your use case involves frequent lookups or updates to existing documents, setting `batchKeyField` can be beneficial. It allows you to define a consistent identifier for each document, helping to streamline updates and prevent duplicate entries. Be aware that if the value provided for `batchKeyField` is not unique across documents, Elasticsearch will overwrite any existing document with the same `_id`.
+By default, during bulk uploads with the Elasticsearch [indexer](../../references/glossary.md#indexer-search-plugin), each document is assigned an auto-generated `_id` unless a `batchKeyField` is explicitly set. This configuration is optional and most users won’t need to customize it. However, if your use case involves frequent lookups or updates to existing documents, setting `batchKeyField` can be beneficial. It allows you to define a consistent identifier for each document, helping to streamline updates and prevent duplicate entries. Be aware that if the value provided for `batchKeyField` is not unique across documents, Elasticsearch will overwrite any existing document with the same `_id`.
 
 **Using `batchKeyField` (Custom `_id`)**
 
@@ -289,7 +289,7 @@ After applying this setting, an index name would look like this: `custom-prefix-
 
 ### Elasticsearch index retention
 
-Each indexing run writes documents to a fresh index and then moves the search
+Each indexing run writes documents to a fresh [index](../../references/glossary.md#index-search-plugin) and then moves the search
 alias for that document type to it. To make sure searches that are already
 running can finish, the indexer keeps the previous index around for one more
 run:
@@ -320,9 +320,9 @@ search:
 
 ### Custom Authentication Extension Point
 
-For enterprise environments that require dynamic authentication mechanisms such as bearer tokens with automatic rotation, the Elasticsearch module provides an authentication extension point. This is useful when:
+For enterprise environments that require dynamic authentication mechanisms such as bearer [tokens](../../references/glossary.md#token) with automatic rotation, the Elasticsearch module provides an authentication extension point. This is useful when:
 
-- Using OAuth2/OIDC identity providers for service authentication
+- Using [OAuth2](../../references/glossary.md#oauth)/[OIDC](../../references/glossary.md#openid-connect-aka-oidc) identity providers for service authentication
 - Tokens need to be refreshed automatically (e.g., tokens that expire hourly)
 - Integrating with internal identity services
 - Running Elasticsearch/OpenSearch clusters secured by token-based authentication
