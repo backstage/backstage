@@ -459,6 +459,7 @@ export class StorageTaskBroker implements TaskBroker {
       const { taskId } = options;
 
       let after = options.after;
+      let lastCompletionId: number | undefined;
       let cancelled = false;
 
       (async () => {
@@ -473,10 +474,23 @@ export class StorageTaskBroker implements TaskBroker {
             after,
             isTaskRecoverable,
           });
-          const { events } = result;
+          const completionId = lastCompletionId;
+          const events = result.events.filter(
+            event =>
+              event.type !== 'completion' ||
+              completionId === undefined ||
+              event.id > completionId,
+          );
           if (events.length) {
-            after = events[events.length - 1].id;
-            observer.next(result);
+            // listEvents also returns completion events older than the cursor
+            // so reconnecting clients learn that the task has finished.
+            after = Math.max(after ?? 0, ...events.map(event => event.id));
+            for (const event of events) {
+              if (event.type === 'completion') {
+                lastCompletionId = Math.max(lastCompletionId ?? 0, event.id);
+              }
+            }
+            observer.next({ events });
           }
 
           await new Promise(resolve => setTimeout(resolve, 1000));
