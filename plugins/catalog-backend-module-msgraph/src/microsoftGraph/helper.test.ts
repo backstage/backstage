@@ -34,4 +34,12 @@ describe('normalizeEntityName', () => {
       'user.name_example.com',
     );
   });
+
+  it('should strip leading and trailing separators', () => {
+    expect(normalizeEntityName('[External] Partners')).toBe(
+      'external_partners',
+    );
+    expect(normalizeEntityName('(Admins')).toBe('admins');
+    expect(normalizeEntityName('.team-')).toBe('team');
+  });
 });
