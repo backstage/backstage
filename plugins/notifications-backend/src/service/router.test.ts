@@ -32,6 +32,7 @@ import {
 } from '@backstage/plugin-notifications-node';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { DatabaseService } from '@backstage/backend-plugin-api';
+import { InputError } from '@backstage/errors';
 import { randomUUID as uuid } from 'node:crypto';
 import { DatabaseNotificationsStore, generateSettingsHash } from '../database';
 
@@ -39,6 +40,8 @@ jest.setTimeout(60_000);
 
 const databases = TestDatabases.create();
 let store: DatabaseNotificationsStore;
+const auditor = mockServices.auditor.mock();
+const auditorEvent = { success: jest.fn(), fail: jest.fn() };
 
 async function createDatabase(
   databaseId: TestDatabaseId,
@@ -131,6 +134,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
     beforeAll(async () => {
       const router = await createRouter({
         logger: mockServices.logger.mock(),
+        auditor,
         store,
         signals: signalService,
         userInfo,
@@ -144,6 +148,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
 
     beforeEach(async () => {
       jest.resetAllMocks();
+      auditor.createEvent.mockResolvedValue(auditorEvent);
       const client = await database.getClient();
       await client('notification').del();
       await client('broadcast').del();
@@ -156,6 +161,55 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
         .send(data)
         .set('Content-Type', 'application/json')
         .set('Accept', 'application/json');
+
+    it('audits entity and broadcast notifications', async () => {
+      const entityResponse = await sendNotification({
+        recipients: {
+          type: 'entity',
+          entityRef: 'user:default/mock',
+          excludeEntityRef: 'user:default/other',
+        },
+        payload: { title: 'test notification' },
+      });
+
+      expect(entityResponse.status).toEqual(200);
+      expect(entityResponse.body).toHaveLength(1);
+      expect(auditor.createEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          eventId: 'notification-create',
+          severityLevel: 'medium',
+          request: expect.anything(),
+          meta: { actionType: 'create' },
+        }),
+      );
+      expect(auditorEvent.success).toHaveBeenNthCalledWith(1, {
+        meta: {
+          recipientType: 'entity',
+          entityRefs: ['user:default/mock'],
+          excludedEntityRefs: ['user:default/other'],
+          recipientCount: 1,
+          notificationCount: 1,
+        },
+      });
+
+      const broadcastResponse = await sendNotification({
+        recipients: { type: 'broadcast' },
+        payload: { title: 'test broadcast' },
+      });
+
+      expect(broadcastResponse.status).toEqual(200);
+      expect(broadcastResponse.body).toHaveLength(1);
+      expect(auditor.createEvent).toHaveBeenCalledTimes(2);
+      expect(auditorEvent.success).toHaveBeenCalledTimes(2);
+      expect(auditorEvent.success).toHaveBeenNthCalledWith(2, {
+        meta: {
+          recipientType: 'broadcast',
+          notificationId: broadcastResponse.body[0].id,
+          notificationCount: 1,
+        },
+      });
+      expect(auditorEvent.fail).not.toHaveBeenCalled();
+    });
 
     it('returns error on invalid link', async () => {
       const javascriptXSS = await sendNotification({
@@ -181,6 +235,12 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
       });
 
       expect(ftpLink.status).toEqual(400);
+      expect(auditor.createEvent).toHaveBeenCalledTimes(2);
+      expect(auditorEvent.fail).toHaveBeenCalledTimes(2);
+      expect(auditorEvent.fail).toHaveBeenCalledWith({
+        error: expect.any(InputError),
+      });
+      expect(auditorEvent.success).not.toHaveBeenCalled();
     });
 
     it('should accept absolute http links', async () => {
@@ -605,6 +665,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
 
       const routerWithChannelDisabled = await createRouter({
         logger: mockServices.logger.mock(),
+        auditor,
         store,
         signals: signalService,
         userInfo,
@@ -639,6 +700,14 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
 
       expect(response.status).toEqual(200);
       expect(response.body).toEqual([]); // No notifications sent
+      expect(auditorEvent.success).toHaveBeenCalledWith({
+        meta: {
+          recipientType: 'entity',
+          entityRefs: ['user:default/mock'],
+          recipientCount: 1,
+          notificationCount: 0,
+        },
+      });
 
       const client = await database.getClient();
       const notifications = await client('notification')
@@ -667,6 +736,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
 
       const routerWithChannelDisabled = await createRouter({
         logger: mockServices.logger.mock(),
+        auditor,
         store,
         signals: signalService,
         userInfo,
@@ -750,6 +820,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
     beforeAll(async () => {
       const router = await createRouter({
         logger: mockServices.logger.mock(),
+        auditor,
         store,
         signals: signalService,
         userInfo,
@@ -764,6 +835,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
 
     beforeEach(async () => {
       jest.resetAllMocks();
+      auditor.createEvent.mockResolvedValue(auditorEvent);
       const client = await database.getClient();
       await client('notification').del();
       await client('broadcast').del();
@@ -804,6 +876,14 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
           user: 'user:default/mock',
         },
       ]);
+      expect(auditorEvent.success).toHaveBeenCalledWith({
+        meta: {
+          recipientType: 'entity',
+          entityRefs: ['system:default/mock'],
+          recipientCount: 1,
+          notificationCount: 1,
+        },
+      });
 
       const client = await database.getClient();
       const notifications = await client('notification')
@@ -827,6 +907,14 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
       });
       expect(response.status).toEqual(200);
       expect(response.body).toEqual([]);
+      expect(auditorEvent.success).toHaveBeenCalledWith({
+        meta: {
+          recipientType: 'entity',
+          entityRefs: ['system:default/mock'],
+          recipientCount: 0,
+          notificationCount: 0,
+        },
+      });
     });
   });
 
@@ -845,6 +933,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
 
     beforeEach(async () => {
       jest.resetAllMocks();
+      auditor.createEvent.mockResolvedValue(auditorEvent);
       const client = await database.getClient();
       await client('notification').del();
       await client('broadcast').del();
@@ -859,6 +948,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
 
       const router = await createRouter({
         logger: mockServices.logger.mock(),
+        auditor,
         store,
         signals: signalService,
         userInfo,
@@ -950,6 +1040,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
     beforeAll(async () => {
       const router = await createRouter({
         logger: mockServices.logger.mock(),
+        auditor,
         store,
         signals: signalService,
         userInfo,
@@ -1040,6 +1131,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
     beforeAll(async () => {
       const router = await createRouter({
         logger: mockServices.logger.mock(),
+        auditor,
         store,
         signals: signalService,
         userInfo,
@@ -1219,6 +1311,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
 
       const routerWithChannelDisabled = await createRouter({
         logger: mockServices.logger.mock(),
+        auditor,
         store,
         signals: signalService,
         userInfo,
@@ -1275,6 +1368,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
 
       const routerWithChannelDisabled = await createRouter({
         logger: mockServices.logger.mock(),
+        auditor,
         store,
         signals: signalService,
         userInfo,
@@ -1371,6 +1465,7 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
     beforeAll(async () => {
       const router = await createRouter({
         logger: mockServices.logger.mock(),
+        auditor,
         store,
         signals: signalService,
         userInfo,

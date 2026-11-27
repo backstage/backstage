@@ -241,6 +241,33 @@ notifications:
 
 If the retention is set to false, notifications will not be automatically deleted.
 
+### Audit events
+
+The notifications backend emits a `notification-create` audit event at `medium`
+severity when a service sends a notification through
+`POST /api/notifications/notifications` or its deprecated alias,
+`POST /api/notifications`. The event has `actionType: create` in its metadata.
+The sending service is recorded in `actor.actorId`.
+
+For successful requests, the event includes these metadata fields:
+
+| Field                | Description                                                                                                                                        |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `recipientType`      | `entity` or `broadcast`.                                                                                                                           |
+| `entityRefs`         | Entity references requested for an entity notification, after any notification processors have modified the request.                               |
+| `excludedEntityRefs` | Excluded entity references, when provided for an entity notification.                                                                              |
+| `recipientCount`     | Number of distinct users the entity notification was addressed to, after resolving the requested entity references.                                |
+| `notificationCount`  | Number of Web notifications created. This can be lower than `recipientCount` when users have turned off Web notifications for the origin or topic. |
+| `notificationId`     | ID of the broadcast notification. Only present for broadcasts.                                                                                     |
+
+If a request fails, the event is recorded with a `failed` status and the error
+instead of these fields.
+
+The event does not include per-user notification IDs or resolved user references.
+To change which audit events appear in backend logs, configure
+`backend.auditor.severityLogLevelMappings` as described in the
+[Auditor Service documentation](../backend-system/core-services/auditor.md#severity-levels-and-default-mappings).
+
 ## Scaffolder Action
 
 :::note

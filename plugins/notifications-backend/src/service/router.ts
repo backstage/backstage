@@ -32,6 +32,7 @@ import {
 } from '@backstage/plugin-notifications-node';
 import { InputError, NotFoundError } from '@backstage/errors';
 import {
+  AuditorService,
   AuthService,
   HttpAuthService,
   LoggerService,
@@ -50,7 +51,7 @@ import {
 } from '@backstage/plugin-notifications-common';
 import { parseEntityOrderFieldParams } from './parseEntityOrderFieldParams';
 import { Config, readDurationFromConfig } from '@backstage/config';
-import { durationToMilliseconds } from '@backstage/types';
+import { durationToMilliseconds, JsonObject } from '@backstage/types';
 import pThrottle from 'p-throttle';
 import { parseEntityRef } from '@backstage/catalog-model';
 import { DefaultNotificationRecipientResolver } from './DefaultNotificationRecipientResolver.ts';
@@ -58,6 +59,7 @@ import { DefaultNotificationRecipientResolver } from './DefaultNotificationRecip
 /** @internal */
 export interface RouterOptions {
   logger: LoggerService;
+  auditor: AuditorService;
   config: Config;
   store: NotificationsStore;
   auth: AuthService;
@@ -76,6 +78,7 @@ export async function createRouter(
   const {
     config,
     logger,
+    auditor,
     store,
     auth,
     httpAuth,
@@ -742,14 +745,17 @@ export async function createRouter(
     users: string[],
     opts: NotificationSendOptions,
     origin: string,
-  ): Promise<Notification[]> => {
+  ): Promise<{ notifications: Notification[]; recipientCount: number }> => {
     const { scope } = opts.payload;
     const uniqueUsers = [...new Set(filterNonUserEntityRefs(users))];
     const throttled = throttle((user: string) =>
       sendUserNotification(baseNotification, user, opts, origin, scope),
     );
     const sent = await Promise.all(uniqueUsers.map(user => throttled(user)));
-    return sent.filter(n => n !== undefined);
+    return {
+      notifications: sent.filter(n => n !== undefined),
+      recipientCount: uniqueUsers.length,
+    };
   };
 
   const createNotificationsHandler: openapi.EndpointMapRequestHandler<
@@ -761,75 +767,102 @@ export async function createRouter(
       allow: ['service'],
     });
 
-    const origin = credentials.principal.subject;
-    const opts = await processOptions(req.body, origin);
-    const { recipients, payload } = opts;
-    const { title, link } = payload;
-    const notifications: Notification[] = [];
+    const auditorEvent = await auditor.createEvent({
+      eventId: 'notification-create',
+      severityLevel: 'medium',
+      request: req,
+      meta: { actionType: 'create' },
+    });
 
-    if (!recipients || !title) {
-      const missing = [
-        !title ? 'title' : null,
-        !recipients ? 'recipients' : null,
-      ].filter(Boolean);
-      const err = `Invalid notification request received: missing ${missing.join(
-        ', ',
-      )}`;
-      throw new InputError(err);
-    }
+    try {
+      const origin = credentials.principal.subject;
+      const opts = await processOptions(req.body, origin);
+      const { recipients, payload } = opts;
+      const { title, link } = payload;
+      const notifications: Notification[] = [];
+      let auditMeta: JsonObject;
 
-    if (link) {
-      try {
-        validateLink(link);
-      } catch (e) {
-        throw new InputError('Invalid link provided', e);
+      if (!recipients || !title) {
+        const missing = [
+          !title ? 'title' : null,
+          !recipients ? 'recipients' : null,
+        ].filter(Boolean);
+        const err = `Invalid notification request received: missing ${missing.join(
+          ', ',
+        )}`;
+        throw new InputError(err);
       }
-    }
 
-    const baseNotification = {
-      payload: {
-        ...payload,
-        severity: payload.severity ?? 'normal',
-      },
-      origin,
-      created: new Date(),
-    };
+      if (link) {
+        try {
+          validateLink(link);
+        } catch (e) {
+          throw new InputError('Invalid link provided', e);
+        }
+      }
 
-    if (recipients.type === 'broadcast') {
-      const broadcast = await sendBroadcastNotification(
-        baseNotification,
-        opts,
+      const baseNotification = {
+        payload: {
+          ...payload,
+          severity: payload.severity ?? 'normal',
+        },
         origin,
-      );
-      notifications.push(broadcast);
-    } else if (recipients.type === 'entity') {
-      const entityRefs = [recipients.entityRef].flat();
-      const excludedEntityRefs = recipients.excludeEntityRef
-        ? [recipients.excludeEntityRef].flat()
-        : undefined;
-      try {
-        const { userEntityRefs } =
-          await usedRecipientResolver.resolveNotificationRecipients({
-            entityRefs,
-            excludedEntityRefs,
-          });
-        const userNotifications = await sendUserNotifications(
+        created: new Date(),
+      };
+
+      if (recipients.type === 'broadcast') {
+        const broadcast = await sendBroadcastNotification(
           baseNotification,
-          userEntityRefs,
           opts,
           origin,
         );
-        notifications.push(...userNotifications);
-      } catch (e) {
-        throw new InputError('Failed to send user notifications', e);
+        notifications.push(broadcast);
+        auditMeta = {
+          recipientType: 'broadcast',
+          notificationId: broadcast.id,
+        };
+      } else if (recipients.type === 'entity') {
+        const entityRefs = [recipients.entityRef].flat();
+        const excludedEntityRefs = recipients.excludeEntityRef
+          ? [recipients.excludeEntityRef].flat()
+          : undefined;
+        try {
+          const { userEntityRefs } =
+            await usedRecipientResolver.resolveNotificationRecipients({
+              entityRefs,
+              excludedEntityRefs,
+            });
+          const { notifications: userNotifications, recipientCount } =
+            await sendUserNotifications(
+              baseNotification,
+              userEntityRefs,
+              opts,
+              origin,
+            );
+          notifications.push(...userNotifications);
+          auditMeta = {
+            recipientType: 'entity',
+            entityRefs,
+            ...(excludedEntityRefs && { excludedEntityRefs }),
+            recipientCount,
+          };
+        } catch (e) {
+          throw new InputError('Failed to send user notifications', e);
+        }
+      } else {
+        throw new InputError(
+          `Invalid recipients type, please use either 'broadcast' or 'entity'`,
+        );
       }
-    } else {
-      throw new InputError(
-        `Invalid recipients type, please use either 'broadcast' or 'entity'`,
-      );
-    }
 
-    res.json(notifications);
+      await auditorEvent.success({
+        meta: { ...auditMeta, notificationCount: notifications.length },
+      });
+      res.json(notifications);
+    } catch (error) {
+      await auditorEvent.fail({ error });
+      throw error;
+    }
   };
 
   // Add new notification
