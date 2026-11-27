@@ -115,6 +115,12 @@ You should be able to use the generated `DefaultApi.client.ts` file out of the b
 
 For more information, see [the docs](./generate-client.md).
 
+## Keeping generated code up to date
+
+Each `generate` command writes an `.openapi-manifest.json` file into the `src/schema/openapi/generated` directory. The manifest records the spec, the generator version and templates, and the generated files. Commit it together with the generated code.
+
+Running `yarn backstage-repo-tools repo schema openapi validate` uses the manifest to fail when the `openapi.yaml` has changed since the code was generated, or when a generated file was edited, added or removed by hand. The error includes the `generate` command that fixes it. If the directory has no manifest, or it was generated with a different generator version or templates, the command only prints a warning. Regenerate the code to clear the warning.
+
 ## Validating your spec with test traffic
 
 Add the following lines to your `createRouter.test.ts` or `router.test.ts` file,
