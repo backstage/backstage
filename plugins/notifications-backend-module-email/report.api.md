@@ -20,7 +20,7 @@ export const notificationsEmailTemplateExtensionPoint: ExtensionPoint<Notificati
 const notificationsModuleEmail: BackendFeature;
 export default notificationsModuleEmail;
 
-// @public (undocumented)
+// @public
 export interface NotificationTemplateRenderer {
   // (undocumented)
   getHtml?(notification: Notification_2): Promise<string>;

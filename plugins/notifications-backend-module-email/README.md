@@ -10,9 +10,16 @@ The email content can be customized with the `notificationsEmailTemplateExtensio
 this extension, you can set the custom `NotificationTemplateRenderer` to the module. To modify the contents,
 override the `getSubject`, `getHtml` and `getText` methods.
 
+The default email template escapes notification descriptions and links before
+including them in HTML. Line breaks in descriptions are preserved, while HTML
+markup is displayed as text. Custom renderers receive raw notification data and
+must escape any values they include in HTML.
+
 ```ts
+import { createBackendModule } from '@backstage/backend-plugin-api';
 import { notificationsEmailTemplateExtensionPoint } from '@backstage/plugin-notifications-backend-module-email';
-import { Notification } from '@backstage/plugin-notifications-common';
+// Any HTML-escaping helper works here; lodash is used as an example.
+import { escape } from 'lodash';
 
 export const notificationsModuleEmailDecorator = createBackendModule({
   pluginId: 'notifications',
@@ -25,13 +32,13 @@ export const notificationsModuleEmailDecorator = createBackendModule({
       async init({ emailTemplates }) {
         emailTemplates.setTemplateRenderer({
           async getSubject(notification) {
-            return `New notification from ${notification.source}`;
+            return `New notification from ${notification.origin}`;
           },
           async getText(notification) {
-            return notification.content;
+            return notification.payload.description ?? '';
           },
           async getHtml(notification) {
-            return `<p>${notification.content}</p>`;
+            return `<p>${escape(notification.payload.description ?? '')}</p>`;
           },
         });
       },

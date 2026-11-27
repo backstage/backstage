@@ -41,7 +41,7 @@ import {
 } from './transports';
 import { UserEntity } from '@backstage/catalog-model';
 import { CatalogService } from '@backstage/plugin-catalog-node';
-import { compact } from 'lodash';
+import { compact, escape } from 'lodash';
 import { DefaultAwsCredentialsManager } from '@backstage/integration-aws-node';
 import { NotificationTemplateRenderer } from '../extensions';
 import Mail from 'nodemailer/lib/mailer';
@@ -339,9 +339,11 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
   private getHtmlContent(notification: Notification) {
     const contentParts: string[] = [];
     if (notification.payload.description) {
-      contentParts.push(`${notification.payload.description}`);
+      contentParts.push(
+        escape(notification.payload.description).replace(/\r?\n/g, '<br/>'),
+      );
     }
-    const link = this.getNotificationLink(notification);
+    const link = escape(this.getNotificationLink(notification));
     contentParts.push(`<a href="${link}">${link}</a>`);
     return `<p>${contentParts.join('<br/>')}</p>`;
   }

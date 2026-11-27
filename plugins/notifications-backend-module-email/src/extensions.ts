@@ -17,6 +17,10 @@ import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import { Notification } from '@backstage/plugin-notifications-common';
 
 /**
+ * Renders notification email content. Custom renderers receive notification
+ * data without HTML escaping. Implementations must escape untrusted values
+ * before including them in HTML returned by `getHtml`.
+ *
  * @public
  */
 export interface NotificationTemplateRenderer {
