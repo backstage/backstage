@@ -46190,21 +46190,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"websocket-driver@npm:>=0.5.1, websocket-driver@npm:^0.7.4":
-  version: 0.7.5
-  resolution: "websocket-driver@npm:0.7.5"
+"websocket-driver@npm:^0.8.0":
+  version: 0.8.0
+  resolution: "websocket-driver@npm:0.8.0"
   dependencies:
     http-parser-js: "npm:>=0.5.1"
     safe-buffer: "npm:>=5.1.0"
-    websocket-extensions: "npm:>=0.1.1"
-  checksum: 10/0671fef8c79ba1b1b2fa6b7d95cb034d059410e7c4cfd7ef42063a254e12ca2917806c3a5026206b33abf25a5d44a651c547b8f74d9ec94c9fe4df6fa1bc63f7
+    websocket-extensions: "npm:>=0.2.0"
+  checksum: 10/47e7305360dcf8b8fd24a367f0b32a96ffc6a1631e73c6161921744c2300ceefe9cd75b3a1fd13cd68a58f1163108f67066f4cc49bea955bf374b6da854f00bf
   languageName: node
   linkType: hard
 
-"websocket-extensions@npm:>=0.1.1":
-  version: 0.1.4
-  resolution: "websocket-extensions@npm:0.1.4"
-  checksum: 10/b5399b487d277c78cdd2aef63764b67764aa9899431e3a2fa272c6ad7236a0fb4549b411d89afa76d5afd664c39d62fc19118582dc937e5bb17deb694f42a0d1
+"websocket-extensions@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "websocket-extensions@npm:0.2.0"
+  checksum: 10/228cda6c23da7d12a6132bbdbfbf262f5630945ad919afa2d989ffc414c8ad56130734e162f38c13faf57d3f5d194b40ec4525e2cd1c26352c530e34ecc763d1
   languageName: node
   linkType: hard
 
