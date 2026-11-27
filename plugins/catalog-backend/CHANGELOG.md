@@ -1,5 +1,20 @@
 # @backstage/plugin-catalog-backend
 
+## 4.0.7-next.1
+
+### Patch Changes
+
+- ecde8cd: The `PUT /locations/:id` endpoint now requires the `catalog.location.delete` permission in addition to `catalog.location.create`. Updating a location that changes its target replaces the location and re-registers the entities that it holds, so it requires the same permissions as the equivalent delete and create operations. Make sure that your permission policies grant `catalog.location.delete` to users who need to update locations.
+- Updated dependencies
+  - @backstage/integration@2.4.0-next.1
+  - @backstage/backend-plugin-api@1.12.1-next.1
+
+## 4.0.7-next.0
+
+### Patch Changes
+
+- Bumped version to account for a patch release.
+
 ## 4.0.6-next.0
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @backstage/plugin-scaffolder-common
 
+## 2.4.1-next.1
+
+### Patch Changes
+
+- 4595cd3: Improved the performance of resolving which parameter steps are visible in templates with many `when` conditions.
+- Updated dependencies
+  - @backstage/integration@2.4.0-next.1
+
 ## 2.4.1-next.0
 
 ### Patch Changes

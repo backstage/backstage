@@ -1,5 +1,20 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.14.4-next.1
+
+### Patch Changes
+
+- 3cf98c0: Catalog location URLs and refresh keys built by the GitHub entity provider now percent-encode the committed file paths and branch names, including the repository's default branch, that they are constructed from, and file paths or branch names that contain `.` or `..` segments are ignored.
+- Updated dependencies
+  - @backstage/integration@2.4.0-next.1
+  - @backstage/backend-plugin-api@1.12.1-next.1
+
+## 0.14.4-next.0
+
+### Patch Changes
+
+- Bumped version to account for a patch release.
+
 ## 0.14.3-next.0
 
 ### Patch Changes

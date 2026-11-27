@@ -1,5 +1,19 @@
 # @backstage/plugin-auth-backend-module-cloudflare-access-provider
 
+## 0.5.4-next.1
+
+### Patch Changes
+
+- f779de5: The Cloudflare Access auth provider now caches the user identity information fetched from Cloudflare per access token rather than per user, and no longer than one minute or until the token expires. This makes sure that changes to the identity, such as group membership, are reflected when users sign in again with a new token.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.1-next.1
+
+## 0.5.4-next.0
+
+### Patch Changes
+
+- Bumped version to account for a patch release.
+
 ## 0.5.3-next.0
 
 ### Patch Changes

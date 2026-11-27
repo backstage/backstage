@@ -1,6 +1,6 @@
 {
   "name": "@backstage/integration",
-  "version": "2.2.1-next.0",
+  "version": "2.4.0-next.1",
   "description": "Helpers for managing integrations towards external systems",
   "backstage": {
     "role": "common-library"
@@ -63,10 +63,10 @@
     "p-throttle": "^4.1.1"
   },
   "devDependencies": {
-    "@types/git-url-parse": "^9.0.0",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/config-loader": "workspace:^",
+    "@types/git-url-parse": "^9.0.0",
     "msw": "^3.0.4"
   },
   "configSchema": "config.d.ts"

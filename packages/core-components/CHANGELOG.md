@@ -1,5 +1,17 @@
 # @backstage/core-components
 
+## 0.18.17-next.1
+
+### Patch Changes
+
+- 113ef6e: Improved the rendering performance of sidebars with many items. Sidebar items now share their styles instead of each adding their own style sheets.
+- 393107a: Deprecated `Lifecycle`, `TrendLine`, `GaugeCard`, `FeatureCalloutCircular`, `SimpleStepper`, `SimpleStepperStep`, and their associated types. Existing behavior is unchanged.
+
+  Use `Text` or `Badge` from `@backstage/ui` for lifecycle labels, a suitable charting library for trend visualizations, and compose a gauge with a card. Compose application-specific onboarding and workflows in place of the callout and stepper components.
+
+- Updated dependencies
+  - @backstage/ui@0.20.1-next.0
+
 ## 0.18.17-next.0
 
 ### Patch Changes

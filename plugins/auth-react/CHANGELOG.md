@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-react
 
+## 0.1.34-next.1
+
+### Patch Changes
+
+- 54bc2c7: The retry button that `CookieAuthRefreshProvider` shows when a cookie refresh fails now uses Backstage UI. The package no longer depends on Material UI.
+- Updated dependencies
+  - @backstage/core-components@0.18.17-next.1
+  - @backstage/ui@0.20.1-next.0
+
 ## 0.1.34-next.0
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # @backstage/plugin-auth-backend-module-auth0-provider
 
+## 0.4.9-next.1
+
+### Patch Changes
+
+- 7637e40: The Auth0 provider now includes the configured domain in the cache key used for profiles fetched during token refresh, so that environments pointing at different Auth0 tenants no longer share cached profile entries.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.1-next.1
+
+## 0.4.9-next.0
+
+### Patch Changes
+
+- Bumped version to account for a patch release.
+
 ## 0.4.8-next.0
 
 ### Patch Changes

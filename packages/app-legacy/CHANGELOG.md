@@ -1,5 +1,33 @@
 # example-app-legacy
 
+## 0.2.128-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-api-docs@0.14.10-next.1
+  - @backstage/plugin-auth-react@0.1.34-next.1
+  - @backstage/core-components@0.18.17-next.1
+  - @backstage/plugin-catalog@2.1.1-next.1
+  - @backstage/plugin-catalog-react@4.0.1-next.1
+  - @backstage/ui@0.20.1-next.0
+  - @backstage/core-app-api@1.20.9-next.1
+  - @backstage/plugin-devtools@0.1.46-next.1
+  - @backstage/plugin-scaffolder-react@3.1.0-next.1
+  - @backstage/integration-react@1.3.1-next.1
+  - @backstage/plugin-catalog-import@0.13.21-next.1
+  - @backstage/plugin-scaffolder@1.41.1-next.1
+  - @backstage/plugin-techdocs@1.20.1-next.1
+  - @backstage/plugin-techdocs-module-addons-contrib@1.2.1-next.1
+  - @backstage/plugin-catalog-graph@0.6.11-next.1
+  - @backstage/plugin-catalog-unprocessed-entities@0.2.38-next.1
+  - @backstage/plugin-home@0.9.13-next.1
+  - @backstage/plugin-mui-to-bui@0.2.14-next.0
+  - @backstage/plugin-notifications@0.6.3-next.1
+  - @backstage/plugin-org@0.8.2-next.1
+  - @backstage/plugin-search@1.8.1-next.1
+  - @backstage/plugin-user-settings@0.9.10-next.1
+
 ## 0.2.128-next.0
 
 ### Patch Changes
