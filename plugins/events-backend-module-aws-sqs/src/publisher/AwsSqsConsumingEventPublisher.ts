@@ -106,11 +106,11 @@ export class AwsSqsConsumingEventPublisher {
       frequency: { seconds: 0 },
       timeout: { seconds: this.taskTimeoutSeconds },
       scope: 'local',
-      fn: async () => {
+      fn: async signal => {
         try {
-          const numMessages = await this.consumeMessages();
-          if (numMessages === 0) {
-            await this.sleep(this.waitTimeAfterEmptyReceiveMs);
+          const numMessages = await this.consumeMessages(signal);
+          if (numMessages === 0 && !signal.aborted) {
+            await this.sleep(this.waitTimeAfterEmptyReceiveMs, signal);
           }
         } catch (error) {
           logger.error('Failed to consume AWS SQS messages', error);
@@ -155,10 +155,11 @@ export class AwsSqsConsumingEventPublisher {
     }
   }
 
-  private async consumeMessages(): Promise<number> {
+  private async consumeMessages(signal: AbortSignal): Promise<number> {
     try {
       const data = await this.sqs.send(
         new ReceiveMessageCommand(this.receiveParams),
+        { abortSignal: signal },
       );
 
       data.Messages?.forEach(message => {
@@ -190,6 +191,9 @@ export class AwsSqsConsumingEventPublisher {
       await this.deleteMessages(data.Messages);
       return data.Messages?.length ?? 0;
     } catch (error) {
+      if (signal.aborted) {
+        return 0;
+      }
       this.logger.error(
         `Failed to receive events from AWS SQS ${this.queueUrl}`,
         error,
@@ -198,7 +202,16 @@ export class AwsSqsConsumingEventPublisher {
     }
   }
 
-  private sleep(ms: number): Promise<void> {
-    return new Promise<void>(resolve => setTimeout(resolve, ms));
+  private sleep(ms: number, signal: AbortSignal): Promise<void> {
+    return new Promise<void>(resolve => {
+      const timeout = setTimeout(done, ms);
+      signal.addEventListener('abort', done, { once: true });
+
+      function done() {
+        clearTimeout(timeout);
+        signal.removeEventListener('abort', done);
+        resolve();
+      }
+    });
   }
 }
