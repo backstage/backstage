@@ -179,5 +179,79 @@ export interface Config {
         };
       };
     };
+
+    auth?: {
+      /**
+       * Environment that selects the `kubernetes.auth.providers.microsoft.<env>`
+       * block. Defaults to `development`.
+       */
+      environment?: string;
+      providers?: {
+        /**
+         * Backend-only Microsoft Entra Id application credentials used to
+         * request cluster tokens. Can reuse the sign-in application or a
+         * dedicated one.
+         */
+        microsoft?: {
+          [authEnv: string]: {
+            /**
+             * Microsoft Entra Id tenant ID.
+             */
+            tenantId: string;
+            /**
+             * Microsoft Entra Id client ID.
+             */
+            clientId: string;
+            /**
+             * Microsoft Entra Id client secret.
+             *
+             * @visibility secret
+             */
+            clientSecret: string;
+            /**
+             * Default Microsoft Entra Id scope for cluster tokens. The
+             * `kubernetes.io/microsoft-entra-id-scope` annotation overrides it.
+             *
+             * @visibility frontend
+             */
+            scope?: string;
+            /**
+             * Security allowlist of scope and cluster hostname pairs. It stops
+             * anyone who can register a cluster in the catalog from receiving
+             * a token for this application on a server they control. No token
+             * is issued when unset or when no entry matches.
+             */
+            allowedScopes?: Array<{
+              /**
+               * Scope, for example `api://<app-id>/.default`.
+               */
+              scope: string;
+              /**
+               * Hostname patterns such as `*.example.com`, matched like
+               * `dangerouslyAllowClusterUrls`. Port, path and scheme are ignored.
+               */
+              clusterUrls: string[];
+            }>;
+          };
+        };
+      };
+    };
+  };
+  auth?: {
+    providers?: {
+      /**
+       * Microsoft Entra Id configuration
+       */
+      microsoft?: {
+        [authEnv: string]: {
+          /**
+           * Microsoft Entra Id scope for Kubernetes tokens.
+           *
+           * @visibility frontend
+           */
+          scope: string;
+        };
+      };
+    };
   };
 }

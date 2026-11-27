@@ -40,6 +40,19 @@ describe('resourcesRoutes', () => {
     auditor.createEvent.mockResolvedValue(auditEvent);
   };
 
+  const kubernetesAuth = {
+    environment: 'development',
+    providers: {
+      microsoft: {
+        development: {
+          tenantId: 'microsoft-entra-id-enterprise-application-tenant-id',
+          clientId: 'microsoft-entra-id-enterprise-application-client-id',
+          clientSecret:
+            'microsoft-entra-id-enterprise-application-client-secret',
+        },
+      },
+    },
+  };
   const startPermissionDeniedTestServer = async () => {
     setupAuditorMock();
     const { server } = await startTestBackend({
@@ -49,6 +62,7 @@ describe('resourcesRoutes', () => {
             kubernetes: {
               serviceLocatorMethod: { type: 'multiTenant' },
               clusterLocatorMethods: [],
+              auth: kubernetesAuth,
             },
           },
         }),
@@ -138,6 +152,7 @@ describe('resourcesRoutes', () => {
                   clusters: [],
                 },
               ],
+              auth: kubernetesAuth,
             },
           },
         }),
