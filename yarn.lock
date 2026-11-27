@@ -4153,7 +4153,7 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@material-ui/core": "npm:^4.9.13"
+    "@backstage/ui": "workspace:^"
     "@react-hookz/web": "npm:^24.0.0"
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
