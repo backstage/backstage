@@ -622,6 +622,46 @@ describe('BitbucketCloudEntityProvider', () => {
     },
   );
 
+  it('does not apply a full update when the scheduled task is aborted', async () => {
+    const provider = BitbucketCloudEntityProvider.fromConfig(simpleConfig, {
+      auth: mockServices.auth(),
+      catalog: catalogServiceMock(),
+      events: DefaultEventsService.create({ logger }),
+      logger,
+      schedule,
+    })[0];
+    const controller = new AbortController();
+    const { searchBodies } = mockBitbucket({
+      repositories: () => [
+        repository('repo1', 'PROJ1', 'main'),
+        repository('repo2', 'PROJ2', 'main'),
+      ],
+      search: () => {
+        controller.abort();
+        return [];
+      },
+    });
+    await provider.connect(entityProviderConnection);
+    const runTask = (signal: AbortSignal) =>
+      (schedule.getTasks()[0].fn as (signal: AbortSignal) => Promise<void>)(
+        signal,
+      );
+
+    await runTask(AbortSignal.abort());
+    expect(searchBodies).toHaveLength(0);
+
+    await runTask(controller.signal);
+    expect(searchBodies).toHaveLength(1);
+    expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
+
+    await runTask(new AbortController().signal);
+    expect(searchBodies).toHaveLength(3);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: [],
+    });
+  });
+
   it('update onRepoPush', async () => {
     const keptModule = createLocationEntity(
       'https://bitbucket.org/test-ws/test-repo',
