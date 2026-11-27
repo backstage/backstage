@@ -274,7 +274,7 @@ export class MysqlConnector implements Connector {
       }
     }
 
-    const pluginDivisionMode = this.getPluginDivisionModeConfig();
+    const pluginDivisionMode = this.getPluginDivisionModeConfig(pluginId);
     if (pluginDivisionMode !== 'database') {
       throw new Error(
         `The MySQL driver does not support plugin division mode '${pluginDivisionMode}'`,
@@ -371,8 +371,14 @@ export class MysqlConnector implements Connector {
     );
   }
 
-  private getPluginDivisionModeConfig(): string {
-    return this.config.getOptionalString('pluginDivisionMode') ?? 'database';
+  private getPluginDivisionModeConfig(pluginId: string): string {
+    return (
+      this.config.getOptionalString(
+        `${pluginPath(pluginId)}.pluginDivisionMode`,
+      ) ??
+      this.config.getOptionalString('pluginDivisionMode') ??
+      'database'
+    );
   }
 
   /**
@@ -393,7 +399,7 @@ export class MysqlConnector implements Connector {
     // Databases cannot be shared unless the `pluginDivisionMode` is set to `schema`. The
     // `database` property from the base connection is omitted unless `pluginDivisionMode`
     // is set to `schema`.
-    if (this.getPluginDivisionModeConfig() !== 'schema') {
+    if (this.getPluginDivisionModeConfig(pluginId) !== 'schema') {
       baseConnection = omit(baseConnection, 'database');
     }
 
