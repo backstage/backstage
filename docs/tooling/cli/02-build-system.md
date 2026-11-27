@@ -382,6 +382,41 @@ changes to individual plugins and packages will invalidate a smaller number of
 files, thereby allowing for rapid development without much impact on the page
 load performance.
 
+#### Public sources
+
+Sometimes a small script needs to run before the app has loaded, for example
+to apply a stored theme choice or to start fetching data early. You can write
+such scripts in TypeScript or JavaScript in a `public-sources` folder next to
+`public` in your app package. Each file directly in that folder is built into a
+standalone script, and can import other files, for example from a subfolder.
+The template refers to the built script by the file name without its extension,
+through the `sources` constant:
+
+```html
+<script src="<%= sources.theme %>"></script>
+```
+
+In production builds, each script is written to the `dist/static/` folder with
+a content hash in its name, just like the rest of the app, so it can be cached
+for a long time. Unlike the files in `public`, which are copied as they are, a
+public source is transpiled, bundled and minified, and gets a new name whenever
+its content changes. The scripts are served from the same origin as the app, so
+a content security policy that allows `'self'` scripts covers them.
+
+Each script is built on its own, without anything shared with the app bundle.
+It can only import scripts, not styles or other assets. The template is the
+only place that refers to it, so you decide where it goes and with which
+attributes. For example, a script that starts requests early can use
+`async` and `fetchpriority="high"`:
+
+```html
+<script async fetchpriority="high" src="<%= sources.preload %>"></script>
+```
+
+The app configuration is added to the end of the `<head>` of the page. A script
+that reads it must therefore come after that, for example at the start of the
+`<body>`.
+
 ### Backend Development
 
 The backend development setup does not use any bundling process. It runs a

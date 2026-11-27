@@ -28,6 +28,7 @@ const paths: BundlingPaths = {
   targetRunFile: undefined,
   targetDist: '/fake/app/dist',
   targetAssets: '/fake/app/assets',
+  targetPublicSources: '/fake/app/public-sources',
   targetSrc: '/fake/app/src',
   targetDev: '/fake/app/dev',
   targetEntry: '/fake/app/src/index.tsx',

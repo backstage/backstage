@@ -23,12 +23,16 @@ import {
   printFileSizesAfterBuild,
 } from 'react-dev-utils/FileSizeReporter';
 import formatWebpackMessages from 'react-dev-utils/formatWebpackMessages';
-import { createConfig } from './config';
+import { createConfig, resolveBaseUrl } from './config';
 import { BuildOptions } from './types';
 import { resolveBundlingPaths, resolveOptionalBundlingPaths } from './paths';
 import chalk from 'chalk';
 import { createDetectedModulesEntryPoint } from './packageDetection';
 import { createRuntimeSharedDependenciesEntryPoint } from './moduleFederation';
+import {
+  preparePublicSources,
+  PUBLIC_SOURCES_COMPILER_NAME,
+} from './publicSources';
 
 // TODO(Rugvip): Limits from CRA, we might want to tweak these though.
 const WARN_AFTER_BUNDLE_GZIP_SIZE = 512 * 1024;
@@ -70,6 +74,15 @@ export async function buildBundle(options: BuildOptions) {
         targetPath: paths.targetPath,
       });
 
+    const publicSources = await preparePublicSources(paths, {
+      isDev: false,
+      webpack,
+      publicPath: resolveBaseUrl(options.frontendConfig).pathname.replace(
+        /\/$/,
+        '',
+      ),
+    });
+
     configs.push(
       await createConfig(paths, {
         ...commonConfigOptions,
@@ -78,6 +91,7 @@ export async function buildBundle(options: BuildOptions) {
         ],
         deferredEntryPoints: [...detectedModulesEntryPoint],
         appMode: publicPaths ? 'protected' : 'public',
+        publicSources: publicSources.registry,
       }),
     );
 
@@ -91,8 +105,18 @@ export async function buildBundle(options: BuildOptions) {
         await createConfig(publicPaths, {
           ...commonConfigOptions,
           appMode: 'public',
+          publicSources: publicSources.registry,
         }),
       );
+    }
+
+    // Added last, so that the stats of the app bundles keep their positions.
+    // The app compilers depend on this one, so it still runs first.
+    if (publicSources.config) {
+      for (const config of configs) {
+        config.dependencies = [PUBLIC_SOURCES_COMPILER_NAME];
+      }
+      configs.push(publicSources.config);
     }
   }
 

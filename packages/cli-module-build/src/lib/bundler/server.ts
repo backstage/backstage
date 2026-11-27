@@ -31,6 +31,7 @@ import { resolveBundlingPaths, resolveOptionalBundlingPaths } from './paths';
 import { translateLegacyProxyOptions } from './proxy';
 import { ServeOptions } from './types';
 import { createRuntimeSharedDependenciesEntryPoint } from './moduleFederation';
+import { preparePublicSources, watchPublicSources } from './publicSources';
 
 export async function serveBundle(options: ServeOptions) {
   const paths = resolveBundlingPaths(options);
@@ -149,11 +150,28 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
     },
   };
 
+  // The dev server serves the public sources from here as static files
+  const publicSourcesOutputPath = resolvePath(
+    paths.targetPath,
+    'node_modules/.cache/backstage-cli/public-sources',
+  );
+
+  // Module federation remotes have no index template of their own
+  const publicSources = options.moduleFederationRemote
+    ? undefined
+    : await preparePublicSources(paths, {
+        isDev: true,
+        webpack,
+        publicPath: url.pathname.replace(/\/$/, ''),
+        outputPath: publicSourcesOutputPath,
+      });
+
   const config = await createConfig(paths, {
     ...commonConfigOptions,
     additionalEntryPoints: [...moduleFederationSharedDependenciesEntryPoint],
     deferredEntryPoints: [...detectedModulesEntryPoint],
     moduleFederationRemote: options.moduleFederationRemote,
+    publicSources: publicSources?.registry,
   });
 
   const bundler = (webpack ?? rspack) as typeof rspack;
@@ -176,9 +194,45 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
       ),
     );
   }
-  const compiler = publicPaths
-    ? bundler([config, await createConfig(publicPaths, commonConfigOptions)])
-    : bundler(config);
+  const configs = [config];
+  if (publicPaths) {
+    configs.push(
+      await createConfig(publicPaths, {
+        ...commonConfigOptions,
+        publicSources: publicSources?.registry,
+      }),
+    );
+  }
+  const compiler = configs.length > 1 ? bundler(configs) : bundler(config);
+
+  // Built before the dev server starts, so that the index template can
+  // refer to their output from the first render
+  const publicSourcesWatcher = publicSources?.config
+    ? await watchPublicSources(publicSources.config, {
+        webpack,
+        onRebuild: triggerReload,
+      })
+    : undefined;
+
+  const staticDirectories = [
+    ...(paths.targetPublic
+      ? [
+          {
+            publicPath: config.output?.publicPath as string,
+            directory: paths.targetPublic,
+          },
+        ]
+      : []),
+    ...(publicSourcesWatcher
+      ? [
+          {
+            publicPath: config.output?.publicPath as string,
+            directory: publicSourcesOutputPath,
+            watch: false,
+          },
+        ]
+      : []),
+  ];
 
   devServer = new DevServer(
     {
@@ -187,12 +241,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
         publicPath: config.output?.publicPath as string,
         stats: 'errors-warnings',
       },
-      static: paths.targetPublic
-        ? {
-            publicPath: config.output?.publicPath as string,
-            directory: paths.targetPublic,
-          }
-        : undefined,
+      static: staticDirectories.length ? staticDirectories : undefined,
       historyApiFallback: options.moduleFederationRemote
         ? false
         : {
@@ -285,6 +334,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
   const waitForExit = async () => {
     for (const signal of ['SIGINT', 'SIGTERM'] as const) {
       process.on(signal, () => {
+        publicSourcesWatcher?.close();
         devServer?.stop();
         // exit instead of resolve. The process is shutting down and resolving a promise here logs an error
         process.exit();

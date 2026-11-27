@@ -18,6 +18,7 @@ import { AppConfig, Config } from '@backstage/config';
 import { BundlingPathsOptions } from './paths';
 import { ConfigSchema } from '@backstage/config-loader';
 import { RemoteSharedDependencies } from '@backstage/module-federation-common';
+import type { PublicSourcesRegistry } from './publicSources';
 
 export type ModuleFederationRemoteOptions = {
   // Unique name for this module federation bundle
@@ -49,6 +50,9 @@ export type BundlingOptions = {
   linkedWorkspace?: string;
   moduleFederationRemote?: ModuleFederationRemoteOptions;
   webpack?: typeof import('webpack');
+  // The public sources of the app, for use in the index template. They are
+  // built by a separate compiler that must finish first.
+  publicSources?: PublicSourcesRegistry;
 };
 
 export type ServeOptions = BundlingPathsOptions & {

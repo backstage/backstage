@@ -67,6 +67,7 @@ export function resolveBundlingPaths(options: BundlingPathsOptions) {
     targetRunFile: runFileExists ? targetRunFile : undefined,
     targetDist: resolvePath(targetDir, options.dist ?? 'dist'),
     targetAssets: resolvePath(targetDir, 'assets'),
+    targetPublicSources: resolvePath(targetDir, 'public-sources'),
     targetSrc: resolvePath(targetDir, 'src'),
     targetDev: resolvePath(targetDir, 'dev'),
     targetEntry: resolveTargetModule(entry),
