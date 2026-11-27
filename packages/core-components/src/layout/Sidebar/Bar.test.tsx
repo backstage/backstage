@@ -48,7 +48,9 @@ async function renderScalableSidebar({
               title="External Link"
               to="https://backstage.io/"
               icon={BuildRoundedIcon}
-            />
+            >
+              <span data-testid="external-link-icon">ext</span>
+            </SidebarSubmenuItem>
             <SidebarSubmenuItem
               title="Misc"
               to="/6"
@@ -65,9 +67,14 @@ async function renderScalableSidebar({
                 {
                   title: 'dropdown item 3',
                   to: 'https://backstage.io/',
+                  secondaryAction: (
+                    <span data-testid="dropdown-external-link-icon">ext</span>
+                  ),
                 },
               ]}
-            />
+            >
+              <span data-testid="dropdown-parent-secondary-action">ext</span>
+            </SidebarSubmenuItem>
           </SidebarSubmenu>
         </SidebarItem>
         <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
@@ -132,6 +139,13 @@ describe('Sidebar', () => {
       );
     });
 
+    it('Submenu item renders secondary action children', async () => {
+      await userEvent.hover(screen.getByTestId('item-with-submenu'));
+      expect(
+        await screen.findByTestId('external-link-icon'),
+      ).toBeInTheDocument();
+    });
+
     it('Dropdown item in submenu renders an external link when `to` value is provided', async () => {
       await userEvent.hover(screen.getByTestId('item-with-submenu'));
       await userEvent.click(screen.getByText('Misc'));
@@ -139,6 +153,21 @@ describe('Sidebar', () => {
         'href',
         'https://backstage.io/',
       );
+    });
+
+    it('Dropdown item renders secondary action content', async () => {
+      await userEvent.hover(screen.getByTestId('item-with-submenu'));
+      await userEvent.click(screen.getByText('Misc'));
+      expect(
+        screen.getByTestId('dropdown-external-link-icon'),
+      ).toBeInTheDocument();
+    });
+
+    it('does not render children on dropdown parent items', async () => {
+      await userEvent.hover(screen.getByTestId('item-with-submenu'));
+      expect(
+        screen.queryByTestId('dropdown-parent-secondary-action'),
+      ).not.toBeInTheDocument();
     });
   });
 

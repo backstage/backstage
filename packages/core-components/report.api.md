@@ -1264,12 +1264,14 @@ export type SidebarSubmenuItemClassKey =
   | 'dropdownArrow'
   | 'dropdown'
   | 'dropdownItem'
-  | 'textContent';
+  | 'textContent'
+  | 'secondaryAction';
 
 // @public
 export type SidebarSubmenuItemDropdownItem = {
   title: string;
   to: string;
+  secondaryAction?: ReactNode;
 };
 
 // @public
@@ -1281,6 +1283,7 @@ export type SidebarSubmenuItemProps = {
   dropdownItems?: SidebarSubmenuItemDropdownItem[];
   exact?: boolean;
   initialShowDropdown?: boolean;
+  children?: ReactNode;
 };
 
 // @public
