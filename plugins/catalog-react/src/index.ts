@@ -25,11 +25,22 @@ export { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 export { catalogApiRef } from './api';
 export * from './apis';
 export * from './components';
+export { EntityCardBlueprint } from './alpha/blueprints/EntityCardBlueprint';
+export { EntityContentBlueprint } from './alpha/blueprints/EntityContentBlueprint';
+export {
+  EntityContentLayoutBlueprint,
+  type EntityContentLayoutProps,
+} from './alpha/blueprints/EntityContentLayoutBlueprint';
+export {
+  EntityHeaderLayoutBlueprint,
+  type EntityHeaderLayoutProps,
+} from './alpha/blueprints/EntityHeaderLayoutBlueprint';
 export * from './hooks';
 export * from './filters';
 export type { EntityRouteParamsOptions } from './routes';
 export { entityRouteParams, entityRouteRef } from './routes';
 export * from './types';
+export type { EntityCardType } from './alpha/blueprints/extensionData';
 export * from './overridableComponents';
 export { getEntityRelations, getEntitySourceLocation } from './utils';
 export type { EntitySourceLocation } from './utils';

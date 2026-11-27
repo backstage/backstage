@@ -69,25 +69,25 @@ Your custom component receives a `navItems` prop—a collection with `take(id)` 
 
 App root wrapper extensions install React components that wrap the entire app root. Use them for global providers, such as a query client, that every plugin in the app needs. They are the replacement for providers that used to be bundled into a custom root router component.
 
-## Extension blueprints in `@backstage/plugin-catalog-react/alpha`
+## Catalog extension blueprints
 
 These are the [extension blueprints](../architecture/23-extension-blueprints.md) provided by the Catalog plugin.
 
 ### EntityCard - [Example](https://github.com/backstage/backstage/blob/75e79518eafc6e6eb55585f166667418419662de/plugins/org/src/alpha.tsx#L27-L36)
 
-Creates entity cards to be displayed on the entity pages of the catalog plugin. Exported as `EntityCardBlueprint`.
+Creates cards for the Catalog entity page. Import `EntityCardBlueprint` from `@backstage/plugin-catalog-react`. The blueprint attaches to the overview by default.
 
 Avoid using `convertLegacyEntityCardExtension` from `@backstage/core-compat-api` to convert legacy entity card extensions to the new system. Instead, use the `EntityCardBlueprint` directly. The legacy converter is only intended to help adapt 3rd party plugins that you don't control, and doesn't produce as good results as using the blueprint directly.
 
 ### EntityContent - [Example](https://github.com/backstage/backstage/blob/cd71065a02bed740011daee96a865108a785dff6/plugins/kubernetes/src/alpha/entityContents.tsx#L22-L34)
 
-Creates entity content to be displayed on the entity pages of the catalog plugin. Exported as `EntityContentBlueprint`.
+Creates tabs for the Catalog entity page. Import `EntityContentBlueprint` from `@backstage/plugin-catalog-react`.
 
 Entity content is page content, not a page, so it never declares a [page router](10-page-routers.md) adapter of its own. It already renders inside the adapter the entity page declared, one route match deeper. A second adapter here re-scopes to the entity page's mount and drops the tab's match. The same holds for `EntityCardBlueprint`.
 
 Supports optional params such as `group` and `icon` to:
 
-- group: string | false — associates the content with a tab group on the entity page (for example "overview", "quality", "deployment", or any custom id). You can override or disable this per-installation via app-config using `app.extensions[...].config.group`, where `false` removes the grouping.
+- group: string — associates the content with a tab group on the entity page (for example "overview", "quality", "deployment", or any custom id). You can override or disable this per-installation via app-config using `app.extensions[...].config.group`, where `false` removes the grouping.
 - icon: string — sets the tab icon. Note: when providing a string, the icon is looked up via the app's IconsApi; make sure icon bundles are enabled/installed in your app (see the Icons blueprint reference above) so that the icon id you use is available.
 
 To render icons in the entity page tabs, the page must also have icons enabled via app configuration. Set `showNavItemIcons: true` on the catalog entity page config (created via `page:catalog/entity`). Example:
@@ -111,6 +111,18 @@ app:
 ```
 
 Avoid using `convertLegacyEntityContentExtension` from `@backstage/core-compat-api` to convert legacy entity content extensions to the new system. Instead, use the `EntityContentBlueprint` directly. The legacy converter is only intended to help adapt 3rd party plugins that you don't control, and doesn't produce as good results as using the blueprint directly.
+
+### EntityContentLayout
+
+Import `EntityContentLayoutBlueprint` from `@backstage/plugin-catalog-react`
+to install an entity overview layout. Its component receives the matching cards
+as elements with optional card types.
+
+### EntityHeaderLayout
+
+Import `EntityHeaderLayoutBlueprint` from `@backstage/plugin-catalog-react`
+to install an entity header layout. Its component receives the available tabs
+and the active tab ID.
 
 ### EntityContextMenuItem - [Example](https://github.com/backstage/backstage/blob/5d0d2c547c7a67a60c4097334bd2c2ca11fbd6b3/plugins/catalog/src/alpha/contextMenuItems.tsx#L54-L151)
 

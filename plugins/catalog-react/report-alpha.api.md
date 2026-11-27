@@ -188,7 +188,7 @@ export const defaultEntityContentGroups: Record<
   string
 >;
 
-// @alpha
+// @public
 export const EntityCardBlueprint: ExtensionBlueprint<{
   kind: 'entity-card';
   params: {
@@ -247,7 +247,7 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-// @alpha (undocumented)
+// @public
 export type EntityCardType = 'info' | 'content';
 
 // @public (undocumented)
@@ -276,7 +276,7 @@ export const entityColumnPresets: {
   };
 };
 
-// @alpha
+// @public
 export const EntityContentBlueprint: ExtensionBlueprint<{
   kind: 'entity-content';
   params: {
@@ -285,7 +285,7 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
     defaultTitle?: [Error: `Use the 'title' param instead`];
     title: string | TranslationRefTuple<undefined>;
     defaultGroup?: [Error: `Use the 'group' param instead`];
-    group?: keyof typeof defaultEntityContentGroups | (string & {});
+    group?: string;
     icon?: string | ReactElement;
     loader: () => Promise<JSX.Element>;
     routeRef?: RouteRef;
@@ -397,7 +397,7 @@ export type EntityContentGroupDefinitions = Record<
   }
 >;
 
-// @alpha (undocumented)
+// @public
 export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
   kind: 'entity-content-layout';
   params: {
@@ -452,7 +452,7 @@ export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-// @alpha (undocumented)
+// @public
 export interface EntityContentLayoutProps {
   // (undocumented)
   cards: Array<{
@@ -604,7 +604,7 @@ export const EntityHeaderBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-// @alpha (undocumented)
+// @public
 export const EntityHeaderLayoutBlueprint: ExtensionBlueprint<{
   kind: 'entity-header-layout';
   params: {
@@ -645,7 +645,7 @@ export const EntityHeaderLayoutBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-// @alpha (undocumented)
+// @public
 export interface EntityHeaderLayoutProps {
   // (undocumented)
   activeTabId?: string;

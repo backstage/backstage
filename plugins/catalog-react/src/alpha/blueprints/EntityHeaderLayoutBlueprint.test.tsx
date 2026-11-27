@@ -20,7 +20,7 @@ import {
   renderInTestApp,
 } from '@backstage/frontend-test-utils';
 import { screen } from '@testing-library/react';
-import { EntityHeaderLayoutBlueprint } from './EntityHeaderLayoutBlueprint';
+import { EntityHeaderLayoutBlueprint } from '../..';
 
 describe('EntityHeaderLayoutBlueprint', () => {
   it('emits a lazy component that receives composed tab props', async () => {

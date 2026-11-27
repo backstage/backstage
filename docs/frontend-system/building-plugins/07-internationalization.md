@@ -349,7 +349,7 @@ PageBlueprint.make({
 ```
 
 `SubPageBlueprint` accepts the same title form for its tab and breadcrumb label.
-`EntityContentBlueprint` from `@backstage/plugin-catalog-react/alpha` also accepts
+`EntityContentBlueprint` from `@backstage/plugin-catalog-react` also accepts
 message references for entity content titles:
 
 ```tsx
