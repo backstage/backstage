@@ -20,7 +20,7 @@ import { ParsedLocationAnnotation } from '../../helpers';
 import {
   ALLOWED_MKDOCS_KEYS,
   ALLOWED_THEME_KEYS,
-  DANGEROUS_EXTENSION_CONFIG_KEYS,
+  getDangerousKeysByExtensionName,
   getRepoUrlFromLocationAnnotation,
   MKDOCS_SCHEMA,
   UnknownTag,
@@ -528,7 +528,8 @@ export const sanitizeMkdocsYml = async (
 
     // Sanitize markdown_extensions
     const extensions = sanitized.markdown_extensions;
-    const removedEntries: string[] = [];
+    const removedExtensions: string[] = [];
+    const removedExtensionOptions = new Map<string, string[]>();
     const inputDir = path.dirname(mkdocsYmlPath);
     let removedCustomIcons = false;
     const extensionMapping = isPlainObject(extensions) ? extensions : undefined;
@@ -543,12 +544,12 @@ export const sanitizeMkdocsYml = async (
       );
     }
     if (extensions instanceof UnknownTag) {
-      removedEntries.push('dynamically configured extension');
+      removedExtensions.push('dynamically configured extension');
       sanitized.markdown_extensions = [];
     } else if (normalizedExtensions) {
       const sanitizedExtensions = normalizedExtensions.flatMap<unknown>(ext => {
         if (ext instanceof UnknownTag) {
-          removedEntries.push('dynamically configured extension');
+          removedExtensions.push('dynamically configured extension');
           return [];
         }
 
@@ -558,19 +559,19 @@ export const sanitizeMkdocsYml = async (
           }
 
           if (ext.includes(':')) {
-            removedEntries.push(ext);
+            removedExtensions.push(ext);
             return [];
           }
 
           if (!isAllowedExtensionName(ext, allowedExtensions)) {
-            removedEntries.push(ext);
+            removedExtensions.push(ext);
             return [];
           }
           return [ext];
         }
 
         if (!isPlainObject(ext)) {
-          removedEntries.push('malformed extension declaration');
+          removedExtensions.push('malformed extension declaration');
           return [];
         }
 
@@ -585,39 +586,37 @@ export const sanitizeMkdocsYml = async (
               !isPymdownxSnippetsExtension(extensionName),
           );
         if (dangerousNames.length > 0) {
-          removedEntries.push(...dangerousNames);
+          removedExtensions.push(...dangerousNames);
           return [];
         }
 
         const sanitizedExtension: Record<string, unknown> = {};
         for (const [extensionName, extensionConfig] of extensionEntries) {
           if (!isAllowedExtensionName(extensionName, allowedExtensions)) {
-            removedEntries.push(extensionName);
+            removedExtensions.push(extensionName);
             continue;
           }
 
           if (extensionConfig instanceof UnknownTag) {
-            removedEntries.push(
+            removedExtensions.push(
               `dynamically configured ${extensionName} extension`,
             );
             continue;
           }
 
-          if (isPymdownxSnippetsExtension(extensionName)) {
-            if (
-              extensionConfig !== null &&
-              (typeof extensionConfig !== 'object' ||
-                Object.keys(extensionConfig).length > 0)
-            ) {
-              removedEntries.push(`${extensionName} configuration`);
-            }
-            sanitizedExtension[extensionName] = {};
-          } else if (isPlainObject(extensionConfig)) {
+          if (isPlainObject(extensionConfig)) {
             const sanitizedConfig = { ...extensionConfig };
-            for (const dangerousKey of DANGEROUS_EXTENSION_CONFIG_KEYS) {
+            for (const dangerousKey of getDangerousKeysByExtensionName(
+              extensionName,
+            )) {
               if (dangerousKey in sanitizedConfig) {
                 delete sanitizedConfig[dangerousKey];
-                removedEntries.push(dangerousKey);
+                const dangerousKeys =
+                  removedExtensionOptions.get(extensionName) ?? [];
+                removedExtensionOptions.set(extensionName, [
+                  ...dangerousKeys,
+                  dangerousKey,
+                ]);
               }
             }
 
@@ -650,15 +649,28 @@ export const sanitizeMkdocsYml = async (
         ? Object.assign({}, ...sanitizedExtensions)
         : sanitizedExtensions;
     } else if (extensions !== undefined) {
-      removedEntries.push('malformed extension declaration');
+      removedExtensions.push('malformed extension declaration');
       sanitized.markdown_extensions = [];
     }
 
-    if (removedEntries.length > 0) {
+    if (removedExtensions.length > 0) {
       logger.warn(
-        `Removed the following dangerous or unsupported entries from markdown_extensions in mkdocs.yml: ${removedEntries.join(
+        `Removed the following dangerous or unsupported entries from markdown_extensions in mkdocs.yml: ${removedExtensions.join(
           ', ',
         )}. To allow additional markdown extensions, configure 'techdocs.generator.mkdocs.dangerouslyAllowAdditionalExtensions' in your Backstage app-config. When using the TechDocs CLI, use '--dangerouslyAllowAdditionalExtensions' instead.`,
+      );
+    }
+
+    if (removedExtensionOptions.size > 0) {
+      logger.warn(
+        `Removed the following dangerous or unsupported configuration keys from markdown_extensions in mkdocs.yml: ${[
+          ...removedExtensionOptions.entries(),
+        ]
+          .map(
+            ([extension, extensionKeys]) =>
+              `'${extensionKeys.join(', ')}' from ${extension}`,
+          )
+          .join('\n')}.`,
       );
     }
 

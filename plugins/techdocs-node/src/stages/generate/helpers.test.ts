@@ -33,6 +33,7 @@ import {
   storeEtagMetadata,
   validateInputDirectory,
   validateMkdocsYaml,
+  normalizeExtensionName,
 } from './helpers';
 import {
   patchMkdocsYmlPreBuild,
@@ -1651,7 +1652,7 @@ markdown_extensions:
         expect.stringContaining('plantuml_cmd'),
       );
       expect(warn).toHaveBeenCalledWith(
-        expect.stringContaining('pymdownx.snippets configuration'),
+        expect.stringContaining('from pymdownx.snippets'),
       );
     });
 
@@ -1851,7 +1852,7 @@ markdown_extensions:
       expect(parsedTaggedConfigYml.markdown_extensions).toEqual({});
     });
 
-    it('should remove configuration from snippets extensions', async () => {
+    it('should remove dangerous keys from configuration in snippets extensions', async () => {
       mockDir.setContent({
         'mkdocs.yml': `site_name: Test
 markdown_extensions:
@@ -1878,16 +1879,14 @@ markdown_extensions:
       ]);
       expect(warn).toHaveBeenCalledTimes(1);
       expect(warn).toHaveBeenCalledWith(
-        expect.stringContaining('pymdownx.snippets configuration'),
+        expect.stringContaining('from pymdownx.snippets'),
       );
       expect(warn).toHaveBeenCalledWith(
-        expect.stringContaining(
-          'pymdownx.snippets:SnippetExtension configuration',
-        ),
+        expect.stringContaining('from pymdownx.snippets:SnippetExtension'),
       );
     });
 
-    it('should remove configuration from every snippets extension in a mapping', async () => {
+    it('should remove dangerous keys from configuration in every snippets extension in a mapping', async () => {
       mockDir.setContent({
         'mkdocs.yml': `site_name: Test
 markdown_extensions:
@@ -1896,6 +1895,7 @@ markdown_extensions:
       base_path: /
       restrict_base_path: false
       url_download: true
+      auto_append: true
 `,
       });
 
@@ -1909,14 +1909,12 @@ markdown_extensions:
       expect(parsedYml.markdown_extensions).toEqual([
         {
           'pymdownx.snippets': {},
-          'pymdownx.snippets:SnippetExtension': {},
+          'pymdownx.snippets:SnippetExtension': { auto_append: true },
         },
       ]);
       expect(warn).toHaveBeenCalledTimes(1);
       expect(warn).toHaveBeenCalledWith(
-        expect.stringContaining(
-          'pymdownx.snippets:SnippetExtension configuration',
-        ),
+        expect.stringContaining('from pymdownx.snippets:SnippetExtension'),
       );
     });
 
@@ -2036,7 +2034,7 @@ markdown_extensions:
 
       expect(warn).toHaveBeenCalledWith(
         expect.stringContaining(
-          'Removed the following dangerous or unsupported entries from markdown_extensions in mkdocs.yml: plantuml_cmd',
+          "Removed the following dangerous or unsupported configuration keys from markdown_extensions in mkdocs.yml: 'plantuml_cmd' from plantuml_markdown",
         ),
       );
     });
@@ -2402,6 +2400,33 @@ theme: material
       await expect(
         validateInputDirectory(mockDir.path),
       ).resolves.toBeUndefined();
+    });
+  });
+
+  describe('normalizeExtensionName', () => {
+    it('should treat pymdownx.snippets and pymdownx.snippets:SnippetExtension as equivalent', () => {
+      expect(normalizeExtensionName('pymdownx.snippets')).toBe(
+        'pymdownx.snippets',
+      );
+      expect(normalizeExtensionName('pymdownx.snippets:SnippetExtension')).toBe(
+        'pymdownx.snippets',
+      );
+    });
+
+    it('should treat plantuml_markdown and plantuml-markdown as equivalent', () => {
+      expect(normalizeExtensionName('plantuml_markdown')).toBe(
+        'plantuml_markdown',
+      );
+      expect(normalizeExtensionName('plantuml-markdown')).toBe(
+        'plantuml_markdown',
+      );
+    });
+
+    it('should leave other extension names unchanged', () => {
+      expect(normalizeExtensionName('admonition')).toBe('admonition');
+      expect(normalizeExtensionName('zensical.extensions.links')).toBe(
+        'zensical.extensions.links',
+      );
     });
   });
 });
