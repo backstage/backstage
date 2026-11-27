@@ -86,6 +86,16 @@ describe('public sources', () => {
     expect(registry.getFile('theme')).toMatch(
       /^static\/theme\.[0-9a-f]{12}\.js$/,
     );
+    // Everything emitted, which the build also copies for the public entry
+    // point
+    expect([...registry.emittedFiles].sort()).toEqual(
+      [
+        preloadFile,
+        `${preloadFile}.map`,
+        registry.getFile('theme'),
+        `${registry.getFile('theme')}.map`,
+      ].sort(),
+    );
 
     // A classic script that inlines its imports, with no bundler runtime
     // that would wait for chunks from the app

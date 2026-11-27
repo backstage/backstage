@@ -78,6 +78,7 @@ export async function findPublicSources(
 export class PublicSourcesRegistry {
   readonly #names: string[];
   #files = new Map<string, string>();
+  #emittedFiles: string[] = [];
 
   constructor(names: string[]) {
     this.#names = names;
@@ -87,9 +88,18 @@ export class PublicSourcesRegistry {
     return this.#names.length === 0;
   }
 
-  /** Records the output files of the latest compilation. */
-  setFiles(files: Map<string, string>) {
+  /**
+   * Records the output files of the latest compilation: the script of each
+   * source, and every emitted file including source maps.
+   */
+  setFiles(files: Map<string, string>, emittedFiles: string[] = []) {
     this.#files = files;
+    this.#emittedFiles = emittedFiles;
+  }
+
+  /** Every file that the latest compilation emitted, relative to its output. */
+  get emittedFiles(): readonly string[] {
+    return this.#emittedFiles;
   }
 
   /**
@@ -187,7 +197,10 @@ class PublicSourcesCollectorPlugin {
           files.set(name, file);
         }
       }
-      this.#registry.setFiles(files);
+      this.#registry.setFiles(
+        files,
+        compilation.getAssets().map(asset => asset.name),
+      );
     });
   }
 }

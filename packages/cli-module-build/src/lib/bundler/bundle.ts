@@ -60,6 +60,9 @@ export async function buildBundle(options: BuildOptions) {
   };
 
   const configs: Configuration[] = [];
+  let publicSources:
+    | Awaited<ReturnType<typeof preparePublicSources>>
+    | undefined;
   if (options.moduleFederationRemote) {
     // Package detection is disabled for remote bundles
     configs.push(await createConfig(paths, commonConfigOptions));
@@ -74,7 +77,7 @@ export async function buildBundle(options: BuildOptions) {
         targetPath: paths.targetPath,
       });
 
-    const publicSources = await preparePublicSources(paths, {
+    publicSources = await preparePublicSources(paths, {
       isDev: false,
       webpack,
       publicPath: resolveBaseUrl(options.frontendConfig).pathname.replace(
@@ -156,6 +159,18 @@ export async function buildBundle(options: BuildOptions) {
   }
 
   const { stats } = await build(configs, isCi, webpack);
+
+  // The public entry point is served from its own folder, including its static
+  // assets, and renders the same template. Like the public folder, the public
+  // sources are shared by both, so they're copied there too.
+  if (publicPaths && publicSources?.config) {
+    for (const file of publicSources.registry.emittedFiles) {
+      await fs.copy(
+        resolvePath(paths.targetDist, file),
+        resolvePath(publicPaths.targetDist, file),
+      );
+    }
+  }
 
   if (!stats) {
     throw new Error('No stats returned');
