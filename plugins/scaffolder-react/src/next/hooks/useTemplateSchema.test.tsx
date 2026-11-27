@@ -388,4 +388,116 @@ describe('useTemplateSchema', () => {
       });
     });
   });
+
+  describe('Derived defaults', () => {
+    it('extracts ui:backstage.default expressions for enabled fields, nested objects, and dependencies', () => {
+      const manifest: TemplateParameterSchema = {
+        title: 'Derived Defaults Template',
+        steps: [
+          {
+            title: 'Step 1',
+            schema: {
+              type: 'object',
+              properties: {
+                sourceUrl: { type: 'string' },
+                repoUrl: {
+                  type: 'string',
+                  'ui:field': 'RepoUrlPicker',
+                  'ui:backstage': {
+                    default:
+                      "github.com?owner=example-org&repo=${{ parameters.sourceUrl.split('/') | last }}",
+                  },
+                },
+                disabledField: {
+                  type: 'string',
+                  'ui:backstage': {
+                    featureFlag: 'disabled-flag',
+                    default: '${{ parameters.sourceUrl }}',
+                  },
+                },
+                nested: {
+                  type: 'object',
+                  properties: {
+                    label: {
+                      type: 'string',
+                      'ui:backstage': {
+                        default: '${{ parameters.sourceUrl | lower }}',
+                      },
+                    },
+                    hiddenChild: {
+                      type: 'string',
+                      'ui:backstage': {
+                        featureFlag: 'disabled-flag',
+                        default: 'ignored',
+                      },
+                    },
+                  },
+                },
+                tags: {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                    'ui:backstage': {
+                      default: 'not-extracted-for-array-items',
+                    },
+                  },
+                },
+              },
+              dependencies: {
+                sourceUrl: {
+                  properties: {
+                    dependentDefault: {
+                      type: 'string',
+                      'ui:backstage': {
+                        default: 'dep-${{ parameters.sourceUrl }}',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          {
+            title: 'Step 2',
+            schema: {
+              type: 'object',
+              properties: {
+                plain: { type: 'string' },
+              },
+            },
+          },
+        ],
+      };
+
+      const { result } = renderHook(() => useTemplateSchema(manifest), {
+        wrapper: ({ children }: PropsWithChildren<{}>) => (
+          <TestApiProvider
+            apis={[
+              mockApis.featureFlags.mock({ isActive: jest.fn(() => false) }),
+            ]}
+          >
+            {children}
+          </TestApiProvider>
+        ),
+      });
+
+      const [first, second] = result.current.steps;
+      expect(first.defaultExpressions).toEqual([
+        {
+          path: ['repoUrl'],
+          expression:
+            "github.com?owner=example-org&repo=${{ parameters.sourceUrl.split('/') | last }}",
+        },
+        {
+          path: ['nested', 'label'],
+          expression: '${{ parameters.sourceUrl | lower }}',
+        },
+        {
+          path: ['dependentDefault'],
+          expression: 'dep-${{ parameters.sourceUrl }}',
+        },
+      ]);
+      expect(second.defaultExpressions).toBeUndefined();
+    });
+  });
 });
