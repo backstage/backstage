@@ -214,6 +214,11 @@ export async function preserveTechDocsSources(
   const { inputDir, outputDir, logger, engine, etag } = options;
   const resolvedInputDir = path.resolve(inputDir);
 
+  // Remove sources from an earlier run in the same output directory, even
+  // if no sources end up being stored this time.
+  const sourcesDir = path.join(outputDir, TECHDOCS_SOURCES_DIR);
+  await fs.remove(sourcesDir);
+
   const mkdocsConfig = await readMkdocsConfig(resolvedInputDir);
   const docsDir =
     typeof mkdocsConfig?.docs_dir === 'string' && mkdocsConfig.docs_dir
@@ -250,7 +255,6 @@ export async function preserveTechDocsSources(
     ].join('\n'),
   );
 
-  const sourcesDir = path.join(outputDir, TECHDOCS_SOURCES_DIR);
   await fs.ensureDir(sourcesDir);
   const stored = new Set<string>();
 
@@ -290,7 +294,17 @@ export async function preserveTechDocsSources(
       );
       continue;
     }
-    if (stored.has(relPath) || isExcluded(relPath)) {
+    // Files inside the docs directory must also pass the rules the docs
+    // walk applies, so that pages the site excludes are never stored.
+    const docsRelPath = relPath.startsWith(`${docsDirRel}/`)
+      ? relPath.slice(docsDirRel.length + 1)
+      : undefined;
+    if (
+      stored.has(relPath) ||
+      isExcluded(relPath) ||
+      (docsRelPath !== undefined &&
+        matchesGitignoreRules(docsRules, docsRelPath, false))
+    ) {
       continue;
     }
     let stat;

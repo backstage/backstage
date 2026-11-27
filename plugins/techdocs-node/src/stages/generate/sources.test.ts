@@ -31,6 +31,7 @@ describe('preserveTechDocsSources', () => {
     jest.clearAllMocks();
     outputDir.setContent({
       'index.html': '<html />',
+      _sources: { 'stale.md': 'from an earlier run' },
       'techdocs_metadata.json': JSON.stringify({
         engine: 'zensical',
         files: ['index.html'],
@@ -86,6 +87,8 @@ describe('preserveTechDocsSources', () => {
         'README.md',
         'CONTRIBUTING.md',
         'docs/index.md',
+        'docs/secret/page.md',
+        'docs/drafts/wip.md',
         'docs',
         'manifest.json',
         '.env',

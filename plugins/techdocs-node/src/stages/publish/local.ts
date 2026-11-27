@@ -76,6 +76,10 @@ export class LocalPublish implements PublisherBase {
   private readonly logger: LoggerService;
   private readonly discovery: DiscoveryService;
   private readonly staticDocsDir: string;
+  // Publishes in progress, by publish directory. Publishes to the same
+  // directory run one at a time so that removing stale files from one
+  // publish can't delete files that an overlapping publish just copied.
+  private readonly publishesInProgress = new Map<string, Promise<void>>();
 
   constructor(options: {
     logger: LoggerService;
@@ -130,6 +134,22 @@ export class LocalPublish implements PublisherBase {
     };
   }
 
+  private async runExclusive(
+    key: string,
+    fn: () => Promise<void>,
+  ): Promise<void> {
+    const previous = this.publishesInProgress.get(key) ?? Promise.resolve();
+    const current = previous.catch(() => {}).then(fn);
+    this.publishesInProgress.set(key, current);
+    try {
+      await current;
+    } finally {
+      if (this.publishesInProgress.get(key) === current) {
+        this.publishesInProgress.delete(key);
+      }
+    }
+  }
+
   async publish({
     entity,
     directory,
@@ -159,20 +179,22 @@ export class LocalPublish implements PublisherBase {
 
     try {
       await validateNoExternalSymlinks(directory, directory);
-      const existingFiles = await getFileTreeRecursively(publishDir);
-      await fs.copy(directory, publishDir);
-      // Remove files left over from a previous build, the same way the
-      // remote storage publishers do, so that removed pages and directories
-      // such as _sources/ stop being served.
-      const newFiles = new Set(
-        (await getFileTreeRecursively(directory)).map(f =>
-          path.relative(directory, f),
-        ),
-      );
-      const staleFiles = existingFiles.filter(
-        f => !newFiles.has(path.relative(publishDir, f)),
-      );
-      await Promise.all(staleFiles.map(f => fs.remove(f)));
+      await this.runExclusive(publishDir, async () => {
+        const existingFiles = await getFileTreeRecursively(publishDir);
+        await fs.copy(directory, publishDir);
+        // Remove files left over from a previous build, the same way the
+        // remote storage publishers do, so that removed pages and
+        // directories such as _sources/ stop being served.
+        const newFiles = new Set(
+          (await getFileTreeRecursively(directory)).map(f =>
+            path.relative(directory, f),
+          ),
+        );
+        const staleFiles = existingFiles.filter(
+          f => !newFiles.has(path.relative(publishDir, f)),
+        );
+        await Promise.all(staleFiles.map(f => fs.remove(f)));
+      });
       this.logger.info(`Published site stored at ${publishDir}`);
     } catch (error) {
       this.logger.debug(
