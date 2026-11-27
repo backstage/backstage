@@ -259,6 +259,10 @@ You can define this property as any normal parameter, however the consumption of
 
 Parameters will be automatically masked in the review step.
 
+A field is masked in the review step whenever any parameter step marks it as a secret (`ui:field: Secret`) or password (`ui:widget: password`), or sets a mask for it with `ui:backstage.review.mask`. This also applies to steps that are hidden by a `when` condition, and it does not depend on which step declares the field first.
+
+If you provide a custom review step component, it receives the complete form state as `schemaFormState` and all parameter steps, including hidden ones, as `allSteps`. Forward them to `ReviewState` as `schemaFormState` and `maskSchemas`, together with the visible `steps` as `schemas`, to keep the same masking behavior as the built-in review step. Don't display `schemaFormState` directly, because it includes values that won't be submitted.
+
 ```yaml
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
