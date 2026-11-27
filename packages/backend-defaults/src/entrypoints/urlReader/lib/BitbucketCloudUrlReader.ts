@@ -178,15 +178,8 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
     url: string,
     options?: UrlReaderServiceSearchOptions,
   ): Promise<UrlReaderServiceSearchResponse> {
-    const {
-      filepath,
-      filepathtype,
-      name,
-      owner,
-      protocol,
-      ref,
-      resource,
-    } = parseGitUrlSafe(url);
+    const { filepath, filepathtype, name, owner, protocol, ref, resource } =
+      parseGitUrlSafe(url);
     // If it's a direct URL we use readUrl instead
     if (!filepath?.match(/[*?]/)) {
       try {
