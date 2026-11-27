@@ -20,7 +20,7 @@ jobs:
           egress-policy: audit
 
       - name: Stale check - base
-        uses: actions/stale@v10
+        uses: actions/stale@v11
         with:
           stale-issue-message: >
             This issue has been automatically marked as stale because it has not had
@@ -42,7 +42,7 @@ jobs:
           operations-per-run: 100
 
       - name: Stale check - bugs without repro
-        uses: actions/stale@v10
+        uses: actions/stale@v11
         with:
           stale-issue-message: >
             This bug report has been automatically marked as stale because it has not had

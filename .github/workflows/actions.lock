@@ -31,7 +31,7 @@ workflows:
         - 'actions/github-script@v9'
         - 'step-security/harden-runner@v2'
     '.github/workflows/automate_stale.yml':
-        - 'actions/stale@v10'
+        - 'actions/stale@v11'
         - 'step-security/harden-runner@v2'
     '.github/workflows/automate_yarn-lock-changes.yml':
         - 'actions/checkout@v7'
@@ -298,9 +298,9 @@ dependencies:
         commit: 'sha1-6d4fd22b20465ccc0f7354476588e8df7c9ca0e0'
         owner_id: 44036562
         repo_id: 192625525
-    'actions/stale@v10':
-        ref: 'v10'
-        commit: 'sha1-1e223db275d687790206a7acac4d1a11bd6fe629'
+    'actions/stale@v11':
+        ref: 'v11'
+        commit: 'sha1-4391f3da665fdf50b6810c1a66712fb9ba21aa93'
         owner_id: 44036562
         repo_id: 200437066
     'actions/upload-artifact@v7':
