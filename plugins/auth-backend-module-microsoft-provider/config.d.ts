@@ -25,9 +25,19 @@ export interface Config {
           clientId: string;
           tenantId: string;
           /**
+           * Client secret of the App Registration. Exactly one of
+           * `clientSecret`, `clientCertificate` or `clientCertificatePath`
+           * must be set.
            * @visibility secret
            */
-          clientSecret: string;
+          clientSecret?: string;
+          /**
+           * PEM-encoded client certificate including its private key.
+           * @visibility secret
+           */
+          clientCertificate?: string;
+          /** Path to a PEM-encoded client certificate file including its private key. */
+          clientCertificatePath?: string;
           domainHint?: string;
           callbackUrl?: string;
           additionalScopes?: string | string[];

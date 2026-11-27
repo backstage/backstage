@@ -50,6 +50,7 @@
     "@backstage/types": "workspace:^",
     "@types/passport-microsoft": "^1.0.0",
     "msw": "^3.0.4",
+    "selfsigned": "^5.5.0",
     "supertest": "^7.0.0"
   },
   "configSchema": "config.d.ts"

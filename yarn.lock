@@ -3907,6 +3907,7 @@ __metadata:
     jose: "npm:^6.1.0"
     msw: "npm:^3.0.4"
     passport-microsoft: "npm:^1.0.0"
+    selfsigned: "npm:^5.5.0"
     supertest: "npm:^7.0.0"
     zod: "npm:^3.25.76 || ^4.0.0"
   languageName: unknown
