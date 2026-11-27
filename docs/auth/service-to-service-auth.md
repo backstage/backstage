@@ -206,6 +206,50 @@ must have been signed using one of the listed algorithms.
 `audience` specifies the intended audience(s) of the JWT. The passed JWTs must have an "aud"
 claim that matches one of the audiences specified, or have no audience specified.
 
+`subjectPattern` specifies the regular expression(s) that the `sub` claim of the JWT must
+match. It can be either a single pattern or a list of patterns:
+
+```yaml
+# A single pattern
+subjectPattern: 'project_path:my-group/my-project:ref_type:branch:ref:main'
+
+# A list of patterns, where the subject must match at least one of them
+subjectPattern:
+  - 'project_path:my-group/my-project:ref_type:branch:ref:main'
+  - 'project_path:my-other-group/[^:]+:ref_type:branch:ref:main'
+```
+
+Each pattern must match the entire subject, as if it was wrapped in `^` and `$`. Unlike
+`issuer`, `algorithm` and `audience`, a single string is never split on commas or spaces,
+since those characters are meaningful in regular expressions. To allow several subjects, use a
+list or an alternation such as `(a|b)` inside one pattern. Quoting patterns with single quotes
+is recommended, so that YAML does not interpret characters like `:` or `[`.
+
+This matters when the issuer signs tokens for callers you do not control, which is the case
+for shared CI/CD OIDC providers such as GitLab.com or GitHub Actions: any project on these
+platforms can request a token with your `issuer` and any `audience` it likes, so `issuer` and
+`audience` alone do not identify the caller. For example, to only accept GitLab CI/CD
+[ID tokens](https://docs.gitlab.com/ci/secrets/id_token_authentication/) from the default
+branch of projects in one group:
+
+```yaml title="in e.g. app-config.production.yaml"
+backend:
+  auth:
+    externalAccess:
+      - type: jwks
+        options:
+          url: https://gitlab.com/oauth/discovery/keys
+          issuer: https://gitlab.com
+          algorithm: RS256
+          audience: https://backstage.example.com
+          subjectPattern: 'project_path:my-group/[^:]+:ref_type:branch:ref:main'
+          subjectPrefix: gitlab
+        accessRestrictions:
+          - plugin: catalog
+            permissionAttribute:
+              action: read
+```
+
 For additional details regarding the JWKS configuration, please consult your authentication
 provider's documentation.
 
