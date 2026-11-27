@@ -81,6 +81,28 @@ export const spec = {
           },
         },
       },
+      createdAfter: {
+        name: 'createdAfter',
+        in: 'query',
+        description:
+          'Only return tasks created at or after this ISO 8601 timestamp.',
+        required: false,
+        allowReserved: true,
+        schema: {
+          type: 'string',
+        },
+      },
+      createdBefore: {
+        name: 'createdBefore',
+        in: 'query',
+        description:
+          'Only return tasks created at or before this ISO 8601 timestamp.',
+        required: false,
+        allowReserved: true,
+        schema: {
+          type: 'string',
+        },
+      },
       eventsAfter: {
         name: 'after',
         in: 'query',
@@ -141,6 +163,20 @@ export const spec = {
         name: 'order',
         in: 'query',
         description: 'Order',
+        required: false,
+        allowReserved: true,
+        schema: {
+          type: 'array',
+          items: {
+            type: 'string',
+          },
+        },
+      },
+      templateRef: {
+        name: 'templateRef',
+        in: 'query',
+        description:
+          'Entity refs of the templates that the tasks were created from.',
         required: false,
         allowReserved: true,
         schema: {
@@ -853,7 +889,7 @@ export const spec = {
         operationId: 'ListTasks',
         tags: ['Tasks'],
         description:
-          'Returns a list of tasks, filtering by ownership and/or status if given.',
+          'Returns a list of tasks, filtering by owner, status, template and/or creation time if given.',
         responses: {
           '200': {
             description: 'Ok',
@@ -880,6 +916,12 @@ export const spec = {
             $ref: '#/components/parameters/createdBy',
           },
           {
+            $ref: '#/components/parameters/createdAfter',
+          },
+          {
+            $ref: '#/components/parameters/createdBefore',
+          },
+          {
             $ref: '#/components/parameters/limit',
           },
           {
@@ -890,6 +932,9 @@ export const spec = {
           },
           {
             $ref: '#/components/parameters/status',
+          },
+          {
+            $ref: '#/components/parameters/templateRef',
           },
         ],
       },

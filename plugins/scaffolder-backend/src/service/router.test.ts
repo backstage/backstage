@@ -1564,6 +1564,44 @@ describe('scaffolder router', () => {
       });
     });
 
+    it('passes template and time range filters to the task broker', async () => {
+      const { router, taskBroker } = await createTestRouter();
+      (
+        taskBroker.list as jest.Mocked<Required<TaskBroker>>['list']
+      ).mockResolvedValue({ tasks: [], totalTasks: 0 });
+
+      const response = await request(router).get(
+        `/v2/tasks?templateRef=template:default/a&templateRef=template:default/b&createdAfter=2026-01-01T00:00:00Z&createdBefore=2026-02-01T00:00:00.000Z&order=asc:template_ref`,
+      );
+
+      expect(response.status).toEqual(200);
+      expect(taskBroker.list).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filters: {
+            templateRef: ['template:default/a', 'template:default/b'],
+            createdAfter: '2026-01-01T00:00:00.000Z',
+            createdBefore: '2026-02-01T00:00:00.000Z',
+          },
+          order: [{ order: 'asc', field: 'template_ref' }],
+        }),
+      );
+    });
+
+    it('rejects invalid time range filters', async () => {
+      const { router, taskBroker } = await createTestRouter();
+
+      const invalid = await request(router).get(
+        `/v2/tasks?createdAfter=not-a-date`,
+      );
+      const reversed = await request(router).get(
+        `/v2/tasks?createdAfter=2026-02-01T00:00:00Z&createdBefore=2026-01-01T00:00:00Z`,
+      );
+
+      expect(invalid.status).toEqual(400);
+      expect(reversed.status).toEqual(400);
+      expect(taskBroker.list).not.toHaveBeenCalled();
+    });
+
     it('rejects ordering by unsupported task fields', async () => {
       const { router, taskBroker } = await createTestRouter();
 

@@ -107,10 +107,13 @@ export type ListActions = {};
 export type ListTasks = {
   query: {
     createdBy?: Array<string>;
+    createdAfter?: string;
+    createdBefore?: string;
     limit?: number;
     offset?: number;
     order?: Array<string>;
     status?: Array<string>;
+    templateRef?: Array<string>;
   };
 };
 /**
@@ -320,12 +323,15 @@ export class DefaultApiClient {
   }
 
   /**
-   * Returns a list of tasks, filtering by ownership and/or status if given.
+   * Returns a list of tasks, filtering by owner, status, template and/or creation time if given.
    * @param createdBy - Created by
+   * @param createdAfter - Only return tasks created at or after this ISO 8601 timestamp.
+   * @param createdBefore - Only return tasks created at or before this ISO 8601 timestamp.
    * @param limit - Number of records to return in the response.
    * @param offset - Number of records to skip in the query page.
    * @param order - Order
    * @param status - Status
+   * @param templateRef - Entity refs of the templates that the tasks were created from.
    */
   public async listTasks(
     // @ts-ignore
@@ -334,7 +340,7 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<ListTasksResponse>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
-    const uriTemplate = `/v2/tasks{?createdBy*,limit,offset,order*,status*}`;
+    const uriTemplate = `/v2/tasks{?createdBy*,createdAfter,createdBefore,limit,offset,order*,status*,templateRef*}`;
 
     const uri = parser.parse(uriTemplate).expand({
       ...request.query,

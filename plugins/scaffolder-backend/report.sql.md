@@ -33,8 +33,10 @@
 | `spec`              | `text`                     | false    | -          | -                   |
 | `state`             | `text`                     | true     | -          | -                   |
 | `status`            | `text`                     | false    | -          | -                   |
+| `template_ref`      | `character varying`        | true     | 255        | -                   |
 | `workspace`         | `bytea`                    | true     | -          | -                   |
 
 ### Indices
 
 - `tasks_pkey` (`id`) unique primary
+- `tasks_template_ref_idx` (`template_ref`)
