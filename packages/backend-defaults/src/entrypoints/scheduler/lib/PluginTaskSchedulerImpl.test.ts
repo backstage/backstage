@@ -544,7 +544,7 @@ describe('PluginTaskSchedulerImpl metrics', () => {
     await expect(run(undefined, 'throws')).resolves.toBe('failed');
     await expect(run('timeout', 'returns')).resolves.toBe('failed');
     await expect(run('timeout', 'throws')).resolves.toBe('failed');
-    await expect(run('shutdown', 'returns')).resolves.toBe('aborted');
+    await expect(run('shutdown', 'returns')).resolves.toBe('completed');
     await expect(run('shutdown', 'throws')).resolves.toBe('aborted');
     await expect(run('ticket-lost', 'returns')).resolves.toBe('aborted');
     await expect(run('ticket-lost', 'throws')).resolves.toBe('aborted');

@@ -199,12 +199,20 @@ export class LocalTaskWorker {
       this.#taskState.lastRunError = serializeError(error);
     } else if (thrown && !abortCause) {
       this.#taskState.lastRunError = serializeError(thrown.error);
+    } else if (abortCause === 'ticket-lost') {
+      // Matches what the distributed worker records when a run is cancelled
+      if (thrown) {
+        this.logger.debug(
+          `Task "${this.taskId}" stopped after being cancelled, ${thrown.error}`,
+        );
+      }
+      this.#taskState.lastRunError = serializeError(
+        new Error('Task was cancelled'),
+      );
     } else {
       if (thrown) {
         this.logger.debug(
-          `Task "${this.taskId}" stopped after being ${
-            abortCause === 'shutdown' ? 'shut down' : 'cancelled'
-          }, ${thrown.error}`,
+          `Task "${this.taskId}" stopped after being shut down, ${thrown.error}`,
         );
       }
       this.#taskState.lastRunError = undefined;

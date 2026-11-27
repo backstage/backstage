@@ -187,8 +187,9 @@ work when that happens, for example by calling `signal.throwIfAborted()` between
 steps. Errors that a task throws after the signal is aborted are reported based
 on why it was aborted:
 
-- After a cancellation or a shutdown, the run isn't treated as a failure. The
-  error is only logged at debug level.
+- After a cancellation or a shutdown, the run isn't treated as a failure, and
+  the error is only logged at debug level. A cancelled run is recorded with a
+  `Task was cancelled` error.
 - After a timeout, the run is always treated as a failure, even if the task
   returns normally. A warning is logged, and the timeout is recorded as the
   run's error.

@@ -284,13 +284,16 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
         labels.result = 'failed';
         throw ex;
       } finally {
-        // Whether the task threw or returned normally, runs that the scheduler
-        // stopped on shutdown or handed over to another host aren't failures,
-        // and timeouts always are.
+        // Timeouts are always failures, and runs handed over to another host
+        // are always aborted. A shutdown only aborts runs that stopped because
+        // of it; a task that returned normally still completed its work.
         const abortCause = getTaskAbortCause(abort);
         if (abortCause === 'timeout') {
           labels.result = 'failed';
-        } else if (abortCause === 'shutdown' || abortCause === 'ticket-lost') {
+        } else if (
+          abortCause === 'ticket-lost' ||
+          (abortCause === 'shutdown' && labels.result === 'failed')
+        ) {
           labels.result = 'aborted';
         }
         const delta = process.hrtime(startTime);

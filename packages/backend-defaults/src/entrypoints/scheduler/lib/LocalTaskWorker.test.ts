@@ -140,15 +140,15 @@ describe('LocalTaskWorker', () => {
     worker.cancel();
     expect(receivedSignal?.aborted).toBe(true);
 
-    // A cancelled run that throws is not recorded as failed
+    // A cancelled run is recorded as cancelled, not with what the task threw
     await waitFor(() => {
       expect(worker.taskState()).toEqual(
-        expect.objectContaining({ lastRunEndedAt: expect.any(String) }),
+        expect.objectContaining({
+          lastRunEndedAt: expect.any(String),
+          lastRunError: expect.stringContaining('Task was cancelled'),
+        }),
       );
     });
-    expect(
-      (worker.taskState() as { lastRunError?: string }).lastRunError,
-    ).toBeUndefined();
 
     controller.abort();
   });

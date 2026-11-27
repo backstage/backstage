@@ -363,10 +363,10 @@ export class TaskWorker {
       // The run belongs to another host now, so there is nothing to release
       return { result: 'run-aborted' };
     }
+    // A task that finished its work is completed, even if a shutdown started
+    // just before it returned
     await this.tryReleaseTask(ticket, taskSettings);
-    return abortCause === 'shutdown'
-      ? { result: 'run-aborted' }
-      : { result: 'completed' };
+    return { result: 'completed' };
   }
 
   /**
