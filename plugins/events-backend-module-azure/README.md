@@ -1,24 +1,6 @@
 # events-backend-module-azure
 
-Welcome to the `events-backend-module-azure` backend module!
-
-This package is a module for the `events-backend` backend plugin
-and extends the event system with an `AzureDevOpsEventRouter`.
-
-The event router will subscribe to the topic `azureDevOps`
-and route the events to more concrete topics based on the value
-of the provided `$.eventType` payload field.
-
-Examples:
-
-| `$.eventType`             | topic                                 |
-| ------------------------- | ------------------------------------- |
-| `git.push`                | `azureDevOps.git.push`                |
-| `git.pullrequest.created` | `azureDevOps.git.pullrequest.created` |
-
-Please find all possible webhook event types at the
-[official documentation of events](https://learn.microsoft.com/en-us/azure/devops/service-hooks/events?source=recommendations&view=azure-devops)
-and [webhooks](https://learn.microsoft.com/en-us/azure/devops/service-hooks/services/webhooks?view=azure-devops).
+This module routes Azure DevOps events to event-specific topics in the Backstage events backend.
 
 ## Installation
 
@@ -27,48 +9,6 @@ and [webhooks](https://learn.microsoft.com/en-us/azure/devops/service-hooks/serv
 yarn --cwd packages/backend add @backstage/plugin-events-backend-module-azure
 ```
 
-```ts
-// packages/backend/src/index.ts
-backend.add(import('@backstage/plugin-events-backend-module-azure'));
-```
+## Documentation
 
-### Legacy Backend System
-
-```ts
-// packages/backend/src/plugins/events.ts
-const eventRouter = new AzureDevOpsEventRouter({
-  events: env.events,
-});
-await eventRouter.subscribe();
-```
-
-## Configuration
-
-Webhook authentication is secure by default. Requests to the module's endpoint `/api/events/http/azureDevOps` without a configured `webhookSecret` return an HTTP 403 Forbidden status.
-
-This only covers the module's own endpoint. Routes created solely through `events.http.topics` have no validator attached and still accept unauthenticated requests.
-
-Add the following to your `app-config.yaml`:
-
-```yaml
-events:
-  modules:
-    azureDevOps:
-      webhookSecret: your-secret-token
-```
-
-Configure the same secret value as the `x-ado-webhook-secret` HTTP header in your Azure DevOps service hook subscription.
-
-### Development and testing
-
-For development or testing environments where a webhook secret cannot be configured, you can set `dangerouslyAllowUnauthenticatedEvents: true` as an explicit escape hatch under the module configuration:
-
-```yaml
-events:
-  modules:
-    azureDevOps:
-      dangerouslyAllowUnauthenticatedEvents: true
-```
-
-> [!WARNING]
-> Only use `dangerouslyAllowUnauthenticatedEvents: true` for development or testing. Never enable this option in production environments.
+See [Azure DevOps Events](https://backstage.io/docs/integrations/azure/events) for backend setup and routing details.
