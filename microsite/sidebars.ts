@@ -479,6 +479,7 @@ export default {
         sidebarElementWithIndex({ label: 'Gitea' }, [
           'integrations/gitea/locations',
           'integrations/gitea/discovery',
+          'integrations/gitea/scaffolder',
         ]),
         sidebarElementWithIndex({ label: 'Harness' }, [
           'integrations/harness/locations',
