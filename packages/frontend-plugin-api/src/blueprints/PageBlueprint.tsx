@@ -85,17 +85,24 @@ function resolveTitleLink(
 /** Parent-owned selection from the same matched branch as the app route. */
 function PageContent(props: {
   subPages?: readonly PageSubPage[];
+  selectedSubPage?: PageSubPage;
+  selectedMatch?: RouteResolutionMatch;
   pageMount?: RouteResolutionMatch;
   matches?: readonly RouteResolutionMatch[];
   history?: AppHistoryApi;
   location?: AppLocation;
   children?: ReactNode;
 }) {
-  const { subPages, pageMount, matches, history, location, children } = props;
-  const selectedMatch = matches?.find(match =>
-    subPages?.some(page => page.node === match.node),
-  );
-  const selected = subPages?.find(page => page.node === selectedMatch?.node);
+  const {
+    subPages,
+    selectedSubPage,
+    selectedMatch,
+    pageMount,
+    matches,
+    history,
+    location,
+    children,
+  } = props;
   const firstPath = subPages?.[0]?.path;
   useEffect(() => {
     if (
@@ -114,13 +121,12 @@ function PageContent(props: {
       }
     }
   }, [matches, firstPath, pageMount, location, history]);
-  return selected && selectedMatch ? (
+  return selectedSubPage && selectedMatch ? (
     <>
-      <Helmet title={selected.label} />
       <BreadcrumbEntry
-        entry={{ label: selected.label, href: selectedMatch.basePath }}
+        entry={{ label: selectedSubPage.label, href: selectedMatch.basePath }}
       >
-        {selected.element}
+        {selectedSubPage.element}
       </BreadcrumbEntry>
     </>
   ) : (
@@ -179,6 +185,12 @@ function PluginPageShell(props: {
   const matches =
     location &&
     routeResolutionApi.resolvePath({ pathname: location.pathname }).matches;
+  const selectedMatch = matches?.find(match =>
+    translatedSubPages?.some(page => page.node === match.node),
+  );
+  const selectedSubPage = translatedSubPages?.find(
+    page => page.node === selectedMatch?.node,
+  );
   const tabs =
     mount &&
     translatedSubPages?.map(({ path, label, icon: tabIcon }) => ({
@@ -195,7 +207,11 @@ function PluginPageShell(props: {
   }
   return (
     <>
-      <Helmet titleTemplate={titleTemplate} defaultTitle={defaultTitle} />
+      <Helmet
+        titleTemplate={titleTemplate}
+        defaultTitle={defaultTitle}
+        title={selectedSubPage?.label}
+      />
       <PageLayout
         title={titles[0] ?? title}
         icon={icon}
@@ -207,6 +223,8 @@ function PluginPageShell(props: {
         <ExtensionBoundary node={node}>
           <PageContent
             subPages={translatedSubPages}
+            selectedSubPage={selectedSubPage}
+            selectedMatch={selectedMatch}
             pageMount={mount}
             matches={matches}
             history={history}
