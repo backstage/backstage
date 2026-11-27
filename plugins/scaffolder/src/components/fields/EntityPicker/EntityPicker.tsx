@@ -221,11 +221,26 @@ export const EntityPicker = (props: EntityPickerProps) => {
     lastCommittedRef.current = formData;
   }, [formData]);
 
+  // With both inputValue and selectedKey controlled, the combobox leaves it to
+  // us to clear the selection when the input is emptied and to sync the input
+  // text back to the selection.
+  const handleInputChange = useCallback(
+    (value: string) => {
+      setInputValue(value);
+      if (value === '' && lastCommittedRef.current !== undefined) {
+        lastCommittedRef.current = undefined;
+        onChange(undefined);
+      }
+    },
+    [onChange],
+  );
+
   const handleSelectionChange = useCallback(
     (key: Key | null) => {
       if (key !== null) {
         const value = String(key);
         lastCommittedRef.current = value;
+        setInputValue(buiOptions.find(o => o.value === value)?.label ?? value);
         onChange(value);
       } else if (allowArbitraryValues && inputValue) {
         let entityRef = inputValue;
@@ -240,10 +255,18 @@ export const EntityPicker = (props: EntityPickerProps) => {
         onChange(entityRef);
       } else {
         lastCommittedRef.current = undefined;
+        setInputValue('');
         onChange(undefined);
       }
     },
-    [onChange, allowArbitraryValues, inputValue, defaultKind, defaultNamespace],
+    [
+      onChange,
+      allowArbitraryValues,
+      inputValue,
+      defaultKind,
+      defaultNamespace,
+      buiOptions,
+    ],
   );
 
   const handleBlur = useCallback(() => {
@@ -321,7 +344,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
           isDisabled={isDisabled || isAutoSelected}
           selectedKey={selectedKey}
           inputValue={inputValue}
-          onInputChange={setInputValue}
+          onInputChange={handleInputChange}
           onSelectionChange={handleSelectionChange}
           onBlur={handleBlur}
           isLoading={loading}
