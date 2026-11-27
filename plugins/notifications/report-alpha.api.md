@@ -141,6 +141,51 @@ const _default: OverridableFrontendPlugin<
         noHeader?: boolean;
       };
     }>;
+    'sub-page:notifications/settings': OverridableExtensionDefinition<{
+      kind: 'sub-page';
+      name: 'settings';
+      config: {
+        path: string | undefined;
+        title: string | undefined;
+      };
+      configInput: {
+        path?: string | undefined;
+        title?: string | undefined;
+      };
+      output:
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<
+            RouteRef_2<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<string, 'core.title', {}>
+        | ExtensionDataRef<
+            TranslationRefTuple<undefined>,
+            'core.titleTranslation',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        path: string;
+        title: string | TranslationRefTuple<undefined>;
+        icon?: IconElement;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef_2;
+      };
+    }>;
   }
 >;
 export default _default;

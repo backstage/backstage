@@ -127,10 +127,7 @@ export const UserNotificationSettingsPanel = (props: {
           </th>
           {settings.channels.map(channel => (
             <th key={channel.id} className={styles.headerCell}>
-              <Text
-                variant="title-x-small"
-                style={{ textAlign: 'center', display: 'block' }}
-              >
+              <Text variant="title-x-small" style={{ display: 'block' }}>
                 {channel.id}
               </Text>
             </th>

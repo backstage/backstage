@@ -17,6 +17,7 @@
 import {
   ApiBlueprint,
   PageBlueprint,
+  SubPageBlueprint,
   createFrontendPlugin,
   discoveryApiRef,
   fetchApiRef,
@@ -34,6 +35,26 @@ const page = PageBlueprint.make({
       import('./components/NotificationsPage').then(m => (
         <m.NfsNotificationsPage />
       )),
+  },
+});
+
+const settingsPage = SubPageBlueprint.make({
+  name: 'settings',
+  attachTo: { id: 'page:user-settings', input: 'pages' },
+  params: {
+    path: 'notifications',
+    title: 'Notifications',
+    loader: async () => {
+      const [m, { Container }] = await Promise.all([
+        import('./components/UserNotificationSettingsCard'),
+        import('@backstage/ui'),
+      ]);
+      return (
+        <Container>
+          <m.UserNotificationSettingsCard />
+        </Container>
+      );
+    },
   },
 });
 
@@ -57,7 +78,7 @@ export default createFrontendPlugin({
     root: rootRouteRef,
   },
   // TODO(Rugvip): Nav item (i.e. NotificationsSidebarItem) currently needs to be installed manually
-  extensions: [page, api, unreadNotificationsHomeWidget],
+  extensions: [page, settingsPage, api, unreadNotificationsHomeWidget],
 });
 
 import { notificationsTranslationRef as _notificationsTranslationRef } from './translation';
