@@ -233,6 +233,11 @@ export default {
             'notifications/usage',
           ],
         ),
+        {
+          type: 'category',
+          label: 'Events',
+          items: ['events/service'],
+        },
         sidebarElementWithIndex(
           {
             label: 'Permissions',
