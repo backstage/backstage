@@ -91,9 +91,10 @@ for Zensical. See [Zensical Engine](./engines-zensical.md) for running Zensical
 without Docker.
 
 Backstage instances might differ from the provided preview app in appearance and
-behavior. To preview documentation with a different app, use
-`--preview-app-bundle-path` with a path to the bundle of the app to use instead.
-Typically, a `dist` or `build` directory.
+behavior. To preview documentation with your own theme, logos, or TechDocs
+addons, build a custom preview app and pass its bundle with
+`--preview-app-bundle-path`. See
+[Previewing with a custom app](#previewing-with-a-custom-app).
 
 NOTE: When using a custom Docker image, make sure its entry point is the
 engine's command (`ENTRYPOINT ["mkdocs"]` or `ENTRYPOINT ["zensical"]`), or
@@ -130,6 +131,91 @@ Options:
 ```
 
 The `--mkdocs-*` options are deprecated, see [Deprecated options](#deprecated-options).
+
+### Previewing with a custom app
+
+The default preview app that ships with `@techdocs/cli` is a small Backstage
+frontend called
+[`techdocs-cli-embedded-app`](https://github.com/backstage/backstage/tree/master/packages/techdocs-cli-embedded-app).
+It includes TechDocs API overrides that talk to the local documentation engine
+instead of a TechDocs backend. To get a local preview that matches your real
+Backstage instance more closely, copy that package into your Backstage app,
+customize it, build it, and point `serve` at the resulting bundle.
+
+#### 1. Copy the embedded app
+
+From your Backstage repository root, copy the package into `packages/`:
+
+```shell
+cp -R <path-to-backstage>/packages/techdocs-cli-embedded-app \
+  packages/techdocs-cli-embedded-app
+```
+
+If you do not have a local clone of the Backstage repository, download the
+package from
+[GitHub](https://github.com/backstage/backstage/tree/master/packages/techdocs-cli-embedded-app)
+instead. Keep the package name `techdocs-cli-embedded-app` (or update workspace
+scripts accordingly), and make sure its dependencies use the same
+`workspace:^` style as your other packages so Yarn links them correctly.
+
+:::caution
+Do not pass the `dist` of your full `packages/app` to
+`--preview-app-bundle-path` unless you have added equivalent TechDocs preview
+API overrides. Without those overrides the preview app expects a TechDocs
+backend and will not load documentation from the local engine.
+:::
+
+#### 2. Register custom addons, theme, and logo
+
+Customize the copied package so it matches the TechDocs experience in your main
+app:
+
+- **Addons** — register the same TechDocs addon modules you use in production.
+  Import them in `src/App.tsx` and add them to the `features` array. See
+  [TechDocs Addons](./addons.md) for details. Keep the built-in live-reload and
+  theme-toggle addons unless you intentionally replace them.
+- **Theme** — install your app themes with
+  [`ThemeBlueprint`](../../frontend-system/building-plugins/03-common-extension-blueprints.md#theme---reference)
+  the same way you do in `packages/app`, then include those theme modules in
+  `src/App.tsx`.
+- **Logo** — replace the components in
+  `src/components/Sidebar/LogoFull.tsx` and
+  `src/components/Sidebar/LogoIcon.tsx` with the logos from your main app, or
+  symlink those files if you want a single source of truth.
+
+Keep the TechDocs API overrides in `src/apis.ts`. Those implementations are what
+make `techdocs-cli serve` fetch pages from the local engine.
+
+#### 3. Build the preview app
+
+From your Backstage repository root:
+
+```shell
+yarn install
+yarn workspace techdocs-cli-embedded-app build
+```
+
+This writes a static bundle to `packages/techdocs-cli-embedded-app/dist`.
+
+#### 4. Serve with the custom bundle
+
+From the documentation project directory (the one that contains `mkdocs.yml` or
+your chosen engine config):
+
+```shell
+npx @techdocs/cli serve \
+  --preview-app-bundle-path <path-to-backstage>/packages/techdocs-cli-embedded-app/dist
+```
+
+Optional flags:
+
+- `--preview-app-port <PORT>` — port for the preview app (default `3000`)
+- `--no-docker` — run the documentation engine on the host instead of in Docker
+
+Open
+`http://localhost:<preview-app-port>/docs/default/component/local/` if the
+browser does not open automatically. You should see your custom theme, logos,
+and addons while editing docs locally.
 
 ### Serve with the engine's own preview server
 
