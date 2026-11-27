@@ -45,10 +45,12 @@ export interface Config {
     };
 
     /**
+     * Extension settings, keyed by extension ID. Objects merge across config files
+     * without changing extension order. The legacy array form also sets global order.
+     *
      * @deepVisibility frontend
      */
-    extensions?: Array<
-      | string
+    extensions?:
       | {
           [extensionId: string]:
             | boolean
@@ -56,9 +58,22 @@ export interface Config {
                 attachTo?: { id: string; input: string };
                 disabled?: boolean;
                 config?: unknown;
+                inputs?: { [inputName: string]: { order?: string[] } };
               };
         }
-    >;
+      | Array<
+          | string
+          | {
+              [extensionId: string]:
+                | boolean
+                | {
+                    attachTo?: { id: string; input: string };
+                    disabled?: boolean;
+                    config?: unknown;
+                    inputs?: { [inputName: string]: { order?: string[] } };
+                  };
+            }
+        >;
 
     /**
      * This section enables you to override certain properties of specific or

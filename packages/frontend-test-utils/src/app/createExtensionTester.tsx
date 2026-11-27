@@ -325,16 +325,13 @@ export class ExtensionTester<UOutput extends ExtensionDataRef> {
 
     const collector = createErrorCollector();
 
-    const tree = resolveAppTree(
-      subject.id,
-      resolveAppNodeSpecs({
-        features: [],
-        builtinExtensions: this.#extensions.map(_ => _.extension),
-        parameters: readAppExtensionsConfig(this.#getConfig()),
-        collector,
-      }),
+    const { specs, inputSettings } = resolveAppNodeSpecs({
+      features: [],
+      builtinExtensions: this.#extensions.map(_ => _.extension),
+      ...readAppExtensionsConfig(this.#getConfig(), collector),
       collector,
-    );
+    });
+    const tree = resolveAppTree(subject.id, specs, collector, inputSettings);
 
     const apiHolder = resolveTestApiEntries(this.#apis ?? []);
 

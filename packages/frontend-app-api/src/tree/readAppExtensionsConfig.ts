@@ -17,46 +17,97 @@
 import { Config } from '@backstage/config';
 import { JsonValue } from '@backstage/types';
 
+import { ErrorCollector } from '../wiring/createErrorCollector';
+
+export interface ExtensionInputSettings {
+  [inputName: string]: { order?: string[] };
+}
+
 export interface ExtensionParameters {
   id: string;
   attachTo?: { id: string; input: string };
   disabled?: boolean;
   config?: unknown;
+  inputs?: ExtensionInputSettings;
 }
 
-const knownExtensionParameters = ['attachTo', 'disabled', 'config'];
+const knownExtensionParameters = ['attachTo', 'disabled', 'config', 'inputs'];
 
-// Since we'll never merge arrays in config the config reader context
-// isn't too much of a help. Fall back to manual config reading logic
-// as the Config interface makes it quite hard for us otherwise.
 /** @internal */
 export function readAppExtensionsConfig(
   rootConfig: Config,
-): ExtensionParameters[] {
-  const arr = rootConfig.getOptional('app.extensions');
-  if (!Array.isArray(arr)) {
-    if (arr === undefined) {
-      return [];
-    }
-    // This will throw, and show which part of config had the wrong type
-    rootConfig.getConfigArray('app.extensions');
-    return [];
+  collector: ErrorCollector,
+): {
+  parameters: ExtensionParameters[];
+  reorder: boolean;
+} {
+  let value: JsonValue | undefined;
+  try {
+    value = rootConfig.getOptional('app.extensions');
+  } catch (error) {
+    collector.report({
+      code: 'EXTENSION_CONFIG_INVALID',
+      message: String(error),
+      context: { configPath: 'app.extensions' },
+    });
+    return { parameters: [], reorder: false };
   }
-
-  return arr.map((arrayEntry, arrayIndex) =>
-    expandShorthandExtensionParameters(arrayEntry, arrayIndex),
-  );
+  const reorder = Array.isArray(value);
+  const parameters: ExtensionParameters[] = [];
+  if (value === undefined) return { parameters, reorder };
+  if (typeof value !== 'object' || value === null) {
+    collector.report({
+      code: 'EXTENSION_CONFIG_INVALID',
+      message:
+        'Invalid extension configuration at app.extensions, must be an array or object',
+      context: { configPath: 'app.extensions' },
+    });
+    return { parameters, reorder };
+  }
+  const entries = Array.isArray(value)
+    ? value.map((entry, index) => ({ entry, path: index }))
+    : Object.entries(value).map(([id, settings]) => ({
+        entry: { [id]: settings },
+        path: 'app.extensions',
+      }));
+  for (const { entry, path } of entries) {
+    let extensionId: string | undefined;
+    if (typeof entry === 'string') extensionId = entry;
+    else if (entry && typeof entry === 'object' && !Array.isArray(entry))
+      extensionId = Object.keys(entry)[0];
+    const report = (message: string) =>
+      collector.report({
+        code: 'EXTENSION_CONFIG_INVALID',
+        message,
+        context: {
+          configPath:
+            typeof path === 'number' ? `app.extensions[${path}]` : path,
+          extensionId,
+        },
+      });
+    try {
+      parameters.push(expandShorthandExtensionParameters(entry, path, report));
+    } catch (error) {
+      report(error instanceof Error ? error.message : String(error));
+    }
+  }
+  return { parameters, reorder };
 }
 
 /** @internal */
 export function expandShorthandExtensionParameters(
   arrayEntry: JsonValue,
-  arrayIndex: number,
+  configPath: number | string,
+  reportError: (message: string) => void = message => {
+    throw new Error(message);
+  },
 ): ExtensionParameters {
   function errorMsg(msg: string, key?: string, prop?: string) {
-    return `Invalid extension configuration at app.extensions[${arrayIndex}]${
-      key ? `[${key}]` : ''
-    }${prop ? `.${prop}` : ''}, ${msg}`;
+    return `Invalid extension configuration at ${
+      typeof configPath === 'number'
+        ? `app.extensions[${configPath}]`
+        : configPath
+    }${key ? `[${key}]` : ''}${prop ? `.${prop}` : ''}, ${msg}`;
   }
 
   // NOTE(freben): This check is intentionally not complete and doesn't check
@@ -201,10 +252,81 @@ export function expandShorthandExtensionParameters(
     );
   }
 
+  let inputs: ExtensionParameters['inputs'];
+  if (value.inputs !== undefined) {
+    if (
+      !value.inputs ||
+      typeof value.inputs !== 'object' ||
+      Array.isArray(value.inputs)
+    ) {
+      reportError(errorMsg('must be an object', id, 'inputs'));
+    } else {
+      inputs = {};
+      for (const [inputName, settings] of Object.entries(value.inputs)) {
+        const prop = `inputs.${inputName}`;
+        if (
+          !settings ||
+          typeof settings !== 'object' ||
+          Array.isArray(settings)
+        ) {
+          reportError(errorMsg('must be an object', id, prop));
+          continue;
+        }
+        Object.defineProperty(inputs, inputName, {
+          value: {},
+          enumerable: true,
+          writable: true,
+        });
+        for (const key of Object.keys(settings)) {
+          if (key !== 'order')
+            reportError(
+              errorMsg(
+                "unknown parameter; expected 'order'",
+                id,
+                `${prop}.${key}`,
+              ),
+            );
+        }
+        if (settings.order === undefined) continue;
+        if (!Array.isArray(settings.order)) {
+          reportError(
+            errorMsg('must be an array of extension IDs', id, `${prop}.order`),
+          );
+          continue;
+        }
+        const seen = new Set<string>();
+        const order: string[] = [];
+        for (const entry of settings.order) {
+          if (typeof entry !== 'string' || !entry || entry !== entry.trim()) {
+            reportError(
+              errorMsg(
+                'must be a non-empty extension ID or wildcard',
+                id,
+                `${prop}.order`,
+              ),
+            );
+          } else if (seen.has(entry)) {
+            reportError(
+              errorMsg(
+                `duplicate entry '${entry}'; keeping the first occurrence`,
+                id,
+                `${prop}.order`,
+              ),
+            );
+          } else {
+            seen.add(entry);
+            order.push(entry);
+          }
+        }
+        inputs[inputName] = { order };
+      }
+    }
+  }
   return {
     id,
     attachTo,
     disabled,
     config,
+    ...(inputs ? { inputs } : {}),
   };
 }

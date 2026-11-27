@@ -24,6 +24,7 @@ import {
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtension } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 import { ErrorCollector } from '../wiring/createErrorCollector';
+import { ExtensionInputSettings } from './readAppExtensionsConfig';
 
 function indent(str: string) {
   return str.replace(/^/gm, '  ');
@@ -109,13 +110,15 @@ const isValidAttachmentPoint = (
 
 /**
  * Build the app tree by iterating through all node specs and constructing the app
- * tree with all attachments in the same order as they appear in the input specs array.
+ * tree with attachments in the same order as the input specs array, then applying
+ * configured input ordering after all attachments and redirects are resolved.
  * @internal
  */
 export function resolveAppTree(
   rootNodeId: string,
   specs: AppNodeSpec[],
   errorCollector: ErrorCollector,
+  inputSettings: Map<string, ExtensionInputSettings> = new Map(),
 ): AppTree {
   const nodes = new Map<string, SerializableAppNode>();
 
@@ -217,6 +220,38 @@ export function resolveAppTree(
       } else {
         orphans.push(node);
       }
+    }
+  }
+
+  for (const [nodeId, inputs] of inputSettings) {
+    const node = nodes.get(nodeId);
+    if (!node) continue;
+    for (const [inputName, settings] of Object.entries(inputs)) {
+      if (
+        !Object.prototype.hasOwnProperty.call(
+          toInternalExtension(node.spec.extension).inputs,
+          inputName,
+        )
+      ) {
+        errorCollector.report({
+          code: 'EXTENSION_CONFIGURATION_INVALID',
+          message: `Unknown configured input '${inputName}' in extension '${node.spec.id}'; ignoring its settings`,
+          context: { node },
+        });
+        continue;
+      }
+      if (!settings.order) continue;
+      const children = node.edges.attachments.get(inputName) ?? [];
+      const byId = new Map(children.map(child => [child.spec.id, child]));
+      const mentioned = new Set(settings.order);
+      const rest = children.filter(child => !mentioned.has(child.spec.id));
+      const ordered = settings.order.flatMap(id => {
+        if (id === '*') return rest;
+        const child = byId.get(id);
+        return child ? [child] : [];
+      });
+      if (!mentioned.has('*')) ordered.push(...rest);
+      node.edges.attachments.set(inputName, ordered);
     }
   }
 

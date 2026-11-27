@@ -164,6 +164,7 @@ describe('JSON schema UI rendering', () => {
       expect(tr).toBeInTheDocument();
 
       const pt = (basic.properties![p] as JSONSchema7).type;
+      await within(tr).findByText(`the ${pt}`);
       const headerCells = within(tr).queryAllByRole('rowheader');
       const dataCells = within(tr).getAllByRole('gridcell');
       const allCells = [...headerCells, ...dataCells];

@@ -87,7 +87,7 @@ Entity content is page content, not a page, so it never declares a [page router]
 
 Supports optional params such as `group` and `icon` to:
 
-- group: string | false — associates the content with a tab group on the entity page (for example "overview", "quality", "deployment", or any custom id). You can override or disable this per-installation via app-config using `app.extensions[...].config.group`, where `false` removes the grouping.
+- group: string | false — associates the content with a tab group on the entity page (for example "overview", "quality", "deployment", or any custom id). You can override or disable this per-installation via app-config using `app.extensions[<extension-id>].config.group`, where `false` removes the grouping.
 - icon: string — sets the tab icon. Note: when providing a string, the icon is looked up via the app's IconsApi; make sure icon bundles are enabled/installed in your app (see the Icons blueprint reference above) so that the icon id you use is available.
 
 To render icons in the entity page tabs, the page must also have icons enabled via app configuration. Set `showNavItemIcons: true` on the catalog entity page config (created via `page:catalog/entity`). Example:
@@ -96,18 +96,18 @@ To render icons in the entity page tabs, the page must also have icons enabled v
 app:
   extensions:
     # Entity page
-    - page:catalog/entity:
-        config:
-          # Enable tab- and group-icons
-          showNavItemIcons: true
-          # Optionally override default groups and their icons
-          groups:
-            - overview:
-                title: Overview
-                icon: dashboard
-            - documentation:
-                title: Docs
-                icon: description
+    page:catalog/entity:
+      config:
+        # Enable tab- and group-icons
+        showNavItemIcons: true
+        # Optionally override default groups and their icons
+        groups:
+          - overview:
+              title: Overview
+              icon: dashboard
+          - documentation:
+              title: Docs
+              icon: description
 ```
 
 Avoid using `convertLegacyEntityContentExtension` from `@backstage/core-compat-api` to convert legacy entity content extensions to the new system. Instead, use the `EntityContentBlueprint` directly. The legacy converter is only intended to help adapt 3rd party plugins that you don't control, and doesn't produce as good results as using the blueprint directly.

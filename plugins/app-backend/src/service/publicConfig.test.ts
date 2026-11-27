@@ -18,6 +18,7 @@ import express from 'express';
 import fs from 'fs-extra';
 import request from 'supertest';
 import { AppConfig, ConfigReader } from '@backstage/config';
+import { JsonValue } from '@backstage/types';
 import {
   createMockDirectory,
   mockCredentials,
@@ -85,11 +86,16 @@ describe('public entry point config', () => {
                     title: { type: 'string', visibility: 'frontend' },
                     baseUrl: { type: 'string', visibility: 'frontend' },
                     extensions: {
-                      type: 'array',
                       deepVisibility: 'frontend',
-                      items: {
-                        anyOf: [{ type: 'string' }, { type: 'object' }],
-                      },
+                      anyOf: [
+                        {
+                          type: 'array',
+                          items: {
+                            anyOf: [{ type: 'string' }, { type: 'object' }],
+                          },
+                        },
+                        { type: 'object' },
+                      ],
                     },
                     privateValue: { type: 'string', visibility: 'backend' },
                     secret: { type: 'string', visibility: 'secret' },
@@ -123,6 +129,7 @@ describe('public entry point config', () => {
     options?: {
       disablePublicEntryPoint?: boolean;
       disableConfigInjection?: boolean;
+      extensions?: JsonValue;
     },
   ) {
     const data = {
@@ -325,33 +332,59 @@ describe('public entry point config', () => {
     });
   });
 
-  it.each([
-    {},
-    { allowedConfig: [], allowedExtensions: [] },
-    { allowedExtensions: ['api:auth'] },
-    { allowedConfig: ['app.extensions'] },
-    { allowedConfig: ['app.extensions.0', 'app.extensions.1.api:auth'] },
-    { allowedConfig: ['app.extensions[0]', 'app["extensions"]'] },
-    { allowedConfig: ['app'], allowedExtensions: [] },
-    {
-      allowedConfig: ['app', 'app.extensions', 'app.extensions.0'],
-      allowedExtensions: ['api:auth'],
-    },
-  ])(
+  it.each(
+    [
+      {},
+      { allowedConfig: [], allowedExtensions: [] },
+      { allowedExtensions: ['api:auth'] },
+      { allowedExtensions: ['api:auth.config'] },
+      { allowedConfig: ['app.extensions'] },
+      {
+        allowedConfig: [
+          'app.extensions.api:auth',
+          'app.extensions.api:auth.config',
+        ],
+      },
+      { allowedConfig: ['app["extensions"]["api:auth"]'] },
+      { allowedConfig: ['app.extensions.0', 'app.extensions.1.api:auth'] },
+      { allowedConfig: ['app.extensions[0]', 'app["extensions"]'] },
+      { allowedConfig: ['app'], allowedExtensions: [] },
+      {
+        allowedConfig: ['app', 'app.extensions', 'app.extensions.0'],
+        allowedExtensions: ['api:auth'],
+      },
+    ].flatMap(publicConfig =>
+      ['array', 'object'].map(format => ({ publicConfig, format })),
+    ),
+  )(
     'restricts extensions independently of key paths: %j',
-    async publicConfig => {
-      const app = await createApp(publicConfig);
+    async ({ publicConfig, format }) => {
+      const extension = {
+        'api:auth': { config: { provider: 'github' } },
+        'api:auth.extra': { config: { title: 'Not an exact match' } },
+        'page:catalog': {
+          disabled: false,
+          config: { title: 'Internal catalog' },
+        },
+      };
+      const app = await createApp(
+        publicConfig,
+        format === 'object' ? { extensions: extension } : {},
+      );
       const response = await request(app).get('/backstage/');
       expect(response.status).toBe(200);
       const includesApp = publicConfig.allowedConfig?.includes('app');
+      const includesAuth = publicConfig.allowedExtensions?.includes('api:auth');
+      const expectedMap = includesAuth
+        ? { 'api:auth': extension['api:auth'] }
+        : {};
+      const expectedArray = includesAuth ? [extensions[1]] : [];
       expect(readInjectedConfig(response.text)).toEqual({
         app: {
           ...(includesApp
             ? { title: 'Backstage', baseUrl: frontendData.app.baseUrl }
             : {}),
-          extensions: publicConfig.allowedExtensions?.includes('api:auth')
-            ? [extensions[1]]
-            : [],
+          extensions: format === 'object' ? expectedMap : expectedArray,
         },
       });
       expect(response.text).toContain('src="/backstage/static/main.js"');
@@ -359,7 +392,13 @@ describe('public entry point config', () => {
       const mainResponse = await request(app)
         .get('/backstage/')
         .set('Cookie', mockCredentials.limitedUser.cookie());
-      expect(readInjectedConfig(mainResponse.text)).toEqual(frontendData);
+      expect(readInjectedConfig(mainResponse.text)).toEqual({
+        ...frontendData,
+        app: {
+          ...frontendData.app,
+          ...(format === 'object' ? { extensions: extension } : {}),
+        },
+      });
     },
   );
 });
