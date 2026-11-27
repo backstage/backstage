@@ -1,0 +1,54 @@
+# Complements .github/workflows/verify_fossa.yml (FOSSA push + PR analysis).
+# This workflow provides fast, deterministic PR gating on yarn.lock dependency
+# license changes using scripts/check-licenses.js and .allowed-licenses.json.
+# Runs on pull_request (no secrets needed) to avoid the default
+# pull_request_target block (evaluate now, enforcement Dec 2, 2026).
+# See PR description for why not Snyk/Mend/FOSSA/ORT/dependency-review-action.
+name: Verify Licenses
+
+on:
+  pull_request:
+    branches: [master]
+    paths:
+      - 'yarn.lock'
+      - '.allowed-licenses.json'
+      - 'scripts/check-licenses.js'
+      - '.github/workflows/verify_licenses.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
+      - name: Checkout PR merge commit
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Fetch base yarn.lock for diff
+        run: |
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          echo "Base: $BASE_SHA Head: ${{ github.event.pull_request.head.sha }}"
+          git fetch origin master --depth 1
+          git show "$BASE_SHA":yarn.lock > /tmp/base-yarn.lock 2>/dev/null || touch /tmp/base-yarn.lock
+          ls -l /tmp/base-yarn.lock yarn.lock || true
+
+      - name: Use Node.js 24.x
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24.x
+
+      - name: Verify licenses
+        run: node scripts/check-licenses.js --base-lock /tmp/base-yarn.lock --head-lock yarn.lock --config .allowed-licenses.json

@@ -1,0 +1,96 @@
+{
+  "_comment": "CNCF Allowlist + Backstage-approved licenses. CNCF list is pinned; additional licenses have per-entry approval. Allowed set is cncfAllowedLicenses \u222a approvedLicenses[].id",
+  "cncfPolicyRev": "2024-11-23",
+  "cncfAllowedLicenses": [
+    "0BSD",
+    "BSD-2-Clause",
+    "BSD-2-Clause-FreeBSD",
+    "BSD-3-Clause",
+    "MIT",
+    "MIT-0",
+    "ISC",
+    "OpenSSL",
+    "OpenSSL-standalone",
+    "PSF-2.0",
+    "Python-2.0",
+    "Python-2.0.1",
+    "PostgreSQL",
+    "SSLeay-standalone",
+    "UPL-1.0",
+    "X11",
+    "Zlib",
+    "Apache-2.0"
+  ],
+  "approvedLicenses": [
+    {
+      "id": "BlueOak-1.0.0",
+      "reason": "Permissive, MIT-like \u2014 no attribution burden, Apache-2.0 compatible, OSI-recognized as copyfree. Chosen as replacement for MIT in npm ecosystem for its clarity on patent and attribution.",
+      "approvedBy": "backstage/maintainers",
+      "url": "https://opensource.org/license/BlueOak-1.0.0"
+    },
+    {
+      "id": "Artistic-2.0",
+      "reason": "OSI-approved permissive \u2014 allows commercial use and relicensing with notice preservation, no copyleft. Used for Perl-ecosystem utilities, compatible with Apache-2.0.",
+      "approvedBy": "backstage/maintainers",
+      "url": "https://opensource.org/license/Artistic-2.0"
+    },
+    {
+      "id": "CC0-1.0",
+      "reason": "Public domain dedication \u2014 waives all copyright, no attribution required. Applied to data packages (mdn-data, caniuse subsets) where attribution would be impractical.",
+      "approvedBy": "backstage/maintainers",
+      "url": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "id": "Unlicense",
+      "reason": "Public domain dedication \u2014 equivalent to CC0 for code, no conditions. Used for small utilities where author opts out of copyright.",
+      "approvedBy": "backstage/maintainers",
+      "url": "https://unlicense.org/"
+    }
+  ],
+  "overrides": [
+    {
+      "_example": true,
+      "name": "example-package",
+      "versionRange": "*",
+      "license": "GPL-2.0-only",
+      "reason": "Example override entry showing required fields - engine ignores entries with _example:true; remove flag to activate",
+      "expiresOn": "2026-12-31",
+      "approvedBy": "legal@example.com"
+    },
+    {
+      "name": "fly-import",
+      "versionRange": "1.0.0",
+      "license": "(missing)",
+      "reason": "verified the package has MIT license via npm view",
+      "approvedBy": "backstage/maintainers"
+    },
+    {
+      "name": "pause",
+      "versionRange": "0.0.1",
+      "license": "(missing)",
+      "reason": "verified the package has MIT license via npm view",
+      "approvedBy": "backstage/maintainers"
+    },
+    {
+      "name": "uid2",
+      "versionRange": "0.0.3",
+      "license": "(missing)",
+      "reason": "verified the package has MIT license https://github.com/coreh/uid2",
+      "approvedBy": "backstage/maintainers"
+    },
+    {
+      "name": "valid-url",
+      "versionRange": "1.0.9",
+      "license": "(missing)",
+      "reason": "verified the package has MIT license https://github.com/ogt/valid-url",
+      "approvedBy": "backstage/maintainers"
+    },
+    {
+      "name": "@isomorphic-git/pgp-plugin",
+      "versionRange": "0.0.7",
+      "license": "LGPL-3.0+",
+      "reason": "upstream intended MIT (see commit 1823741) but package.json/LICENSE still LGPL; fix pending in https://github.com/isomorphic-git/pgp-plugin/pull/3",
+      "approvedBy": "backstage/maintainers"
+    }
+  ]
+}
