@@ -165,7 +165,7 @@ Migration instructions (only for breaking changes)
 
 **Key requirements:**
 
-1. **Affected components marker** - Must end with `**Affected components:**` followed by comma-separated component names
+1. **Affected components marker** - Must end with `**Affected components:**` followed by comma-separated component names. Add `BuiTokens` for changes to design tokens or theming
 2. **Migration marker** - Use `**Migration:**` (bold, with colon) for breaking changes only
 3. **No headings** - Never use `##`, `###`, or `####` inside changeset entries (these break semantic structure when the entry becomes a list item in CHANGELOG.md)
 4. **Bold markers** - Use bold text markers, not plain text, for reliable parsing

@@ -26,7 +26,7 @@ export const changelog_0_1_0: ChangelogProps[] = [
     commitSha: '1e4ccce',
   },
   {
-    components: [],
+    components: ['bui-tokens'],
     version: '0.1.0',
     prs: ['28789'],
     description: `**BREAKING**: Updated core CSS tokens and fixing the Button component accordingly.`,

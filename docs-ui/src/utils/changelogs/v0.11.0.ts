@@ -44,7 +44,7 @@ export const changelog_0_11_0: ChangelogProps[] = [
     commitSha: '243e5e7',
   },
   {
-    components: [],
+    components: ['bui-tokens'],
     version: '0.11.0',
     prs: ['32202'],
     description: `**BREAKING**: Updating color tokens to match the new neutral style on different surfaces.`,
@@ -66,7 +66,7 @@ export const changelog_0_11_0: ChangelogProps[] = [
     commitSha: 'ea0c6d8',
   },
   {
-    components: [],
+    components: ['bui-tokens'],
     version: '0.11.0',
     prs: ['32200'],
     description: `**BREAKING**: Renamed CSS variable \`--bui-bg\` to \`--bui-bg-surface-0\` for consistency.`,
@@ -122,7 +122,7 @@ export const changelog_0_11_0: ChangelogProps[] = [
     commitSha: 'de80336',
   },
   {
-    components: [],
+    components: ['bui-tokens'],
     version: '0.11.0',
     prs: ['32313'],
     description: `Added new Popover component for Backstage UI with automatic overflow handling, and full placement support. Also introduced \`--bui-shadow\` token for consistent elevation styling across overlay components (Popover, Tooltip, Menu).`,
