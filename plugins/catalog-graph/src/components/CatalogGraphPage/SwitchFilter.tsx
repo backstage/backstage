@@ -13,11 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Box from '@material-ui/core/Box';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
-import { makeStyles } from '@material-ui/core/styles';
-import { ChangeEvent, useCallback } from 'react';
+import { Switch } from '@backstage/ui';
 
 export type Props = {
   label: string;
@@ -25,43 +21,13 @@ export type Props = {
   onChange: (value: boolean) => void;
 };
 
-/** @public */
+/**
+ * @public
+ * @deprecated The filter is styled with CSS modules and no longer reads theme
+ * overrides, so this type has no effect and will be removed.
+ */
 export type SwitchFilterClassKey = 'root';
 
-const useStyles = makeStyles(
-  {
-    root: {
-      width: '100%',
-      maxWidth: 300,
-    },
-  },
-  { name: 'PluginCatalogGraphSwitchFilter' },
+export const SwitchFilter = ({ label, value, onChange }: Props) => (
+  <Switch label={label} isSelected={value} onChange={onChange} />
 );
-
-export const SwitchFilter = ({ label, value, onChange }: Props) => {
-  const classes = useStyles();
-
-  const handleChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      onChange(event.target.checked);
-    },
-    [onChange],
-  );
-
-  return (
-    <Box pb={1} pt={1}>
-      <FormControlLabel
-        control={
-          <Switch
-            checked={value}
-            onChange={handleChange}
-            name={label}
-            color="primary"
-          />
-        }
-        label={label}
-        className={classes.root}
-      />
-    </Box>
-  );
-};
