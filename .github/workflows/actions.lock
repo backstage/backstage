@@ -106,6 +106,11 @@ workflows:
         - 'github/codeql-action@v4'
         - 'ossf/scorecard-action@v2.4.4'
         - 'step-security/harden-runner@v2'
+    '.github/workflows/sync_bui-changelog.yml':
+        - 'actions/checkout@v7'
+        - 'actions/setup-node@v7'
+        - 'backstage/actions@v0.7.13'
+        - 'step-security/harden-runner@v2'
     '.github/workflows/sync_bui-docs.yml':
         - 'actions/checkout@v7'
         - 'actions/setup-node@v7'

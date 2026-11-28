@@ -1,0 +1,59 @@
+name: Sync BUI Changelog
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'packages/ui/CHANGELOG.md'
+
+concurrency:
+  group: sync-bui-changelog
+  cancel-in-progress: false
+
+jobs:
+  sync-bui-changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Use Node.js 24.x
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24.22.1
+          registry-url: https://registry.npmjs.org/
+
+      - name: yarn install
+        uses: backstage/actions/yarn-install@v0.7.13
+        with:
+          cache-prefix: ${{ runner.os }}-v24.x
+
+      - name: Sync Backstage UI changelog
+        working-directory: docs-ui
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+        run: yarn sync:changelog
+
+      - name: Lint docs-ui
+        working-directory: docs-ui
+        run: yarn lint
+
+      - name: Commit and push generated changelog files
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo 'No changelog changes to commit.'
+            exit 0
+          fi
+
+          git config user.email 'noreply@backstage.io'
+          git config user.name 'Github BUI Docs workflow'
+          git add docs-ui/src/utils/changelogs/ docs-ui/src/utils/changelog.ts
+          git commit --signoff -m 'ci(docs-ui): sync Backstage UI changelog automatically'
+          git push
