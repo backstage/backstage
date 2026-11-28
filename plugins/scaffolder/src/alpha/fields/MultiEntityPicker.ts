@@ -17,10 +17,12 @@ import { createFormField } from '@backstage/plugin-scaffolder-react/alpha';
 import {
   MultiEntityPicker as Component,
   MultiEntityPickerFieldSchema,
+  validateMultiEntityPickerValidation,
 } from '../../components/fields/MultiEntityPicker';
 
 export const MultiEntityPicker = createFormField({
   component: Component,
   name: 'MultiEntityPicker',
+  validation: validateMultiEntityPickerValidation,
   schema: MultiEntityPickerFieldSchema,
 });
