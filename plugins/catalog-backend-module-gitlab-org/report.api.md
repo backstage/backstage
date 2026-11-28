@@ -5,6 +5,7 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import { GroupNameTransformer } from '@backstage/plugin-catalog-backend-module-gitlab';
 import { GroupTransformer } from '@backstage/plugin-catalog-backend-module-gitlab';
 import { UserTransformer } from '@backstage/plugin-catalog-backend-module-gitlab';
 
@@ -14,6 +15,7 @@ export default catalogModuleGitlabOrgDiscoveryEntityProvider;
 
 // @public
 export interface GitlabOrgEntityProviderTransformsExtensionPoint {
+  setGroupNameTransformer(transformer: GroupNameTransformer): void;
   setGroupTransformer(transformer: GroupTransformer): void;
   setUserTransformer(transformer: UserTransformer): void;
 }

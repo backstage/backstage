@@ -15,16 +15,23 @@
  */
 
 import {
+  createBackendModule,
   createServiceFactory,
   SchedulerServiceTaskScheduleDefinition,
 } from '@backstage/backend-plugin-api';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
-import { GitlabOrgDiscoveryEntityProvider } from '@backstage/plugin-catalog-backend-module-gitlab';
+import {
+  GitlabOrgDiscoveryEntityProvider,
+  GroupNameTransformer,
+} from '@backstage/plugin-catalog-backend-module-gitlab';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
-import { catalogModuleGitlabOrgDiscoveryEntityProvider } from './catalogModuleGitlabOrgDiscoveryEntityProvider';
+import {
+  catalogModuleGitlabOrgDiscoveryEntityProvider,
+  gitlabOrgEntityProviderTransformsExtensionPoint,
+} from './catalogModuleGitlabOrgDiscoveryEntityProvider';
 
 describe('catalogModuleGitlabOrgDiscoveryEntityProvider', () => {
   it('should register provider at the catalog extension point', async () => {
@@ -106,5 +113,70 @@ describe('catalogModuleGitlabOrgDiscoveryEntityProvider', () => {
       'GitlabOrgDiscoveryEntityProvider:test-id',
     );
     expect(runner).toHaveBeenCalledTimes(1);
+  });
+
+  it('should pass the group name transformer set at the extension point to the provider', async () => {
+    const fromConfig = jest.spyOn(
+      GitlabOrgDiscoveryEntityProvider,
+      'fromConfig',
+    );
+    const groupNameTransformer: GroupNameTransformer = ({ group }) =>
+      `${group.id}`;
+
+    const config = {
+      integrations: {
+        gitlab: [
+          {
+            host: 'test-gitlab',
+            apiBaseUrl: 'https://api.gitlab.example/api/v4',
+            token: '1234',
+          },
+        ],
+      },
+      catalog: {
+        providers: {
+          gitlab: {
+            'test-id': {
+              host: 'test-gitlab',
+              group: 'test-group',
+              orgEnabled: true,
+              schedule: { frequency: 'P1M', timeout: 'PT3M' },
+            },
+          },
+        },
+      },
+    };
+
+    await startTestBackend({
+      extensionPoints: [
+        [catalogProcessingExtensionPoint, { addEntityProvider: jest.fn() }],
+      ],
+      features: [
+        catalogModuleGitlabOrgDiscoveryEntityProvider,
+        createBackendModule({
+          pluginId: 'catalog',
+          moduleId: 'test-transformers',
+          register(env) {
+            env.registerInit({
+              deps: {
+                gitlabOrg: gitlabOrgEntityProviderTransformsExtensionPoint,
+              },
+              async init({ gitlabOrg }) {
+                gitlabOrg.setGroupNameTransformer(groupNameTransformer);
+              },
+            });
+          },
+        }),
+        mockServices.rootConfig.factory({ data: config }),
+        mockServices.logger.factory(),
+        mockServices.scheduler.factory(),
+      ],
+    });
+
+    expect(fromConfig).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ groupNameTransformer }),
+    );
+    fromConfig.mockRestore();
   });
 });
