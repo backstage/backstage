@@ -152,6 +152,10 @@ export class PluginScanner {
         this.logger.debug(`skipping '${pluginDir.name}' system directory`);
         continue;
       }
+      if (pluginDir.name.startsWith('.')) {
+        this.logger.debug(`skipping hidden entry '${pluginDir.name}'`);
+        continue;
+      }
       const pluginHome = path.normalize(
         path.resolve(dynamicPluginsLocation, pluginDir.name),
       );
@@ -234,7 +238,8 @@ export class PluginScanner {
   async trackChanges(): Promise<void> {
     const setupRootDirectoryWatcher = async (): Promise<void> => {
       return new Promise((resolve, reject) => {
-        if (!this._rootDirectory) {
+        const rootDirectory = this._rootDirectory;
+        if (!rootDirectory) {
           resolve();
           return;
         }
@@ -243,7 +248,7 @@ export class PluginScanner {
         }, 500);
         let ready = false;
         this.rootDirectoryWatcher = chokidar
-          .watch(this._rootDirectory, {
+          .watch(rootDirectory, {
             ignoreInitial: true,
             followSymlinks: true,
             depth: 1,
@@ -256,13 +261,17 @@ export class PluginScanner {
               eventPath: string,
               _: Stats | undefined,
             ): void => {
+              const isHidden = path
+                .relative(rootDirectory, eventPath)
+                .startsWith('.');
               if (
-                (['addDir', 'unlinkDir'].includes(event) &&
+                !isHidden &&
+                ((['addDir', 'unlinkDir'].includes(event) &&
                   path.dirname(eventPath) === this._rootDirectory) ||
-                (['add', 'unlink', 'change'].includes(event) &&
-                  path.dirname(path.dirname(eventPath)) ===
-                    this._rootDirectory &&
-                  path.basename(eventPath) === 'package.json')
+                  (['add', 'unlink', 'change'].includes(event) &&
+                    path.dirname(path.dirname(eventPath)) ===
+                      this._rootDirectory &&
+                    path.basename(eventPath) === 'package.json'))
               ) {
                 this.logger.info(
                   `rootDirectory changed (${event} - ${eventPath}): scanning plugins again`,

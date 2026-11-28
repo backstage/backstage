@@ -21,6 +21,7 @@ import {
 import {
   BackendFeature,
   coreServices,
+  createBackendPlugin,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import * as path from 'node:path';
@@ -36,6 +37,7 @@ import { ScannedPluginManifest, ScannedPluginPackage } from '../scanner/types';
 import { randomUUID } from 'node:crypto';
 import { createSpecializedBackend } from '@backstage/backend-app-api';
 import { ConfigSources } from '@backstage/config-loader';
+import { ConfigReader } from '@backstage/config';
 import { Logs, MockedLogger, LogContent } from '../__testUtils__/testUtils';
 import { PluginScanner } from '../scanner/plugin-scanner';
 import { targetPaths } from '@backstage/cli-common';
@@ -992,6 +994,238 @@ describe('backend-dynamic-feature-service', () => {
       (pluginManager as any)._plugins = [plugin];
 
       expect(pluginManager.getScannedPackage(plugin)).toEqual(scannedPackage);
+    });
+  });
+
+  describe('refresh on rootDirectory change', () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+      mockDir.clear();
+    });
+
+    const scannedPackage = (
+      dir: string,
+      name: string,
+      version: string,
+      role: PackageRole,
+    ): ScannedPluginPackage => ({
+      location: url.pathToFileURL(mockDir.resolve(dir)),
+      manifest: {
+        name,
+        version,
+        main: 'dist/index.cjs.js',
+        backstage: { role },
+      },
+    });
+
+    async function setup(initialPackages: ScannedPluginPackage[]) {
+      mockDir.setContent({
+        'frontend-a': {},
+        'frontend-c': {},
+        'backend-b': {},
+      });
+      let packagesOnDisk = initialPackages;
+      jest
+        .spyOn(PluginScanner.prototype as any, 'applyConfig')
+        .mockImplementation(() => {});
+      jest
+        .spyOn(PluginScanner.prototype, 'trackChanges')
+        .mockImplementation(async () => {});
+      const scanRoot = jest
+        .spyOn(PluginScanner.prototype, 'scanRoot')
+        .mockImplementation(async () => ({ packages: packagesOnDisk }));
+      let onRootDirectoryChange: (() => unknown) | undefined;
+      jest
+        .spyOn(PluginScanner.prototype, 'subscribeToRootDirectoryChange')
+        .mockImplementation(subscriber => {
+          onRootDirectoryChange = subscriber;
+        });
+
+      const logger = new MockedLogger();
+      const moduleLoader = {
+        logger,
+        bootstrap: jest.fn(async () => {}),
+        load: jest.fn(async () => ({
+          default: createBackendPlugin({
+            pluginId: 'backend-b',
+            register() {},
+          }),
+        })),
+      };
+      const manager = await DynamicPluginManager.create({
+        config: new ConfigReader({}),
+        logger,
+        moduleLoader,
+      });
+      expect(onRootDirectoryChange).toBeDefined();
+      logger.logs = {};
+
+      return {
+        manager,
+        logger,
+        moduleLoader,
+        scanRoot,
+        setPackagesOnDisk(packages: ScannedPluginPackage[]) {
+          packagesOnDisk = packages;
+        },
+        async rootDirectoryChanged() {
+          await onRootDirectoryChange!();
+        },
+      };
+    }
+
+    const frontendA = scannedPackage(
+      'frontend-a',
+      'frontend-a',
+      '1.0.0',
+      'frontend-plugin',
+    );
+    const frontendAUpdated = scannedPackage(
+      'frontend-a',
+      'frontend-a',
+      '1.1.0',
+      'frontend-plugin',
+    );
+    const frontendC = scannedPackage(
+      'frontend-c',
+      'frontend-c',
+      '0.1.0',
+      'frontend-plugin-module',
+    );
+    const backendB = scannedPackage(
+      'backend-b',
+      'backend-b',
+      '1.0.0',
+      'backend-plugin',
+    );
+    const backendBUpdated = scannedPackage(
+      'backend-b',
+      'backend-b',
+      '2.0.0',
+      'backend-plugin',
+    );
+
+    const nameAndVersion = (plugins: DynamicPlugin[]) =>
+      plugins.map(p => `${p.name}@${p.version}`);
+
+    it('should add, remove and update frontend plugins in place', async () => {
+      const t = await setup([frontendA, backendB]);
+      expect(nameAndVersion(t.manager.frontendPlugins())).toEqual([
+        'frontend-a@1.0.0',
+      ]);
+      const initialPlugins = t.manager.frontendPlugins();
+
+      t.setPackagesOnDisk([frontendAUpdated, frontendC, backendB]);
+      await t.rootDirectoryChanged();
+
+      expect(nameAndVersion(t.manager.frontendPlugins())).toEqual([
+        'frontend-a@1.1.0',
+        'frontend-c@0.1.0',
+      ]);
+      expect(
+        t.manager.getScannedPackage(t.manager.frontendPlugins()[0]),
+      ).toEqual(frontendAUpdated);
+      expect(() =>
+        t.manager.getScannedPackage({
+          name: 'frontend-a',
+          version: '1.0.0',
+          platform: 'web',
+          role: 'frontend-plugin',
+        }),
+      ).toThrow();
+      const refreshedPlugins = t.manager.frontendPlugins();
+      expect(refreshedPlugins[0]).not.toBe(initialPlugins[0]);
+
+      t.setPackagesOnDisk([frontendC, backendB]);
+      await t.rootDirectoryChanged();
+
+      expect(nameAndVersion(t.manager.frontendPlugins())).toEqual([
+        'frontend-c@0.1.0',
+      ]);
+      expect(t.manager.frontendPlugins()[0]).not.toBe(refreshedPlugins[1]);
+
+      expect(nameAndVersion(t.manager.backendPlugins())).toEqual([
+        'backend-b@1.0.0',
+      ]);
+      expect(t.moduleLoader.load).toHaveBeenCalledTimes(1);
+      expect(t.logger.logs).toEqual<Logs>({
+        infos: [
+          {
+            message:
+              'dynamic frontend plugins refreshed: [frontend-a@1.1.0, frontend-c@0.1.0]',
+          },
+          {
+            message: 'dynamic frontend plugins refreshed: [frontend-c@0.1.0]',
+          },
+        ],
+      });
+    });
+
+    it('should only warn when backend plugins change', async () => {
+      const t = await setup([frontendA, backendB]);
+
+      t.setPackagesOnDisk([frontendA, backendBUpdated]);
+      await t.rootDirectoryChanged();
+
+      expect(nameAndVersion(t.manager.backendPlugins())).toEqual([
+        'backend-b@1.0.0',
+      ]);
+      expect(
+        t.manager.getScannedPackage(t.manager.backendPlugins()[0]),
+      ).toEqual(backendB);
+      expect(t.moduleLoader.load).toHaveBeenCalledTimes(1);
+      expect(nameAndVersion(t.manager.frontendPlugins())).toEqual([
+        'frontend-a@1.0.0',
+      ]);
+      expect(t.logger.logs.warns).toEqual([
+        {
+          message:
+            'dynamic backend plugin packages changed (loaded: [backend-b@1.0.0], on disk: [backend-b@2.0.0]); restart the backend to apply',
+        },
+      ]);
+    });
+
+    it('should keep the current plugins when a rescan fails', async () => {
+      const t = await setup([frontendA, backendB]);
+      const initialPlugins = t.manager.frontendPlugins();
+
+      t.scanRoot.mockRejectedValueOnce(new Error('scan failed'));
+      await t.rootDirectoryChanged();
+
+      expect(nameAndVersion(t.manager.frontendPlugins())).toEqual([
+        'frontend-a@1.0.0',
+      ]);
+      expect(t.manager.frontendPlugins()[0]).toBe(initialPlugins[0]);
+      expect(t.logger.logs.errors).toEqual([
+        {
+          message:
+            'failed to refresh dynamic plugins after a rootDirectory change',
+          meta: { name: 'Error', message: 'scan failed' },
+        },
+      ]);
+    });
+
+    it('should apply overlapping rescans in order', async () => {
+      const t = await setup([frontendA, backendB]);
+
+      let finishSlowScan: () => void = () => {};
+      t.scanRoot.mockImplementationOnce(
+        () =>
+          new Promise(resolve => {
+            finishSlowScan = () => resolve({ packages: [frontendA, backendB] });
+          }),
+      );
+      t.setPackagesOnDisk([frontendC, backendB]);
+
+      const first = t.rootDirectoryChanged();
+      const second = t.rootDirectoryChanged();
+      await new Promise(resolve => setImmediate(resolve));
+      finishSlowScan();
+      await Promise.all([first, second]);
+
+      expect(nameAndVersion(t.manager.frontendPlugins())).toEqual([
+        'frontend-c@0.1.0',
+      ]);
     });
   });
 
