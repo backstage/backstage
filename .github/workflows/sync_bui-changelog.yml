@@ -28,7 +28,7 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version: 24.22.1
-          registry-url: https://registry.npmjs.org/
+          registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
         uses: backstage/actions/yarn-install@v0.7.13
