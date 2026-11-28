@@ -107,6 +107,11 @@ export default async ({ args, info }: CliCommandContext) => {
     args,
   );
 
+  const resolvedFormat =
+    format === 'eslint-formatter-friendly'
+      ? require.resolve('eslint-formatter-friendly')
+      : format;
+
   let packages = await PackageGraph.listTargetPackages();
 
   const cache = SuccessCache.create({
@@ -186,11 +191,17 @@ export default async ({ args, info }: CliCommandContext) => {
     items: items.filter(item => item.lintOptions), // Filter out packages without lint script
     context: {
       fix: Boolean(fix),
-      format: format as string | undefined,
+      format: resolvedFormat as string | undefined,
       shouldCache: Boolean(cacheContext),
       maxWarnings: maxWarnings ?? '-1',
       successCache: cacheContext?.entries,
       rootDir: targetPaths.rootDir,
+      // The eval'd worker resolves modules relative to the current working
+      // directory rather than this package, which breaks with strict
+      // node_modules layouts such as pnpm's. Resolving the paths up front
+      // lets the worker load them from the right place.
+      eslintPath: require.resolve('eslint'),
+      globbyPath: require.resolve('globby'),
     },
     workerFactory: async ({
       fix: workerFix,
@@ -198,11 +209,13 @@ export default async ({ args, info }: CliCommandContext) => {
       shouldCache,
       successCache,
       rootDir,
+      eslintPath,
+      globbyPath,
       maxWarnings: workerMaxWarnings,
     }) => {
-      const { ESLint } = require('eslint') as typeof import('eslint');
+      const { ESLint } = require(eslintPath) as typeof import('eslint');
       const crypto = require('node:crypto') as typeof import('crypto');
-      const globby = require('globby') as typeof import('globby');
+      const globby = require(globbyPath) as typeof import('globby');
       const { readFile } =
         require('node:fs/promises') as typeof import('fs/promises');
       const workerPath = require('node:path') as typeof import('path');
