@@ -17,7 +17,7 @@
 import { createCatalogModelLayer } from '../model/createCatalogModelLayer';
 import type { Entity } from '../entity/Entity';
 import jsonSchema from '../schema/kinds/Group.v1alpha1.schema.json';
-import { ajvCompiledJsonSchemaValidator } from './util';
+import { lazyKindSchemaValidator } from './util';
 
 /**
  * Backstage catalog Group kind Entity.
@@ -44,8 +44,7 @@ export interface GroupEntityV1alpha1 extends Entity {
  * {@link KindValidator} for {@link GroupEntityV1alpha1}.
  * @public
  */
-export const groupEntityV1alpha1Validator =
-  ajvCompiledJsonSchemaValidator(jsonSchema);
+export const groupEntityV1alpha1Validator = lazyKindSchemaValidator(jsonSchema);
 
 /**
  * Extends the catalog model with the Group kind.

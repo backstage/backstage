@@ -16,7 +16,7 @@
 
 import { createCatalogModelLayer } from '../model/createCatalogModelLayer';
 import type { Entity } from '../entity/Entity';
-import { entityKindSchemaValidator } from '../validation';
+import { lazyKindSchemaValidator } from './util';
 import type { KindValidator } from './types';
 import type { JsonObject } from '@backstage/types';
 import defaultJsonSchema from '../schema/kinds/AiResource.v1alpha1.schema.json';
@@ -139,31 +139,21 @@ export type AiResourceEntityV1alpha1 =
   | PluginAiResourceEntityV1alpha1
   | MarketplaceAiResourceEntityV1alpha1;
 
-const defaultValidator = entityKindSchemaValidator(defaultJsonSchema);
-
 /**
  * Entity data validator for the default {@link AiResourceEntityV1alpha1}.
  *
  * @alpha
  */
-export const aiResourceEntityV1alpha1Validator: KindValidator = {
-  async check(data: Entity) {
-    return defaultValidator(data) === data;
-  },
-};
-
-const skillValidator = entityKindSchemaValidator(skillJsonSchema);
+export const aiResourceEntityV1alpha1Validator: KindValidator =
+  lazyKindSchemaValidator(defaultJsonSchema);
 
 /**
  * Entity data validator for {@link SkillAiResourceEntityV1alpha1}.
  *
  * @alpha
  */
-export const skillAiResourceEntityV1alpha1Validator: KindValidator = {
-  async check(data: Entity) {
-    return skillValidator(data) === data;
-  },
-};
+export const skillAiResourceEntityV1alpha1Validator: KindValidator =
+  lazyKindSchemaValidator(skillJsonSchema);
 
 /**
  * Type guard for {@link AiResourceEntityV1alpha1}.
@@ -215,44 +205,29 @@ export const isMarketplaceAiResourceEntity = (
 ): entity is MarketplaceAiResourceEntityV1alpha1 =>
   isAiResourceEntity(entity) && entity.spec?.type === 'marketplace';
 
-const ruleValidator = entityKindSchemaValidator(ruleJsonSchema);
-
 /**
  * Entity data validator for {@link RuleAiResourceEntityV1alpha1}.
  *
  * @alpha
  */
-export const ruleAiResourceEntityV1alpha1Validator: KindValidator = {
-  async check(data: Entity) {
-    return ruleValidator(data) === data;
-  },
-};
-
-const pluginValidator = entityKindSchemaValidator(pluginJsonSchema);
+export const ruleAiResourceEntityV1alpha1Validator: KindValidator =
+  lazyKindSchemaValidator(ruleJsonSchema);
 
 /**
  * Entity data validator for {@link PluginAiResourceEntityV1alpha1}.
  *
  * @alpha
  */
-export const pluginAiResourceEntityV1alpha1Validator: KindValidator = {
-  async check(data: Entity) {
-    return pluginValidator(data) === data;
-  },
-};
-
-const marketplaceValidator = entityKindSchemaValidator(marketplaceJsonSchema);
+export const pluginAiResourceEntityV1alpha1Validator: KindValidator =
+  lazyKindSchemaValidator(pluginJsonSchema);
 
 /**
  * Entity data validator for {@link MarketplaceAiResourceEntityV1alpha1}.
  *
  * @alpha
  */
-export const marketplaceAiResourceEntityV1alpha1Validator: KindValidator = {
-  async check(data: Entity) {
-    return marketplaceValidator(data) === data;
-  },
-};
+export const marketplaceAiResourceEntityV1alpha1Validator: KindValidator =
+  lazyKindSchemaValidator(marketplaceJsonSchema);
 
 const baseRelationFields = [
   {

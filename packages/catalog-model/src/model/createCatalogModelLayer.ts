@@ -18,7 +18,8 @@ import {
   CatalogModelLayerBuilder,
   createCatalogModelLayerBuilder,
 } from './createCatalogModelLayerBuilder';
-import { CatalogModelLayer } from './types';
+import { CatalogModelOp } from './operations';
+import { CatalogModelLayer, OpaqueCatalogModelLayer } from './types';
 
 /**
  * Creates a catalog model layer using a builder pattern.
@@ -45,9 +46,20 @@ export function createCatalogModelLayer(options: {
   layerId: string;
   builder: (model: CatalogModelLayerBuilder) => void;
 }): CatalogModelLayer {
-  const b = createCatalogModelLayerBuilder({
+  // Layers are commonly created at module load time, so the builder only runs
+  // once the layer is actually used, to avoid doing that work up front
+  let ops: Array<CatalogModelOp> | undefined;
+  return OpaqueCatalogModelLayer.createInstance('v1', {
     layerId: options.layerId,
+    get ops() {
+      if (!ops) {
+        const b = createCatalogModelLayerBuilder({
+          layerId: options.layerId,
+        });
+        options.builder(b);
+        ops = OpaqueCatalogModelLayer.toInternal(b.build()).ops;
+      }
+      return ops;
+    },
   });
-  options.builder(b);
-  return b.build();
 }

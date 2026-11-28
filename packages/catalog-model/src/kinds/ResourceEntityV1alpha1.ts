@@ -17,7 +17,7 @@
 import { createCatalogModelLayer } from '../model/createCatalogModelLayer';
 import type { Entity } from '../entity/Entity';
 import jsonSchema from '../schema/kinds/Resource.v1alpha1.schema.json';
-import { ajvCompiledJsonSchemaValidator } from './util';
+import { lazyKindSchemaValidator } from './util';
 
 /**
  * Backstage catalog Resource kind Entity. Represents infrastructure required to operate Components.
@@ -46,7 +46,7 @@ export interface ResourceEntityV1alpha1 extends Entity {
  * @public
  */
 export const resourceEntityV1alpha1Validator =
-  ajvCompiledJsonSchemaValidator(jsonSchema);
+  lazyKindSchemaValidator(jsonSchema);
 
 /**
  * Extends the catalog model with the Resource kind.

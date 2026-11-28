@@ -16,16 +16,11 @@
 
 import {
   ApiEntity,
-  apiEntityV1alpha1Validator,
   ComponentEntity,
-  componentEntityV1alpha1Validator,
   DomainEntity,
-  domainEntityV1alpha1Validator,
   Entity,
   getCompoundEntityRef,
   GroupEntity,
-  groupEntityV1alpha1Validator,
-  locationEntityV1alpha1Validator,
   parseEntityRef,
   RELATION_API_CONSUMED_BY,
   RELATION_API_PROVIDED_BY,
@@ -42,12 +37,10 @@ import {
   RELATION_PART_OF,
   RELATION_PROVIDES_API,
   ResourceEntity,
-  resourceEntityV1alpha1Validator,
   SystemEntity,
-  systemEntityV1alpha1Validator,
   UserEntity,
-  userEntityV1alpha1Validator,
 } from '@backstage/catalog-model';
+import { ajvEntityValidators } from '../processing/util';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
   CatalogProcessor,
@@ -58,16 +51,7 @@ import { get, set } from 'lodash';
 
 /** @public */
 export class BuiltinKindsEntityProcessor implements CatalogProcessor {
-  private readonly validators = [
-    apiEntityV1alpha1Validator,
-    componentEntityV1alpha1Validator,
-    resourceEntityV1alpha1Validator,
-    groupEntityV1alpha1Validator,
-    locationEntityV1alpha1Validator,
-    userEntityV1alpha1Validator,
-    systemEntityV1alpha1Validator,
-    domainEntityV1alpha1Validator,
-  ];
+  private readonly validators = ajvEntityValidators.builtinKindValidators;
 
   getProcessorName(): string {
     return 'BuiltinKindsEntityProcessor';

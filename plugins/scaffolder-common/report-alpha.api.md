@@ -78,6 +78,9 @@ export const taskReadPermission: ResourcePermission<'scaffolder-task'>;
 export const templateDryRunPermission: BasicPermission;
 
 // @alpha
+export const templateEntityV1beta3Schema: JsonObject;
+
+// @alpha
 export const templateManagementPermission: BasicPermission;
 
 // @alpha

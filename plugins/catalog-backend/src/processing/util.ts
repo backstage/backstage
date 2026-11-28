@@ -16,13 +16,12 @@
 
 import {
   Entity,
-  entityEnvelopeSchemaValidator,
-  entitySchemaValidator,
   LocationEntity,
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
+import { createAjvEntityValidators } from '@backstage/catalog-model/ajv';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -83,6 +82,11 @@ export function isObject(value: JsonValue | undefined): value is JsonObject {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-export const validateEntity = entitySchemaValidator();
+// Entity validation is performance sensitive in the catalog, so use the
+// validators that compile schemas into code
+export const ajvEntityValidators = createAjvEntityValidators();
 
-export const validateEntityEnvelope = entityEnvelopeSchemaValidator();
+export const validateEntity = ajvEntityValidators.entitySchemaValidator();
+
+export const validateEntityEnvelope =
+  ajvEntityValidators.entityEnvelopeSchemaValidator();
