@@ -17,6 +17,7 @@
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import {
   CatalogModel,
+  CatalogModelKind,
   CatalogModelAnnotationSummary,
   CatalogModelKindSummary,
   CatalogModelLabelSummary,
@@ -25,68 +26,10 @@ import {
   compileCatalogModel,
   defaultCatalogEntityModel,
 } from '@backstage/catalog-model/alpha';
+import { JsonObject } from '@backstage/types';
 import { ModelHolder } from '../model/ModelHolder';
 
-/**
- * Lets users fetch a markdown formatted description of the catalog model. This
- * is useful for informing LLMs how to properly work with it.
- */
-export const createGetCatalogModelDescriptionAction = ({
-  modelHolder,
-  actionsRegistry,
-}: {
-  modelHolder: ModelHolder | undefined;
-  actionsRegistry: ActionsRegistryService;
-}) => {
-  actionsRegistry.register({
-    name: 'get-catalog-model-description',
-    title: 'Get a Catalog Model Description',
-    description:
-      'Returns a markdown formatted description of the current catalog model, including all registered entity kinds, annotations, labels, tags, and relations.',
-    attributes: {
-      destructive: false,
-      readOnly: true,
-      idempotent: true,
-    },
-    schema: {
-      input: z => z.object({}),
-      output: z =>
-        z.object({
-          description: z
-            .string()
-            .describe(
-              'Markdown description of the catalog model including entity kinds, spec fields, and relations.',
-            ),
-        }),
-    },
-    action: async () => {
-      return {
-        output: {
-          description: describeCatalogModel(modelHolder?.model),
-        },
-      };
-    },
-  });
-};
-
-// Compute the default description once (if needed) and cache it
-let defaultModelDescription: string | undefined;
-
-function describeCatalogModel(model: CatalogModel | undefined): string {
-  if (!model) {
-    if (!defaultModelDescription) {
-      defaultModelDescription = describeModel(
-        compileCatalogModel([defaultCatalogEntityModel]),
-      );
-    }
-    return defaultModelDescription;
-  }
-
-  return describeModel(model);
-}
-
-function describeModel(model: CatalogModel): string {
-  return `# Catalog Model
+const PREAMBLE = `# Catalog Model
 
 The software catalog contains a few key concepts:
 
@@ -110,7 +53,9 @@ The unique identifying key for an entity is its so called entity reference (or e
 for short), on the form of "kind:namespace/name", e.g. "component:default/my-service".
 These are always uniformly lowercased in the "en-US" locale.
 
-## Entity Metadata field
+`;
+
+const METADATA_SECTION = `## Entity Metadata field
 
 The "metadata" object field on all entities has the same static schema. Some common fields
 there are:
@@ -125,7 +70,78 @@ there are:
 * "labels": A map of labels on the entity.
 * "tags": A list of tags on the entity.
 * "links": A list of links on the entity.
+`;
 
+/**
+ * Lets users fetch a markdown formatted description of the catalog model. This
+ * is useful for informing LLMs how to properly work with it.
+ */
+export const createGetCatalogModelDescriptionAction = ({
+  modelHolder,
+  actionsRegistry,
+}: {
+  modelHolder: ModelHolder | undefined;
+  actionsRegistry: ActionsRegistryService;
+}) => {
+  actionsRegistry.register({
+    name: 'get-catalog-model-description',
+    title: 'Get a Catalog Model Description',
+    description:
+      'Returns a markdown formatted description of the current catalog model, including all registered entity kinds with their JSON schemas, annotations, labels, tags, and relations.',
+    attributes: {
+      destructive: false,
+      readOnly: true,
+      idempotent: true,
+    },
+    schema: {
+      input: z => z.object({}),
+      output: z =>
+        z.object({
+          description: z
+            .string()
+            .describe(
+              'Markdown description of the catalog model including entity kinds with their JSON schemas, and relations.',
+            ),
+        }),
+    },
+    action: async () => {
+      return {
+        output: {
+          description: describeCatalogModel(modelHolder?.model),
+        },
+      };
+    },
+  });
+};
+
+// Fields shared by all entities, which are described separately
+const BASE_FIELDS = ['apiVersion', 'kind', 'metadata'];
+
+// Compile the default model once (if needed) and cache it
+let defaultModel: CatalogModel | undefined;
+
+function getDefaultModel(): CatalogModel {
+  if (!defaultModel) {
+    defaultModel = compileCatalogModel([defaultCatalogEntityModel]);
+  }
+  return defaultModel;
+}
+
+// Descriptions of models, cached per model instance
+const modelDescriptions = new WeakMap<CatalogModel, string>();
+
+function describeCatalogModel(model: CatalogModel | undefined): string {
+  const resolvedModel = model ?? getDefaultModel();
+  let description = modelDescriptions.get(resolvedModel);
+  if (!description) {
+    description = describeModel(resolvedModel);
+    modelDescriptions.set(resolvedModel, description);
+  }
+  return description;
+}
+
+function describeModel(model: CatalogModel): string {
+  return `${PREAMBLE}${METADATA_SECTION}
 ${model.getMetadata().annotations.map(describeAnnotation).join('\n')}
 ${model.getMetadata().labels.map(describeLabel).join('\n')}
 ${model.getMetadata().tags.map(describeTag).join('\n')}
@@ -134,7 +150,10 @@ ${model.getMetadata().tags.map(describeTag).join('\n')}
 
 The model contains the following entity kinds:
 
-${model.listKinds().map(describeKind).join('\n')}
+${model
+  .listKinds()
+  .map(k => describeKind(k, model))
+  .join('\n')}
 
 ## Entity Relations
 
@@ -144,7 +163,10 @@ ${model.listRelations().map(describeRelation).join('\n')}
 `;
 }
 
-function describeKind(kind: CatalogModelKindSummary): string {
+function describeKind(
+  kind: CatalogModelKindSummary,
+  model: CatalogModel,
+): string {
   return `### Entity Kind "${kind.names.kind}"
 
 * Singular in text: "${kind.names.singular}"
@@ -160,7 +182,107 @@ ${kind.versions
   .join('\n')}
 
 ${kind.description}
-`;
+${describeSchemaGroups(resolveSchemaGroups(kind, model))}`;
+}
+
+type SchemaGroup = {
+  schema: string;
+  relationFields: string[];
+  apiVersions: string[];
+  specType?: string;
+};
+
+// Removes the fields shared by all entities from a kind schema, since they are
+// described separately and would otherwise be repeated for every kind
+function omitBaseFields(schema: JsonObject): JsonObject {
+  const { properties, required, ...rest } = schema;
+  const result: JsonObject = { ...rest };
+  if (
+    properties &&
+    typeof properties === 'object' &&
+    !Array.isArray(properties)
+  ) {
+    const remaining = Object.fromEntries(
+      Object.entries(properties).filter(
+        ([name]) => !BASE_FIELDS.includes(name),
+      ),
+    );
+    if (Object.keys(remaining).length) {
+      result.properties = remaining;
+    }
+  }
+  if (Array.isArray(required)) {
+    const remaining = required.filter(
+      name => typeof name !== 'string' || !BASE_FIELDS.includes(name),
+    );
+    if (remaining.length) {
+      result.required = remaining;
+    }
+  }
+  return result;
+}
+
+// Resolves the JSON schema of every version of a kind, grouping versions (per
+// spec type) whose schemas and relation fields are identical.
+function resolveSchemaGroups(
+  kind: CatalogModelKindSummary,
+  model: CatalogModel,
+): SchemaGroup[] {
+  const groups = new Map<string, SchemaGroup>();
+  for (const version of kind.versions) {
+    const resolved = model.getKind({
+      kind: kind.names.kind,
+      apiVersion: version.apiVersion,
+      spec: version.specType ? { type: version.specType } : undefined,
+    });
+    if (!resolved) {
+      continue;
+    }
+    const schema = JSON.stringify(omitBaseFields(resolved.jsonSchema), null, 2);
+    const relationFields = resolved.relationFields.map(describeRelationField);
+    const key = JSON.stringify([schema, relationFields, version.specType]);
+    const group = groups.get(key);
+    if (group) {
+      group.apiVersions.push(version.apiVersion);
+    } else {
+      groups.set(key, {
+        schema,
+        relationFields,
+        apiVersions: [version.apiVersion],
+        specType: version.specType,
+      });
+    }
+  }
+  return [...groups.values()];
+}
+
+function describeSchemaGroups(groups: SchemaGroup[]): string {
+  const blocks = groups.map(group => {
+    const label = `${group.apiVersions.join(', ')}${
+      group.specType ? `; spec.type: "${group.specType}"` : ''
+    }`;
+    const relations = group.relationFields.length
+      ? `\nRelation fields:\n\n${group.relationFields
+          .map(f => `* ${f}`)
+          .join('\n')}\n`
+      : '';
+    return `#### JSON Schema (${label})\n\n\`\`\`json\n${group.schema}\n\`\`\`\n${relations}`;
+  });
+  return blocks.length ? `\n${blocks.join('\n')}` : '';
+}
+
+function describeRelationField(
+  field: CatalogModelKind['relationFields'][number],
+): string {
+  const details = [
+    field.defaultKind ? `default kind: ${field.defaultKind}` : undefined,
+    field.allowedKinds?.length
+      ? `allowed kinds: ${field.allowedKinds.join(', ')}`
+      : undefined,
+  ].filter(Boolean);
+  return `"${field.path}": relation "${field.relation}"${
+    details.length ? ` [${details.join('; ')}]` : ''
+  }`;
 }
 
 function describeAnnotation(annotation: CatalogModelAnnotationSummary): string {
