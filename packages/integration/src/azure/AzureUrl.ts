@@ -124,7 +124,12 @@ export class AzureUrl {
     } else if (this.#project === this.#repo) {
       url = this.#baseUrl(this.#owner, '_git', this.#repo);
     } else {
-      url = this.#baseUrl(this.#owner, this.#project, '_git', this.#repo);
+      url = this.#baseUrl(
+        ...this.#owner.split('/'),
+        this.#project,
+        '_git',
+        this.#repo,
+      );
     }
 
     if (this.#path) {
@@ -161,7 +166,7 @@ export class AzureUrl {
       );
     } else {
       url = this.#baseUrl(
-        this.#owner,
+        ...this.#owner.split('/'),
         this.#project,
         '_apis',
         'git',
@@ -197,7 +202,7 @@ export class AzureUrl {
       );
     } else {
       url = this.#baseUrl(
-        this.#owner,
+        ...this.#owner.split('/'),
         this.#project,
         '_apis',
         'git',
@@ -237,7 +242,7 @@ export class AzureUrl {
       );
     } else {
       url = this.#baseUrl(
-        this.#owner,
+        ...this.#owner.split('/'),
         this.#project,
         '_apis',
         'git',
