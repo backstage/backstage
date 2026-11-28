@@ -15,6 +15,7 @@
  */
 
 import { useContext, useState } from 'react';
+import type { Location } from 'history';
 import { resolvePath, useLocation, useResolvedPath } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -137,6 +138,7 @@ export type SidebarSubmenuItemDropdownItem = {
  * to: Path to navigate to when item is clicked
  * icon: Icon displayed on the left of text content
  * dropdownItems: Optional array of dropdown items displayed when submenu item is clicked.
+ * isActive: Optional function that overrides how the item decides whether it is active, replacing the default `to` and `exact` matching.
  *
  * @public
  */
@@ -148,6 +150,7 @@ export type SidebarSubmenuItemProps = {
   dropdownItems?: SidebarSubmenuItemDropdownItem[];
   exact?: boolean;
   initialShowDropdown?: boolean;
+  isActive?: (location: Location) => boolean;
 };
 
 /**
@@ -156,7 +159,15 @@ export type SidebarSubmenuItemProps = {
  * @public
  */
 export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
-  const { title, subtitle, to, icon: Icon, dropdownItems, exact } = props;
+  const {
+    title,
+    subtitle,
+    to,
+    icon: Icon,
+    dropdownItems,
+    exact,
+    isActive: isActiveOverride,
+  } = props;
   const classes = useStyles();
   const { setIsHoveredOn } = useContext(SidebarItemWithSubmenuContext);
   const closeSubmenu = () => {
@@ -164,7 +175,9 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   };
   const toLocation = useResolvedPath(to ?? '');
   const currentLocation = useLocation();
-  let isActive = isLocationMatch(currentLocation, toLocation, exact);
+  let isActive = isActiveOverride
+    ? isActiveOverride(currentLocation)
+    : isLocationMatch(currentLocation, toLocation, exact);
 
   const [showDropDown, setShowDropDown] = useState(
     props.initialShowDropdown ?? false,
@@ -173,11 +186,13 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
     setShowDropDown(!showDropDown);
   };
   if (dropdownItems !== undefined) {
-    dropdownItems.some(item => {
-      const resolvedPath = resolvePath(item.to);
-      isActive = isLocationMatch(currentLocation, resolvedPath, exact);
-      return isActive;
-    });
+    if (!isActiveOverride) {
+      dropdownItems.some(item => {
+        const resolvedPath = resolvePath(item.to);
+        isActive = isLocationMatch(currentLocation, resolvedPath, exact);
+        return isActive;
+      });
+    }
     return (
       <Box className={classes.itemContainer}>
         <Tooltip title={title} enterDelay={500} enterNextDelay={500}>
