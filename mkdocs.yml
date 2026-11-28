@@ -176,6 +176,9 @@ nav:
       - Reading Backstage Configuration: 'conf/reading.md'
       - Writing Backstage Configuration: 'conf/writing.md'
       - Defining Configuration for your Plugin: 'conf/defining.md'
+  - Database:
+      - Overview: 'database/index.md'
+      - Database maintenance: 'database/maintenance.md'
   - Notifications:
       - Getting Started: 'notifications/index.md'
       - Usage: 'notifications/usage.md'
