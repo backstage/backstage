@@ -28,6 +28,7 @@ import { Progress, ResponseErrorPanel } from '@backstage/core-components';
 import { toError } from '@backstage/errors';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useEntityPresentation } from '../../apis';
 import {
   Accordion,
   AccordionPanel,
@@ -67,6 +68,7 @@ function useUnregisterDialogHandlers(
     null,
   );
   const { t } = useTranslationRef(catalogReactTranslationRef);
+  const { primaryTitle: entityName } = useEntityPresentation(entity);
 
   const onUnregister = useCallback(async () => {
     if ('unregisterLocation' in state) {
@@ -87,7 +89,6 @@ function useUnregisterDialogHandlers(
       setBusyAction('delete');
       try {
         await state.deleteEntity();
-        const entityName = entity.metadata.title ?? entity.metadata.name;
         onConfirm();
         alertApi.post({
           message: t('unregisterEntityDialog.deleteEntitySuccessMessage', {
@@ -102,7 +103,7 @@ function useUnregisterDialogHandlers(
         setBusyAction(null);
       }
     }
-  }, [alertApi, onConfirm, state, entity, t]);
+  }, [alertApi, onConfirm, state, entityName, t]);
 
   return { state, busyAction, onUnregister, onDelete, onClose };
 }
