@@ -20,7 +20,10 @@ interactions.
   pairs) that may be provided on an event-by-event basis. To continue the above
   example, the URL a user clicked to might look like `{ "to": "/a/page" }`.
 - **Context** represents the broader context in which an event took place. By
-  default, it includes `pluginId` and `extensionId`.
+  default, it includes `pluginId` and `extensionId`. `navigate` events also
+  include `routeRef` when the page is mounted with one of its plugin's routes.
+  It is the route's name in the form `<pluginId>.<routeKey>`, for example
+  `catalog.catalogEntity`.
 
 This composition of events aims to allow analysis at different levels of detail,
 enabling very granular questions (like "what is the most clicked on thing on a
