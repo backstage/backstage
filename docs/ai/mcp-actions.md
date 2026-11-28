@@ -237,6 +237,17 @@ auth:
     #   - 'http://[::1]:*/*'
 ```
 
+Tokens issued through this flow carry an `azp` claim holding the `client_id` of
+the client that obtained them, both on the initial exchange and after a refresh.
+Tokens from an interactive Backstage sign-in have no `azp` claim.
+
+Backends see the client as `clientId` on the user principal of the request
+credentials, also when the request reaches them through another backend on
+behalf of the user. Audit events include it as `actor.clientId`, and a
+[permission policy](../permissions/writing-a-policy.md#requests-made-through-an-oauth-client)
+can use it to decide differently for a client than for the user's own session.
+Without such a policy, the token still carries all of the user's permissions.
+
 #### Pre-registered clients
 
 Some MCP clients and integration platforms support neither CIMD nor Dynamic Client Registration, and instead only offer a manual OAuth setup with a fixed client ID, client secret, and the authorization and token URLs. You can register these clients statically in config:

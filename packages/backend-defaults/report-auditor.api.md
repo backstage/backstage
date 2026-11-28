@@ -30,6 +30,7 @@ export type AuditorEvent = {
 // @public (undocumented)
 export type AuditorEventActorDetails = {
   actorId?: string;
+  clientId?: string;
   ip?: string;
   hostname?: string;
   userAgent?: string;

@@ -101,6 +101,7 @@ export namespace mockCredentials {
       actor?: {
         subject: string;
       };
+      clientId?: string;
     },
   ): BackstageCredentials<BackstageUserPrincipal>;
   export namespace user {
@@ -115,6 +116,7 @@ export namespace mockCredentials {
         actor?: {
           subject: string;
         };
+        clientId?: string;
       },
     ): string;
   }

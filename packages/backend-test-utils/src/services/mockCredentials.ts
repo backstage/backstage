@@ -56,6 +56,7 @@ function validateUserEntityRef(ref: string) {
 export type UserTokenPayload = {
   sub?: string;
   actor?: { subject: string };
+  clientId?: string;
 };
 
 /**
@@ -118,7 +119,7 @@ export namespace mockCredentials {
    */
   export function user(
     userEntityRef: string = DEFAULT_MOCK_USER_ENTITY_REF,
-    options?: { actor?: { subject: string } },
+    options?: { actor?: { subject: string }; clientId?: string },
   ): BackstageCredentials<BackstageUserPrincipal> {
     validateUserEntityRef(userEntityRef);
     const result = {
@@ -130,6 +131,7 @@ export namespace mockCredentials {
         ...(options?.actor && {
           actor: { type: 'service', subject: options.actor.subject } as const,
         }),
+        ...(options?.clientId && { clientId: options.clientId }),
       },
     } as const;
     Object.defineProperties(result, {
@@ -139,13 +141,15 @@ export namespace mockCredentials {
         value: () =>
           `mockCredentials{userPrincipal{${userEntityRef}${
             options?.actor ? `,actor={${options.actor.subject}}` : ''
-          }}}`,
+          }${options?.clientId ? `,clientId=${options.clientId}` : ''}}}`,
       },
       token: {
         enumerable: false,
         configurable: true,
         value:
-          userEntityRef !== DEFAULT_MOCK_USER_ENTITY_REF || options?.actor
+          userEntityRef !== DEFAULT_MOCK_USER_ENTITY_REF ||
+          options?.actor ||
+          options?.clientId
             ? user.token(userEntityRef, options)
             : user.token(),
       },
@@ -164,7 +168,7 @@ export namespace mockCredentials {
      */
     export function token(
       userEntityRef?: string,
-      options?: { actor?: { subject: string } },
+      options?: { actor?: { subject: string }; clientId?: string },
     ): string {
       if (userEntityRef) {
         validateUserEntityRef(userEntityRef);
@@ -173,6 +177,7 @@ export namespace mockCredentials {
           ...(options?.actor && {
             actor: { subject: options.actor.subject },
           }),
+          ...(options?.clientId && { clientId: options.clientId }),
         } satisfies UserTokenPayload)}`;
       }
       return MOCK_USER_TOKEN;

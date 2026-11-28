@@ -119,6 +119,53 @@ describe('TokenFactory', () => {
     );
   });
 
+  it('should add a proof that covers the client to tokens issued to a client', async () => {
+    const factory = new TokenFactory({
+      issuer: 'my-issuer',
+      keyStore: new MemoryKeyStore(),
+      keyDurationSeconds: 5,
+      logger,
+    });
+    const { token } = await factory.issueToken({
+      claims: { sub: entityRef, ent: [entityRef], azp: 'my-client' },
+    });
+
+    const { keys } = await factory.listPublicKeys();
+    const keyStore = createLocalJWKSet({ keys: keys });
+    const { payload, protectedHeader } = await jwtVerify(token, keyStore);
+    const { sub, iat, exp } = payload;
+
+    const verifyLimited = (claims: object, proof: unknown) =>
+      jwtVerify(
+        [
+          base64url.encode(
+            JSON.stringify({
+              typ: tokenTypes.limitedUser.typParam,
+              alg: protectedHeader.alg,
+              kid: protectedHeader.kid!,
+            }),
+          ),
+          base64url.encode(JSON.stringify(claims)),
+          proof,
+        ].join('.'),
+        keyStore,
+      );
+
+    await expect(
+      verifyLimited({ sub, iat, exp, azp: 'my-client' }, payload.cip),
+    ).resolves.toMatchObject({ payload: { sub, azp: 'my-client' } });
+    // The original proof is unchanged, for backends that ignore the client
+    await expect(
+      verifyLimited({ sub, iat, exp }, payload.uip),
+    ).resolves.toMatchObject({ payload: { sub } });
+    // Neither proof is valid for another client
+    for (const proof of [payload.cip, payload.uip]) {
+      await expect(
+        verifyLimited({ sub, iat, exp, azp: 'other-client' }, proof),
+      ).rejects.toThrow('signature verification failed');
+    }
+  });
+
   it('should generate new signing keys when the current one expires', async () => {
     const fixedTime = Date.now();
     jest.spyOn(Date, 'now').mockImplementation(() => fixedTime);

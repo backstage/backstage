@@ -428,6 +428,51 @@ describe('UserTokenHandler', () => {
       });
     });
 
+    it('should keep the client when the token has a proof that covers it', async () => {
+      const header = { typ: 'vnd.backstage.user', alg: 'ES256' };
+      const limitedHeader = { typ: 'vnd.backstage.limited-user', alg: 'ES256' };
+      const payload = {
+        aud: 'backstage',
+        sub: 'mock',
+        ent: ['mock'],
+        azp: 'my-client',
+        iat: 1,
+        exp: 2,
+        uip: 'proof',
+      };
+
+      const withClientProof = await createToken({
+        header,
+        payload: { ...payload, cip: 'client-proof' },
+        signature: 'sig',
+      });
+      expect(
+        userTokenHandler.createLimitedUserToken(withClientProof).token,
+      ).toBe(
+        await createToken({
+          header: limitedHeader,
+          payload: { sub: 'mock', iat: 1, exp: 2, azp: 'my-client' },
+          signature: 'client-proof',
+        }),
+      );
+
+      // Without that proof the limited token is built the way it always was
+      const withoutClientProof = await createToken({
+        header,
+        payload,
+        signature: 'sig',
+      });
+      expect(
+        userTokenHandler.createLimitedUserToken(withoutClientProof).token,
+      ).toBe(
+        await createToken({
+          header: limitedHeader,
+          payload: { sub: 'mock', iat: 1, exp: 2 },
+          signature: 'proof',
+        }),
+      );
+    });
+
     it('should create limited token that can be verified', async () => {
       jest.useFakeTimers({
         doNotFake: ['nextTick'],

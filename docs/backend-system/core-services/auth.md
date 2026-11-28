@@ -114,6 +114,11 @@ if (auth.isPrincipal(credentials, 'user')) {
 }
 ```
 
+A user principal also has a `clientId` when the user signed in through an OAuth
+client, for example an MCP client that the user approved. It holds the ID of
+that client and is kept across on-behalf-of requests between backend plugins. It
+is not set for an interactive sign-in to Backstage.
+
 ## Configuring the service
 
 :::note

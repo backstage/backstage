@@ -188,6 +188,7 @@ export type BackstageUserPrincipal = {
   type: 'user';
   userEntityRef: string;
   actor?: BackstageServicePrincipal;
+  clientId?: string;
 };
 
 // @public

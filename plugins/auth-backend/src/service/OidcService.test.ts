@@ -772,6 +772,12 @@ describe('OidcService', () => {
           idToken: mockToken,
           scope: 'openid',
         });
+        expect(mocks.tokenIssuer.issueToken).toHaveBeenCalledWith({
+          claims: {
+            sub: 'user:default/test',
+            azp: client.clientId,
+          },
+        });
       });
 
       it('should use non-default backstageTokenExpiration when exchanging code for tokens', async () => {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { mockServices } from '@backstage/backend-test-utils';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import { DefaultAuditorService } from './DefaultAuditorService';
 
 const mockDeps = {
@@ -87,6 +87,29 @@ describe('DefaultAuditorService', () => {
       plugin: 'test',
       severityLevel: 'low',
       actor: {},
+    });
+  });
+
+  it('should log the client that the user credentials were issued to', async () => {
+    const logFn = jest.fn();
+    const auditor = DefaultAuditorService.create(logFn, {
+      ...mockDeps,
+      auth: mockServices.auth(),
+      httpAuth: mockServices.httpAuth({
+        defaultCredentials: mockCredentials.user('user:default/mock', {
+          clientId: 'my-client',
+        }),
+      }),
+    });
+
+    await auditor.createEvent({
+      eventId: 'test-event',
+      request: { headers: {}, get: () => undefined } as any,
+    });
+
+    expect(logFn.mock.calls[0][0].actor).toEqual({
+      actorId: 'user:default/mock',
+      clientId: 'my-client',
     });
   });
 

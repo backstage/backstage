@@ -23,7 +23,7 @@ import {
   authServiceFactory,
   pluginTokenHandlerDecoratorServiceRef,
 } from './authServiceFactory';
-import { base64url, decodeJwt } from 'jose';
+import { base64url, decodeJwt, GeneralSign, importJWK, SignJWT } from 'jose';
 import { discoveryServiceFactory } from '../discovery';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
@@ -401,6 +401,97 @@ describe('authServiceFactory', () => {
       targetPluginId: 'permission',
     });
     expect(decodeJwt(oboToken2).obo).toBe(limitedToken);
+  });
+
+  it('should keep the client of a user token across on-behalf-of requests', async () => {
+    const tester = ServiceFactoryTester.from(authServiceFactory, {
+      dependencies: mockDeps,
+    });
+    const searchAuth = await tester.getSubject('search');
+    const catalogAuth = await tester.getSubject('catalog');
+
+    const publicKey = {
+      kty: 'EC',
+      x: 'c9cPvv_S7zETBKDlAa3oOjr7RvyUueIYIak0TRph7mg',
+      y: 'bKaxDRAWgmEJ9Ix8e85blH_IsnbQxX31x0oQTVwLZ2c',
+      crv: 'P-256',
+      kid: '8d01c3db-56f9-45f0-86dd-05b3c835b3d3',
+      alg: 'ES256',
+    };
+    const privateKey = await importJWK({
+      ...publicKey,
+      d: '2eJlhCDdGx9fxKDL1D9BnY3CCTEKxL60Bkms0hmubmY',
+    });
+    server.use(
+      http.get('http://localhost:7007/api/auth/.well-known/jwks.json', () =>
+        HttpResponse.json({ keys: [publicKey] }),
+      ),
+      http.get(
+        'http://localhost:7007/api/:pluginId/.backstage/auth/v1/jwks.json',
+        async ({ params }) =>
+          HttpResponse.json(
+            await (params.pluginId === 'search'
+              ? searchAuth
+              : catalogAuth
+            ).listPublicServiceKeys(),
+          ),
+      ),
+    );
+
+    const sub = 'user:development/guest';
+    const iat = Math.floor(Date.now() / 1000);
+    const exp = iat + 3600;
+    const proof = async (claims: object) =>
+      (
+        await new GeneralSign(new TextEncoder().encode(JSON.stringify(claims)))
+          .addSignature(privateKey)
+          .setProtectedHeader({
+            typ: 'vnd.backstage.limited-user',
+            alg: 'ES256',
+            kid: publicKey.kid,
+          })
+          .done()
+          .sign()
+      ).signatures[0].signature;
+
+    const fullToken = await new SignJWT({
+      sub,
+      ent: [sub],
+      aud: 'backstage',
+      azp: 'my-client',
+      iat,
+      exp,
+      uip: await proof({ sub, iat, exp }),
+      cip: await proof({ sub, iat, exp, azp: 'my-client' }),
+    })
+      .setProtectedHeader({
+        typ: 'vnd.backstage.user',
+        alg: 'ES256',
+        kid: publicKey.kid,
+      })
+      .sign(privateKey);
+
+    const credentials = await searchAuth.authenticate(fullToken);
+    expect(credentials.principal).toEqual({
+      type: 'user',
+      userEntityRef: sub,
+      clientId: 'my-client',
+    });
+
+    const { token: oboToken } = await searchAuth.getPluginRequestToken({
+      onBehalfOf: credentials,
+      targetPluginId: 'catalog',
+    });
+    const oboCredentials = await catalogAuth.authenticate(oboToken);
+    expect(oboCredentials.principal).toEqual({
+      type: 'user',
+      userEntityRef: sub,
+      actor: { type: 'service', subject: 'plugin:search' },
+      clientId: 'my-client',
+    });
+    expect(String(oboCredentials.principal)).toBe(
+      `userPrincipal{${sub},actor={servicePrincipal{plugin:search}},clientId=my-client}`,
+    );
   });
 
   it('should eagerly reject access to external access tokens based on plugin id', async () => {

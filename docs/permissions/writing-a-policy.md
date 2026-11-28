@@ -201,3 +201,32 @@ In this example, we use [`isResourcePermission`](https://backstage.io/api/stable
 Some catalog permissions do not have the `'catalog-entity'` resource type, such as [`catalogEntityCreatePermission`](https://github.com/backstage/backstage/blob/1e5e9fb9de9856a49e60fc70c38a4e4e94c69570/plugins/catalog-common/src/permissions.ts#L49). In those cases, a definitive decision is required because conditions can't be applied to an entity that does not exist yet.
 
 :::
+
+## Requests made through an OAuth client
+
+A user can approve an OAuth client, such as an [MCP client](../ai/mcp-actions.md#client-id-metadata-documents) used by an AI agent, to act for them. These requests carry the user's identity and are by default allowed everything that the user is allowed.
+
+For such requests, `user.credentials.principal.clientId` holds the ID of the client. It is set by the `auth` backend when the token is issued, and it is not set for requests from the user's own session in Backstage. The following policy only lets a trusted client make changes:
+
+```ts title="packages/backend/src/extensions/permissionsPolicyExtension.ts"
+const trustedClients = ['https://my-custom-client.example.com/client.json'];
+
+export class CustomPolicy implements PermissionPolicy {
+  async handle(
+    request: PolicyQuery,
+    user?: PolicyQueryUser,
+  ): Promise<PolicyDecision> {
+    const clientId = user?.credentials.principal.clientId;
+    const isRead = request.permission.attributes.action === 'read';
+
+    if (clientId && !isRead && !trustedClients.includes(clientId)) {
+      return { result: AuthorizeResult.DENY };
+    }
+
+    // The rules that apply to everyone, including the user's own session
+    return { result: AuthorizeResult.ALLOW };
+  }
+}
+```
+
+In tests, `mockCredentials.user('user:default/mock', { clientId })` from `@backstage/backend-test-utils` creates credentials for such a request.

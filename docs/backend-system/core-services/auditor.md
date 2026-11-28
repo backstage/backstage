@@ -74,6 +74,8 @@ export async function createRouter(
 
 In this example, an audit event is created for each request to `/my-endpoint`. The `success` or `fail` methods are called based on the outcome of processing the request.
 
+Passing the `request` also records who made it in the `actor` field of the event. For a user that signed in through an OAuth client, such as an MCP client, the actor includes the `clientId` of that client next to the `actorId` of the user.
+
 ## Naming Conventions
 
 When defining audit events, follow these guidelines to ensure consistency and clarity:
