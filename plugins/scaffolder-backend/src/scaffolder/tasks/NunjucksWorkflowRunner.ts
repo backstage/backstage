@@ -1099,9 +1099,22 @@ function scaffoldingTracker(metrics: MetricsService) {
     description: 'Total number of scaffolder tasks executed',
   });
 
+  // OpenTelemetry default boundaries up to 1000, with extra sub-five-second
+  // boundaries.
+  const stepDurationBuckets = [
+    0, 0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25, 50, 75, 100, 250, 500,
+    750, 1000,
+  ];
+  // Tasks can wait on long CI runs or approvals, so they also keep the 2500
+  // to 10000 default boundaries.
+  const taskDurationBuckets = [...stepDurationBuckets, 2500, 5000, 7500, 10000];
+
   const taskDuration = metrics.createHistogram('scaffolder.task.duration', {
     description: 'Time taken to complete a scaffolder task end-to-end',
     unit: 's',
+    advice: {
+      explicitBucketBoundaries: taskDurationBuckets,
+    },
   });
 
   const stepCount = metrics.createCounter('scaffolder.step.count', {
@@ -1111,6 +1124,9 @@ function scaffoldingTracker(metrics: MetricsService) {
   const stepDuration = metrics.createHistogram('scaffolder.step.duration', {
     description: 'Time taken to complete a single scaffolder action step',
     unit: 's',
+    advice: {
+      explicitBucketBoundaries: stepDurationBuckets,
+    },
   });
 
   async function taskStart(task: TaskContext) {

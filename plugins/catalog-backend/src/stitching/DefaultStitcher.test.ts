@@ -360,6 +360,44 @@ describe.each(databases.eachSupportedId())('Stitcher, %p', databaseId => {
   });
 });
 
+describe('Stitcher metrics', () => {
+  it('creates stitching histograms with explicit second-scale bucket boundaries', () => {
+    const metrics = metricsServiceMock.mock();
+    void new DefaultStitcher({
+      knex: {} as any,
+      logger: mockServices.logger.mock(),
+      strategy: {
+        pollingInterval: { milliseconds: 50 },
+        stitchTimeout: { seconds: 10 },
+      },
+      metrics,
+    });
+
+    expect(metrics.createHistogram).toHaveBeenCalledWith(
+      'catalog.stitching.duration',
+      expect.objectContaining({
+        advice: expect.objectContaining({
+          explicitBucketBoundaries: [
+            0, 0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25, 50, 75, 100, 250,
+            500, 750, 1000,
+          ],
+        }),
+      }),
+    );
+    expect(metrics.createHistogram).toHaveBeenCalledWith(
+      'catalog.stitching.queue.delay',
+      expect.objectContaining({
+        advice: expect.objectContaining({
+          explicitBucketBoundaries: [
+            0, 0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25, 50, 75, 100, 250,
+            500, 750, 1000, 2500, 5000, 7500, 10000,
+          ],
+        }),
+      }),
+    );
+  });
+});
+
 async function waitForCondition(
   condition: () => Promise<boolean>,
   timeoutMs = 10_000,

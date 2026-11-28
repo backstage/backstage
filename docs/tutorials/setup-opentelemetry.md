@@ -201,6 +201,44 @@ The following metrics are available:
 - `backend_tasks.task.runs.started`: Gauge recording the Unix epoch time (seconds) when each task (`taskId` label) was last started
 - `backend_tasks.task.runs.completed`: Gauge recording the Unix epoch time (seconds) when each task (`taskId` label) was last completed
 
+### Histogram bucket boundaries
+
+The duration and delay metrics above are histograms that record values in
+seconds. OpenTelemetry's default bucket boundaries are `0`, `5`, `10`, `25`,
+`50`, `75`, `100`, `250`, `500`, `750`, `1000`, `2500`, `5000`, `7500` and
+`10000`. Many values fall below `5`, so percentiles such as p95 and p99 were
+not accurate with these defaults.
+
+The following histograms therefore declare explicit boundaries. They all add
+boundaries below `5`. How they handle the default boundaries above `1000`
+depends on how long the measured work can take.
+
+These histograms keep the default boundaries up to `1000` and remove `2500`,
+`5000`, `7500` and `10000`:
+
+- `catalog.processing.duration`
+- `catalog.processors.duration`
+- `catalog.stitching.duration`
+- `scaffolder.step.duration`
+
+They use these boundaries, in seconds: `0`, `0.01`, `0.05`, `0.1`, `0.25`,
+`0.5`, `1`, `2.5`, `5`, `10`, `25`, `50`, `75`, `100`, `250`, `500`, `750` and
+`1000`. Values above `1000` seconds go into the `+Inf` bucket. Dashboards and
+alerts for these histograms that use an `le` label up to `le="1000"` continue
+to work. Dashboards and alerts that use `le="2500"` or higher must be updated.
+
+These histograms measure work that can take much longer than `1000` seconds,
+so they keep all the default boundaries:
+
+- `catalog.processing.queue.delay`
+- `catalog.stitching.queue.delay`
+- `scaffolder.task.duration`
+- `backend_tasks.task.runs.duration`
+
+They use the same boundaries as the first group, plus `2500`, `5000`, `7500`
+and `10000`.
+Dashboards and alerts for these histograms continue to work.
+
 ## References
 
 - [Getting started with OpenTelemetry Node.js](https://opentelemetry.io/docs/instrumentation/js/getting-started/nodejs/)

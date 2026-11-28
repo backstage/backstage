@@ -18,7 +18,11 @@ import { stringifyError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { DateTime } from 'luxon';
 import { DbStitchQueueRow } from '../database/tables';
-import { createCounterMetric } from '../util/metrics';
+import {
+  createCounterMetric,
+  longSecondsHistogramBuckets,
+  secondsHistogramBuckets,
+} from '../util/metrics';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 
@@ -46,6 +50,9 @@ export function progressTracker(
     {
       description: 'Time spent executing the full stitching flow',
       unit: 'seconds',
+      advice: {
+        explicitBucketBoundaries: secondsHistogramBuckets,
+      },
     },
   );
 
@@ -66,6 +73,9 @@ export function progressTracker(
       description:
         'The amount of delay between being scheduled for stitching, and the start of actually being stitched',
       unit: 'seconds',
+      advice: {
+        explicitBucketBoundaries: longSecondsHistogramBuckets,
+      },
     },
   );
 
