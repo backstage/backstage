@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-events-backend-module-msgraph
+  title: '@backstage/plugin-events-backend-module-msgraph'
+  description: The msgraph backend module for the events plugin.
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: maintainers
