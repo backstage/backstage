@@ -52,11 +52,9 @@ describe('package lint formatter resolution', () => {
             ? require.resolve('eslint-formatter-friendly')
             : format,
         );
-        if (format === 'eslint-formatter-friendly') {
-          expect(chdir).toHaveBeenCalledWith('/workspace');
-        } else {
-          expect(chdir).not.toHaveBeenCalled();
-        }
+        expect(chdir.mock.calls).toEqual(
+          format === 'eslint-formatter-friendly' ? [['/workspace']] : [],
+        );
       } finally {
         chdir.mockRestore();
       }

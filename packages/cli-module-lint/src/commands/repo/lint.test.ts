@@ -53,11 +53,9 @@ describe('repo lint formatter resolution', () => {
             }),
           }),
         );
-        if (format === 'eslint-formatter-friendly') {
-          expect(chdir).toHaveBeenCalledWith('/workspace');
-        } else {
-          expect(chdir).not.toHaveBeenCalled();
-        }
+        expect(chdir.mock.calls).toEqual(
+          format === 'eslint-formatter-friendly' ? [['/workspace']] : [],
+        );
       } finally {
         chdir.mockRestore();
         if (forceColor === undefined) {
