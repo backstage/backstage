@@ -28,6 +28,7 @@ import { ProcessingDatabase, RefreshStateItem } from '../database/types';
 import {
   createCounterMetric,
   createSummaryMetric,
+  longSecondsHistogramBuckets,
   secondsHistogramBuckets,
 } from '../util/metrics';
 import { CatalogProcessingOrchestrator, EntityProcessingResult } from './types';
@@ -438,7 +439,7 @@ function progressTracker(metrics: MetricsService) {
         'The amount of delay between being scheduled for processing, and the start of actually being processed',
       unit: 'seconds',
       advice: {
-        explicitBucketBoundaries: secondsHistogramBuckets,
+        explicitBucketBoundaries: longSecondsHistogramBuckets,
       },
     },
   );

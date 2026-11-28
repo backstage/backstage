@@ -73,13 +73,27 @@ export function createHistogramMetric<T extends string>(
 }
 
 /**
- * Bucket boundaries, in seconds, for the OpenTelemetry duration and delay
- * histograms. These keep the OpenTelemetry default boundaries up to 1000 so
- * that existing `le` labels stay valid, add sub-five-second boundaries where
- * most values fall, and drop the 2500 to 10000 boundaries that are not useful
- * for second-scale values.
+ * Bucket boundaries, in seconds, for the catalog processing and stitching
+ * duration histograms.
+ * These keep the OpenTelemetry default boundaries up to 1000, add
+ * sub-five-second boundaries where most values fall, and drop the 2500 to
+ * 10000 boundaries that are not useful for these durations.
  */
 export const secondsHistogramBuckets = [
   0, 0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25, 50, 75, 100, 250, 500, 750,
   1000,
+];
+
+/**
+ * Bucket boundaries, in seconds, for the OpenTelemetry queue delay
+ * histograms. These are {@link secondsHistogramBuckets} plus the 2500 to
+ * 10000 default boundaries, because queue delays can go far above 1000 seconds
+ * when the catalog is backed up.
+ */
+export const longSecondsHistogramBuckets = [
+  ...secondsHistogramBuckets,
+  2500,
+  5000,
+  7500,
+  10000,
 ];
