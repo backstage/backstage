@@ -107,6 +107,11 @@ export default async ({ args, info }: CliCommandContext) => {
     args,
   );
 
+  const resolvedFormat =
+    format === 'eslint-formatter-friendly'
+      ? require.resolve('eslint-formatter-friendly')
+      : format;
+
   let packages = await PackageGraph.listTargetPackages();
 
   const cache = SuccessCache.create({
@@ -186,7 +191,7 @@ export default async ({ args, info }: CliCommandContext) => {
     items: items.filter(item => item.lintOptions), // Filter out packages without lint script
     context: {
       fix: Boolean(fix),
-      format: format as string | undefined,
+      format: resolvedFormat as string | undefined,
       shouldCache: Boolean(cacheContext),
       maxWarnings: maxWarnings ?? '-1',
       successCache: cacheContext?.entries,

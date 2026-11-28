@@ -54,6 +54,11 @@ export default async ({ args, info }: CliCommandContext) => {
     args,
   );
 
+  const resolvedFormat =
+    format === 'eslint-formatter-friendly'
+      ? require.resolve('eslint-formatter-friendly')
+      : format;
+
   const eslint = new ESLint({
     cwd: targetPaths.dir,
     fix,
@@ -77,7 +82,7 @@ export default async ({ args, info }: CliCommandContext) => {
     await ESLint.outputFixes(results);
   }
 
-  const formatter = await eslint.loadFormatter(format);
+  const formatter = await eslint.loadFormatter(resolvedFormat);
 
   // This formatter uses the cwd to format file paths, so let's have that happen from the root instead
   if (format === 'eslint-formatter-friendly') {
