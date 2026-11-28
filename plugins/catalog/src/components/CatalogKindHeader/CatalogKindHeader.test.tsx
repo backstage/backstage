@@ -172,6 +172,35 @@ describe('<CatalogKindHeader />', () => {
     );
   });
 
+  it('prefers the current kind filter over stale query parameters on mount', async () => {
+    const updateFilters = jest.fn();
+    await renderWithEffects(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{
+            filters: { kind: new EntityKindFilter('system', 'System') },
+            queryParameters: { kind: 'component' },
+            updateFilters,
+          }}
+        >
+          <CatalogKindHeader />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    await waitFor(() => {
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        kind: new EntityKindFilter('system', 'System'),
+      });
+    });
+
+    expect(
+      updateFilters.mock.calls.some(
+        ([update]) => update.kind?.value === 'component',
+      ),
+    ).toBe(false);
+  });
+
   it('limits kinds when allowedKinds is set', async () => {
     await renderWithEffects(
       <ApiProvider apis={apis}>
