@@ -16,6 +16,7 @@
 
 import { UserEntity } from '@backstage/catalog-model';
 import { createSwappableComponent } from '@backstage/frontend-plugin-api';
+import { entityPresentationSnapshot } from '@backstage/plugin-catalog-react';
 import type { AvatarOwnProps } from '@backstage/ui';
 import type { DefaultUserAvatarProps } from './DefaultUserAvatar';
 
@@ -31,7 +32,7 @@ export interface UserAvatarProps {
   entity: UserEntity;
   /**
    * Display name used for avatar initials when no picture is available.
-   * Defaults to `entity.spec.profile.displayName` or `entity.metadata.name`.
+   * Defaults to `entityPresentationSnapshot(entity).primaryTitle`.
    */
   displayName?: string;
   className?: string;
@@ -54,8 +55,7 @@ export const UserAvatar = createSwappableComponent<
   loader: () => import('./DefaultUserAvatar').then(m => m.DefaultUserAvatar),
   transformProps: ({ entity, displayName, className, size, purpose }) => ({
     entity,
-    displayName:
-      displayName ?? entity.spec?.profile?.displayName ?? entity.metadata.name,
+    displayName: displayName ?? entityPresentationSnapshot(entity).primaryTitle,
     className,
     size,
     purpose,

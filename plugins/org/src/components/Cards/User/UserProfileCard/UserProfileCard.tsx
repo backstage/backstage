@@ -20,7 +20,14 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import { Link } from '@backstage/core-components';
-import { EntityInfoCard } from '@backstage/plugin-catalog-react';
+import {
+  EntityDisplayName,
+  EntityInfoCard,
+  EntityRefLinks,
+  getEntityRelations,
+  useEntity,
+  useEntityPresentation,
+} from '@backstage/plugin-catalog-react';
 import { Box, Flex, Text } from '@backstage/ui';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import BaseButton from '@material-ui/core/ButtonBase';
@@ -36,12 +43,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import CloseIcon from '@material-ui/icons/Close';
-import {
-  EntityRefLinks,
-  getEntityRelations,
-  useEntity,
-} from '@backstage/plugin-catalog-react';
-
 import Alert from '@material-ui/lab/Alert';
 import EditIcon from '@material-ui/icons/Edit';
 import EmailIcon from '@material-ui/icons/Email';
@@ -83,17 +84,19 @@ const useStyles = makeStyles(
   { name: 'PluginOrgUserProfileCard' },
 );
 
-const CardTitle = (props: { entity: UserEntity; title: string }) =>
-  props.title ? (
+const CardTitle = (props: { entity: UserEntity }) => {
+  const { primaryTitle } = useEntityPresentation(props.entity);
+  return (
     <Flex align="center" gap="2">
       <UserAvatar
         entity={props.entity}
-        displayName={props.title}
+        displayName={primaryTitle}
         size="small"
       />
-      {props.title}
+      <EntityDisplayName entityRef={props.entity} hideIcon />
     </Flex>
-  ) : null;
+  );
+};
 
 /** @public */
 export const UserProfileCard = (props: {
@@ -105,6 +108,7 @@ export const UserProfileCard = (props: {
 
   const classes = useStyles();
   const { entity: user } = useEntity<UserEntity>();
+  const userPresentation = useEntityPresentation(user ?? '');
   const [isAllGroupsDialogOpen, setIsAllGroupsDialogOpen] = useState(false);
   const { t } = useTranslationRef(orgTranslationRef);
 
@@ -124,10 +128,9 @@ export const UserProfileCard = (props: {
     user.metadata.annotations?.[ANNOTATION_EDIT_URL];
 
   const {
-    metadata: { name: metaName, description, links },
+    metadata: { description, links },
     spec: { profile },
   } = user;
-  const displayName = profile?.displayName ?? metaName;
   const emailHref = profile?.email ? `mailto:${profile.email}` : undefined;
   const memberOfRelations = getEntityRelations(user, RELATION_MEMBER_OF, {
     kind: 'Group',
@@ -135,7 +138,7 @@ export const UserProfileCard = (props: {
 
   return (
     <EntityInfoCard
-      title={<CardTitle entity={user} title={displayName} />}
+      title={<CardTitle entity={user} />}
       headerActions={
         <>
           {entityMetadataEditUrl && (
@@ -212,7 +215,7 @@ export const UserProfileCard = (props: {
       >
         <DialogTitle id="view-all-groups-dialog-title">
           {t('userProfileCard.allGroupDialog.title', {
-            name: user.metadata.name,
+            name: userPresentation.primaryTitle,
           })}
           <IconButton
             className={classes.closeButton}

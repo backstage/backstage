@@ -60,4 +60,26 @@ describe('UserAvatar', () => {
     );
     expect(avatar).toHaveAttribute('data-name', 'Tara');
   });
+
+  it('falls back to the entity presentation title when displayName is not provided', async () => {
+    await renderInTestApp(<UserAvatar entity={user} size="x-large" />);
+
+    const avatar = await screen.findByTestId('mock-avatar');
+    expect(avatar).toHaveAttribute('data-name', 'Tara');
+  });
+
+  it('falls back to entity name when profile displayName is absent', async () => {
+    const userWithoutProfile: UserEntity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'User',
+      metadata: { name: 'tara' },
+      spec: {},
+    };
+    await renderInTestApp(
+      <UserAvatar entity={userWithoutProfile} size="x-large" />,
+    );
+
+    const avatar = await screen.findByTestId('mock-avatar');
+    expect(avatar).toHaveAttribute('data-name', 'tara');
+  });
 });
