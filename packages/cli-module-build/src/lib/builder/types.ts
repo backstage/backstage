@@ -17,6 +17,7 @@
 /* eslint-disable @typescript-eslint/no-redeclare */
 
 import { BackstagePackage, BackstagePackageJson } from '@backstage/cli-node';
+import { EntryPoint } from '../entryPoints';
 
 export const Output = {
   esm: 0,
@@ -42,6 +43,8 @@ export type BuildOptions = {
   logPrefix?: string;
   targetDir?: string;
   packageJson?: BackstagePackageJson;
+  /** Explicit build inputs, overriding package manifest entry points. */
+  entryPoints?: EntryPoint[];
   outputs: Set<Output>;
   minify?: boolean;
   workspacePackages: BackstagePackage[];

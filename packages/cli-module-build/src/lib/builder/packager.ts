@@ -22,7 +22,12 @@ import { targetPaths } from '@backstage/cli-common';
 
 import { makeRollupConfigs } from './config';
 import { BuildOptions, Output } from './types';
-import { PackageRoles, runConcurrentTasks } from '@backstage/cli-node';
+import {
+  BackstagePackageJson,
+  PackageRoles,
+  runConcurrentTasks,
+} from '@backstage/cli-node';
+import { EntryPoint } from '../entryPoints';
 
 export function formatErrorMessage(error: any) {
   let msg = '';
@@ -149,4 +154,15 @@ export function getOutputsForRole(role: string): Set<Output> {
   }
 
   return outputs;
+}
+
+/** Supplies conventional application inputs unless the package declares exports. */
+export function getEntryPointsForRole(
+  role: string,
+  packageJson: BackstagePackageJson,
+): EntryPoint[] | undefined {
+  if ((role === 'backend' || role === 'cli') && !packageJson.exports) {
+    return [{ mount: '.', path: 'src/index.ts', name: 'index', ext: '.ts' }];
+  }
+  return undefined;
 }

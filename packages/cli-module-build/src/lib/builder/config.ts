@@ -137,7 +137,7 @@ export async function makeRollupConfigs(
   };
 
   const distDir = resolvePath(targetDir, 'dist');
-  const entryPoints = readEntryPoints(targetPkg);
+  const entryPoints = options.entryPoints ?? readEntryPoints(targetPkg);
 
   const scriptEntryPoints = entryPoints.filter(e =>
     SCRIPT_EXTS.includes(e.ext),
