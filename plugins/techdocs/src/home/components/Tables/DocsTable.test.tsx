@@ -155,4 +155,43 @@ describe('DocsTable test', () => {
 
     expect(await screen.findByText('No documents to show')).toBeInTheDocument();
   });
+
+  it('should link techdocs-entity rows to the referenced entity docs path', async () => {
+    await renderInTestApp(
+      <DocsTable
+        entities={[
+          {
+            apiVersion: 'version',
+            kind: 'Component',
+            metadata: {
+              name: 'feature-1',
+              namespace: 'example-1',
+              annotations: {
+                'backstage.io/techdocs-entity':
+                  'component:example-1/my-component-1',
+                'backstage.io/techdocs-entity-path': '/feature-1/',
+              },
+            },
+            relations: [
+              {
+                targetRef: 'user:default/owned',
+                type: 'ownedBy',
+              },
+            ],
+          },
+        ]}
+      />,
+      {
+        mountedRoutes: {
+          '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    const link = await screen.findByRole('link', { name: /feature-1$/ });
+    expect(link.getAttribute('href')).toContain(
+      '/docs/example-1/component/my-component-1/feature-1/',
+    );
+  });
 });

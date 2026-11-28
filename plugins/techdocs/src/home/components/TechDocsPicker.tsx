@@ -21,12 +21,24 @@ import {
   EntityFilter,
   useEntityList,
 } from '@backstage/plugin-catalog-react';
-import { TECHDOCS_ANNOTATION } from '@backstage/plugin-techdocs-common';
+import {
+  TECHDOCS_ANNOTATION,
+  TECHDOCS_EXTERNAL_ANNOTATION,
+} from '@backstage/plugin-techdocs-common';
 
 class TechDocsFilter implements EntityFilter {
   getCatalogQuery(): FilterPredicate {
     return {
-      [`metadata.annotations.${TECHDOCS_ANNOTATION}`]: { $exists: true },
+      $any: [
+        {
+          [`metadata.annotations.${TECHDOCS_ANNOTATION}`]: { $exists: true },
+        },
+        {
+          [`metadata.annotations.${TECHDOCS_EXTERNAL_ANNOTATION}`]: {
+            $exists: true,
+          },
+        },
+      ],
     };
   }
 }

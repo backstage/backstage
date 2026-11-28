@@ -20,7 +20,7 @@ import {
   getEntityRelations,
   type EntityPresentationApi,
 } from '@backstage/plugin-catalog-react';
-import { toLowerMaybe } from '../../../helpers';
+import { getEntityDocsRoute } from '../../../helpers';
 import { ConfigApi, RouteFunc } from '@backstage/core-plugin-api';
 
 type getRouteFunc = RouteFunc<{
@@ -40,14 +40,7 @@ export function entitiesToDocsMapper(
     return {
       entity,
       resolved: {
-        docsUrl: getRouteToReaderPageFor({
-          namespace: toLowerMaybe(
-            entity.metadata.namespace ?? 'default',
-            config,
-          ),
-          kind: toLowerMaybe(entity.kind, config),
-          name: toLowerMaybe(entity.metadata.name, config),
-        }),
+        docsUrl: getEntityDocsRoute(entity, getRouteToReaderPageFor, config),
         ownedByRelations,
         ownedByRelationsTitle: ownedByRelations
           .map(

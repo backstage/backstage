@@ -27,6 +27,10 @@ import { PropsWithChildren } from 'react';
 import { TechDocsCustomHome, PanelType } from './TechDocsCustomHome';
 import { ApiProvider } from '@backstage/core-app-api';
 import { rootDocsRouteRef } from '../../routes';
+import {
+  TECHDOCS_ANNOTATION,
+  TECHDOCS_EXTERNAL_ANNOTATION,
+} from '@backstage/plugin-techdocs-common';
 
 const mockCatalogApi = catalogApiMock({
   entities: [
@@ -179,5 +183,88 @@ describe('TechDocsCustomHome', () => {
 
     expect(screen.getByText('Custom Title')).toBeInTheDocument();
     expect(screen.getByText('Custom Subtitle')).toBeInTheDocument();
+  });
+
+  it('should list entities that only have the techdocs-entity annotation', async () => {
+    const catalogApi = catalogApiMock({
+      entities: [
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: {
+            name: 'docs-owner',
+            title: 'Docs Owner',
+            annotations: {
+              [TECHDOCS_ANNOTATION]: 'dir:.',
+            },
+          },
+          spec: {
+            type: 'service',
+            owner: 'user:guest',
+          },
+        },
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: {
+            name: 'docs-consumer',
+            title: 'Docs Consumer',
+            annotations: {
+              [TECHDOCS_EXTERNAL_ANNOTATION]: 'component:default/docs-owner',
+            },
+          },
+          spec: {
+            type: 'service',
+            owner: 'user:guest',
+          },
+        },
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: {
+            name: 'no-docs',
+            title: 'No Docs',
+          },
+          spec: {
+            type: 'service',
+            owner: 'user:guest',
+          },
+        },
+      ],
+    });
+
+    await renderInTestApp(
+      <ApiProvider
+        apis={TestApiRegistry.from(
+          [catalogApiRef, catalogApi],
+          [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+        )}
+      >
+        <TechDocsCustomHome
+          tabsConfig={[
+            {
+              label: 'Docs',
+              panels: [
+                {
+                  title: 'All Docs',
+                  description: 'All documented entities',
+                  panelType: 'DocsTable' as PanelType,
+                  filterPredicate: () => true,
+                },
+              ],
+            },
+          ]}
+        />
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
+        },
+      },
+    );
+
+    expect(await screen.findByText('Docs Owner')).toBeInTheDocument();
+    expect(await screen.findByText('Docs Consumer')).toBeInTheDocument();
+    expect(screen.queryByText('No Docs')).not.toBeInTheDocument();
   });
 });

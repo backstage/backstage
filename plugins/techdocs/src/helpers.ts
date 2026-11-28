@@ -15,6 +15,12 @@
  */
 
 import { Config } from '@backstage/config';
+import { Entity } from '@backstage/catalog-model';
+import { RouteFunc } from '@backstage/core-plugin-api';
+import {
+  buildTechDocsURL,
+  toLowercaseEntityRefMaybe,
+} from '@backstage/plugin-techdocs-react';
 
 // Lower-case entity triplets by default, but allow override.
 export function toLowerMaybe(str: string, config: Config) {
@@ -23,4 +29,23 @@ export function toLowerMaybe(str: string, config: Config) {
   )
     ? str
     : str.toLowerCase();
+}
+
+/**
+ * Builds the TechDocs reader URL for an entity, following
+ * `backstage.io/techdocs-entity` and `backstage.io/techdocs-entity-path` when set.
+ */
+export function getEntityDocsRoute(
+  entity: Entity,
+  getRouteToReaderPageFor: RouteFunc<{
+    namespace: string;
+    kind: string;
+    name: string;
+  }>,
+  config: Config,
+): string {
+  // buildTechDocsURL only returns undefined when routeFunc is missing; ours is required.
+  return buildTechDocsURL(entity, entityRef =>
+    getRouteToReaderPageFor(toLowercaseEntityRefMaybe(entityRef, config)),
+  )!;
 }

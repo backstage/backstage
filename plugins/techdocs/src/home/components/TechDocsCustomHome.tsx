@@ -43,8 +43,12 @@ import {
 import { useApi } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { techdocsTranslationRef } from '../../translation';
-import { TECHDOCS_ANNOTATION } from '@backstage/plugin-techdocs-common';
+import {
+  TECHDOCS_ANNOTATION,
+  TECHDOCS_EXTERNAL_ANNOTATION,
+} from '@backstage/plugin-techdocs-common';
 import { EntityFilterQuery } from '@backstage/catalog-client';
+import { isTechDocsAvailable } from '../../Router';
 
 const panels = {
   DocsTable: DocsTable,
@@ -196,11 +200,23 @@ export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
     loading,
     error,
   } = useAsync(async () => {
+    const baseFilters = Array.isArray(filter) ? filter : [filter ?? {}];
+
+    // Array of filter objects is OR'd by the catalog API. Expand the caller's
+    // filters with each TechDocs annotation so entities match either one.
     const response = await catalogApi.getEntities({
-      filter: {
-        ...filter,
-        [`metadata.annotations.${TECHDOCS_ANNOTATION}`]: CATALOG_FILTER_EXISTS,
-      },
+      filter: [
+        ...baseFilters.map(baseFilter => ({
+          ...baseFilter,
+          [`metadata.annotations.${TECHDOCS_ANNOTATION}`]:
+            CATALOG_FILTER_EXISTS,
+        })),
+        ...baseFilters.map(baseFilter => ({
+          ...baseFilter,
+          [`metadata.annotations.${TECHDOCS_EXTERNAL_ANNOTATION}`]:
+            CATALOG_FILTER_EXISTS,
+        })),
+      ],
       fields: [
         'apiVersion',
         'kind',
@@ -210,9 +226,7 @@ export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
         'spec.type',
       ],
     });
-    return response.items.filter((entity: Entity) => {
-      return !!entity.metadata.annotations?.[TECHDOCS_ANNOTATION];
-    });
+    return response.items.filter(isTechDocsAvailable);
   });
 
   const currentTabConfig = tabsConfig[selectedTab];
