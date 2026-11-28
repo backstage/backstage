@@ -1,4 +1,3 @@
-cat << 'EOF' > .github/workflows/sync_bui-changelog.yml
 name: Sync BUI Changelog
 
 on:
@@ -59,4 +58,3 @@ jobs:
           git add docs-ui/src/utils/changelogs/ docs-ui/src/utils/changelog.ts
           git commit --signoff -m 'ci(docs-ui): sync Backstage UI changelog automatically'
           git push
-EOF
