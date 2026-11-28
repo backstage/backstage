@@ -202,8 +202,10 @@ export const EntityPicker = (props: EntityPickerProps) => {
 
   // BUI: controlled input value
   const [inputValue, setInputValue] = useState(formData || '');
+  const userEditedInputRef = useRef(false);
 
   useEffect(() => {
+    userEditedInputRef.current = false;
     if (formData) {
       const opt = buiOptions.find(o => o.value === formData);
       setInputValue(opt?.label || formData);
@@ -217,17 +219,24 @@ export const EntityPicker = (props: EntityPickerProps) => {
 
   const lastCommittedRef = useRef(formData);
 
+  const selectedOption = buiOptions.find(option => option.value === formData);
+
   useEffect(() => {
     lastCommittedRef.current = formData;
   }, [formData]);
 
   const handleSelectionChange = useCallback(
     (key: Key | null) => {
+      userEditedInputRef.current = false;
       if (key !== null) {
         const value = String(key);
         lastCommittedRef.current = value;
         onChange(value);
-      } else if (allowArbitraryValues && inputValue) {
+      } else if (
+        allowArbitraryValues &&
+        inputValue &&
+        selectedOption?.value !== inputValue
+      ) {
         let entityRef = inputValue;
         try {
           entityRef = stringifyEntityRef(
@@ -243,10 +252,23 @@ export const EntityPicker = (props: EntityPickerProps) => {
         onChange(undefined);
       }
     },
-    [onChange, allowArbitraryValues, inputValue, defaultKind, defaultNamespace],
+    [
+      onChange,
+      allowArbitraryValues,
+      inputValue,
+      defaultKind,
+      defaultNamespace,
+      selectedOption?.value,
+    ],
   );
 
   const handleBlur = useCallback(() => {
+    if (!userEditedInputRef.current) {
+      return;
+    }
+
+    userEditedInputRef.current = false;
+
     if (allowArbitraryValues && inputValue) {
       let entityRef = inputValue;
       try {
@@ -321,7 +343,10 @@ export const EntityPicker = (props: EntityPickerProps) => {
           isDisabled={isDisabled || isAutoSelected}
           selectedKey={selectedKey}
           inputValue={inputValue}
-          onInputChange={setInputValue}
+          onInputChange={value => {
+            userEditedInputRef.current = true;
+            setInputValue(value);
+          }}
           onSelectionChange={handleSelectionChange}
           onBlur={handleBlur}
           isLoading={loading}
