@@ -58,7 +58,9 @@ export class DefaultSchedulerService {
           logger: options.logger,
         });
 
-        options.rootLifecycle.addShutdownHook(() => abortController.abort());
+        options.rootLifecycle.addBeforeShutdownHook(() =>
+          abortController.abort(),
+        );
         janitor.start(abortController.signal);
       }
 
