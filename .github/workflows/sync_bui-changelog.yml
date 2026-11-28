@@ -1,3 +1,4 @@
+cat << 'EOF' > .github/workflows/sync_bui-changelog.yml
 name: Sync BUI Changelog
 
 on:
@@ -49,12 +50,13 @@ jobs:
       - name: Commit and push generated changelog files
         run: |
           if [ -z "$(git status --porcelain)" ]; then
-            echo "No changelog changes to commit."
+            echo 'No changelog changes to commit.'
             exit 0
           fi
 
-          git config user.email "noreply@backstage.io"
-          git config user.name "Github BUI Docs workflow"
+          git config user.email 'noreply@backstage.io'
+          git config user.name 'Github BUI Docs workflow'
           git add docs-ui/src/utils/changelogs/ docs-ui/src/utils/changelog.ts
-          git commit --signoff -m "ci(docs-ui): sync Backstage UI changelog automatically"
+          git commit --signoff -m 'ci(docs-ui): sync Backstage UI changelog automatically'
           git push
+EOF
