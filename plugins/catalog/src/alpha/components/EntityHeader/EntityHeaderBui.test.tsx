@@ -137,6 +137,20 @@ describe('EntityHeaderBui', () => {
     ).toBeInTheDocument();
   });
 
+  it('renders owner names from the presentation API', async () => {
+    const ownerWithDisplayName: Entity = {
+      ...ownerEntity,
+      spec: { profile: { displayName: 'Team A Core' } },
+    };
+
+    await renderHeader({
+      entity: componentEntity,
+      catalogEntities: [componentEntity, ownerWithDisplayName, systemEntity],
+    });
+
+    expect(await screen.findByText('Team A Core')).toBeInTheDocument();
+  });
+
   it('keeps a useful owner fallback while catalog owner resolution is pending', async () => {
     const catalogApi = catalogApiMock({
       entities: [componentEntity, ownerEntity, systemEntity],
