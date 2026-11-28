@@ -210,6 +210,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/cli-node": "workspace:^",
     "@google-cloud/cloud-sql-connector": "^1.4.0",
+    "@opentelemetry/context-async-hooks": "^3.0.0",
     "@types/archiver": "^7.0.0",
     "@types/base64-stream": "^1.0.2",
     "@types/compression": "^1.7.5",

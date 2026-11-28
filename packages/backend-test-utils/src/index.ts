@@ -20,6 +20,7 @@
  * @packageDocumentation
  */
 
+export * from './auditor';
 export * from './cache';
 export * from './database';
 export * from './msw';

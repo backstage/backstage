@@ -17,6 +17,7 @@
 import { Backend, createSpecializedBackend } from '@backstage/backend-app-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { auditorServiceFactory } from '@backstage/backend-defaults/auditor';
+import { defaultAuditSinksServiceFactory } from '@backstage/backend-defaults/auditor';
 import { authServiceFactory } from '@backstage/backend-defaults/auth';
 import { cacheServiceFactory } from '@backstage/backend-defaults/cache';
 import { databaseServiceFactory } from '@backstage/backend-defaults/database';
@@ -49,6 +50,7 @@ import { instanceMetadataServiceFactory } from './alpha/entrypoints/instanceMeta
 /** @public */
 export const defaultServiceFactories: ServiceFactory[] = [
   auditorServiceFactory,
+  defaultAuditSinksServiceFactory,
   authServiceFactory,
   cacheServiceFactory,
   rootConfigServiceFactory,
