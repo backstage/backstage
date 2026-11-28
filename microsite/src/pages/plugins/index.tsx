@@ -139,6 +139,20 @@ const Plugins = () => {
       .filter(pluginData => matchesSearch(pluginData, searchTerm));
   }, [selectedCategories, searchTerm]);
 
+  const totalPluginCount = useMemo(
+    () =>
+      [...plugins.corePlugins, ...plugins.otherPlugins].filter(
+        pluginData => pluginData.status !== 'archived',
+      ).length,
+    [],
+  );
+
+  const isFiltering = searchTerm !== '' || selectedCategories.length > 0;
+  const visiblePluginCount =
+    (showCoreFeatures ? corePlugins.length : 0) +
+    (showOtherPlugins ? otherPlugins.length : 0) +
+    inactivePlugins.length;
+
   return (
     <Layout>
       <div
@@ -172,6 +186,14 @@ const Plugins = () => {
             searchTerm={searchTerm}
             onSearchTermChange={setSearchTerm}
           />
+        </div>
+
+        <div className="pluginsResultCount" aria-live="polite" role="status">
+          {isFiltering && (
+            <span>
+              Showing {visiblePluginCount} of {totalPluginCount} plugins
+            </span>
+          )}
         </div>
 
         {corePlugins.length === 0 &&
