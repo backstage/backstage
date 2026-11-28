@@ -29,7 +29,7 @@ import { useApi } from '@backstage/core-plugin-api';
 
 import { EntityDialog } from './EntityDialog';
 import { catalogUnprocessedEntitiesApiRef } from '../api';
-import useAsync from 'react-use/esm/useAsync';
+import useAsyncRetry from 'react-use/esm/useAsyncRetry';
 import { DeleteEntityConfirmationDialog } from './DeleteEntityConfirmationDialog';
 import { UnprocessedEntity } from '@backstage/plugin-catalog-unprocessed-entities-common';
 import { toastApiRef } from '@backstage/frontend-plugin-api';
@@ -70,18 +70,22 @@ const RenderErrorContext = ({
 };
 
 /**
- * Converts input datetime which lacks timezone info into user's local time so that they can
- * easily understand the times.
+ * Formats a datetime for the user's locale and timezone.
+ *
+ * SQLite returns `yyyy-MM-dd HH:mm:ss` strings, which are always UTC.
  */
 export const convertTimeToLocalTimezone = (dateTime: string | Date) => {
   const isoDateTime =
     typeof dateTime === 'string' ? dateTime : dateTime.toISOString();
-
-  const strDateTime = DateTime.fromISO(isoDateTime, {
-    zone: DateTime.local().zoneName,
-  });
-
-  return strDateTime.toFormat('yyyy-MM-dd hh:mm:ss ZZZZ');
+  const parsed = DateTime.fromISO(isoDateTime);
+  return (
+    parsed.isValid ? parsed : DateTime.fromSQL(isoDateTime, { zone: 'utc' })
+  )
+    .toLocal()
+    .toLocaleString({
+      ...DateTime.DATETIME_MED_WITH_SECONDS,
+      timeZoneName: 'short',
+    });
 };
 
 export const FailedEntities = () => {
@@ -90,7 +94,8 @@ export const FailedEntities = () => {
     loading,
     error,
     value: data,
-  } = useAsync(async () => await unprocessedApi.failed());
+    retry,
+  } = useAsyncRetry(() => unprocessedApi.failed());
   const toastApi = useApi(toastApiRef);
   const [selectedEntityId, setSelectedEntityId] = useState<string | undefined>(
     undefined,
@@ -127,6 +132,7 @@ export const FailedEntities = () => {
           title: `Entity ${selectedEntityRef} has been deleted`,
           status: 'success',
         });
+        retry();
       }
     } catch (e) {
       toastApi.post({
@@ -157,7 +163,7 @@ export const FailedEntities = () => {
     {
       title: <Text>Kind</Text>,
       sorting: true,
-      field: 'kind',
+      field: 'unprocessed_entity.kind',
       render: (rowData: UnprocessedEntity | {}) =>
         (rowData as UnprocessedEntity).unprocessed_entity.kind,
     },
@@ -176,7 +182,7 @@ export const FailedEntities = () => {
       render: (rowData: UnprocessedEntity | {}) =>
         convertTimeToLocalTimezone(
           (rowData as UnprocessedEntity).last_discovery_at,
-        ) || 'unknown',
+        ),
     },
     {
       title: <Text>Next Refresh At</Text>,
@@ -185,7 +191,7 @@ export const FailedEntities = () => {
       render: (rowData: UnprocessedEntity | {}) =>
         convertTimeToLocalTimezone(
           (rowData as UnprocessedEntity).next_update_at,
-        ) || 'unknown',
+        ),
     },
     {
       title: <Text>Raw Entity Definition</Text>,
@@ -202,7 +208,7 @@ export const FailedEntities = () => {
         return (
           <ButtonIcon
             variant="tertiary"
-            aria-label="delete"
+            aria-label={`Delete entity ${entity_ref}`}
             icon={<RiDeleteBinLine />}
             onPress={() =>
               handleDelete({
