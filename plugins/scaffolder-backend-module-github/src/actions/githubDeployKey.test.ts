@@ -18,7 +18,10 @@ import { createGithubDeployKeyAction } from './githubDeployKey';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { ConfigReader } from '@backstage/config';
-import { ScmIntegrations } from '@backstage/integration';
+import {
+  ScmIntegrations,
+  type GithubCredentialsProvider,
+} from '@backstage/integration';
 
 import { Octokit } from 'octokit';
 
@@ -84,6 +87,34 @@ describe('github:deployKey:create', () => {
 
     expect(octokitMock).toHaveBeenCalledWith(
       expect.objectContaining({ log: mockContext.logger }),
+    );
+  });
+
+  it('should use the provided credentials provider when no token is given', async () => {
+    const getCredentials = jest
+      .fn()
+      .mockResolvedValue({ token: 'provider-token', type: 'token' });
+    const credentialsProvider: GithubCredentialsProvider = { getCredentials };
+
+    const providerAction = createGithubDeployKeyAction({
+      integrations,
+      githubCredentialsProvider: credentialsProvider,
+    });
+
+    mockOctokit.rest.actions.getRepoPublicKey.mockResolvedValue({
+      data: {
+        key: publicKey,
+        key_id: 'keyid',
+      },
+    });
+
+    await providerAction.handler(mockContext);
+
+    expect(getCredentials).toHaveBeenCalledWith({
+      url: 'https://github.com/owner/repository',
+    });
+    expect(octokitMock).toHaveBeenCalledWith(
+      expect.objectContaining({ auth: 'provider-token' }),
     );
   });
 

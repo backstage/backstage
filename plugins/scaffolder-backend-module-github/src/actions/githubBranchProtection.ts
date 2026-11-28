@@ -19,7 +19,10 @@ import {
   createTemplateAction,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
-import { ScmIntegrationRegistry } from '@backstage/integration';
+import {
+  GithubCredentialsProvider,
+  ScmIntegrationRegistry,
+} from '@backstage/integration';
 import { examples } from './githubBranchProtection.examples';
 import * as inputProps from './inputProperties';
 import { getOctokitOptions } from '../util';
@@ -33,9 +36,11 @@ import { enableBranchProtectionOnDefaultRepoBranch } from './gitHelpers';
  */
 export function createGithubBranchProtectionAction(options: {
   integrations: ScmIntegrationRegistry;
+  githubCredentialsProvider?: GithubCredentialsProvider;
   requireScmUserCredentials?: boolean;
 }) {
-  const { integrations, requireScmUserCredentials } = options;
+  const { integrations, githubCredentialsProvider, requireScmUserCredentials } =
+    options;
 
   return createTemplateAction({
     id: 'github:branch-protection:create',
@@ -90,6 +95,7 @@ export function createGithubBranchProtectionAction(options: {
 
       const octokitOptions = await getOctokitOptions({
         integrations,
+        credentialsProvider: githubCredentialsProvider,
         requireScmUserCredentials,
         token: providedToken,
         host,

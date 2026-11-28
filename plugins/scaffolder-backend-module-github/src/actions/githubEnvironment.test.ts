@@ -18,7 +18,10 @@ import { createGithubEnvironmentAction } from './githubEnvironment';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { ConfigReader } from '@backstage/config';
-import { ScmIntegrations } from '@backstage/integration';
+import {
+  ScmIntegrations,
+  type GithubCredentialsProvider,
+} from '@backstage/integration';
 import { mockCredentials } from '@backstage/backend-test-utils';
 
 import { Octokit } from 'octokit';
@@ -144,6 +147,30 @@ describe('github:environment:create', () => {
 
     expect(octokitMock).toHaveBeenCalledWith(
       expect.objectContaining({ log: mockContext.logger }),
+    );
+  });
+
+  it('should use the provided credentials provider when no token is given', async () => {
+    const getCredentials = jest
+      .fn()
+      .mockResolvedValue({ token: 'provider-token', type: 'token' });
+    const credentialsProvider: GithubCredentialsProvider = { getCredentials };
+
+    const providerAction = createGithubEnvironmentAction({
+      integrations,
+      catalog: mockCatalogService,
+      githubCredentialsProvider: credentialsProvider,
+    });
+
+    const result = providerAction.handler(mockContext);
+    await jest.advanceTimersByTimeAsync(2_000);
+    await result;
+
+    expect(getCredentials).toHaveBeenCalledWith({
+      url: 'https://github.com/owner/repository',
+    });
+    expect(octokitMock).toHaveBeenCalledWith(
+      expect.objectContaining({ auth: 'provider-token' }),
     );
   });
 
