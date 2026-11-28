@@ -91,13 +91,21 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const router = await createOpenApiRouter({
-    validatorOptions: {
-      // We want the spec to be up to date with the expected value, but the return type needs
-      //  to be controlled by the router implementation not the request validator.
-      ignorePaths: /^\/validate-entity\/?$/,
+  const router = await createOpenApiRouter();
+
+  // Request validation failures on this route (including malformed JSON) use
+  // the same response shape as the handler's own validation errors.
+  router.use(
+    '/validate-entity',
+    (
+      err: Error,
+      _req: express.Request,
+      res: express.Response,
+      _next: express.NextFunction,
+    ) => {
+      res.status(400).json({ errors: [serializeError(err)] });
     },
-  });
+  );
   const {
     entitiesCatalog,
     locationAnalyzer,
