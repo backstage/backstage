@@ -57,16 +57,14 @@ function createConfig(dir, extraConfig = {}) {
 
   return {
     ...otherConfig,
+    // The base config and parser are referenced by path, so that they're
+    // loaded from the dependencies of this package, see eslint-factory-base.js
     extends: [
-      '@spotify/eslint-config-base',
-      '@spotify/eslint-config-typescript',
-      'prettier',
-      'plugin:jest/recommended',
-      'plugin:@backstage/recommended',
+      require.resolve('./eslint-factory-base'),
       ...(extraExtends ?? []),
     ],
-    parser: '@typescript-eslint/parser',
-    plugins: ['import', 'unused-imports', ...(plugins ?? [])],
+    parser: require.resolve('@typescript-eslint/parser'),
+    plugins: plugins ?? [],
     env: {
       jest: true,
       ...env,
@@ -239,7 +237,7 @@ function createConfigForRole(dir, role, extraConfig = {}) {
       return createConfig(dir, {
         ...extraConfig,
         extends: [
-          '@spotify/eslint-config-react',
+          require.resolve('@spotify/eslint-config-react'),
           ...(extraConfig.extends ?? []),
         ],
         parserOptions: {
