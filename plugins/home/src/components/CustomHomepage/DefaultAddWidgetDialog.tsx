@@ -1,0 +1,103 @@
+/*
+ * Copyright 2023 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import Box from '@material-ui/core/Box';
+import Dialog from '@material-ui/core/Dialog';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import AddIcon from '@material-ui/icons/Add';
+import ListItemText from '@material-ui/core/ListItemText';
+import Typography from '@material-ui/core/Typography';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { homeTranslationRef } from '../../translation';
+import type {
+  AddWidgetDialogProps,
+  AddWidgetDialogWidget,
+} from './AddWidgetDialog';
+
+const getTitle = (widget: AddWidgetDialogWidget) => {
+  return widget.title || widget.name;
+};
+
+const AddWidgetDialogContent = (
+  props: Pick<AddWidgetDialogProps, 'widgets' | 'handleAdd'>,
+) => {
+  const { widgets, handleAdd } = props;
+  const { t } = useTranslationRef(homeTranslationRef);
+  return (
+    <>
+      <DialogTitle>{t('addWidgetDialog.title')}</DialogTitle>
+      <DialogContent>
+        {widgets.length === 0 ? (
+          <Box pb={3} textAlign="center">
+            <Typography variant="body1" color="textSecondary">
+              {t('addWidgetDialog.noAvailableWidgets')}
+            </Typography>
+          </Box>
+        ) : (
+          <List dense>
+            {widgets.map(widget => {
+              return (
+                <ListItem
+                  key={widget.name}
+                  button
+                  onClick={() => handleAdd(widget)}
+                >
+                  <ListItemAvatar>
+                    <AddIcon />
+                  </ListItemAvatar>
+                  <ListItemText
+                    secondary={
+                      widget.description && (
+                        <Typography
+                          component="span"
+                          variant="caption"
+                          color="textPrimary"
+                        >
+                          {widget.description}
+                        </Typography>
+                      )
+                    }
+                    primary={
+                      <Typography variant="body1" color="textPrimary">
+                        {getTitle(widget)}
+                      </Typography>
+                    }
+                  />
+                </ListItem>
+              );
+            })}
+          </List>
+        )}
+      </DialogContent>
+    </>
+  );
+};
+
+export const DefaultAddWidgetDialog = (props: AddWidgetDialogProps) => {
+  const { open, onClose, widgets, handleAdd } = props;
+  return (
+    <Dialog open={open} onClose={onClose}>
+      {/* Only mount when open so the list does not update (e.g. remove the added widget) before the modal closes */}
+      {open && (
+        <AddWidgetDialogContent widgets={widgets} handleAdd={handleAdd} />
+      )}
+    </Dialog>
+  );
+};
