@@ -237,6 +237,8 @@ auth:
     #   - 'http://[::1]:*/*'
 ```
 
+Patterns are matched per URL component. The host part of a URL is matched case-insensitively, but the path is matched case-sensitively, including the literal text of the pattern. For example, `https://app.example.com/oauth/*` does not match `https://app.example.com/OAUTH/client.json`.
+
 #### Pre-registered clients
 
 Some MCP clients and integration platforms support neither CIMD nor Dynamic Client Registration, and instead only offer a manual OAuth setup with a fixed client ID, client secret, and the authorization and token URLs. You can register these clients statically in config:
