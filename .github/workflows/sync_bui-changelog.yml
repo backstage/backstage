@@ -1,5 +1,4 @@
 name: Sync BUI Changelog
-
 on:
   push:
     branches: [master]
