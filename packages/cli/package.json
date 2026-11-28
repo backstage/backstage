@@ -49,6 +49,7 @@
     "@backstage/cli-node": "workspace:^",
     "@backstage/eslint-plugin": "workspace:^",
     "@manypkg/get-packages": "^1.1.3",
+    "@rushstack/eslint-patch": "^1.16.1",
     "@spotify/eslint-config-base": "^15.0.0",
     "@spotify/eslint-config-react": "^15.0.0",
     "@spotify/eslint-config-typescript": "^15.0.0",
